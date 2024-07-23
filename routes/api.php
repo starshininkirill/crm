@@ -11,5 +11,3 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/register', [RegisterController::class, 'register']);
-
-Route::get('/test', [TestController::class, 'test'])->name('test')->middleware('auth:sanctum');
