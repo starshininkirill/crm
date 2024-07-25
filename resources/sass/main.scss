@@ -21,6 +21,16 @@ a{
     margin: 20px;
     margin-left: 30px;
 
+    .contracts{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        a{
+            color: blue;
+            padding-bottom: 10px;
+        }
+    }
+
     .contract-submenu{
         display: flex;
         gap: 2px;

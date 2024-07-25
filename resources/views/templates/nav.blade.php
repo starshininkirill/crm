@@ -2,7 +2,7 @@
     <a href="{{ route('contract.index') }}">
         Договора
     </a>
-    <a href="">
+    <a href="{{ route('payment.index') }}">
         Платежи
     </a>
     <a href="">

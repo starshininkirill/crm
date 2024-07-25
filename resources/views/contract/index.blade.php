@@ -7,14 +7,11 @@
             <h2>Договоров не найдено</h2>
         @else
             @foreach($contracts as $contract)
-            <div class="contract">
+            <a href="{{ route('contract.show', $contract->id) }}" class="contract border-bottom">
                 <div class="contract__name">
                     {{ $contract->client }}
                 </div>
-                <div class="contract__amount-summ">
-                    {{ $contract->amount_price }}
-                </div>
-            </div>
+            </a>
             @endforeach
         @endif
     </div>

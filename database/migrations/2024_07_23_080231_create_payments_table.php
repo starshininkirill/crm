@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name');
             $table->float('value');
-            $table->string('status');
+            $table->integer('order');
+            $table->string('status')->default('close');
             $table->foreignId('contract_id')->constrained()->onDelete('cascade');
         });
     }
