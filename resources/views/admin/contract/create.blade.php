@@ -1,8 +1,8 @@
-@extends('layouts.contract')
+@extends('admin.layouts.contract')
 
 @section('content')
     <h1>Создать договор</h1>
-    <form action="{{ route('contract.store') }}" method="POST" class="contract-create-form d-flex flex-column">
+    <form action="{{ route('admin.contract.store') }}" method="POST" class="contract-create-form d-flex flex-column">
         @csrf
         @if ($errors->any())
             <div class="alert alert-danger">

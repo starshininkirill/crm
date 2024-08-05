@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class PaymentController extends Controller
     public function index()
     {
         $payments = Payment::all();
-        return view('payment.index', ['payments' => $payments]);
+        return view('admin.payment.index', ['payments' => $payments]);
     }
 
     /**
@@ -39,7 +40,7 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
 
-        return view('payment.show', ['payment' => $payment]);
+        return view('admin.payment.show', ['payment' => $payment]);
     }
 
     /**

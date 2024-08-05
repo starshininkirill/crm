@@ -1,4 +1,4 @@
-@extends('layouts.payment')
+@extends('admin.layouts.payment')
 
 @section('content')
     <h1>Платеж №: {{ $payment->id }}</h1>

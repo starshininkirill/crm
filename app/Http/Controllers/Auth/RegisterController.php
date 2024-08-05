@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    public function create()
+    {
+        
+    }
+
     public function register(RegisterRequest $request)
     {   
 

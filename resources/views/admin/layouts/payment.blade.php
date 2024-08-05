@@ -1,13 +1,13 @@
-@extends('base')
+@extends('admin')
 
 @section('main')
     <div class="contract-page border border-top-0 h-100" id="contract-page">
         <div class="contract-submenu border-bottom">
-            <a href="{{ route('contract.index') }}" class="border border-bottom-0">
-                Все Договора
+            <a href="" class="border border-bottom-0">
+                Все Платежи
             </a>
-            <a href="{{ route('contract.create') }}" class="border border-bottom-0">
-                Создать договор
+            <a href="" class="border border-bottom-0">
+                Создать Платеж
             </a>
         </div>
         <div class="contract-page-wrapper">

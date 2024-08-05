@@ -1,4 +1,4 @@
-@extends('layouts.contract')
+@extends('admin.layouts.contract')
 
 @section('content')
     <h1 class="pb-4">Договор: {{ $contract->client }}</h1>
@@ -9,7 +9,7 @@
         <h3>Платежи</h3>
         <div class="payments d-flex flex-column gap-1">
             @foreach ($contract->payments as $payment)
-                <a href="{{ route('payment.show', $payment->id) }}" class="payment">
+                <a href="{{ route('admin.payment.show', $payment->id) }}" class="payment">
                     {{ $payment->order }}й платеж: {{ $payment->value }}
                 </a>
             @endforeach

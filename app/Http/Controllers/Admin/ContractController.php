@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractRequest;
 use App\Models\Contract;
 use App\Models\Payment;
@@ -26,7 +27,7 @@ class ContractController extends Controller
 
         $contracts = Contract::all();
 
-        return view('contract.index', ['contracts' => $contracts]);
+        return view('admin.contract.index', ['contracts' => $contracts]);
 
     }
 
@@ -36,7 +37,7 @@ class ContractController extends Controller
     public function create()
     {
         $services = Service::all(); // Предполагается, что у вас есть модель Service
-        return view('contract.create', ['services' => $services]);
+        return view('admin.contract.create', ['services' => $services]);
     }
 
     /**
@@ -61,7 +62,7 @@ class ContractController extends Controller
     {
         $contract = Contract::findOrFail($id);
 
-        return view('contract.show', ['contract' => $contract]);
+        return view('admin.contract.show', ['contract' => $contract]);
     }
 
     /**
