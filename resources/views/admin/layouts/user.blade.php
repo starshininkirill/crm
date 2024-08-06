@@ -3,10 +3,10 @@
 @section('main')
     <div class="grow w-full py-8 px-2" id="contract-page">
         <div class="flex gap-3 mb-4 border-b">
-            <a href="#" class="px-4 py-2 border border-b-0 ">
+            <a href="{{ route('admin.user.index') }}" class="px-4 py-2 border border-b-0 ">
                 Все Сотрудники
             </a>
-            <a href="#" class="px-4 py-2 border border-b-0">
+            <a href="{{ route('admin.user.create') }}" class="px-4 py-2 border border-b-0">
                 Создать сотрудника
             </a>
         </div>

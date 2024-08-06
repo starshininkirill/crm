@@ -12,13 +12,18 @@
                   </div>
                   <div class="flex items-center space-x-4">
                         @guest
-                          <x-header-nav-link href="{{ route('home') }}" route="home">
+                          <x-header-nav-link href="{{ route('login') }}" route="login">
                               Вход
-                              </x-nav-link>
-                              <x-header-nav-link href="{{ route('home') }}" route="home">
-                                  Регистрация
-                                </x-nav-link>
+                            </x-nav-link> 
                         @endguest
+                        @auth
+                            <span class=" text-l text-white ">
+                                {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                            </span>
+                            <x-header-nav-link href="{{ route('logout') }}" route="logout">
+                                Выйти
+                              </x-nav-link> 
+                        @endauth
                   </div>
               </div>
           </div>
