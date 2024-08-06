@@ -11,14 +11,25 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MainController::class, 'home'])->name('home');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
-
-Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 
-Route::prefix('admin')->group(function () {
-    
+Route::middleware('guest')->group(function () {
+
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+
+});
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
+
+ });
+
+
+
+Route::prefix('admin')->middleware('role:admin')->group(function () {
+
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     Route::prefix('contract')->group(function () {
@@ -38,5 +49,4 @@ Route::prefix('admin')->group(function () {
         Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
     });
-
 });

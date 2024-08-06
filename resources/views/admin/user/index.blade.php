@@ -8,8 +8,8 @@
     @else
         <div class="flex flex-col gap-3">
             @foreach ($users as $user)
-                <a>
-                    {{ $user }}
+                <a href="#">
+                    {{ $user->first_name }} {{ $user->last_name }}<br> {{ $user->email }}
                 </a>
             @endforeach
         </div>

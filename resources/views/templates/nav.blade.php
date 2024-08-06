@@ -1,11 +1,11 @@
 <nav class="flex flex-col gap-3 w-1/6 pl-1 pr-1 py-6 bg-light border-r border-solid border-gray-300">
-    <a class=" text-xl " href="{{ route('admin.contract.index') }}">
+    <a class=" text-xl {{ Route::is('admin.contract*') ? 'font-bold' : '' }}" href="{{ route('admin.contract.index') }}">
         Договора
     </a>
-    <a class="text-xl" href="{{ route('admin.payment.index') }}">
+    <a class="text-xl {{ Route::is('admin.payment*') ? 'font-bold' : '' }}" href="{{ route('admin.payment.index') }}">
         Платежи
     </a>
-    <a class="text-xl" href="{{ route('admin.user.index') }}">
+    <a class="text-xl {{ Route::is('admin.user*') ? 'font-bold' : '' }}" href="{{ route('admin.user.index') }}">
         Сотрудники
     </a>
 </nav>
