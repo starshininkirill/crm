@@ -47,6 +47,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('service')->group(function () {
         Route::get('', [ServiceController::class, 'index'])->name('admin.service.index');
+        Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
+        Route::post('/store', [ServiceController::class, 'store'])->name('admin.service.store');
     });
 
     Route::prefix('user')->group(function () {

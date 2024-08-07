@@ -26,7 +26,8 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'role'
+        'role',
+        'position_id'
     ];
 
     /**
@@ -50,5 +51,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
     }
 } 

@@ -6,6 +6,9 @@
             <x-admin-subnav-link route="admin.service.index">
                 Все Услуги
             </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.service.create">
+                Создать услугу
+            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')
