@@ -8,4 +8,7 @@
     <a class="text-xl {{ Route::is('admin.user*') ? 'font-bold' : '' }}" href="{{ route('admin.user.index') }}">
         Сотрудники
     </a>
+    <a class="text-xl {{ Route::is('admin.service*') ? 'font-bold' : '' }}" href="{{ route('admin.service.index') }}">
+        Услуги
+    </a>
 </nav>

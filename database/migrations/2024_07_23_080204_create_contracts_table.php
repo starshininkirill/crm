@@ -16,10 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->string('client');
             $table->float('amount_price');
-            $table->foreignId('service_id')->constrained()->onDelete('cascade');
-        });
+        }); 
     }
-
     /**
      * Reverse the migrations.
      */

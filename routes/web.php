@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -44,9 +45,14 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/show/{id}', [PaymentController::class, 'show'])->name('admin.payment.show');
     });
 
+    Route::prefix('service')->group(function () {
+        Route::get('', [ServiceController::class, 'index'])->name('admin.service.index');
+    });
+
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
     });
+
 });

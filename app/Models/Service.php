@@ -10,4 +10,9 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = ['name',];
+
+    public function contracts()
+    {
+        return $this->belongsToMany(Contract::class);
+    }
 }

@@ -1,16 +1,14 @@
+
 @extends('admin')
 
 @section('main')
-    <div class="contract-page border border-top-0 h-100" id="contract-page">
-        <div class="contract-submenu border-bottom">
-            <a href="" class="border border-bottom-0">
+    <div class="grow w-full py-8 px-2" id="contract-page">
+        <div class="flex gap-3 mb-4 border-b">
+            <x-admin-subnav-link route="admin.payment.index">
                 Все Платежи
-            </a>
-            <a href="" class="border border-bottom-0">
-                Создать Платеж
-            </a>
+            </x-admin-subnav-link>
         </div>
-        <div class="contract-page-wrapper">
+        <div class="contract-page-wrapper flex flex-col">
             @yield('content')
         </div>
     </div>

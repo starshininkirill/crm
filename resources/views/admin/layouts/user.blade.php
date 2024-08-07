@@ -3,12 +3,12 @@
 @section('main')
     <div class="grow w-full py-8 px-2" id="contract-page">
         <div class="flex gap-3 mb-4 border-b">
-            <a href="{{ route('admin.user.index') }}" class="px-4 py-2 border border-b-0 ">
+            <x-admin-subnav-link route="admin.user.index">
                 Все Сотрудники
-            </a>
-            <a href="{{ route('admin.user.create') }}" class="px-4 py-2 border border-b-0">
-                Создать сотрудника
-            </a>
+            </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.user.create">
+                Создать Сотрудники
+            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')
