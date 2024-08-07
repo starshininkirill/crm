@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ContractController;
+use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
@@ -50,6 +51,11 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
         Route::post('/store', [ServiceController::class, 'store'])->name('admin.service.store');
     });
+
+    Route::prefix('department')->group(function () {
+        Route::get('', [DepartmentController::class, 'index'])->name('admin.department.index');
+    });
+
 
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
