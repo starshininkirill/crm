@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -29,8 +30,8 @@ Route::middleware('auth')->group(function () {
  });
 
 
-
-Route::prefix('admin')->middleware('role:admin')->group(function () {
+//  Route::prefix('admin')->middleware('role:admin')->group(function () {
+Route::prefix('admin')->group(function () {
 
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
@@ -54,8 +55,15 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('department')->group(function () {
         Route::get('', [DepartmentController::class, 'index'])->name('admin.department.index');
-    });
+        Route::get('/create', [DepartmentController::class, 'create'])->name('admin.department.create');
+        Route::post('/store', [DepartmentController::class, 'store'])->name('admin.department.store');
 
+        Route::prefix('position')->group(function () {
+            Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
+            Route::post('/store', [PositionController::class, 'store'])->name('admin.department.position.store');
+        });
+
+    });
 
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
@@ -64,3 +72,4 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 
 });
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
+use App\Models\Position;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -26,7 +27,9 @@ class UserController
     }
 
     public function create(){
-        return view('admin.user.create');
+        $positions = Position::all();
+
+        return view('admin.user.create', ['positions' => $positions]);
     }
 
     public function store(UserRegisterRequest $request)

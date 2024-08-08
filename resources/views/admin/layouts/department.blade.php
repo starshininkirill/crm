@@ -6,6 +6,12 @@
             <x-admin-subnav-link route="admin.department.index">
                 Все Отделы
             </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.department.create">
+                Создать отдел
+            </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.department.position.create">
+                Создать Должность
+            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')

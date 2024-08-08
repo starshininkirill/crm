@@ -13,6 +13,7 @@ class UserService
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
+            'position_id' => $data['position_id'],
             'password' => Hash::make($data['password']),
         ]);
     }

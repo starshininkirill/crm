@@ -9,7 +9,24 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['client', 'amount_price'];
+    protected $fillable = [
+        'user_id',
+        'contract_number',
+        'client_id',
+        'amount_price',
+        'comment',
+    ];
+
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function payments()
     {
@@ -20,4 +37,6 @@ class Contract extends Model
     {
         return $this->belongsToMany(Service::class);
     }
+
+
 }

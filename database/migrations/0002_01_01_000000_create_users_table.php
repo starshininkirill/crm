@@ -21,7 +21,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->enum('role', ['admin', 'user'])->default('user');
-            $table->foreignId('position_id')->constrained()->onDelete('cascade');
+            $table->foreignId('position_id')->nullable()->constrained()->onDelete('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
