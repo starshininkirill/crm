@@ -1,15 +1,40 @@
+// document.getElementById('add-payment').addEventListener('click', function() {
+//     let paymentsWrapper = document.querySelector('.payments-wrapper');
+//     let paymentGroups = document.getElementsByName('payments[]').length;
+//     console.log(paymentGroups);
+    
+//     if (paymentGroups < 5) {
+//         let newPaymentGroup = document.createElement('div');
+//         newPaymentGroup.className = 'input-group input-group-sm mb-3 payment-group';
+//         newPaymentGroup.innerHTML = `
+//             <span class="input-group-text" id="inputGroup-sizing-sm">Платеж ${paymentGroups + 1}</span>
+//             <input type="number" name="payments[]" class="form-control" aria-label="Платеж"
+//                 aria-describedby="inputGroup-sizing-sm">
+//         `;
+//         paymentsWrapper.appendChild(newPaymentGroup);
+//     } else {
+//         alert('Можно добавить не более 5 платежей.');
+//     }
+// });
+
 document.getElementById('add-payment').addEventListener('click', function() {
     let paymentsWrapper = document.querySelector('.payments-wrapper');
-    let paymentGroups = paymentsWrapper.querySelectorAll('.payment-group').length;
+    let paymentGroups = document.getElementsByName('payments[]').length;
+    console.log(paymentGroups);
+    
     if (paymentGroups < 5) {
-        let newPaymentGroup = document.createElement('div');
-        newPaymentGroup.className = 'input-group input-group-sm mb-3 payment-group';
-        newPaymentGroup.innerHTML = `
-            <span class="input-group-text" id="inputGroup-sizing-sm">Платеж ${paymentGroups + 1}</span>
-            <input type="number" name="payments[]" class="form-control" aria-label="Платеж"
-                aria-describedby="inputGroup-sizing-sm">
+        let compiledInputGroup = document.createElement('div');
+        compiledInputGroup.innerHTML = `
+            <div>
+                <label class="block text-sm font-medium leading-6 text-gray-900">Платеж ${paymentGroups + 1}</label>
+                <div class="mt-1">
+                    <input type="number" name="payments[]" placeholder="Введите сумму" required
+                           class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+            </div>
         `;
-        paymentsWrapper.appendChild(newPaymentGroup);
+
+        paymentsWrapper.appendChild(compiledInputGroup);
     } else {
         alert('Можно добавить не более 5 платежей.');
     }

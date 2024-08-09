@@ -19,9 +19,6 @@ class ContractController extends Controller
         $this->contractService = $contractService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
 
@@ -31,18 +28,13 @@ class ContractController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $services = Service::all(); // Предполагается, что у вас есть модель Service
+        $services = Service::all(); 
         return view('admin.contract.create', ['services' => $services]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(ContractRequest $request)
     {
         $validated = $request->validated();

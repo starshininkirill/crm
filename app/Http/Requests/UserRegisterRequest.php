@@ -11,7 +11,8 @@ class UserRegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        return true;
+        // return auth()->check() && auth()->user()->role === 'admin';
     }
 
     /**
@@ -25,7 +26,8 @@ class UserRegisterRequest extends FormRequest
             'first_name' => 'required|max:255|min:3',
             'last_name' => 'required|max:255|min:3',
             'email' => 'required|email|unique:users,email',
-            'position_id' => 'required|exists:positions,id',
+            // 'position_id' => 'required|exists:positions,id',
+            'position_id' => 'exists:positions,id',
             'password' => 'required|min:4',
             'password2' => 'required|same:password',
         ];

@@ -26,9 +26,7 @@
             <x-form-input type="password" name="password2" placeholder="******" label="Повторите пароль" />
             <x-select-input :options="$positions" label="Должность" name="position_id" id="position_id" />
 
-            <button type="submit"
-                class="middle w-full none center mr-4 rounded-lg bg-blue-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                data-ripple-light="true">
+            <button class="btn" type="submit">
                 Создать
             </button>
         </div>
