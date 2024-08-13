@@ -1,9 +1,9 @@
 @extends('admin.layouts.contract')
 
 @section('content')
-    <h1 class="pb-4">Договор: {{ $contract->client }}</h1>
+    <h1 class="pb-4">Договор: {{ $contract->number }}</h1>
     <h4 class="pb-1">Цена: {{ $contract->amount_price }} Р</h4>
-    <h4 class="border-bottom pb-3">Услуга: {{ $contract->service->name }}</h4>
+    <h4 class="border-bottom pb-3">Услуги: несколькко</h4>
 
     @if (!empty($contract->payments))
         <h3>Платежи</h3>

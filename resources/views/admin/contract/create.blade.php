@@ -3,12 +3,12 @@
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">Договор</h1>
     <form action="{{ route('admin.contract.store') }}" method="POST" class="max-w-md">
-        @csrf
         @if (session('success'))
             <div class="mb-3 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
+        @csrf
 
         @csrf
         @if ($errors->any())
@@ -35,7 +35,8 @@
                 <div class="grid grid-cols-3">
                     @foreach ($services as $service)
                         <label for="service-{{ $service->id }}" class=" cursor-pointer">
-                            <input type="checkbox" id="service-{{ $service->id }}" name="service[]" value="{{ $service->id }}">
+                            <input type="checkbox" id="service-{{ $service->id }}" name="service[]"
+                                value="{{ $service->id }}">
                             <span>{{ $service->name }}</span>
                         </label>
                     @endforeach

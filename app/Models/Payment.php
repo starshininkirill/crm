@@ -15,4 +15,8 @@ class Payment extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+
+    public function getFormatValue(){
+        return number_format($this->value, 0, '.', ' ') . ' ₽' ;
+    }
 }

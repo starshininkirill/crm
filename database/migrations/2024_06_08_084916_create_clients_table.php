@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('email')->nullable();
             $table->string('company')->nullable();
-            $table->integer('inn')->nullable();
+            $table->string('inn')->nullable();
             $table->string('phone')->nullable();
             $table->timestamps();
         });

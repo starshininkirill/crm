@@ -11,7 +11,7 @@ class Contract extends Model
 
     protected $fillable = [
         'user_id',
-        'contract_number',
+        'number',
         'client_id',
         'amount_price',
         'comment',
@@ -36,6 +36,11 @@ class Contract extends Model
     public function services()
     {
         return $this->belongsToMany(Service::class);
+    }
+
+    public function getPrice()
+    {
+        return number_format($this->amount_price, 0, '.', ' ') . ' ₽' ;
     }
 
 

@@ -23,7 +23,7 @@ class PositionRequest extends FormRequest
     {
         return [
             'name' => 'required|min:2|max:255',
-            'salary' => 'nullable|numeric|min:0',
+            'salary' => 'numeric|min:1',
             'department_id' => 'required|exists:departments,id',
         ];
     }

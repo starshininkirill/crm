@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractRequest;
+use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Service;
@@ -37,14 +38,24 @@ class ContractController extends Controller
 
     public function store(ContractRequest $request)
     {
-        $validated = $request->validated();
-        $payments = $request->input('payments', []);
+        $client = Client::create($request->getClientData());
 
-        if ($created_contract = Contract::create($validated)) {
-            $this->contractService->addPaymentsToContract($created_contract, $payments);
+        $contractData = $request->storeContract();
+        $contractData['client_id'] = $client->id;
+        $contractData['user_id'] = auth()->user()->id;
+
+        $createdContract = Contract::create($contractData);
+
+        $services = $request->input('service', []);
+        if ($services) {
+            $createdContract->services()->sync($services);
         }
 
-        return redirect()->route('contract.index');
+        if ($createdContract) {
+            $this->contractService->addPaymentsToContract($createdContract, $request->input('payments', []));
+        }
+
+        return redirect()->back()->with('success', 'Договор успешно создан');
     }
 
     /**
