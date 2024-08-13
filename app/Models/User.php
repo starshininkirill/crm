@@ -57,4 +57,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Position::class);
     }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+    
 } 

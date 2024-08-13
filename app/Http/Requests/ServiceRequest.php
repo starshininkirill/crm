@@ -23,6 +23,7 @@ class ServiceRequest extends FormRequest
     {
         return [
             'name' => 'required|min:2|max:255',
+            'service_category_id' => 'required|exists:service_categories,id',
         ];
     }
 
@@ -32,6 +33,8 @@ class ServiceRequest extends FormRequest
             'name.required' => 'Поле Название услуги пользователя обязательно для заполнения.',
             'name.max' => 'Название услуги не должно превышать 255 символов.',
             'name.min' => 'Название услуги должно содержать минимум 3 символа.',
+            'service_category_id.required' => 'Выберите категорию для услуги.',
+            'service_category_id.exists' => 'Выбранная категория не существует.',
         ];
     }
 }

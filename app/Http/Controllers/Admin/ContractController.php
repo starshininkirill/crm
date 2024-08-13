@@ -15,18 +15,17 @@ class ContractController extends Controller
 {
     protected $contractService;
 
-    public function __construct(ContractService $contractService)
+    public function __construct(
+        ContractService $contractService,
+    )
     {
         $this->contractService = $contractService;
     }
 
     public function index()
     {
-
         $contracts = Contract::all();
-
         return view('admin.contract.index', ['contracts' => $contracts]);
-
     }
 
     public function create()
@@ -38,21 +37,19 @@ class ContractController extends Controller
 
     public function store(ContractRequest $request)
     {
+        $data = $request->validated();
+        $user = $request->user();
+
         $client = Client::create($request->getClientData());
 
-        $contractData = $request->storeContract();
-        $contractData['client_id'] = $client->id;
-        $contractData['user_id'] = auth()->user()->id;
+        $contractData = $request->storeContract($client);
+        $createdContract = $user->contracts()->create($contractData);
 
-        $createdContract = Contract::create($contractData);
-
-        $services = $request->input('service', []);
-        if ($services) {
-            $createdContract->services()->sync($services);
-        }
+        $createdContract->services()->sync($data['service']);
 
         if ($createdContract) {
-            $this->contractService->addPaymentsToContract($createdContract, $request->input('payments', []));
+            $this->contractService
+                ->addPaymentsToContract($createdContract, $data['payments']);
         }
 
         return redirect()->back()->with('success', 'Договор успешно создан');
@@ -61,10 +58,8 @@ class ContractController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Contract $contract)
     {
-        $contract = Contract::findOrFail($id);
-
         return view('admin.contract.show', ['contract' => $contract]);
     }
 

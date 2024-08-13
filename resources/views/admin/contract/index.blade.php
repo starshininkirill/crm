@@ -48,14 +48,17 @@
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2">
                                     @foreach ($contract->services as $service)
-                                        {{ $service->name }},
+                                        {{ $service->name }} 
+                                        @if (!$loop->last)
+                                        ,
+                                        @endif
                                     @endforeach
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2">
                                     {{ $contract->getPrice() }}
                                 </td>
                                 @foreach ($contract->payments as $payment)
-                                    <td class="border border-gray-300 px-4 py-2">
+                                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
                                         {{ $payment->getFormatValue() }}
                                     </td>
                                 @endforeach

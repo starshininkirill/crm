@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceRequest;
 use App\Models\Service;
+use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -17,7 +18,9 @@ class ServiceController extends Controller
     }
 
     public function create(){
-        return view('admin.service.create');
+        $categories = ServiceCategory::all();
+
+        return view('admin.service.create', ['categories' => $categories]);
     }
 
     public function store(ServiceRequest $request){

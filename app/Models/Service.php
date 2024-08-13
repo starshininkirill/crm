@@ -9,10 +9,15 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name',];
+    protected $fillable = ['name', 'service_category_id',];
 
     public function contracts()
     {
         return $this->belongsToMany(Contract::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ServiceCategory::class, 'service_category_id');
     }
 }
