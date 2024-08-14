@@ -7,6 +7,9 @@
             <x-admin-subnav-link route="admin.payment.index">
                 Все Платежи
             </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.payment.unsettled">
+                Неразобранные платежи
+            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')

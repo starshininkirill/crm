@@ -58,7 +58,7 @@
                                     {{ $contract->getPrice() }}
                                 </td>
                                 @foreach ($contract->payments as $payment)
-                                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap">
+                                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap {{ $payment->status == 'close' ? 'bg-green-500 text-white' : '' }}">
                                         {{ $payment->getFormatValue() }}
                                     </td>
                                 @endforeach

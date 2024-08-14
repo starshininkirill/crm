@@ -14,7 +14,7 @@ class ContractService
             if (!empty($payment) && $order <= $maxPayments) {
                 $contract->payments()->create([
                     'value' => $payment,
-                    'status' => 'close',
+                    'status' => 'open',
                     'order' => $order,
                 ]);
                 $order++;

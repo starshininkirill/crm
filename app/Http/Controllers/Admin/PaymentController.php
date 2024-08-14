@@ -20,9 +20,10 @@ class PaymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function unsettled()
     {
-        //
+        $payments = Payment::whereNull('contract_id')->get();
+        return view('admin.payment.unsettled', ['payments' => $payments]);
     }
 
     /**

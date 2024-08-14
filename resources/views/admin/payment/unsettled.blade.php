@@ -1,7 +1,7 @@
 @extends('admin.layouts.payment')
 
 @section('content')
-    <h1 class="text-4xl font-semibold mb-6">Платежи</h1>
+    <h1 class="text-4xl font-semibold mb-6">Неразобранные платежи</h1>
     <div class="">
         @if ($payments->isEmpty())
             <h2>Платежей не найдено</h2>

@@ -45,6 +45,7 @@ Route::prefix('admin')->group(function () {
 
     Route::prefix('payments')->group(function () {
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
+        Route::get('/unsettled', [PaymentController::class, 'unsettled'])->name('admin.payment.unsettled');
         Route::get('/show/{id}', [PaymentController::class, 'show'])->name('admin.payment.show');
     });
 

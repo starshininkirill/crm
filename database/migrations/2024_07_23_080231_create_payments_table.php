@@ -16,8 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->float('value');
             $table->integer('order');
-            $table->string('status')->default('close');
-            $table->foreignId('contract_id')->constrained()->onDelete('cascade');
+            $table->string('status')->default('open');
+            $table->foreignId('contract_id')->nullable()->constrained()->onDelete('cascade');
         });
     }
 
