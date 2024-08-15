@@ -10,7 +10,7 @@
             @foreach ($departments as $department)
                 <div class="p-4 text-xl border ">
                     {{ $department->name }}
-                    @php
+                    {{-- @php
                         $positions = $department->positions;
                     @endphp
                     @if ($positions->isNotEmpty())
@@ -24,7 +24,7 @@
                                 </li>
                             @endforeach
                         </ul>
-                    @endif
+                    @endif --}}
                 </div>
             @endforeach
         </div>

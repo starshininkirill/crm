@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ServiceCategorySeeder::class,
             ServiceSeeder::class,
+            // DepartmentSeeder::class,
+            SaleDepartmentSeeder::class,
         ]);
     }
 }
