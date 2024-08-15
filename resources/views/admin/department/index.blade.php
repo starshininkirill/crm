@@ -8,23 +8,24 @@
     @else
         <div class="flex flex-col gap-3">
             @foreach ($departments as $department)
+                @php
+                    $departmentObj = $department->departmentable;
+                    $childsDepartments = $department->childDepartments;
+                @endphp
                 <div class="p-4 text-xl border ">
-                    {{ $department->name }}
-                    {{-- @php
-                        $positions = $department->positions;
-                    @endphp
-                    @if ($positions->isNotEmpty())
+                    {{ $departmentObj->name }}
+                    @if ($childsDepartments->isNotEmpty())
                         <div class="font-bold text-lg mb-1 mt-3 pl-3">
-                            Должности
+                            Подотделы
                         </div>
                         <ul class="flex flex-col gap-1 pl-3">
-                            @foreach ($positions as $position)
+                            @foreach ($childsDepartments as $childDepartment)
                                 <li class=" text-lg list-disc list-inside">
-                                    {{ $position->name }}
+                                    {{ $childDepartment->departmentable->name }}
                                 </li>
                             @endforeach
                         </ul>
-                    @endif --}}
+                    @endif
                 </div>
             @endforeach
         </div>

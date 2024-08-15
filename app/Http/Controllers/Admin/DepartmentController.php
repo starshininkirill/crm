@@ -11,7 +11,8 @@ class DepartmentController extends Controller
 {
     public function index(){
 
-        $departments = Department::getParentDepartments();
+        $departments = Department::where('parent_id', null)->get();
+
 
         return view('admin.department.index', ['departments' => $departments]);
     }
