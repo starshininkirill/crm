@@ -25,9 +25,6 @@ class ContractRequest extends FormRequest
     public function getClientData() : array
     {
         return array_filter([
-            'name' => $this->input('client_name'),
-            'city' => $this->input('client_city'),
-            'email' => $this->input('client_email'),
             'phone' => $this->input('client_phone'),
             'company' => $this->input('client_company'),
             'inn' => $this->input('client_inn'),
@@ -66,9 +63,6 @@ class ContractRequest extends FormRequest
         if($this->getRequestUri() == route('admin.contract.store', [], false))
         {
             return array_merge($default, [
-                'client_name' => 'required|min:3|max:255',
-                'client_city' => 'nullable|string|max:255',
-                'client_email' => 'nullable|email|max:255',
                 'client_phone' => 'nullable|string|max:20',
                 'client_company' => 'nullable|string|max:255',
                 'client_inn' => 'nullable|string|regex:/^\d{1,}$/',
@@ -84,12 +78,6 @@ class ContractRequest extends FormRequest
         return [
             'number.required' => 'Поле "номер договора" обязательно для заполнения.',
             'number.unique' => 'Договор с таким номером уже существует.',
-            'client_name.required' => 'Поле "имя клиента" обязательно для заполнения.',
-            'client_name.min' => 'Поле "имя клиента" должно содержать минимум :min символа.',
-            'client_name.max' => 'Поле "имя клиента" должно содержать максимум :max символов.',
-            'client_city.max' => 'Поле "город клиента" должно содержать максимум :max символов.',
-            'client_email.email' => 'Поле "email клиента" должно содержать корректный адрес электронной почты.',
-            'client_email.max' => 'Поле "email клиента" должно содержать максимум :max символов.',
             'client_phone.max' => 'Поле "телефон клиента" должно содержать максимум :max символов.',
             'client_company.max' => 'Поле "название компании клиента" должно содержать максимум :max символов.',
             'client_inn.regex' => 'Поле "ИНН клиента" должно содержать только цифры.',

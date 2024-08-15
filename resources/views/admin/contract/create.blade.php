@@ -55,9 +55,6 @@
                 Информация о клиенте
             </div>
 
-            <x-form-input type="text" name="client_name" placeholder="Имя клиента" label="Имя клиента" />
-            <x-form-input type="text" name="client_city" placeholder="Город клиента" label="Город клиента" />
-            <x-form-input type="email" name="client_email" placeholder="email клиента" label="email клиента" />
             <x-form-input type="phone" name="client_phone" placeholder="Телефон клиента" label="Телефон клиента" />
             <x-form-input type="text" name="client_company" placeholder="Название компании" label="Название компании" />
             <x-form-input type="text" name="client_inn" placeholder="Инн клиента" label="Инн клиента" />

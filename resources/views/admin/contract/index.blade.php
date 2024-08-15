@@ -13,7 +13,6 @@
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Дата</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Сотрудник</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">№</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left text-white">Имя</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Компания</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Номер телефона</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Услуги</th>
@@ -36,9 +35,6 @@
                                     <a href="{{ route('admin.contract.show', $contract->id) }}">
                                         {{ $contract->number }}
                                     </a>
-                                </td>
-                                <td class="border border-gray-300 px-4 py-2">
-                                    {{ $contract->client->name }}
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2">
                                     {{ $contract->client->company }}
