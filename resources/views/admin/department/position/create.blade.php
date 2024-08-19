@@ -25,7 +25,7 @@
             <div class="flex flex-col gap-2">
                 <x-form-input type="text" name="name" placeholder="Название должности" label="Название должности" />
                 <x-form-input type="number" name="salary" placeholder="Ставка" label="Ставка" />
-                <x-select-input :options="$departments" label="Выберите отдел" name="department_id" id="department_id" />
+                <x-department-select-input :options="$departments" label="Выберите отдел" name="department_id" id="department_id" />
 
                 <button type="submit"
                     class="middle w-full none center mr-4 rounded-lg bg-blue-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

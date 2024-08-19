@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->enum('role', ['admin', 'user'])->default('admin');
-            $table->foreignId('position_id')->nullable()->constrained()->onDelete('cascade');
+            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->foreignId('position_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
         });
-
+ 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

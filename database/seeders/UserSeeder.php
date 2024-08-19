@@ -18,9 +18,11 @@ class UserSeeder extends Seeder
             'first_name' => 'Admin',
             'last_name' => 'User',
             'email' => 'admin@mail.ru',
-            'password' => Hash::make('1409199696Rust'), // Никогда не храните пароли в открытом виде
+            'password' => Hash::make('1409199696Rust'),
             'role' => 'admin',
-            'position_id' => null, // или установите в соответствующее значение
+            'position_id' => null,
         ]);
+
+        $users = User::factory()->count(5)->create();
     }
 }

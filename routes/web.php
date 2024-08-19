@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\MainController;
+use App\Models\Departments\Department;
 use Illuminate\Support\Facades\Route;
 
 
@@ -64,6 +65,7 @@ Route::prefix('admin')->group(function () {
         Route::get('', [DepartmentController::class, 'index'])->name('admin.department.index');
         Route::get('/create', [DepartmentController::class, 'create'])->name('admin.department.create');
         Route::post('/store', [DepartmentController::class, 'store'])->name('admin.department.store');
+        Route::get('/show/{department}', [DepartmentController::class, 'show'])->name('admin.department.show');
 
         Route::prefix('position')->group(function () {
             Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
@@ -76,6 +78,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
+        Route::get('/show/{user}', [UserController::class, 'show'])->name('admin.user.show');
     });
 
 });

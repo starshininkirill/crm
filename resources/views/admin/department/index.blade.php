@@ -11,9 +11,12 @@
                 @php
                     $departmentObj = $department->departmentable;
                     $childsDepartments = $department->childDepartments;
+                    $positions = $department->positions;
                 @endphp
-                <div class="p-4 text-xl border ">
-                    {{ $departmentObj->name }}
+                <div class="p-4 text-xl border">
+                    <a href="{{ route('admin.department.show', $department->id) }}" class="text-xl">
+                        {{ $departmentObj->name }}
+                    </a>
                     @if ($childsDepartments->isNotEmpty())
                         <div class="font-bold text-lg mb-1 mt-3 pl-3">
                             Подотделы
@@ -21,7 +24,21 @@
                         <ul class="flex flex-col gap-1 pl-3">
                             @foreach ($childsDepartments as $childDepartment)
                                 <li class=" text-lg list-disc list-inside">
-                                    {{ $childDepartment->departmentable->name }}
+                                    <a href="{{ route('admin.department.show', $childDepartment->id) }}">
+                                        {{ $childDepartment->departmentable->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    @if ($positions->isNotEmpty())
+                        <div class="font-bold text-lg mb-1 mt-3 pl-3">
+                            Должности
+                        </div>
+                        <ul class="flex flex-col gap-1 pl-3">
+                            @foreach ($positions as $position)
+                                <li class=" text-lg list-disc list-inside">
+                                    {{ $position->name }}
                                 </li>
                             @endforeach
                         </ul>

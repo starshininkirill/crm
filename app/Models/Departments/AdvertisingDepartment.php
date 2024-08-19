@@ -17,4 +17,6 @@ class AdvertisingDepartment extends Model
     {
         return $this->morphOne(Department::class, 'departmentable');
     }
+
+    
 }

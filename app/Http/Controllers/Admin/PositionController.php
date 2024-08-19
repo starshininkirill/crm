@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PositionRequest;
-use App\Models\Department;
+use App\Models\Departments\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {
     public function create(){
-        $departments = Department::all();
+        $departments = Department::getMainDepartments();
 
         return view('admin.department.position.create', ['departments' => $departments]);
     }
@@ -25,4 +25,4 @@ class PositionController extends Controller
         return redirect()->route('admin.department.position.create')->with('success', 'Должность успешно создана.');
     }
 }
- 
+  

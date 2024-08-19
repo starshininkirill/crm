@@ -11,8 +11,7 @@ class DepartmentController extends Controller
 {
     public function index(){
 
-        $departments = Department::where('parent_id', null)->get();
-
+        $departments = Department::getMainDepartments();
 
         return view('admin.department.index', ['departments' => $departments]);
     }
@@ -27,6 +26,11 @@ class DepartmentController extends Controller
         Department::create($validated);
 
         return redirect()->back()->with('success', 'Отдел успешно создан');
+    }
+
+    public function show(Department $department)
+    {
+        return view('admin.department.show', ['department' => $department]);
     }
 }
  
