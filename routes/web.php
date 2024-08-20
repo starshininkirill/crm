@@ -32,9 +32,7 @@ Route::middleware('auth')->group(function () {
  });
 
 
-//  Route::prefix('admin')->middleware('role:admin')->group(function () {
-Route::prefix('admin')->group(function () {
-
+ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     Route::prefix('contracts')->group(function () {

@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contract extends Model
 {
@@ -17,31 +20,28 @@ class Contract extends Model
         'comment',
     ];
 
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+    }
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function services()
+    public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class);
     }
 
-    public function getPrice()
+    public function getPrice(): string
     {
-        return number_format($this->amount_price, 0, '.', ' ') . ' ₽' ;
+        return number_format($this->amount_price, 0, '.', ' ') . ' ₽';
     }
-
-
 }

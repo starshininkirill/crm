@@ -7,6 +7,7 @@ use App\Http\Requests\ContractRequest;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Payment;
+use App\Models\RoleInContract;
 use App\Models\Service;
 use App\Services\ContractService;
 use Illuminate\Http\Request;
@@ -43,7 +44,12 @@ class ContractController extends Controller
         $client = Client::create($request->getClientData());
 
         $contractData = $request->storeContract($client);
-        $createdContract = $user->contracts()->create($contractData);
+        $createdContract = Contract::create($contractData);
+        $user->contracts()->attach($createdContract->id, [
+            'role_in_contracts_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $createdContract->services()->sync($data['service']);
 
@@ -60,7 +66,8 @@ class ContractController extends Controller
      */
     public function show(Contract $contract)
     {
-        return view('admin.contract.show', ['contract' => $contract]);
+        $roles = RoleInContract::all();
+        return view('admin.contract.show', ['contract' => $contract, 'roles' => $roles]);
     }
 
     /**

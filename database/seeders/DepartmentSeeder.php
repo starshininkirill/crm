@@ -47,6 +47,5 @@ class DepartmentSeeder extends Seeder
         foreach ($advertisingPositions as $position) {
             $mainDepartment->positions()->create(array_merge($position, ['department_id' => $mainDepartment->id]));
         }
-
     }
 }

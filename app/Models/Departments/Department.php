@@ -44,6 +44,7 @@ class Department extends Model
         }
     }
 
+
     public function users(): SimgpeCollection
     {
         $users = collect();
