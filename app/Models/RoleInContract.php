@@ -13,6 +13,8 @@ class RoleInContract extends Model
 {
     use HasFactory;
 
+    public const IS_SALLER = 1;
+
     protected $fillable = ['name', 'department_id'];
 
     public function department(): BelongsTo

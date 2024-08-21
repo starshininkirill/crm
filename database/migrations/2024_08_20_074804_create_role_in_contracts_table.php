@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name');
+            $table->boolean('is_saller')->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -24,7 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_in_contracts');
+        Schema::table('role_in_contracts', function (Blueprint $table) {
+            $table->dropUnique('unique_is_responsible_true');
+            $table->dropColumn('is_responsible');
+        });
     }
 };
  

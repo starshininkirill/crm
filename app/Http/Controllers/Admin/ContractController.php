@@ -45,8 +45,9 @@ class ContractController extends Controller
 
         $contractData = $request->storeContract($client);
         $createdContract = Contract::create($contractData);
+
         $user->contracts()->attach($createdContract->id, [
-            'role_in_contracts_id' => 1,
+            'role_in_contracts_id' => RoleInContract::where('is_saller', RoleInContract::IS_SALLER)->value('id'),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
