@@ -6,11 +6,12 @@ use App\Models\Departments\Department;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class RoleInContract extends Model
-{
+{ 
     use HasFactory;
 
     public const IS_SALLER = 1;

@@ -15,7 +15,7 @@ class RoleInContractSeeder extends Seeder
     {
         RoleInContract::create([
             'name' => 'Ответственный',
-            'is_saller' => 1
+            'is_saller' => RoleInContract::IS_SALLER
         ]);
         RoleInContract::create([
             'name' => 'Проект-менеджер',

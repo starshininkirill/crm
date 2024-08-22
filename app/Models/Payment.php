@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -24,6 +25,11 @@ class Payment extends Model
         ];
     }
 
+    public function responsible(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
+    }
+
     public function contract()
     {
         return $this->belongsTo(Contract::class);
@@ -35,7 +41,8 @@ class Payment extends Model
         return $statuses[$this->status] ?? $this->status;
     }
 
-    public function getFormatValue(){
-        return number_format($this->value, 0, '.', ' ') . ' ₽' ;
+    public function getFormatValue()
+    {
+        return number_format($this->value, 0, '.', ' ') . ' ₽';
     }
 }

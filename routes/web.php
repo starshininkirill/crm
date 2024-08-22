@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::get('', [ContractController::class, 'index'])->name('admin.contract.index');
         Route::get('/create', [ContractController::class, 'create'])->name('admin.contract.create');
         Route::post('/store', [ContractController::class, 'store'])->name('admin.contract.store');
+        Route::post('/{contract}/attach-user', [ContractController::class, 'attachUser'])->name('admin.contract.attachUser');
         Route::get('/show/{contract}', [ContractController::class, 'show'])->name('admin.contract.show');
     });
 

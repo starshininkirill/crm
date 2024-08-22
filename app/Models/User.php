@@ -58,6 +58,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'responsible_id');
+    }
+
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);

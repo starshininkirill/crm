@@ -18,8 +18,7 @@ class ContractController extends Controller
 
     public function __construct(
         ContractService $contractService,
-    )
-    {
+    ) {
         $this->contractService = $contractService;
     }
 
@@ -31,7 +30,7 @@ class ContractController extends Controller
 
     public function create()
     {
-        $services = Service::all(); 
+        $services = Service::all();
         return view('admin.contract.create', ['services' => $services]);
     }
 
@@ -62,13 +61,29 @@ class ContractController extends Controller
         return redirect()->back()->with('success', 'Договор успешно создан');
     }
 
+    public function attachUser(Request $request, Contract $contract)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'role_in_contracts_id' => 'required|integer|exists:role_in_contracts,id',
+        ]);
+
+        $is_created = $this->contractService->attachPerformer($contract, $validated['user_id'], $validated['role_in_contracts_id']);
+        
+        if($is_created){
+            return redirect()->back()->with('success', 'Исполнитель успешно добавлен.');
+        }else{
+            return redirect()->back()->withErrors(['user_id' => 'Пользователь уже привязан к данной роли.']);
+        }
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(Contract $contract)
     {
-        $roles = RoleInContract::all();
-        return view('admin.contract.show', ['contract' => $contract, 'roles' => $roles]);
+        $performersData = $this->contractService->getPerformers($contract);
+        return view('admin.contract.show', compact('contract', 'performersData'));
     }
 
     /**
