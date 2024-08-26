@@ -30,11 +30,12 @@
                                 <td class="border border-gray-300 px-4 py-2">{{ $contract->created_at->format('d.m.y') }}
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2">
-                                    Продал
+                                    @if ($contract->saller())
+                                        {{ $contract->saller()->first_name }} {{ $contract->saller()->last_name }}
+                                    @else
+                                        Не прикреплён
+                                    @endif
                                 </td>
-                                {{-- <td class="border border-gray-300 px-4 py-2">{{ $contract->user->first_name }}
-                                    {{ $contract->user->last_name }}
-                                </td> --}}
                                 <td class="border border-gray-300 px-4 py-2 text-blue-700">
                                     <a href="{{ route('admin.contract.show', $contract->id) }}">
                                         {{ $contract->number }}
@@ -48,9 +49,9 @@
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2">
                                     @foreach ($contract->services as $service)
-                                        {{ $service->name }} 
+                                        {{ $service->name }}
                                         @if (!$loop->last)
-                                        ,
+                                            ,
                                         @endif
                                     @endforeach
                                 </td>
@@ -58,7 +59,8 @@
                                     {{ $contract->getPrice() }}
                                 </td>
                                 @foreach ($contract->payments as $payment)
-                                    <td class="border border-gray-300 px-4 py-2 whitespace-nowrap {{ $payment->status == 'close' ? 'bg-green-500 text-white' : '' }}">
+                                    <td
+                                        class="border border-gray-300 px-4 py-2 whitespace-nowrap {{ $payment->status == 'close' ? 'bg-green-500 text-white' : '' }}">
                                         {{ $payment->getFormatValue() }}
                                     </td>
                                 @endforeach

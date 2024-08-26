@@ -30,13 +30,14 @@ class ContractService
         $roles = RoleInContract::all();
 
         $performers = $contract->belongsToMany(User::class, 'contract_user')
+            ->wherePivotNull('payment_id')
             ->withPivot('role_in_contracts_id')
             ->get()
-            ->groupBy(function($performer) {
+            ->groupBy(function ($performer) {
                 return $performer->pivot->role_in_contracts_id;
             });
 
-        $result = $roles->map(function($role) use ($performers) {
+        $result = $roles->map(function ($role) use ($performers) {
             return [
                 'role' => $role,
                 'performers' => $performers->get($role->id, collect())
@@ -49,11 +50,12 @@ class ContractService
     public function attachPerformer(Contract $contract, int $userId, int $roleId): bool
     {
         $exists = $contract->users()
-        ->wherePivot('user_id', $userId)
-        ->wherePivot('role_in_contracts_id', $roleId)
-        ->exists();
+            ->wherePivotNull('payment_id')
+            ->wherePivot('user_id', $userId)
+            ->wherePivot('role_in_contracts_id', $roleId)
+            ->exists();
 
-        if(!$exists){
+        if (!$exists) {
             $contract->users()->attach($userId, [
                 'role_in_contracts_id' => $roleId,
                 'created_at' => now(),
@@ -63,5 +65,4 @@ class ContractService
         }
         return false;
     }
-    
 }

@@ -44,4 +44,9 @@ class Contract extends Model
     {
         return number_format($this->amount_price, 0, '.', ' ') . ' ₽';
     }
+
+    public function saller()
+    {
+        return $this->users()->wherePivot('role_in_contracts_id', RoleInContract::IS_SALLER)->first();
+    }
 }
