@@ -32,12 +32,12 @@
             </div>
 
             @if ($services->isNotEmpty())
-                <div class="grid grid-cols-3">
+                <div class="flex flex-col gap-2">
                     @foreach ($services as $service)
                         <label for="service-{{ $service->id }}" class=" cursor-pointer">
                             <input type="checkbox" id="service-{{ $service->id }}" name="service[]"
                                 value="{{ $service->id }}">
-                            <span>{{ $service->name }}</span>
+                            <span>{{ $service->name }}  (цена: {{ number_format($service->price, 0, 0, ' ') }} р)</span>
                         </label>
                     @endforeach
                 </div>

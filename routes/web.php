@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
+Route::get('/login-home', [MainController::class, 'loginHome'])->name('loginHome');
 
 
 
@@ -30,7 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
  });
-
+ 
 
  Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
@@ -71,6 +73,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/store', [PositionController::class, 'store'])->name('admin.department.position.store');
         });
 
+        Route::prefix('sale')->group(function () {
+            Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.department.sale.index');
+            Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
+        });
+
     });
 
     Route::prefix('users')->group(function () {
@@ -79,6 +86,5 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
         Route::get('/show/{user}', [UserController::class, 'show'])->name('admin.user.show');
     });
-
 });
 

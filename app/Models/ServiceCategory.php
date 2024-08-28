@@ -9,7 +9,13 @@ class ServiceCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name',];
+    public const INDIVIDUAL_SITE = 'individual_site';
+    public const READY_SITE = 'ready_site';
+    public const RK = 'rk';
+    public const SEO = 'seo';
+    public const OTHER = 'other';
+
+    protected $fillable = ['name', 'type'];
 
     public function services()
     {

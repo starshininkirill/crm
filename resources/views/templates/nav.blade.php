@@ -14,4 +14,7 @@
     <a class="text-xl {{ Route::is('admin.department*') ? 'font-bold' : '' }}" href="{{ route('admin.department.index') }}">
         Отделы
     </a>
+    <a class="text-xl {{ Route::is('admin.department.sale*') ? 'font-bold' : '' }}" href="{{ route('admin.department.sale.index') }}">
+        Отдел продаж
+    </a>
 </nav>

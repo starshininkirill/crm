@@ -20,6 +20,11 @@ class Contract extends Model
         'comment',
     ];
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class, 'parent_id');
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);

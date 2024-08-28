@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('number')->nullable()->constrained()->onDelete('cascade');
             $table->float('amount_price')->nullable();
             $table->text('comment')->nullable();
-            // $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('contracts')->references('id')->onDelete('set null');
             $table->foreignId('client_id');
         }); 
     }

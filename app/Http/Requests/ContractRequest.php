@@ -22,7 +22,7 @@ class ContractRequest extends FormRequest
      */
 
 
-    public function getClientData() : array
+    public function storeClient() : array
     {
         return array_filter([
             'phone' => $this->input('client_phone'),
@@ -32,7 +32,7 @@ class ContractRequest extends FormRequest
     }
 
     public function storeContract(Client $client): array
-    {
+    { 
         $data = $this->only([
             'number',
             'amount_price',

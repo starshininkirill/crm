@@ -9,6 +9,11 @@ class MainController extends Controller
 {
     public function home()
     {
+        
+        return view('base');   
+    }
+    public function loginHome()
+    {
         Auth::attempt([
             'email' => 'admin@mail.ru',
             'password' => '1409199696Rust'

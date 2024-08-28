@@ -13,14 +13,6 @@ class ServiceCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        ServiceCategory::create([
-            'name' => 'Индивиды',
-        ]);
-        ServiceCategory::create([
-            'name' => 'Готовые сайты',
-        ]);
-        ServiceCategory::create([
-            'name' => 'Реклама',
-        ]);
+
     }
 }

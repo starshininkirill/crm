@@ -40,7 +40,7 @@ class ContractController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        $client = Client::create($request->getClientData());
+        $client = Client::create($request->storeClient());
 
         $contractData = $request->storeContract($client);
         $createdContract = Contract::create($contractData);
@@ -51,7 +51,16 @@ class ContractController extends Controller
             'updated_at' => now(),
         ]);
 
-        $createdContract->services()->sync($data['service']);
+
+        // TODO Сделать цену из формы, а не из услуги
+        $services = Service::whereIn('id', $data['service'])->get();
+        if(!empty($services)){
+            foreach ($services as $service) {
+                $createdContract->services()->attach($service->id, [
+                    'price' => $service->price
+                ]);
+            }
+        }
 
         if ($createdContract) {
             $this->contractService
@@ -69,10 +78,10 @@ class ContractController extends Controller
         ]);
 
         $is_created = $this->contractService->attachPerformer($contract, $validated['user_id'], $validated['role_in_contracts_id']);
-        
-        if($is_created){
+
+        if ($is_created) {
             return redirect()->back()->with('success', 'Исполнитель успешно добавлен.');
-        }else{
+        } else {
             return redirect()->back()->withErrors(['user_id' => 'Пользователь уже привязан к данной роли.']);
         }
     }
