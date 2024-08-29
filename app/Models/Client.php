@@ -20,3 +20,4 @@ class Client extends Model
         return $this->hasMany(Contract::class);
     }
 }
+ 

@@ -51,7 +51,6 @@ class ContractController extends Controller
             'updated_at' => now(),
         ]);
 
-
         // TODO Сделать цену из формы, а не из услуги
         $services = Service::whereIn('id', $data['service'])->get();
         if(!empty($services)){

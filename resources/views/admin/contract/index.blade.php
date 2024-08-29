@@ -15,7 +15,7 @@
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">№</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Компания</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Номер телефона</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left text-white">Услуги</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left text-white w-64">Услуги</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white">Общая стоимость</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white whitespace-nowrap">1-й</th>
                             <th class="border border-gray-300 px-4 py-2 text-left text-white whitespace-nowrap">2-й</th>
@@ -61,7 +61,7 @@
                                 @foreach ($contract->payments as $payment)
                                     <td
                                         class="border border-gray-300 px-4 py-2 whitespace-nowrap {{ $payment->status == 'close' ? 'bg-green-500 text-white' : '' }}">
-                                        {{ $payment->getFormatValue() }}
+                                        {{ $payment->getFormatValue() }} 
                                     </td>
                                 @endforeach
 

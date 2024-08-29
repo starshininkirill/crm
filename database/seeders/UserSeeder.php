@@ -40,6 +40,6 @@ class UserSeeder extends Seeder
             'department_id' => 2,
         ]);
 
-        $users = User::factory()->count(5)->create();
+        // $users = User::factory()->count(5)->create();
     }
 }

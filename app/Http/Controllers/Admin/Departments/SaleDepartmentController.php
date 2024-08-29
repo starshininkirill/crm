@@ -29,18 +29,26 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
-        $users = SaleDepartment::getMainDepartment()->users();
+        $users = SaleDepartment::getMainDepartment()->activeUsers();
         $date = null;
         $user = null;
         $report = null;
-    
+
         $requestData = $request->only(['user', 'date']);
-    
+
         if ($request->filled(['user', 'date'])) {
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
-            $report = $this->saleDepartmentService->createUserReportData($date, $user);
+            $report = $this->saleDepartmentService->generateUserReportData($date, $user);
         }
-        return view('admin.departments.sale.userReport', ['users' => $users, 'user' => $user, 'report' => $report, 'date' => $date]);
+        return view(
+            'admin.departments.sale.userReport',
+            [
+                'users' => $users,
+                'user' => $user,
+                'report' => $report,
+                'date' => $date
+            ]
+        );
     }
 }

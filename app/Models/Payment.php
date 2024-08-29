@@ -10,11 +10,14 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['value', 'contract_id', 'status', 'order'];
+    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type'];
 
     const STATUS_OPEN = 'open';
     const STATUS_CONFIRMATION = 'confirmation';
     const STATUS_CLOSE = 'close';
+
+    const TYPE_NEW = 'new';
+    const TYPE_OLD = 'old';
 
     public static function getStatuses()
     {

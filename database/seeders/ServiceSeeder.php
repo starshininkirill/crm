@@ -2,7 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Departments\SaleDepartment;
+use App\Models\Client; 
+use App\Models\Contract; 
 use App\Models\Service;
+use App\Models\Payment;
+use App\Models\RoleInContract;
 use App\Models\ServiceCategory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -91,6 +96,80 @@ class ServiceSeeder extends Seeder
             'service_category_id' => 5,
             'price' => 10000
         ]);
+
+
+        $services = Service::all();
+
+        $clients = Client::all();
+
+        $users = SaleDepartment::getMainDepartment()->activeUsers();
+
+        foreach ($clients as $client) {
+            $contractData = [
+                'number' => strtoupper(uniqid()),
+                'amount_price' => rand(10000, 50000),
+                'comment' => 'Auto-generated contract',
+                'client_id' => $client->id,
+            ];
+
+
+            $contract = Contract::create($contractData);
+
+
+            $contractServices = $services->random(rand(1, 5));
+            foreach ($contractServices as $service) {
+                $contract->services()->attach($service->id, [
+                    'price' => $service->price,
+                ]);
+            }
+
+            $payments = array_map(function () {
+                return rand(1000, 10000);
+            }, range(1, rand(1, 5)));
+
+            $this->addPaymentsToContract($contract, $payments);
+
+            if ($users->count() > 0) {
+                $randomUser = $users->random();
+                $roleInContractId = RoleInContract::where('is_saller', RoleInContract::IS_SALLER)->value('id');
+                
+                $randomUser->contracts()->attach($contract->id, [
+                    'role_in_contracts_id' => $roleInContractId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+    }
+    private function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5)
+    {
+        $order = 1;
+
+        foreach ($payments as $key => $payment) {
+            if($key == 0){
+                $statuses = [Payment::STATUS_OPEN, Payment::STATUS_CLOSE];
+                $idx = array_rand($statuses);
+                $status = $statuses[$idx];
+                $confirmed_at = now();
+                $type = Payment::TYPE_NEW;
+            }else{
+                $status = Payment::STATUS_OPEN;
+                $confirmed_at = null;
+                $confirmed_at = now();
+                $type = Payment::TYPE_OLD;
+            }
+
+            if (!empty($payment) && $order <= $maxPayments) {
+                $contract->payments()->create([
+                    'value' => $payment,
+                    'status' => $status,
+                    'order' => $order,
+                    'confirmed_at' => $confirmed_at,
+                    'type' => $type
+                ]);
+                $order++;
+            }
+        }
     }
 }
  

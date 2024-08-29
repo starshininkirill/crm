@@ -5,7 +5,7 @@ namespace App\Models\Departments;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SimgpeCollection;
+use Illuminate\Support\Collection as SimpleCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,11 +45,24 @@ class Department extends Model
     }
 
 
-    public function users(): SimgpeCollection
+    public function users(): SimpleCollection
     {
         $users = collect();
         
         $users = $users->merge($this->hasMany(User::class, 'department_id')->get());
+
+        $this->childDepartments->each(function ($childDepartment) use (&$users) {
+            $users = $users->merge($childDepartment->users());
+        });
+
+        return $users;
+    }
+
+    public function activeUsers():  SimpleCollection
+    {
+        $users = collect();
+        
+        $users = $users->merge($this->hasMany(User::class, 'department_id')->where('active', 1)->get());
 
         $this->childDepartments->each(function ($childDepartment) use (&$users) {
             $users = $users->merge($childDepartment->users());
