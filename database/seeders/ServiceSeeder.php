@@ -150,12 +150,12 @@ class ServiceSeeder extends Seeder
                 $statuses = [Payment::STATUS_OPEN, Payment::STATUS_CLOSE];
                 $idx = array_rand($statuses);
                 $status = $statuses[$idx];
-                $confirmed_at = now();
+                $confirmed_at = now()->addDays(rand(-20, 1));
                 $type = Payment::TYPE_NEW;
             }else{
                 $status = Payment::STATUS_OPEN;
                 $confirmed_at = null;
-                $confirmed_at = now();
+                $confirmed_at = now()->addDays(rand(-20, -1));
                 $type = Payment::TYPE_OLD;
             }
 

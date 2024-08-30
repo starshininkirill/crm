@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('type', ['new', 'old',])->nullable();
             $table->dateTime('confirmed_at')->nullable();
             $table->integer('order');
-            $table->string('status')->default(Payment::STATUS_OPEN);
+            $table->enum('status', ['open', 'confirmation', 'close'])->default(Payment::STATUS_OPEN);
             $table->foreignId('contract_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('responsible_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();

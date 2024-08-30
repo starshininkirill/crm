@@ -8,14 +8,15 @@ use App\Models\Payment;
 use App\Helpers\DateHelper;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class SaleDepartmentService
 {
 
-    public function generateUserReportData(Carbon $date, User $user): array
+    public function generateUserReportData(Carbon $date, User $user): Collection
     {
-        $report = [];
+        $report = collect();
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
@@ -29,17 +30,19 @@ class SaleDepartmentService
             ->groupBy('type');
 
         $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_NEW, collect()));
+        $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_NEW, collect())->unique('contract_id'));
         $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_OLD, collect()));
 
         foreach ($workingDays as $day) {
             $dayFormatted = Carbon::parse($day)->format('Y-m-d');
             $dayNewPayments = $newPaymentsGroupedByDate->get($dayFormatted, collect());
             $dayOldPayments = $oldPaymentsGroupedByDate->get($dayFormatted, collect());
+            $uniqueDayNewPayments = $uniqueNewPaymentsGroupedByDate->get($dayFormatted, collect());
 
             $newPayments = $dayNewPayments->sum('value');
             $oldPayments = $dayOldPayments->sum('value');
 
-            $serviceCounts = $this->calculateServiceCounts($dayNewPayments);
+            $serviceCounts = $this->calculateServiceCounts($uniqueDayNewPayments);
 
             $report[] = [
                 'date' => $day,

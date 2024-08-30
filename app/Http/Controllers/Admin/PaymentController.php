@@ -22,7 +22,10 @@ class PaymentController extends Controller
      */
     public function unsettled()
     {
-        $payments = Payment::whereNull('contract_id')->get();
+        $payments = Payment::whereNull('contract_id')
+            ->where('status', Payment::STATUS_CONFIRMATION)
+            ->get();
+        
         return view('admin.payment.unsettled', ['payments' => $payments]);
     }
 
