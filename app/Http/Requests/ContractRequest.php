@@ -22,7 +22,7 @@ class ContractRequest extends FormRequest
      */
 
 
-    public function storeClient() : array
+    public function storeClient(): array
     {
         return array_filter([
             'phone' => $this->input('client_phone'),
@@ -31,22 +31,15 @@ class ContractRequest extends FormRequest
         ]);
     }
 
-    public function storeContract(Client $client): array
-    { 
-        $data = $this->only([
+    public function storeContract(): array
+    {
+        return $this->only([
             'number',
             'amount_price',
             'comment',
         ]);
-        
-        return array_merge(
-            $data,
-            [
-                'client_id' => $client->id,
-            ]
-        );
     }
-    
+
     public function rules(): array
     {
 
@@ -59,9 +52,8 @@ class ContractRequest extends FormRequest
             'payments' => 'nullable|array',
             'payments.*' => 'nullable|numeric|min:0',
         ];
-        
-        if($this->getRequestUri() == route('admin.contract.store', [], false))
-        {
+
+        if ($this->getRequestUri() == route('admin.contract.store', [], false)) {
             return array_merge($default, [
                 'client_phone' => 'nullable|string|max:20',
                 'client_company' => 'nullable|string|max:255',
@@ -70,7 +62,6 @@ class ContractRequest extends FormRequest
         }
 
         return [];
-
     }
 
     public function messages(): array
