@@ -10,7 +10,10 @@ use App\Models\Payment;
 use App\Models\RoleInContract;
 use App\Models\Service;
 use App\Services\ContractService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ContractController extends Controller
 {
@@ -24,7 +27,7 @@ class ContractController extends Controller
 
     public function index()
     {
-        $contracts = Contract::all();
+        $contracts = Contract::orderByDesc('created_at')->get();
         return view('admin.contract.index', ['contracts' => $contracts]);
     }
 
@@ -37,36 +40,42 @@ class ContractController extends Controller
 
     public function store(ContractRequest $request)
     {
-        $data = $request->validated();
-        $user = $request->user();
+        try {
+            DB::beginTransaction();
+            $data = $request->validated();
+            $user = $request->user();
 
-        $client = Client::create($request->storeClient());
+            $client = Client::create($request->storeClient());
 
-        $contractData = $request->storeContract($client);
-        $createdContract = Contract::create($contractData);
+            $contractData = $request->storeContract();
+            $contractData['client_id'] = $client->id;
 
-        $user->contracts()->attach($createdContract->id, [
-            'role_in_contracts_id' => RoleInContract::where('is_saller', RoleInContract::IS_SALLER)->value('id'),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            $createdContract = Contract::create($contractData);
 
-        // TODO Сделать цену из формы, а не из услуги
-        $services = Service::whereIn('id', $data['service'])->get();
-        if(!empty($services)){
-            foreach ($services as $service) {
-                $createdContract->services()->attach($service->id, [
-                    'price' => $service->price
-                ]);
+            if ($createdContract) {
+                $this->contractService->addPaymentsToContract($createdContract, $data['payments']);
+                $this->contractService->attachPerformer($createdContract, $user->id, RoleInContract::IS_SALLER);
+
+                $services = Service::whereIn('id', $data['service'])->get();
+                $totalServicesPrice = $services->sum('price');
+
+                if ($contractData['amount_price'] != $totalServicesPrice) {
+                    throw ValidationException::withMessages(['error' => 'Цены не совпадают']);
+                }
+
+                $this->contractService->attachServices($createdContract, $services);
             }
-        }
 
-        if ($createdContract) {
-            $this->contractService
-                ->addPaymentsToContract($createdContract, $data['payments']);
+            DB::commit();
+        } catch (ValidationException $exeption) {
+            DB::rollBack();
+            $message = $exeption->getMessage() != '' ? $exeption->getMessage() : 'Ошибка при созданни договора';
+            return back()->withErrors($message)->withInput();
+        } catch (Exception $exeption) {
+            DB::rollBack();
+            return back()->withErrors('Ошибка при созданни договора')->withInput();
         }
-
-        return redirect()->back()->with('success', 'Договор успешно создан');
+        return back()->with('success', 'Договор успешно создан');
     }
 
     public function attachUser(Request $request, Contract $contract)

@@ -5,11 +5,12 @@ namespace App\Services;
 use App\Models\RoleInContract;
 use Illuminate\Support\Collection;
 use App\Models\Contract;
+use App\Models\Service;
 use App\Models\User;
 
 class ContractService
 {
-    public function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5)
+    public function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5): void
     {
         $order = 1;
 
@@ -64,5 +65,16 @@ class ContractService
             return true;
         }
         return false;
+    }
+
+    public function attachServices(Contract $contract, array|Collection $services): void
+    {
+        if (!empty($services)) {
+            foreach ($services as $service) {
+                $contract->services()->attach($service->id, [
+                    'price' => $service->price
+                ]);
+            }
+        }
     }
 }
