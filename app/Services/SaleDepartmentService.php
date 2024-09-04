@@ -2,71 +2,91 @@
 
 namespace App\Services;
 
-use DateTime;
 use App\Models\User;
 use App\Models\Payment;
 use App\Helpers\DateHelper;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
 
 class SaleDepartmentService
 {
-
     public function generateUserReportData(Carbon $date, User $user): Collection
     {
         $report = collect();
-        $startOfMonth = $date->copy()->startOfMonth();
-        $endOfMonth = $date->copy()->endOfMonth();
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
+        $payments = $this->getPaymentsForUser($date, $user);
 
-        $contractIds = $user->contracts->pluck('id')->unique()->toArray();
-
-        $payments = Payment::whereBetween('confirmed_at', [$startOfMonth, $endOfMonth])
-            ->whereIn('contract_id', $contractIds)
-            ->where('status', 'close')
-            ->get()
-            ->groupBy('type');
-
-        $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_NEW, collect()));
-        $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_NEW, collect())->unique('contract_id'));
-        $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments->get(Payment::TYPE_OLD, collect()));
+        $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW] ?? collect(), $workingDays);
+        $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW]->unique('contract_id') ?? collect(), $workingDays);
+        $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_OLD] ?? collect(), $workingDays);
 
         foreach ($workingDays as $day) {
             $dayFormatted = Carbon::parse($day)->format('Y-m-d');
-            $dayNewPayments = $newPaymentsGroupedByDate->get($dayFormatted, collect());
-            $dayOldPayments = $oldPaymentsGroupedByDate->get($dayFormatted, collect());
-            $uniqueDayNewPayments = $uniqueNewPaymentsGroupedByDate->get($dayFormatted, collect());
-
-            $newPayments = $dayNewPayments->sum('value');
-            $oldPayments = $dayOldPayments->sum('value');
-
-            $serviceCounts = $this->calculateServiceCounts($uniqueDayNewPayments);
-
-            $report[] = [
-                'date' => $day,
-                'newMoney' => $newPayments,
-                'oldMoney' => $oldPayments,
-                'individual_sites' => $serviceCounts['individual_sites'],
-                'readies_sites' => $serviceCounts['readies_sites'],
-                'rk' => $serviceCounts['rk'],
-                'seo' => $serviceCounts['seo'],
-                'other' => $serviceCounts['other'],
-            ];
+            $report[] = $this->generateDailyReport($dayFormatted, $newPaymentsGroupedByDate, $oldPaymentsGroupedByDate, $uniqueNewPaymentsGroupedByDate);
         }
 
         return $report;
     }
 
-    private function groupPaymentsByDate($payments)
+    private function getPaymentsForUser(Carbon $date, User $user): Collection
     {
-        return $payments->groupBy(function ($payment) {
-            return Carbon::parse($payment->confirmed_at)->format('Y-m-d');
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+        $contractIds = $user->contracts->pluck('id')->unique();
+
+        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->whereIn('contract_id', $contractIds)
+            ->where('status', 'close')
+            ->get()
+            ->groupBy('type');
+    }
+
+    private function groupPaymentsByDate(Collection $payments, array $workingDays): Collection
+    {
+        return $payments->groupBy(function ($payment) use ($workingDays) {
+            $paymentDate = Carbon::parse($payment->created_at)->format('Y-m-d');
+
+            return in_array($paymentDate, $workingDays) 
+                ? $paymentDate 
+                : $this->getNearestPreviousWorkingDay($paymentDate, $workingDays);
         });
     }
 
-    private function calculateServiceCounts($dayPayments)
+    private function getNearestPreviousWorkingDay(string $date, array $workingDays): string
+    {
+        $date = Carbon::parse($date);
+
+        while (!in_array($date->format('Y-m-d'), $workingDays)) {
+            $date->subDay();
+        }
+
+        return $date->format('Y-m-d');
+    }
+
+    private function generateDailyReport(string $day, Collection $newPaymentsGroupedByDate, Collection $oldPaymentsGroupedByDate, Collection $uniqueNewPaymentsGroupedByDate): array
+    {
+        $dayNewPayments = $newPaymentsGroupedByDate->get($day, collect());
+        $dayOldPayments = $oldPaymentsGroupedByDate->get($day, collect());
+        $uniqueDayNewPayments = $uniqueNewPaymentsGroupedByDate->get($day, collect());
+
+        $newPaymentsSum = $dayNewPayments->sum('value');
+        $oldPaymentsSum = $dayOldPayments->sum('value');
+        $serviceCounts = $this->calculateServiceCounts($uniqueDayNewPayments);
+
+        return [
+            'date' => $day,
+            'newMoney' => $newPaymentsSum,
+            'oldMoney' => $oldPaymentsSum,
+            'individual_sites' => $serviceCounts['individual_sites'],
+            'readies_sites' => $serviceCounts['readies_sites'],
+            'rk' => $serviceCounts['rk'],
+            'seo' => $serviceCounts['seo'],
+            'other' => $serviceCounts['other'],
+        ];
+    }
+
+    private function calculateServiceCounts(Collection $dayPayments): array
     {
         $counts = [
             'individual_sites' => 0,
@@ -76,41 +96,33 @@ class SaleDepartmentService
             'other' => 0,
         ];
 
-        if ($dayPayments->isEmpty()) {
-            return $counts;
-        }
-
-        $uniquePayments = $dayPayments->unique('contract_id');
-
-        foreach ($uniquePayments as $payment) {
-            $contract = $payment->contract;
-            $services = $contract->services;
-
-            if ($services->isEmpty()) {
-                continue;
-            }
-
-            foreach ($services as $service) {
-                switch ($service->category->type) {
-                    case ServiceCategory::INDIVIDUAL_SITE:
-                        $counts['individual_sites']++;
-                        break;
-                    case ServiceCategory::READY_SITE:
-                        $counts['readies_sites']++;
-                        break;
-                    case ServiceCategory::RK:
-                        $counts['rk']++;
-                        break;
-                    case ServiceCategory::SEO:
-                        $counts['seo']++;
-                        break;
-                    case ServiceCategory::OTHER:
-                        $counts['other']++;
-                        break;
-                }
+        foreach ($dayPayments->unique('contract_id') as $payment) {
+            foreach ($payment->contract->services as $service) {
+                $this->incrementServiceCount($counts, $service->category->type);
             }
         }
 
         return $counts;
+    }
+
+    private function incrementServiceCount(array &$counts, string $serviceType): void
+    {
+        switch ($serviceType) {
+            case ServiceCategory::INDIVIDUAL_SITE:
+                $counts['individual_sites']++;
+                break;
+            case ServiceCategory::READY_SITE:
+                $counts['readies_sites']++;
+                break;
+            case ServiceCategory::RK:
+                $counts['rk']++;
+                break;
+            case ServiceCategory::SEO:
+                $counts['seo']++;
+                break;
+            case ServiceCategory::OTHER:
+                $counts['other']++;
+                break;
+        }
     }
 }

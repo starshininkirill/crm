@@ -22,7 +22,8 @@ class PaymentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'contract' => 'required|exists:contracts,id', 
+            // заменить
+            'descr' => 'required|exists:contracts,id', 
             'value' => 'required|numeric|min:0',
             'order' => 'nullable|integer|min:0',
             'id_technical' => 'sometimes|boolean',

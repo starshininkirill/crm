@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical'];
+    // заменить
+    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
 
     const STATUS_WAIT = 'open';
     const STATUS_CONFIRMATION = 'confirmation';

@@ -22,7 +22,8 @@
                 </ul>
             @endif
             <div class="flex flex-col gap-3">
-                <x-form-input type="text" name="contract_id" placeholder="Номер договора*" label="Номер договора*" />
+                {{-- заменить --}}
+                <x-form-input type="text" name="descr" placeholder="Номер договора*" label="Номер договора*" />
                 <x-form-input type="number" name="value" placeholder="Сумма платежа*" label="Введите сумму" />
                 <x-form-input type="number" name="order" placeholder="Номер платежа" label="Номер платежа" />
                 <label for="technical" class="flex flex-row justify-start gap-2 text-md font-semibold cursor-pointer">

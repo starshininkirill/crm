@@ -151,17 +151,17 @@ class ServiceSeeder extends Seeder
                 $idx = array_rand($statuses);
                 $status = $statuses[$idx];
                 $status = Payment::STATUS_CLOSE;
-                $confirmed_at = now()->addDays(rand(-20, 1));
+                $created_at = now()->addDays(rand(1, 10));
                 $type = Payment::TYPE_NEW;
             }elseif($key == 1){
                 $status = Payment::STATUS_WAIT;
-                $confirmed_at = null;
-                $confirmed_at = now()->addDays(rand(-20, -1));
+                $created_at = null;
+                $created_at = now()->addDays(rand(1, 10));
                 $payment = 5000;
             }else{
                 $status = Payment::STATUS_WAIT;
-                $confirmed_at = null;
-                $confirmed_at = now()->addDays(rand(-20, -1));
+                $created_at = null;
+                $created_at = now()->addDays(rand(1, 10));
             }
 
             if (!empty($payment) && $order <= $maxPayments) {
@@ -169,7 +169,7 @@ class ServiceSeeder extends Seeder
                     'value' => $payment,
                     'status' => $status,
                     'order' => $order,
-                    'confirmed_at' => $confirmed_at,
+                    'created_at' => $created_at,
                     'type' => $type,
                 ]);
                 $order++;
