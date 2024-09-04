@@ -9,6 +9,7 @@
             <table class="min-w-full border border-gray-300">
                 <thead>
                     <tr class="bg-gray-800">
+                        <th class="border border-gray-300 px-4 py-2 text-left text-white">Номер</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Дата</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Договор</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Сумма</th>
@@ -19,6 +20,11 @@
                 <tbody>
                     @foreach ($payments as $payment)
                         <tr class="">
+                            <td class="border border-gray-300 px-4 py-2">
+                                <a href="{{ route('admin.payment.show', $payment->id) }}" class=" text-blue-700 underline">
+                                   № {{ $payment->id }}
+                                </a>
+                            </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 {{ $payment->created_at->format('d.m.y') }}
                             </td>

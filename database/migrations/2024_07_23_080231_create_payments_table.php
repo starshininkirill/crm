@@ -15,12 +15,14 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->float('value');
+            $table->enum('status', ['open', 'confirmation', 'close'])->default(Payment::STATUS_WAIT);
             $table->enum('type', ['new', 'old',])->nullable();
-            $table->dateTime('confirmed_at')->nullable();
-            $table->integer('order');
-            $table->enum('status', ['open', 'confirmation', 'close'])->default(Payment::STATUS_OPEN);
-            $table->foreignId('contract_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('responsible_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->integer('order')->nullable();
+            $table->boolean('is_technical')->nullable()->default(false);
+            $table->foreignId('contract_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->onDelete('set null');
+            $table->foreignId('responsible_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });
     }
@@ -33,3 +35,4 @@ return new class extends Migration
         Schema::dropIfExists('payments');
     }
 };
+ 

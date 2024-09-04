@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('contract_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('role_in_contracts_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('payment_id')->nullable()->constrained()->onDelete('set null');
+            // $table->foreignId('payment_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

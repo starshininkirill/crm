@@ -11,6 +11,7 @@ use App\Models\RoleInContract;
 use App\Models\ServiceCategory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class ServiceSeeder extends Seeder
 {
@@ -104,9 +105,9 @@ class ServiceSeeder extends Seeder
 
         $users = SaleDepartment::getMainDepartment()->activeUsers();
 
-        foreach ($clients as $client) {
+        foreach ($clients as $key => $client) {
             $contractData = [
-                'number' => strtoupper(uniqid()),
+                'number' => $key + 1,
                 'amount_price' => rand(10000, 50000),
                 'comment' => 'Auto-generated contract',
                 'client_id' => $client->id,
@@ -125,7 +126,7 @@ class ServiceSeeder extends Seeder
 
             $payments = array_map(function () {
                 return rand(1000, 10000);
-            }, range(1, rand(1, 5)));
+            }, range(1, rand(2, 5)));
 
             $this->addPaymentsToContract($contract, $payments);
 
@@ -144,19 +145,23 @@ class ServiceSeeder extends Seeder
     private function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5)
     {
         $order = 1;
-
         foreach ($payments as $key => $payment) {
             if($key == 0){
-                $statuses = [Payment::STATUS_OPEN, Payment::STATUS_CLOSE];
+                $statuses = [Payment::STATUS_WAIT, Payment::STATUS_CLOSE];
                 $idx = array_rand($statuses);
                 $status = $statuses[$idx];
+                $status = Payment::STATUS_CLOSE;
                 $confirmed_at = now()->addDays(rand(-20, 1));
                 $type = Payment::TYPE_NEW;
-            }else{
-                $status = Payment::STATUS_OPEN;
+            }elseif($key == 1){
+                $status = Payment::STATUS_WAIT;
                 $confirmed_at = null;
                 $confirmed_at = now()->addDays(rand(-20, -1));
-                $type = Payment::TYPE_OLD;
+                $payment = 5000;
+            }else{
+                $status = Payment::STATUS_WAIT;
+                $confirmed_at = null;
+                $confirmed_at = now()->addDays(rand(-20, -1));
             }
 
             if (!empty($payment) && $order <= $maxPayments) {
@@ -165,7 +170,7 @@ class ServiceSeeder extends Seeder
                     'status' => $status,
                     'order' => $order,
                     'confirmed_at' => $confirmed_at,
-                    'type' => $type
+                    'type' => $type,
                 ]);
                 $order++;
             }

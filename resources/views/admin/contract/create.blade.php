@@ -9,8 +9,6 @@
             </div>
         @endif
         @csrf
-
-        @csrf
         @if ($errors->any())
             <ul class="flex flex-col gap-1 mb-4">
                 @foreach ($errors->all() as $error)

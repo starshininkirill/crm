@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Lk\MainController as LkMainController;
+use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
 use App\Models\Departments\Department;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +33,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
+    Route::prefix('/lk')->group(function(){
+        Route::get('/', [LkMainController::class, 'index'])->name('lk');
+        Route::prefix('/payments')->group(function(){
+            Route::get('/create', [LkPaymentController::class, 'create'])->name('lk.payment.create');
+            Route::post('/store', [LkPaymentController::class, 'store'])->name('lk.payment.store');
+        });
+    });
+
  });
  
 
@@ -47,8 +57,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('payments')->group(function () {
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
-        Route::get('/unsettled', [PaymentController::class, 'unsettled'])->name('admin.payment.unsettled');
-        Route::get('/show/{id}', [PaymentController::class, 'show'])->name('admin.payment.show');
+        Route::get('/unsettled', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
+        Route::get('/show/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
     });
 
     Route::prefix('servicies')->group(function () {
@@ -68,12 +78,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [DepartmentController::class, 'store'])->name('admin.department.store');
         Route::get('/show/{department}', [DepartmentController::class, 'show'])->name('admin.department.show');
 
-        Route::prefix('position')->group(function () {
+        Route::prefix('positions')->group(function () {
             Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
             Route::post('/store', [PositionController::class, 'store'])->name('admin.department.position.store');
         });
 
-        Route::prefix('sale')->group(function () {
+        Route::prefix('sales')->group(function () {
             Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.department.sale.index');
             Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
         });

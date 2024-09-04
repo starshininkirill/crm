@@ -7,7 +7,7 @@
             <x-admin-subnav-link route="admin.payment.index">
                 Все Платежи
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.payment.unsettled">
+            <x-admin-subnav-link route="admin.payment.unsorted">
                 Неразобранные платежи
             </x-admin-subnav-link>
         </div>

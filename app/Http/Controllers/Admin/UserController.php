@@ -40,4 +40,9 @@ class UserController
 
         return redirect()->back()->with('success', 'Сотрудник успешно создан');
     }
+
+    public function show(User $user)
+    {
+        dd($user);
+    }
 }

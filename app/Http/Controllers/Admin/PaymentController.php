@@ -13,20 +13,20 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all();
+        $payments = Payment::query()->where('status', Payment::STATUS_CLOSE)->get();
         return view('admin.payment.index', ['payments' => $payments]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function unsettled()
+    public function unsorted()
     {
-        $payments = Payment::whereNull('contract_id')
-            ->where('status', Payment::STATUS_CONFIRMATION)
+        $payments = Payment::query()->whereNull('contract_id')
+            ->whereNot('status', Payment::STATUS_CLOSE)
             ->get();
         
-        return view('admin.payment.unsettled', ['payments' => $payments]);
+        return view('admin.payment.unsorted', ['payments' => $payments]);
     }
 
     /**
@@ -40,10 +40,8 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Payment $payment)
     {
-        $payment = Payment::findOrFail($id);
-
         return view('admin.payment.show', ['payment' => $payment]);
     }
 

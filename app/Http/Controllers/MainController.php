@@ -12,6 +12,8 @@ class MainController extends Controller
         
         return view('base');   
     }
+
+    
     public function loginHome()
     {
         Auth::attempt([

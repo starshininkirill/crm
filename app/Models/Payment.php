@@ -10,19 +10,36 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type'];
+    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical'];
 
-    const STATUS_OPEN = 'open';
+    const STATUS_WAIT = 'open';
     const STATUS_CONFIRMATION = 'confirmation';
     const STATUS_CLOSE = 'close';
 
     const TYPE_NEW = 'new';
     const TYPE_OLD = 'old';
 
-    public static function getStatuses()
+    protected $casts = [
+        'confirmed_at' => 'datetime',
+    ];
+
+    public function formatedType(): string
+    {
+        if($this->type == null){
+            return '';
+        }
+        $statuses = [
+            self::TYPE_NEW => 'Новые деньги',
+            self::TYPE_OLD => 'Старые деньги'
+        ];
+
+        return $statuses[$this->type];
+    }
+
+    public static function getStatuses(): array
     {
         return [
-            self::STATUS_OPEN => 'Ожидает оплату',
+            self::STATUS_WAIT => 'Ожидает оплату',
             self::STATUS_CONFIRMATION => 'Ожидает подтверждения',
             self::STATUS_CLOSE => 'Оплачен',
         ];
@@ -31,6 +48,32 @@ class Payment extends Model
     public function responsible(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_id');
+    }
+    
+    public function method():BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function generetePaymentMethodHierarchy(): string
+    {
+        $method = $this->method;
+        if($method == null){
+            return '';
+        }
+        if($method->parent == null){
+            return $method->name;
+        }
+
+        $res = $method->parent->name;
+
+
+        while($method->parent != null){
+            $res = $res . ' / ' . $method->name;
+            $method = $method->parent;
+        }
+        
+        return $res;
     }
 
     public function contract()
