@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ServiceSeeder::class,
             PaymentMethodSeeder::class,
+            WorkPlanSeeder::class
         ]);
     }
 }

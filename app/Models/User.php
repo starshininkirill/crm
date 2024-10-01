@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Departments\Department;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Helpers\DateHelper;
 
 class User extends Authenticatable
 {
@@ -76,6 +78,20 @@ class User extends Authenticatable
     public function contracts(): BelongsToMany
     {
         return $this->belongsToMany(Contract::class);
+    }
+
+    public function getFirstWorkingDay(): Carbon
+    {
+
+        $employmentDate = $this->created_at;
+
+        $workingDays = DateHelper::getWorkingDaysInMonth($employmentDate);
+
+        while (!in_array($employmentDate->format('Y-m-d'), $workingDays)) {
+            $employmentDate->add(1, 'day');
+        }
+
+        return $employmentDate;
     }
     
 } 

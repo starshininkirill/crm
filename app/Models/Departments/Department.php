@@ -4,6 +4,7 @@ namespace App\Models\Departments;
 
 use App\Models\Position;
 use App\Models\User;
+use App\Models\WorkPlan;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SimpleCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -84,6 +85,11 @@ class Department extends Model
     public function childDepartments(): HasMany
     {
         return $this->hasMany(Department::class, 'parent_id');
+    }
+
+    public function workPlans(): HasMany
+    {
+        return $this->hasMany(WorkPlan::class);
     }
 
 }

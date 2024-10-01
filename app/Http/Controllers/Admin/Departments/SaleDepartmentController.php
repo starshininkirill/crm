@@ -40,6 +40,7 @@ class SaleDepartmentController extends Controller
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
             $report = $this->saleDepartmentService->generateUserReportData($date, $user);
+            $motivationReport = $this->saleDepartmentService->generateUserMotivationReportData($date, $user);
         }
         return view(
             'admin.departments.sale.userReport',

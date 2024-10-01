@@ -37,7 +37,7 @@
                 <span class="font-semibold">Технический платёж:</span> {{ $payment->is_technical ? 'Да' : 'Нет' }}
             </div>
             <div class="date mb-3">
-                <span class="font-semibold">Подтвержён:</span>
+                <span class="font-semibold">Когда подтверждён:</span>
                 {{ $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён' }}
             </div>
             <div class="date mb-3">

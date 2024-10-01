@@ -13,7 +13,7 @@ class Payment extends Model
     protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
 
     const STATUS_WAIT = 'open';
-    const STATUS_CONFIRMATION = 'confirmation';
+    const STATUS_CONFIRMATION = 'wait_confirmation';
     const STATUS_CLOSE = 'close';
 
     const TYPE_NEW = 'new';

@@ -5,12 +5,62 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Payment;
 use App\Helpers\DateHelper;
+use App\Models\Departments\SaleDepartment;
 use App\Models\ServiceCategory;
+use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
+
 class SaleDepartmentService
 {
+
+    public function generateUserMotivationReportData(Carbon $date, User $user)
+    {
+        $workingDays = DateHelper::getWorkingDaysInMonth($date);
+        $nowDate = Carbon::now();
+        
+        $mounthPlan = $this->getMounthPlan($user);
+        dd($mounthPlan);
+    }
+
+    private function getMounthPlan(User $user)
+    {
+        $employmentDate = $user->getFirstWorkingDay();
+        $nowDate = Carbon::now();
+    
+        $startWorkingDay = $employmentDate->format('d');
+    
+        $monthsWorked = $employmentDate->floorMonth()->diffInMonths($nowDate->floorMonth()) + 1;
+        if ($startWorkingDay > 7) {
+            $monthsWorked--;
+        }
+    
+        $departmentId = SaleDepartment::getMainDepartment()->id;
+        $userPositionId = $user->position->id;
+    
+        $mounthPlan = WorkPlan::where('department_id', $departmentId)
+            ->where('position_id', $userPositionId)
+            ->first();
+    
+        if ($mounthPlan) {
+            return $mounthPlan;
+        }
+    
+        $mounthPlan = WorkPlan::where('department_id', $departmentId)
+            ->where('mounth', $monthsWorked)
+            ->first();
+    
+        if ($mounthPlan) {
+            return $mounthPlan;
+        }
+    
+        return WorkPlan::where('department_id', $departmentId)
+            ->orderBy('mounth', 'desc')
+            ->first();
+
+    }
+
     public function generateUserReportData(Carbon $date, User $user): Collection
     {
         $report = collect();
@@ -47,8 +97,8 @@ class SaleDepartmentService
         return $payments->groupBy(function ($payment) use ($workingDays) {
             $paymentDate = Carbon::parse($payment->created_at)->format('Y-m-d');
 
-            return in_array($paymentDate, $workingDays) 
-                ? $paymentDate 
+            return in_array($paymentDate, $workingDays)
+                ? $paymentDate
                 : $this->getNearestPreviousWorkingDay($paymentDate, $workingDays);
         });
     }
