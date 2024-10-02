@@ -14,7 +14,10 @@ class PaymentController extends Controller
     public function index()
     {
         $payments = Payment::query()->where('status', Payment::STATUS_CLOSE)->get();
-        return view('admin.payment.index', ['payments' => $payments]);
+        return view('admin.payment.index', [
+            'payments' => $payments,
+            'paymentClass' => Payment::class,
+        ]);
     }
 
     /**

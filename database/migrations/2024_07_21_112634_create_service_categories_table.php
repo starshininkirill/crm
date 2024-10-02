@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
-            $table->enum('type', ['individual_site', 'ready_site', 'rk', 'seo', 'other'])->nullable()->unique();
+            $table->integer('type')->nullable()->unique();
         });
     }
 

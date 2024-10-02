@@ -45,7 +45,7 @@
                                 @endif
                             </td>
                             <td
-                                class="border border-gray-300 px-4 py-2 {{ $payment->status == 'close' ? 'bg-green-500 text-white' : '' }}">
+                                class="border border-gray-300 px-4 py-2 {{ $payment->status == $paymentClass::STATUS_CLOSE ? 'bg-green-500 text-white' : '' }}">
                                 {{ $payment->getStatusNameAttribute() }}
                             </td>
                         </tr>

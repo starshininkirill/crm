@@ -50,8 +50,8 @@
                                     {{ number_format($data['newMoney'], 0, ' ', ' ') }} ₽</td>
                                 <td class="border border-gray-300 text-md px-2 py-1">
                                     {{ number_format($data['oldMoney'], 0, ' ', ' ') }} ₽</td>
-                                <td class="border border-gray-300 text-md px-2 py-1">{{ $data['individual_sites'] }}</td>
-                                <td class="border border-gray-300 text-md px-2 py-1">{{ $data['readies_sites'] }}</td>
+                                <td class="border border-gray-300 text-md px-2 py-1">{{ $data['individualSites'] }}</td>
+                                <td class="border border-gray-300 text-md px-2 py-1">{{ $data['readiesSites'] }}</td>
                                 <td class="border border-gray-300 text-md px-2 py-1">{{ $data['rk'] }}</td>
                                 <td class="border border-gray-300 text-md px-2 py-1">{{ $data['seo'] }}</td>
                                 <td class="border border-gray-300 text-md px-2 py-1">{{ $data['other'] }}</td>

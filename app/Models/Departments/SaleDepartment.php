@@ -14,7 +14,7 @@ class SaleDepartment extends BaseDepartmentModel
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'plans'];
 
     // Methods
     // department

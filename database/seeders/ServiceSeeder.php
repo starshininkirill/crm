@@ -20,7 +20,6 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
-
         ServiceCategory::create([
             'name' => 'Сайты с индивидуальным дизайном',
             'type' => ServiceCategory::INDIVIDUAL_SITE,
@@ -123,10 +122,10 @@ class ServiceSeeder extends Seeder
                     'price' => $service->price,
                 ]);
             }
-
             $payments = array_map(function () {
                 return rand(1000, 10000);
             }, range(1, rand(2, 5)));
+
 
             $this->addPaymentsToContract($contract, $payments);
 

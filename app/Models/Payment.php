@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,12 +11,12 @@ class Payment extends Model
     // заменить
     protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
 
-    const STATUS_WAIT = 'open';
-    const STATUS_CONFIRMATION = 'wait_confirmation';
-    const STATUS_CLOSE = 'close';
+    const STATUS_WAIT = 0;
+    const STATUS_CONFIRMATION = 1;
+    const STATUS_CLOSE = 2;
 
-    const TYPE_NEW = 'new';
-    const TYPE_OLD = 'old';
+    const TYPE_NEW = 0;
+    const TYPE_OLD = 1;
 
     protected $casts = [
         'confirmed_at' => 'datetime',

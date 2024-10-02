@@ -12,7 +12,9 @@ class WorkPlan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['value', 'mounth', 'department_id', 'position_id'];
+    public const MOUNTH_PLAN = 0;
+
+    protected $fillable = ['type', 'value', 'mounth', 'department_id', 'position_id', ];
 
     public $timestamps = false;
 

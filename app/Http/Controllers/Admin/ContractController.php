@@ -28,7 +28,11 @@ class ContractController extends Controller
     public function index()
     {
         $contracts = Contract::orderByDesc('created_at')->get();
-        return view('admin.contract.index', ['contracts' => $contracts]);
+
+        return view('admin.contract.index', [
+            'contracts' => $contracts,
+            'paymentClass' => Payment::class, 
+        ]);
     }
 
     public function create()

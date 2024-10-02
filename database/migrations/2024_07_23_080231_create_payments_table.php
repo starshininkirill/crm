@@ -15,8 +15,8 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->float('value');
-            $table->enum('status', ['open', 'confirmation', 'close'])->default(Payment::STATUS_WAIT);
-            $table->enum('type', ['new', 'old',])->nullable();
+            $table->integer('status')->default(Payment::STATUS_WAIT);
+            $table->integer('type')->nullable();
             $table->integer('order')->nullable();
             $table->boolean('is_technical')->nullable()->default(false);
             $table->foreignId('contract_id')->nullable()->constrained()->onDelete('set null');

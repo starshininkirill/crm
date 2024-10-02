@@ -17,59 +17,135 @@ class SaleDepartmentService
 
     public function generateUserMotivationReportData(Carbon $date, User $user)
     {
+
+        $report = [
+            'mounth_plan' => [
+                'plan' => '',
+                'value' => '',
+                'completed' => false,
+            ],
+            'double_plan' => [
+                'plan' => '',
+                'value' => '',
+                'completed' => false,
+            ],
+            'bonus_plan' => [
+                'plan' => '',
+                'value' => '',
+                'completed' => false,
+            ],
+            'super_plan' => [
+                'plan' => '',
+                'value' => '',
+                'completed' => false,
+            ],
+        ];
+
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
         $nowDate = Carbon::now();
-        
-        $mounthPlan = $this->getMounthPlan($user);
-        dd($mounthPlan);
+
+        $mounthWorkPlan = $this->getMounthPlan($user);
+
+        // Получаем все платежи за месяц
+        $payments = $this->getPaymentsForUserGroupByType($date, $user);
+
+        // Группируем платежи
+        $newPayments = $payments->has(Payment::TYPE_NEW) ? $payments->get(Payment::TYPE_NEW) : collect();
+        $uniqueNewPayments = $newPayments->unique('contract_id');
+        $oldPayments = $payments->has(Payment::TYPE_OLD) ? $payments->get(Payment::TYPE_OLD) : collect();
+
+        // Получаем сумму новых и старых денег
+        $newMoney = $newPayments->sum('value');
+        $oldMoney = $oldPayments->sum('value');
+        $allMoney = $newMoney + $oldMoney;
+
+        // Получаем сумму для выполнения месячного плана
+        $mounthWorkPlanValue = $mounthWorkPlan->value;
+
+        // Наполняем отчёт
+        $report['mounth_plan'] = $this->generateMounthPlanReport($newMoney, $mounthWorkPlanValue);
+        $report['double_plan'] = $this->generateDoubleMounthPlanReport($newMoney, $mounthWorkPlanValue);
+
+        // dd($report);
+    }
+
+    private function generateMounthPlanReport($money, $plan): array
+    {
+
+        return  [
+            'plan' => $plan,
+            'value' => $money,
+            'completed' => $money >= $plan ? true : false
+        ];
+    }
+    private function generateDoubleMounthPlanReport($money, $plan): array
+    {
+
+        return  [
+            'plan' => $plan * 2,
+            'value' => $money,
+            'completed' => $money >= $plan * 2 ? true : false
+        ];
     }
 
     private function getMounthPlan(User $user)
     {
         $employmentDate = $user->getFirstWorkingDay();
         $nowDate = Carbon::now();
-    
+
         $startWorkingDay = $employmentDate->format('d');
-    
+
         $monthsWorked = $employmentDate->floorMonth()->diffInMonths($nowDate->floorMonth()) + 1;
         if ($startWorkingDay > 7) {
             $monthsWorked--;
         }
-    
+
         $departmentId = SaleDepartment::getMainDepartment()->id;
         $userPositionId = $user->position->id;
-    
+
         $mounthPlan = WorkPlan::where('department_id', $departmentId)
             ->where('position_id', $userPositionId)
-            ->first();
-    
-        if ($mounthPlan) {
-            return $mounthPlan;
-        }
-    
-        $mounthPlan = WorkPlan::where('department_id', $departmentId)
-            ->where('mounth', $monthsWorked)
-            ->first();
-    
-        if ($mounthPlan) {
-            return $mounthPlan;
-        }
-    
-        return WorkPlan::where('department_id', $departmentId)
-            ->orderBy('mounth', 'desc')
+            ->where('type', WorkPlan::MOUNTH_PLAN)
             ->first();
 
+        if ($mounthPlan) {
+            return $mounthPlan;
+        }
+
+        $mounthPlan = WorkPlan::where('department_id', $departmentId)
+            ->where('mounth', $monthsWorked)
+            ->where('type', WorkPlan::MOUNTH_PLAN)
+            ->first();
+
+        if ($mounthPlan) {
+            return $mounthPlan;
+        }
+
+        return WorkPlan::where('department_id', $departmentId)
+            ->where('type', WorkPlan::MOUNTH_PLAN)
+            ->orderBy('mounth', 'desc')
+            ->first();
     }
 
     public function generateUserReportData(Carbon $date, User $user): Collection
     {
         $report = collect();
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
-        $payments = $this->getPaymentsForUser($date, $user);
+        $payments = $this->getPaymentsForUserGroupByType($date, $user);
 
-        $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW] ?? collect(), $workingDays);
-        $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW]->unique('contract_id') ?? collect(), $workingDays);
-        $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_OLD] ?? collect(), $workingDays);
+        if($payments->has(Payment::TYPE_NEW)){
+            $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW] ?? collect(), $workingDays);
+            $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW]->unique('contract_id') ?? collect(), $workingDays);
+        }else{
+            $newPaymentsGroupedByDate = collect();
+            $uniqueNewPaymentsGroupedByDate = collect();
+        }
+
+        if($payments->has(Payment::TYPE_OLD)){
+            $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_OLD] ?? collect(), $workingDays);
+        }else{
+            $oldPaymentsGroupedByDate = collect();
+        }
 
         foreach ($workingDays as $day) {
             $dayFormatted = Carbon::parse($day)->format('Y-m-d');
@@ -79,15 +155,16 @@ class SaleDepartmentService
         return $report;
     }
 
-    private function getPaymentsForUser(Carbon $date, User $user): Collection
+    private function getPaymentsForUserGroupByType(Carbon $date, User $user): Collection
     {
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
         $contractIds = $user->contracts->pluck('id')->unique();
 
+
         return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->whereIn('contract_id', $contractIds)
-            ->where('status', 'close')
+            ->where('status', Payment::STATUS_CLOSE)
             ->get()
             ->groupBy('type');
     }
@@ -128,22 +205,22 @@ class SaleDepartmentService
             'date' => $day,
             'newMoney' => $newPaymentsSum,
             'oldMoney' => $oldPaymentsSum,
-            'individual_sites' => $serviceCounts['individual_sites'],
-            'readies_sites' => $serviceCounts['readies_sites'],
-            'rk' => $serviceCounts['rk'],
-            'seo' => $serviceCounts['seo'],
-            'other' => $serviceCounts['other'],
+            'individualSites' => $serviceCounts[ServiceCategory::INDIVIDUAL_SITE],
+            'readiesSites' => $serviceCounts[ServiceCategory::READY_SITE],
+            'rk' => $serviceCounts[ServiceCategory::RK],
+            'seo' => $serviceCounts[ServiceCategory::SEO],
+            'other' => $serviceCounts[ServiceCategory::OTHER],
         ];
     }
 
     private function calculateServiceCounts(Collection $dayPayments): array
     {
         $counts = [
-            'individual_sites' => 0,
-            'readies_sites' => 0,
-            'rk' => 0,
-            'seo' => 0,
-            'other' => 0,
+            ServiceCategory::INDIVIDUAL_SITE => 0,
+            ServiceCategory::READY_SITE => 0,
+            ServiceCategory::RK => 0,
+            ServiceCategory::SEO => 0,
+            ServiceCategory::OTHER => 0,
         ];
 
         foreach ($dayPayments->unique('contract_id') as $payment) {
@@ -159,19 +236,19 @@ class SaleDepartmentService
     {
         switch ($serviceType) {
             case ServiceCategory::INDIVIDUAL_SITE:
-                $counts['individual_sites']++;
+                $counts[ServiceCategory::INDIVIDUAL_SITE]++;
                 break;
             case ServiceCategory::READY_SITE:
-                $counts['readies_sites']++;
+                $counts[ServiceCategory::READY_SITE]++;
                 break;
             case ServiceCategory::RK:
-                $counts['rk']++;
+                $counts[ServiceCategory::RK]++;
                 break;
             case ServiceCategory::SEO:
-                $counts['seo']++;
+                $counts[ServiceCategory::SEO]++;
                 break;
             case ServiceCategory::OTHER:
-                $counts['other']++;
+                $counts[ServiceCategory::OTHER]++;
                 break;
         }
     }
