@@ -28,18 +28,24 @@ class SaleDepartmentService
                 'plan' => '',
                 'value' => '',
                 'completed' => false,
+                'bonus' => 0,
             ],
             'bonus_plan' => [
                 'plan' => '',
                 'value' => '',
                 'completed' => false,
+                'bonus' => 0,
             ],
             'super_plan' => [
                 'plan' => '',
                 'value' => '',
                 'completed' => false,
+                'bonus' => 0,
             ],
         ];
+
+        $department = $user->department->departmentable;
+        dd($department);
 
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
         $nowDate = Carbon::now();
@@ -60,11 +66,11 @@ class SaleDepartmentService
         $allMoney = $newMoney + $oldMoney;
 
         // Получаем сумму для выполнения месячного плана
-        $mounthWorkPlanValue = $mounthWorkPlan->value;
+        $mounthWorkPlanGoal = $mounthWorkPlan->goal;
 
         // Наполняем отчёт
-        $report['mounth_plan'] = $this->generateMounthPlanReport($newMoney, $mounthWorkPlanValue);
-        $report['double_plan'] = $this->generateDoubleMounthPlanReport($newMoney, $mounthWorkPlanValue);
+        $report['mounth_plan'] = $this->generateMounthPlanReport($newMoney, $mounthWorkPlanGoal);
+        $report['double_plan'] = $this->generateDoubleMounthPlanReport($newMoney, $mounthWorkPlanGoal);
 
         // dd($report);
     }
