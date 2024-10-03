@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Departments;
+namespace App\Models;
 
 use App\Models\Position;
 use App\Models\User;
@@ -17,20 +17,11 @@ class Department extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'parent_id'];
+    public const SALE_DEPARTMENT = 0;
+    public const ADVERTISING_DEPARTMENT = 1;
+
+    protected $fillable = ['name', 'parent_id', 'type'];
     
-
-    public static function getMainDepartmentsInstanses(): Collection
-    {
-        $departments = self::getMainDepartments();
-
-        $departmentsInstanses = $departments->map(function ($department) {
-            return $department->departmentable;
-        });
-    
-        return new Collection($departmentsInstanses);
-    }
-
     public static function getMainDepartments(): Collection
     {
         return Department::whereNull('parent_id')->get();
@@ -77,11 +68,6 @@ class Department extends Model
         return $this->belongsTo(Department::class, 'parent_id');
     }
     
-    public function departmentable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
     public function childDepartments(): HasMany
     {
         return $this->hasMany(Department::class, 'parent_id');
@@ -90,6 +76,13 @@ class Department extends Model
     public function workPlans(): HasMany
     {
         return $this->hasMany(WorkPlan::class);
+    }
+
+    public static function getMainSaleDepartment() : ?Department
+    {
+        return Department::where('type', Department::SALE_DEPARTMENT)
+            ->whereNull('parent_id')
+            ->first();
     }
 
 }

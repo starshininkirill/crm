@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Departments\AdvertisingDepartment;
-use App\Models\Departments\Department;
-use App\Models\Departments\SaleDepartment;
+use App\Models\AdvertisingDepartment;
+use App\Models\Department;
 use App\Models\ServiceCategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DepartmentSeeder extends Seeder
@@ -16,9 +14,10 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-
-        $saleDepartment = SaleDepartment::create(['name' => 'Отдел продаж']);
-        $mainDepartment = $saleDepartment->department()->create();
+        $mainDepartment = Department::create([
+            'name' => 'Отдел продаж',
+            'type' => Department::SALE_DEPARTMENT
+        ]);
 
         $salePositions = [
             ['name' => 'Руководитель отдела продаж', 'salary' => 100000],
@@ -27,7 +26,7 @@ class DepartmentSeeder extends Seeder
             ['name' => 'Менеджер по продажам', 'salary' => 25000],
         ];
 
-        $saleDepartment->plans = [
+        $mainDepartment->plans = [
             'double_plan' => [
                 'bonus' => 5000
             ],
@@ -78,22 +77,30 @@ class DepartmentSeeder extends Seeder
 
         ];
 
-        $saleDepartment->save();
+        $mainDepartment->save();
 
 
 
         foreach ($salePositions as $position) {
             $mainDepartment->positions()->create(array_merge($position, ['department_id' => $mainDepartment->id]));
-        }
+        };
 
-        $saleDepartment1 = SaleDepartment::create(['name' => 'Подотдел продаж 1']);
-        $saleDepartment2 = SaleDepartment::create(['name' => 'Подотдел продаж 2']);
+        $saleDepartment1 = Department::create([
+            'name' => 'Подотдел продаж 1',
+            'type' => Department::SALE_DEPARTMENT,
+            'parent_id' => $mainDepartment->id,
+        ]);
 
-        $saleDepartment1->department()->create(['parent_id' => $mainDepartment->id]);
-        $saleDepartment2->department()->create(['parent_id' => $mainDepartment->id]);
+        $saleDepartment2 = Department::create([
+            'name' => 'Подотдел продаж 2',
+            'type' => Department::SALE_DEPARTMENT,
+            'parent_id' => $mainDepartment->id,
+        ]);
 
-        $advertisingDepartment = AdvertisingDepartment::create(['name' => 'Отдел Рекламы']);
-        $mainDepartment = $advertisingDepartment->department()->create();
+        $mainDepartment = Department::create([
+            'name' => 'Отдел рекламы',
+            'type' => Department::ADVERTISING_DEPARTMENT,
+        ]);
 
         $advertisingPositions = [
             ['name' => 'Руководитель отдела рекламы', 'salary' => 100000],

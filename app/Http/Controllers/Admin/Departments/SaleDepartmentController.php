@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Http\Controllers\Controller;
-use App\Models\Departments\SaleDepartment;
+use App\Models\Department;
 use App\Models\User;
 use App\Services\SaleDepartmentService;
 use Carbon\Carbon;
@@ -23,13 +23,13 @@ class SaleDepartmentController extends Controller
 
     public function index()
     {
-        $department = SaleDepartment::getMainDepartment();
+        $department = Department::getMainSaleDepartment();
         return view('admin.departments.sale.index', ['department' => $department]);
     }
 
     public function userReport(Request $request)
     {
-        $users = SaleDepartment::getMainDepartment()->activeUsers();
+        $users = Department::getMainSaleDepartment()->activeUsers();
         $date = null;
         $user = null;
         $report = null;
@@ -53,3 +53,4 @@ class SaleDepartmentController extends Controller
         );
     }
 }
+ 

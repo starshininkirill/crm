@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PositionRequest;
-use App\Models\Departments\Department;
+use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
 

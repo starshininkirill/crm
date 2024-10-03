@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Payment;
 use App\Helpers\DateHelper;
-use App\Models\Departments\SaleDepartment;
+use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
@@ -44,8 +44,7 @@ class SaleDepartmentService
             ],
         ];
 
-        $department = $user->department->departmentable;
-        dd($department);
+        $department = $user->department;
 
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
         $nowDate = Carbon::now();
@@ -106,7 +105,7 @@ class SaleDepartmentService
             $monthsWorked--;
         }
 
-        $departmentId = SaleDepartment::getMainDepartment()->id;
+        $departmentId = Department::getMainSaleDepartment()->id;
         $userPositionId = $user->position->id;
 
         $mounthPlan = WorkPlan::where('department_id', $departmentId)

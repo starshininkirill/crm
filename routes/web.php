@@ -13,7 +13,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
-use App\Models\Departments\Department;
+use App\Models\Department;
 use Illuminate\Support\Facades\Route;
 
 

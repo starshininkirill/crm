@@ -1,12 +1,12 @@
 @extends('admin.layouts.departments.sale')
 
 @section('content')
-    <h1 class="text-4xl font-semibold mb-6">{{ $department->departmentable->name }}</h1>
+    <h1 class="text-4xl font-semibold mb-6">{{ $department->name }}</h1>
     @if ($department->parent)
         <h2 class="text-4xl mb-5 font-semibold">Родительский отдел</h2>
         <div class="mb-7">
             <a href="{{ route('admin.department.show', $department->parent->id) }}" class=" text-lg text-blue-600">
-                {{ $department->parent->departmentable->name }}
+                {{ $department->parent->name }}
             </a>
         </div>
     @endif
@@ -16,7 +16,7 @@
         <div class="flex flex-col gap-1 mb-7">
             @foreach ($department->childDepartments as $childDepartment)
                 <a href="{{ route('admin.department.show', $childDepartment->id) }}" class=" text-lg text-blue-600">
-                    {{ $childDepartment->departmentable->name }}
+                    {{ $childDepartment->name }}
                 </a>
             @endforeach
         </div>

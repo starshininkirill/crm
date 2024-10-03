@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Departments\SaleDepartment;
+
 use App\Models\Client; 
-use App\Models\Contract; 
+use App\Models\Contract;
+use App\Models\Department;
 use App\Models\Service;
 use App\Models\Payment;
 use App\Models\RoleInContract;
@@ -102,7 +103,7 @@ class ServiceSeeder extends Seeder
 
         $clients = Client::all();
 
-        $users = SaleDepartment::getMainDepartment()->activeUsers();
+        $users = Department::getMainSaleDepartment()->activeUsers();
 
         foreach ($clients as $key => $client) {
             $contractData = [

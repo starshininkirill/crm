@@ -9,13 +9,12 @@
         <div class="flex flex-col gap-3">
             @foreach ($departments as $department)
                 @php
-                    $departmentObj = $department->departmentable;
                     $childsDepartments = $department->childDepartments;
                     $positions = $department->positions;
                 @endphp
                 <div class="p-4 text-xl border">
                     <a href="{{ route('admin.department.show', $department->id) }}" class="text-xl">
-                        {{ $departmentObj->name }}
+                        {{ $department->name }}
                     </a>
                     @if ($childsDepartments->isNotEmpty())
                         <div class="font-bold text-lg mb-1 mt-3 pl-3">
@@ -25,7 +24,7 @@
                             @foreach ($childsDepartments as $childDepartment)
                                 <li class=" text-lg list-disc list-inside">
                                     <a href="{{ route('admin.department.show', $childDepartment->id) }}">
-                                        {{ $childDepartment->departmentable->name }}
+                                        {{ $childDepartment->name }}
                                     </a>
                                 </li>
                             @endforeach
