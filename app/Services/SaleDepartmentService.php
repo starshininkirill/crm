@@ -9,88 +9,174 @@ use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;
-
 
 class SaleDepartmentService
 {
 
-    public function generateUserMotivationReportData(Carbon $date, User $user)
+    private $newMoney = 0;
+    private $oldMoney = 0;
+    private $mounthWorkPlan;
+    private $mounthWorkPlanGoal;
+    private $workingDays;
+    private $payments;
+    private $newPayments;
+    private $oldPayments;
+
+    public function generateUserMotivationReportData(Carbon $date, User $user): array
     {
 
-        $report = [
-            'mounth_plan' => [
-                'plan' => '',
-                'value' => '',
-                'completed' => false,
-            ],
-            'double_plan' => [
-                'plan' => '',
-                'value' => '',
-                'completed' => false,
-                'bonus' => 0,
-            ],
-            'bonus_plan' => [
-                'plan' => '',
-                'value' => '',
-                'completed' => false,
-                'bonus' => 0,
-            ],
-            'super_plan' => [
-                'plan' => '',
-                'value' => '',
-                'completed' => false,
-                'bonus' => 0,
-            ],
-        ];
+        $report = [];
 
         $department = $user->department;
 
-        $workingDays = DateHelper::getWorkingDaysInMonth($date);
+        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
         $nowDate = Carbon::now();
 
-        $mounthWorkPlan = $this->getMounthPlan($user);
+        // Получаем сумму для выполнения месячного плана
+        $this->mounthWorkPlan = $this->getMounthPlan($user);
+        $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
 
         // Получаем все платежи за месяц
-        $payments = $this->getPaymentsForUserGroupByType($date, $user);
+        $this->payments = $this->getPaymentsForUserGroupByType($date, $user);
 
         // Группируем платежи
-        $newPayments = $payments->has(Payment::TYPE_NEW) ? $payments->get(Payment::TYPE_NEW) : collect();
-        $uniqueNewPayments = $newPayments->unique('contract_id');
-        $oldPayments = $payments->has(Payment::TYPE_OLD) ? $payments->get(Payment::TYPE_OLD) : collect();
+        $this->newPayments = $this->payments->has(Payment::TYPE_NEW) ? $this->payments->get(Payment::TYPE_NEW) : collect();
+        $uniqueNewPayments = $this->newPayments->unique('contract_id');
+        $this->oldPayments = $this->payments->has(Payment::TYPE_OLD) ? $this->payments->get(Payment::TYPE_OLD) : collect();
 
         // Получаем сумму новых и старых денег
-        $newMoney = $newPayments->sum('value');
-        $oldMoney = $oldPayments->sum('value');
-        $allMoney = $newMoney + $oldMoney;
-
-        // Получаем сумму для выполнения месячного плана
-        $mounthWorkPlanGoal = $mounthWorkPlan->goal;
+        $this->newMoney = $this->newPayments->sum('value');
+        $this->oldMoney = $this->oldPayments->sum('value');
+        $allMoney = $this->newMoney + $this->oldMoney;
 
         // Наполняем отчёт
-        $report['mounth_plan'] = $this->generateMounthPlanReport($newMoney, $mounthWorkPlanGoal);
-        $report['double_plan'] = $this->generateDoubleMounthPlanReport($newMoney, $mounthWorkPlanGoal);
+        $report['mounth_plan'] = $this->generateMounthPlanReport();
+        $report['double_plan'] = $this->generateDoubleMounthPlanReport();
+        $report['bonus_plan'] = $this->generateBonusMounthPlanReport();
+        $report['weeks_plan'] = $this->generateWeeksMounthPlanReport($date);
 
-        // dd($report);
+        return $report;
     }
 
-    private function generateMounthPlanReport($money, $plan): array
+    private function generateWeeksMounthPlanReport(Carbon $date): array
+    {
+        $res = [];
+
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+        $weekPlan = $this->mounthWorkPlanGoal / 4;
+
+        // Начинаем с первого дня месяца
+        $current = $startOfMonth->copy();
+        
+        // Цикл до конца месяца
+        while ($current->lte($endOfMonth)) {
+            $startOfWeek = $current->copy();
+
+            if($startOfWeek->gt($endOfMonth)){
+                break;
+            }
+            
+            // Устанавливаем конец недели, но не позже конца месяца
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+            
+            // Если конец недели за пределами месяца, ограничиваем его концом месяца
+            if ($endOfWeek->gt($endOfMonth)) {
+                $endOfWeek = $endOfMonth;
+            }
+        
+            // Добавляем неделю в массив
+            $weeks[] = [
+                'start' => $startOfWeek->format('Y-m-d'),
+                'end' => $endOfWeek->format('Y-m-d'),
+            ];
+        
+            // Переходим к следующему дню после конца текущей недели
+            $current = $endOfWeek->addDay();
+        
+            // Если текущая дата больше конца месяца, выходим из цикла
+            if ($current->gt($endOfMonth)) {
+                break;
+            }
+        }
+
+        dd($weeks);
+
+        foreach ($weeks as $week) {
+
+            $filteredPayments = $this->newPayments->filter(function ($payment) use ($week) {
+                return $payment->created_at->between($week['start'], $week['end']);
+            });
+            $res[] = $filteredPayments;
+        };
+        dd($res);
+
+        return $res;
+    }
+
+    private function generateMounthPlanReport(): array
     {
 
         return  [
-            'plan' => $plan,
-            'value' => $money,
-            'completed' => $money >= $plan ? true : false
+            'plan' => $this->mounthWorkPlanGoal,
+            'value' => $this->newMoney,
+            'completed' => $this->newMoney >= $this->mounthWorkPlanGoal ? true : false,
         ];
     }
-    private function generateDoubleMounthPlanReport($money, $plan): array
+
+    private function generateBonusMounthPlanReport(): array
+    {
+        $res = [
+            'value' => $this->newMoney,
+            'completed' => false,
+            'bonus' => 0
+        ];
+
+        $planInstance = WorkPlan::where('type', WorkPlan::BONUS_PLAN)
+            ->where('department_id', Department::getMainSaleDepartment()->id)
+            ->first();
+
+        if ($planInstance) {
+            $plan = $planInstance->goal;
+
+            $res['plan'] = $plan;
+
+            if ($this->newMoney >= $plan && $plan != null) {
+                $res['completed'] = true;
+                $res['bonus'] = $planInstance->bonus;
+            }
+        }
+
+
+        return $res;
+    }
+    private function generateDoubleMounthPlanReport(): array
     {
 
-        return  [
-            'plan' => $plan * 2,
-            'value' => $money,
-            'completed' => $money >= $plan * 2 ? true : false
+        $res =  [
+            'plan' => $this->mounthWorkPlanGoal * 2,
+            'value' => $this->newMoney,
+            'completed' => false,
+            'bonus' => 0
         ];
+
+        $completed = $this->newMoney >= $this->mounthWorkPlanGoal * 2 ? true : false;
+
+        if ($completed) {
+            $res['completed'] = true;
+
+            $planInstance = WorkPlan::where('type', WorkPlan::DOUBLE_PLAN)
+                ->where('department_id', Department::getMainSaleDepartment()->id)
+                ->first();
+
+            if ($planInstance) {
+                $res['bonus'] = $planInstance->bonus;
+            }
+        }
+
+        return $res;
     }
 
     private function getMounthPlan(User $user)
@@ -138,17 +224,17 @@ class SaleDepartmentService
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
         $payments = $this->getPaymentsForUserGroupByType($date, $user);
 
-        if($payments->has(Payment::TYPE_NEW)){
+        if ($payments->has(Payment::TYPE_NEW)) {
             $newPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW] ?? collect(), $workingDays);
             $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_NEW]->unique('contract_id') ?? collect(), $workingDays);
-        }else{
+        } else {
             $newPaymentsGroupedByDate = collect();
             $uniqueNewPaymentsGroupedByDate = collect();
         }
 
-        if($payments->has(Payment::TYPE_OLD)){
+        if ($payments->has(Payment::TYPE_OLD)) {
             $oldPaymentsGroupedByDate = $this->groupPaymentsByDate($payments[Payment::TYPE_OLD] ?? collect(), $workingDays);
-        }else{
+        } else {
             $oldPaymentsGroupedByDate = collect();
         }
 

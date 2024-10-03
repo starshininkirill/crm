@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'last_name' => 'Продажник',
             'email' => 'sale1@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            'position_id' => 3,
+            'position_id' => 4,
             'department_id' => 2,
         ]);
         $sale2 = User::create([

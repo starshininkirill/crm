@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -69,5 +70,146 @@ class WorkPlanSeeder extends Seeder
             'department_id' => 1,
             'position_id' => 3,
         ]);
+
+
+        // Двойной план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::DOUBLE_PLAN,
+            'department_id' => 1,
+            'bonus' => 5000
+        ]);
+
+        // Бонус план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::BONUS_PLAN,
+            'department_id' => 1,
+            'goal' => 150000,
+            'bonus' => 2000
+        ]);
+
+        // Недельный план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::BONUS_PLAN,
+            'department_id' => 1,
+            'bonus' => 1000
+        ]);
+
+        // Супер план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::SUPER_PLAN,
+            'department_id' => 1,
+            'goal' => 430000,
+            'bonus' => 2000
+        ]);
+
+        // Б1 план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'department_id' => 1,
+            'goal' => 2,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'department_id' => 1,
+            'goal' => 4,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'department_id' => 1,
+            'goal' => 5,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'department_id' => 1,
+            'goal' => 2,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
+            'bonus' => 10
+        ]);
+
+        // Б2 план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 1,
+            'goal' => 5,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 1,
+            'goal' => 6,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 1,
+            'goal' => 7,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
+            'bonus' => 10
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 1,
+            'goal' => 3,
+            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
+            'bonus' => 10
+        ]);
+
+        // Б3 план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::B3_PLAN,
+            'department_id' => 1,
+            'goal' => 60,
+            'bonus' => 7000
+        ]);
+
+        // Б4 план продажников
+        WorkPlan::create([
+            'type' => WorkPlan::B4_PLAN,
+            'department_id' => 1,
+            'goal' => 10,
+            'bonus' => 10000
+        ]);
+
+        // Процентная лестница продажников
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'goal' => 0,
+            'bonus' => 3
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'goal' => 60000,
+            'bonus' => 5
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'goal' => 150000,
+            'bonus' => 7
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'goal' => 290000,
+            'bonus' => 9
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'goal' => 430000,
+            'bonus' => 9.5
+        ]);
+
     }
 }
