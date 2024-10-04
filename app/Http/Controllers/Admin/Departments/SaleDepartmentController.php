@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Departments;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\User;
+use App\Services\SaleDepartmentReportService;
 use App\Services\SaleDepartmentService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -13,11 +14,14 @@ class SaleDepartmentController extends Controller
 {
 
     protected $saleDepartmentService;
+    protected $saleDepartmentReportService;
 
     public function __construct(
         SaleDepartmentService $saleDepartmentService,
+        SaleDepartmentReportService $saleDepartmentReportService,
     ) {
         $this->saleDepartmentService = $saleDepartmentService;
+        $this->saleDepartmentReportService = $saleDepartmentReportService;
     }
 
 
@@ -39,8 +43,8 @@ class SaleDepartmentController extends Controller
         if ($request->filled(['user', 'date'])) {
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
-            $report = $this->saleDepartmentService->generateUserReportData($date, $user);
-            $motivationReport = $this->saleDepartmentService->generateUserMotivationReportData($date, $user);
+            $report = $this->saleDepartmentReportService->generateUserReportData($date, $user);
+            $motivationReport = $this->saleDepartmentReportService->generateUserMotivationReportData($date, $user);
         }
         return view(
             'admin.departments.sale.userReport',

@@ -89,7 +89,7 @@ class WorkPlanSeeder extends Seeder
 
         // Недельный план продажников
         WorkPlan::create([
-            'type' => WorkPlan::BONUS_PLAN,
+            'type' => WorkPlan::WEEK_PLAN,
             'department_id' => 1,
             'bonus' => 1000
         ]);
