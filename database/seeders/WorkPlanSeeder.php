@@ -183,25 +183,25 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 0,
+            'goal' => 60000,
             'bonus' => 3
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 60000,
+            'goal' => 150000,
             'bonus' => 5
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 150000,
+            'goal' => 290000,
             'bonus' => 7
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 290000,
+            'goal' => 430000,
             'bonus' => 9
         ]);
         WorkPlan::create([

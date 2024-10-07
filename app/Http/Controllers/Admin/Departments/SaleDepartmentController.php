@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin\Departments;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Services\SaleDepartmentReportService;
 use App\Services\SaleDepartmentService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SaleDepartmentController extends Controller
 {
@@ -33,17 +35,19 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
+
         $users = Department::getMainSaleDepartment()->activeUsers();
         $date = null;
         $user = null;
-        $report = null;
+        $daylyReport = collect();
+        $motivationReport = collect();
 
         $requestData = $request->only(['user', 'date']);
 
         if ($request->filled(['user', 'date'])) {
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
-            $report = $this->saleDepartmentReportService->generateUserReportData($date, $user);
+            $daylyReport = $this->saleDepartmentReportService->generateUserReportData($date, $user);
             $motivationReport = $this->saleDepartmentReportService->generateUserMotivationReportData($date, $user);
         }
         return view(
@@ -51,7 +55,9 @@ class SaleDepartmentController extends Controller
             [
                 'users' => $users,
                 'user' => $user,
-                'report' => $report,
+                'daylyReport' => $daylyReport,
+                'motivationReport' => $motivationReport,
+                'serviceCategoryModel' => ServiceCategory::class,
                 'date' => $date
             ]
         );

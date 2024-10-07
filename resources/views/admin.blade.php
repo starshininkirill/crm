@@ -11,7 +11,7 @@
 
 <body class="flex flex-col min-h-screen">
     @include('templates.header')
-    <main class="main flex grow container mx-auto gap-6">
+    <main class="main flex grow w-100 mx-4 gap-6">
         @include('templates.nav')
         <div class="content flex w-full">
             @yield('main')

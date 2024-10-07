@@ -74,7 +74,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
-    
+
     public function contracts(): BelongsToMany
     {
         return $this->belongsToMany(Contract::class);
@@ -93,5 +93,18 @@ class User extends Authenticatable
 
         return $employmentDate;
     }
-    
-} 
+    public function getMounthWorked(): int
+    {
+        $employmentDate = $this->getFirstWorkingDay();
+        $nowDate = Carbon::now();
+
+        $startWorkingDay = $employmentDate->format('d');
+
+        $monthsWorked = $employmentDate->floorMonth()->diffInMonths($nowDate->floorMonth()) + 1;
+        if ($startWorkingDay > 7) {
+            $monthsWorked--;
+        }
+
+        return $monthsWorked;
+    }
+}
