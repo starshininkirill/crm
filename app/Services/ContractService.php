@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\RoleInContract;
 use Illuminate\Support\Collection;
 use App\Models\Contract;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\User;
 
@@ -18,7 +19,7 @@ class ContractService
             if (!empty($payment) && $order <= $maxPayments) {
                 $contract->payments()->create([
                     'value' => $payment,
-                    'status' => 'open',
+                    'status' => Payment::STATUS_WAIT,
                     'order' => $order,
                 ]);
                 $order++;

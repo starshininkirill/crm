@@ -6,23 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\User;
-use App\Services\SaleDepartmentReportService;
-use App\Services\SaleDepartmentService;
+use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SaleDepartmentController extends Controller
 {
-
-    protected $saleDepartmentService;
     protected $saleDepartmentReportService;
 
     public function __construct(
-        SaleDepartmentService $saleDepartmentService,
-        SaleDepartmentReportService $saleDepartmentReportService,
+        ReportService $saleDepartmentReportService,
     ) {
-        $this->saleDepartmentService = $saleDepartmentService;
         $this->saleDepartmentReportService = $saleDepartmentReportService;
     }
 
@@ -47,8 +42,17 @@ class SaleDepartmentController extends Controller
         if ($request->filled(['user', 'date'])) {
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
+
             $daylyReport = $this->saleDepartmentReportService->generateUserReportData($date, $user);
+            $start = microtime(true);
+            $queryCount = 0;
+            DB::listen(function ($query) use (&$queryCount) {
+                $queryCount++;
+            });
             $motivationReport = $this->saleDepartmentReportService->generateUserMotivationReportData($date, $user);
+            $end = microtime(true);
+            // dd($end - $start);
+            // dd($queryCount);
         }
         return view(
             'admin.departments.sale.userReport',

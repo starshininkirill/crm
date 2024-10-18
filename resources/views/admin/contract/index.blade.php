@@ -1,7 +1,7 @@
 @extends('admin.layouts.contract')
 
 @section('content')
-    <h1 class="text-4xl font-semibold mb-6">Договора</h1>
+    <h1 class="text-4xl font-semibold mb-6">Договоры</h1>
     <div class="contracts">
         @if ($contracts->isEmpty())
             <h2>Договоров не найдено</h2>
@@ -61,7 +61,9 @@
                                 @foreach ($contract->payments as $payment)
                                     <td
                                         class="border border-gray-300 px-2 py-1 whitespace-nowrap {{ $payment->status == $paymentClass::STATUS_CLOSE ? 'bg-green-500 text-white' : '' }}">
-                                        {{ $payment->getFormatValue() }} 
+                                        <a href="{{ route('admin.payment.show', $payment->id) }}">
+                                            {{ $payment->getFormatValue() }}
+                                        </a>
                                     </td>
                                 @endforeach
 

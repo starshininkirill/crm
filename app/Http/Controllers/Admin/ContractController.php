@@ -63,9 +63,9 @@ class ContractController extends Controller
                 $services = Service::whereIn('id', $data['service'])->get();
                 $totalServicesPrice = $services->sum('price');
 
-                if ($contractData['amount_price'] != $totalServicesPrice) {
-                    throw ValidationException::withMessages(['error' => 'Цены не совпадают']);
-                }
+                // if ($contractData['amount_price'] != $totalServicesPrice) {
+                //     throw ValidationException::withMessages(['error' => 'Цены не совпадают']);
+                // }
 
                 $this->contractService->attachServices($createdContract, $services);
             }
