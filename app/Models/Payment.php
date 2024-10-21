@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 class Payment extends Model
 {
@@ -24,7 +27,7 @@ class Payment extends Model
 
     public function formatedType(): string
     {
-        if($this->type == null){
+        if ($this->type == null) {
             return '';
         }
         $statuses = [
@@ -48,8 +51,8 @@ class Payment extends Model
     {
         return $this->belongsTo(User::class, 'responsible_id');
     }
-    
-    public function method():BelongsTo
+
+    public function method(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
@@ -57,21 +60,21 @@ class Payment extends Model
     public function generetePaymentMethodHierarchy(): string
     {
         $method = $this->method;
-        if($method == null){
+        if ($method == null) {
             return '';
         }
-        if($method->parent == null){
+        if ($method->parent == null) {
             return $method->name;
         }
 
         $res = $method->parent->name;
 
 
-        while($method->parent != null){
+        while ($method->parent != null) {
             $res = $res . ' / ' . $method->name;
             $method = $method->parent;
         }
-        
+
         return $res;
     }
 
@@ -89,5 +92,30 @@ class Payment extends Model
     public function getFormatValue()
     {
         return number_format($this->value, 0, '.', ' ') . ' ₽';
+    }
+
+    public static function getContractsByPaymentsWithRelations(Collection $payments): Collection
+    {
+        $uniqueIds = $payments->pluck('contract_id')->unique();
+        return Contract::whereIn('id', $uniqueIds)
+            ->with([
+                'services.category',
+                'users'
+            ])
+            ->get();
+    }
+
+    public static function getMonthlyPayments(Carbon $date): Collection
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->where('status', Payment::STATUS_CLOSE)
+            ->with([
+                'contract.services.category',
+                'contract.users'
+            ])
+            ->get();
     }
 }

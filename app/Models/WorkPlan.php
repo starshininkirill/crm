@@ -34,7 +34,7 @@ class WorkPlan extends Model
         return $this->HasOne(Position::class);
     }
 
-    public function serviceCaterory() : BelongsTo
+    public function serviceCategory() : BelongsTo
     {
         return $this->BelongsTo(ServiceCategory::class);
     }

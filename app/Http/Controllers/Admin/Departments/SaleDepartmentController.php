@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\User;
+use App\Services\SaleDepartmentService;
 use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,6 +37,9 @@ class SaleDepartmentController extends Controller
         $user = null;
         $daylyReport = collect();
         $motivationReport = collect();
+        $pivotWeeks = collect();
+        $pivotDaily = collect();
+        $pivotUsers = collect();
 
         $requestData = $request->only(['user', 'date']);
 
@@ -43,14 +47,27 @@ class SaleDepartmentController extends Controller
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
 
-            $daylyReport = $this->saleDepartmentReportService->generateUserReportData($date, $user);
-            $start = microtime(true);
             $queryCount = 0;
             DB::listen(function ($query) use (&$queryCount) {
                 $queryCount++;
             });
-            $motivationReport = $this->saleDepartmentReportService->generateUserMotivationReportData($date, $user);
-            $end = microtime(true);
+            $start = microtime(true);
+
+
+
+            $this->saleDepartmentReportService->prepareData($date);
+
+            $daylyReport = $this->saleDepartmentReportService->mounthByDayReport($user);
+            $motivationReport = $this->saleDepartmentReportService->motivationReport($user);
+
+            $pivotWeeks = $this->saleDepartmentReportService->pivotWeek();
+            $pivotDaily = $this->saleDepartmentReportService->mounthByDayReport();
+
+            $users = Department::getMainSaleDepartment()->activeUsers();
+            $pivotUsers = $this->saleDepartmentReportService->pivotUsers($users);
+
+
+            // $end = microtime(true);
             // dd($end - $start);
             // dd($queryCount);
         }
@@ -61,10 +78,11 @@ class SaleDepartmentController extends Controller
                 'user' => $user,
                 'daylyReport' => $daylyReport,
                 'motivationReport' => $motivationReport,
+                'pivotWeeks' => $pivotWeeks,
+                'pivotDaily' => $pivotDaily,
                 'serviceCategoryModel' => ServiceCategory::class,
                 'date' => $date
             ]
         );
     }
 }
- 

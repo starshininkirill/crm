@@ -14,6 +14,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Helpers\DateHelper;
+use Illuminate\Support\Collection;
+use PhpParser\ErrorHandler\Collecting;
 
 class User extends Authenticatable
 {
@@ -106,5 +108,18 @@ class User extends Authenticatable
         }
 
         return $monthsWorked;
+    }
+
+    public function monthlyClosePaymentsWithRelations(Carbon $date): Collection
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+        $contractIds = $this->contracts->pluck('id')->unique();
+
+        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->whereIn('contract_id', $contractIds)
+            ->where('status', Payment::STATUS_CLOSE)
+            ->with(['contract.services.category'])
+            ->get();
     }
 }

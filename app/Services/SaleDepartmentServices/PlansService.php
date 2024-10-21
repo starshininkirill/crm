@@ -3,6 +3,7 @@
 namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
+use App\Helpers\ServiceCountHelper;
 use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\ServiceCategory;
@@ -13,37 +14,16 @@ use Illuminate\Support\Facades\DB;
 
 class PlansService
 {
+    private ReportInfo $reportInfo;
 
-    private $departmentId;
-    private $workPlans;
-    private $contracts;
-    private $newPayments;
-    private $oldPayments;
-    private $newMoney = 0;
-    private $oldMoney = 0;
-    private $plan;
-    private $planGoal;
-    private $date; 
-    private $services;
-
-    public function prepareData(array $data = []): void
+    public function prepareData(ReportInfo $reportInfo): void
     {
-        extract($data, EXTR_OVERWRITE);
-        $this->workPlans = $workPlans;
-        $this->contracts = $contracts;
-        $this->departmentId = $departmentId;
-        $this->newPayments = $newPayments;
-        $this->oldPayments = $oldPayments;
-        $this->newMoney = $this->newPayments->sum('value');
-        $this->oldMoney = $this->oldPayments->sum('value');
-        $this->planGoal = $planGoal;
-        $this->date = $date;
-        $this->services = $services;
+        $this->reportInfo = $reportInfo;
     }
 
     private function getPlan(int $planType): ?WorkPlan
     {
-        return $this->workPlans->firstWhere('type', $planType);
+        return $this->reportInfo->workPlans->firstWhere('type', $planType);
     }
 
     public function mounthPlan(): Collection
@@ -51,9 +31,9 @@ class PlansService
 
         return  collect(
             [
-                'goal' => $this->planGoal,
-                'value' => $this->newMoney,
-                'completed' => $this->newMoney >= $this->planGoal ? true : false,
+                'goal' => $this->reportInfo->mounthWorkPlanGoal,
+                'value' => $this->reportInfo->newMoney,
+                'completed' => $this->reportInfo->newMoney >= $this->reportInfo->mounthWorkPlanGoal ? true : false,
             ]
         );
     }
@@ -63,14 +43,14 @@ class PlansService
 
         $res = collect(
             [
-                'goal' => $this->planGoal * 2,
-                'value' => $this->newMoney,
+                'goal' => $this->reportInfo->mounthWorkPlanGoal * 2,
+                'value' => $this->reportInfo->newMoney,
                 'completed' => false,
                 'bonus' => 0
             ]
         );
 
-        $completed = $this->newMoney >= $this->planGoal * 2 ? true : false;
+        $completed = $this->reportInfo->newMoney >= $this->reportInfo->mounthWorkPlanGoal * 2 ? true : false;
 
         if ($completed) {
             $res['completed'] = true;
@@ -79,7 +59,7 @@ class PlansService
 
             if ($planInstance) {
                 $res['bonus'] = $planInstance->bonus;
-                // $bonuses += $planInstance->bonus;
+                $this->reportInfo->bonuses += $planInstance->bonus;
             }
         }
 
@@ -90,7 +70,7 @@ class PlansService
     {
         $res = collect(
             [
-                'value' => $this->newMoney,
+                'value' => $this->reportInfo->newMoney,
                 'completed' => false,
                 'bonus' => 0,
             ]
@@ -104,10 +84,10 @@ class PlansService
 
             $res['goal'] = $plan;
 
-            if ($this->newMoney >= $plan && $plan != null) {
+            if ($this->reportInfo->newMoney >= $plan && $plan != null) {
                 $res['completed'] = true;
                 $res['bonus'] = $planInstance->bonus;
-                // $this->bonuses += $planInstance->bonus;
+                $this->reportInfo->bonuses += $planInstance->bonus;
             }
         }
 
@@ -118,16 +98,13 @@ class PlansService
     public function weeksPlan(): Collection
     {
         $res = collect();
-
-        $weekPlan = $this->planGoal / 4;
-
-        $weeks = DateHelper::splitMounthIntoWeek($this->date);
-
+        $weekPlan = $this->reportInfo->mounthWorkPlanGoal / 4;
+        $weeks = DateHelper::splitMounthIntoWeek($this->reportInfo->date);
         $trackedContractsIds = collect();
 
         foreach ($weeks as $week) {
 
-            $newFilteredPayments = $this->newPayments->filter(function ($payment) use ($week) {
+            $newFilteredPayments = $this->reportInfo->newPayments->filter(function ($payment) use ($week) {
                 return $payment->created_at->between($week['start'], $week['end']);
             });
 
@@ -141,9 +118,9 @@ class PlansService
                 $trackedContractsIds = $trackedContractsIds->merge($newUniqueContractsIds);
             }
 
-            $newUniqueContracts = $this->contracts->whereIn('id', $newUniqueContractsIds);
+            $newUniqueContracts = $this->reportInfo->contracts->whereIn('id', $newUniqueContractsIds);
 
-            $oldFilteredPayments = $this->oldPayments->filter(function ($payment) use ($week) {
+            $oldFilteredPayments = $this->reportInfo->oldPayments->filter(function ($payment) use ($week) {
                 return $payment->created_at->between($week['start'], $week['end']);
             });
 
@@ -151,7 +128,7 @@ class PlansService
             $oldFilteredPaymentsSum = $oldFilteredPayments->sum('value');
 
 
-            $weekResult = [
+            $weekResult = collect([
                 'start' => $week['start']->format('d'),
                 'end' => $week['end']->format('d'),
                 'goal' => $weekPlan,
@@ -159,18 +136,64 @@ class PlansService
                 'oldMoney' => $oldFilteredPaymentsSum,
                 'completed' => false,
                 'bonus' => 0
-            ];
+            ]);
 
-            $serviceCounts = $this->calculateServiceCountsByContracts($newUniqueContracts);
-            $weekResult = array_merge($weekResult, $serviceCounts);
+            $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
+            $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
             if ($newFilteredPaymentsSum >= $weekPlan) {
                 $weekResult['completed'] = true;
                 $weekPlanInstance = $this->getPlan(WorkPlan::WEEK_PLAN);
                 if ($weekPlanInstance != null) {
                     $weekResult['bonus'] = $weekPlanInstance->bonus;
-                    // $this->bonuses += $weekPlanInstance->bonus;
+                    $this->reportInfo->bonuses += $weekPlanInstance->bonus;
                 }
             }
+            $res[] = $weekResult;
+        };
+        return $res;
+    }
+
+    public function weeksReport(): Collection
+    {
+        $res = collect();
+        $weeks = DateHelper::splitMounthIntoWeek($this->reportInfo->date);
+        $trackedContractsIds = collect();
+
+        foreach ($weeks as $week) {
+
+            $newFilteredPayments = $this->reportInfo->newPayments->filter(function ($payment) use ($week) {
+                return $payment->created_at->between($week['start'], $week['end']);
+            });
+
+            $newFiltredContractsIds = $newFilteredPayments->pluck('contract_id')->unique();
+
+            $newUniqueContractsIds = $newFiltredContractsIds->diff($trackedContractsIds);
+
+            if ($trackedContractsIds->isEmpty()) {
+                $trackedContractsIds = $newFiltredContractsIds;
+            } else {
+                $trackedContractsIds = $trackedContractsIds->merge($newUniqueContractsIds);
+            }
+
+            $newUniqueContracts = $this->reportInfo->contracts->whereIn('id', $newUniqueContractsIds);
+
+            $oldFilteredPayments = $this->reportInfo->oldPayments->filter(function ($payment) use ($week) {
+                return $payment->created_at->between($week['start'], $week['end']);
+            });
+
+            $newFilteredPaymentsSum = $newFilteredPayments->sum('value');
+            $oldFilteredPaymentsSum = $oldFilteredPayments->sum('value');
+
+
+            $weekResult = collect([
+                'start' => $week['start']->format('d'),
+                'end' => $week['end']->format('d'),
+                'newMoney' => $newFilteredPaymentsSum,
+                'oldMoney' => $oldFilteredPaymentsSum,
+            ]);
+
+            $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
+            $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
             $res[] = $weekResult;
         };
         return $res;
@@ -179,13 +202,13 @@ class PlansService
     public function totalValues(): Collection
     {
         $res = collect([
-            'newMoney' => $this->newMoney,
-            'oldMoney' => $this->oldMoney,
-            ServiceCategory::INDIVIDUAL_SITE => $this->services[ServiceCategory::INDIVIDUAL_SITE],
-            ServiceCategory::READY_SITE => $this->services[ServiceCategory::READY_SITE],
-            ServiceCategory::RK => $this->services[ServiceCategory::RK],
-            ServiceCategory::SEO => $this->services[ServiceCategory::SEO],
-            ServiceCategory::OTHER => $this->services[ServiceCategory::OTHER],
+            'newMoney' => $this->reportInfo->newMoney,
+            'oldMoney' => $this->reportInfo->oldMoney,
+            ServiceCategory::INDIVIDUAL_SITE => $this->reportInfo->services[ServiceCategory::INDIVIDUAL_SITE],
+            ServiceCategory::READY_SITE => $this->reportInfo->services[ServiceCategory::READY_SITE],
+            ServiceCategory::RK => $this->reportInfo->services[ServiceCategory::RK],
+            ServiceCategory::SEO => $this->reportInfo->services[ServiceCategory::SEO],
+            ServiceCategory::OTHER => $this->reportInfo->services[ServiceCategory::OTHER],
         ]);
 
         return $res;
@@ -197,25 +220,26 @@ class PlansService
             'completed' => false,
             'bonus' => 0,
         ]);
-        $departmentId = $this->departmentId;
+        $departmentId = $this->reportInfo->departmentId;
         $isCompletedPlan = true;
-        foreach ($this->services as $key => $service) {
-            $servicePlan = $this->workPlans
-                ->filter(function ($workPlan) use ($planType, $departmentId, $key) {
-                    return $workPlan->type === $planType
-                        && $workPlan->department_id === $departmentId
-                        && isset($workPlan->serviceCategory)
-                        && $workPlan->serviceCategory->type === $key;
-                })
-                ->first();
+        foreach ($this->reportInfo->services as $key => $service) {
+            $servicePlan = $this->reportInfo->workPlans
+            ->filter(function ($workPlan) use ($planType, $departmentId, $key) {
+                return $workPlan->type === $planType
+                && $workPlan->department_id === $departmentId
+                && isset($workPlan->serviceCategory)
+                && $workPlan->serviceCategory->type === $key;
+            })
+            ->first();
             if ($servicePlan) {
                 if ($service < $servicePlan->goal) {
                     $isCompletedPlan = false;
                     break;
                 }
             }
-        }
 
+        }
+        
         $b1Plan = $this->getPlan($planType);
 
         if ($b1Plan) {
@@ -241,7 +265,7 @@ class PlansService
         $res = collect([
             'completed' => false,
             'bonus' => 0,
-            'value' => $this->newMoney,
+            'value' => $this->reportInfo->newMoney,
         ]);
 
         $plan = $this->getPlan(WorkPlan::SUPER_PLAN);
@@ -252,13 +276,13 @@ class PlansService
 
         $res['goal'] = $plan->goal;
 
-        if ($this->newMoney >= $plan->goal) {
+        if ($this->reportInfo->newMoney >= $plan->goal) {
             $res['completed'] = true;
             $res['bonus'] = $plan->bonus;
             return $res;
         }
 
-        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->plan);
+        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->reportInfo->mounthWorkPlan);
 
         if (!$weeksCompleted->every(fn($weekStat) => $weekStat['completed'])) {
             return $res;
@@ -267,7 +291,7 @@ class PlansService
 
         $res['completed'] = true;
         $res['bonus'] = $plan->bonus;
-        // $this->bonuses += $plan->bonus;
+        $this->reportInfo->bonuses += $plan->bonus;
 
         return $res;
     }
@@ -279,10 +303,10 @@ class PlansService
             'bonus' => 0,
         ]);
 
-        if ($this->newPayments->isEmpty()) {
+        if ($this->reportInfo->newPayments->isEmpty()) {
             return $result;
         }
-        // Получаем план B3
+
         $b3Plan = $this->getPlan(WorkPlan::B3_PLAN);
         if (!$b3Plan) {
             return $result;
@@ -290,10 +314,10 @@ class PlansService
 
         $result['goal'] = $b3Plan->goal;
 
-        $contractIds = $this->newPayments->pluck('contract_id');
-        
-        $contracts = $this->contracts->whereIn('id', $contractIds);
-        
+        $contractIds = $this->reportInfo->newPayments->pluck('contract_id');
+
+        $contracts = $this->reportInfo->contracts->whereIn('id', $contractIds);
+
         if ($contracts->isEmpty()) {
             return $result;
         }
@@ -337,7 +361,7 @@ class PlansService
             $result['value'] = $percentage;
             $result['completed'] = true;
             $result['bonus'] = $b3Plan->bonus;
-            // $this->bonuses += $b3Plan->bonus;
+            $this->reportInfo->bonuses += $b3Plan->bonus;
         }
 
         return $result;
@@ -358,16 +382,16 @@ class PlansService
 
         $res['goal'] = $b4Plan->goal;
 
-        if (! array_key_exists(ServiceCategory::RK, $this->services)) {
+        if (! collect($this->reportInfo->services)->has(ServiceCategory::RK)) {
             return $res;
         }
 
-        $res['value'] = $this->services[ServiceCategory::RK];
+        $res['value'] = $this->reportInfo->services[ServiceCategory::RK];
 
-        if ($this->services[ServiceCategory::RK] >= $b4Plan->goal) {
+        if ($this->reportInfo->services[ServiceCategory::RK] >= $b4Plan->goal) {
             $res['completed'] = true;
             $res['bonus'] = $b4Plan->bonus;
-            // $this->bonuses += $b4Plan->bonus;
+            $this->reportInfo->bonuses += $b4Plan->bonus;
         };
 
         return $res;
@@ -397,56 +421,87 @@ class PlansService
         return $weeksCompleted;
     }
 
+    public function calculateSalary(Collection $report): Collection
+    {
+        $mounthWorked = $this->reportInfo->user->getMounthWorked();
+        $bonus = null;
+
+
+        $res = collect([
+            'bonuses' => $this->reportInfo->bonuses,
+            'newMoney' => 0,
+            'oldMoney' => 0,
+            'amount' => $this->reportInfo->bonuses
+        ]);
+
+        // TODO
+        // Добавить в настройках значение после которого до 60к не будет процента
+        if ($mounthWorked > 3) {
+            $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
+                ->where('department_id', $this->reportInfo->departmentId)
+                ->orderBy('goal', 'asc')
+                ->skip(1)
+                ->first();
+            if ($this->reportInfo->newMoney < $minimalWorkPlan->goal) {
+                $bonus = 0;
+            }
+        }
+
+        $workPlan = WorkPlan::where('goal', '<', $this->reportInfo->newMoney)
+            ->where('type', WorkPlan::PERCENT_LADDER)
+            ->where('department_id', $this->reportInfo->departmentId)
+            ->orderBy('goal', 'desc')
+            ->first();
+
+        if ($workPlan == null) {
+            $workPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
+                ->where('department_id', $this->reportInfo->departmentId)
+                ->orderBy('goal', 'desc')
+                ->first();
+        }
+
+        if ($workPlan == null) {
+            return $res;
+        }
+
+        $bonus !== 0 ? $bonus = $workPlan->bonus : '';
+
+
+        $res['percentage'] = $bonus;
+        $res['newMoney'] = ($this->reportInfo->newMoney * $bonus) / 100;
+        $res['oldMoney'] = ($this->reportInfo->oldMoney * $bonus) / 100;
+
+        $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
+
+
+        if (!$report['b1']['completed']) {
+            $b1Plan = WorkPlan::where('type', WorkPlan::B1_PLAN)
+                ->where('department_id', $this->reportInfo->departmentId)
+                ->first();
+            $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->bonus / 100));
+            $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->bonus / 100));
+            $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->bonus / 100));
+
+            $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
+        };
+
+        if (!$report['b1']['completed']) {
+            $res['amount'] = $res['amount'] * (1 - $report['b1']['bonus'] / 100);
+        }
+
+
+        if ($report['b2']['completed']) {
+            $res['amount'] = $res['amount'] * (1 + $report['b2']['bonus'] / 100);
+        }
+
+        return $res;
+    }
+
     private function checkPreviousWeek(Collection &$weeksCompleted, int $currentKey, float $currentWeekMoney, float $planGoal): void
     {
         $previousWeek = $weeksCompleted[$currentKey - 1];
         if (!$previousWeek['completed'] && $currentWeekMoney >= $planGoal / 2) {
             $weeksCompleted[$currentKey - 1]['completed'] = true;
-        }
-    }
-
-
-
-    private function calculateServiceCountsByContracts(Collection $contracts): array
-    {
-        $counts = [
-            ServiceCategory::INDIVIDUAL_SITE => 0,
-            ServiceCategory::READY_SITE => 0,
-            ServiceCategory::RK => 0,
-            ServiceCategory::SEO => 0,
-            ServiceCategory::OTHER => 0,
-        ];
-
-        foreach ($contracts as $contract) {
-            foreach ($contract->services as $service) {
-                if ($service->category) {
-                    $this->incrementServiceCount($counts, $service->category->type);
-                }
-            }
-        }
-
-        return $counts;
-    }
-
-
-    private function incrementServiceCount(array &$counts, string $serviceType): void
-    {
-        switch ($serviceType) {
-            case ServiceCategory::INDIVIDUAL_SITE:
-                $counts[ServiceCategory::INDIVIDUAL_SITE]++;
-                break;
-            case ServiceCategory::READY_SITE:
-                $counts[ServiceCategory::READY_SITE]++;
-                break;
-            case ServiceCategory::RK:
-                $counts[ServiceCategory::RK]++;
-                break;
-            case ServiceCategory::SEO:
-                $counts[ServiceCategory::SEO]++;
-                break;
-            case ServiceCategory::OTHER:
-                $counts[ServiceCategory::OTHER]++;
-                break;
         }
     }
 }
