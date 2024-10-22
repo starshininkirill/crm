@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('sales')->group(function () {
             Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.department.sale.index');
             Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
+            Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.department.sale.report-settings');
         });
 
     });

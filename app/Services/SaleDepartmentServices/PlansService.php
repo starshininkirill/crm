@@ -4,8 +4,6 @@ namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
-use App\Models\Contract;
-use App\Models\Payment;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Carbon\Carbon;

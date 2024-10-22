@@ -3,66 +3,86 @@
 namespace App\Services\SaleDepartmentServices;
 
 use App\Models\User;
-use App\Models\Payment;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
-use App\Models\Contract;
-use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleDepartmentServices\PlansService;
-use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
     protected $planService;
     protected $fullData;
 
-    public function __construct(PlansService $planService)
+    public function __construct(PlansService $planService, Carbon $date)
     {
         $this->planService = $planService;
-    }
-
-    public function prepareData(Carbon $date)
-    {
         $this->fullData = new ReportInfo($date);
     }
 
-    public function pivotUsers(Collection $users) : Collection
+    public function generalPlan($pivotUsers): Collection
+    {
+        $res = collect([
+            'mounthPlan' => 0,
+            'needOnDay' => 0,
+            'faktOnDay' => 0,
+            'difference' => 0,
+            'prognosis' => 0
+        ]);
+
+        $today = date("Y-m-d");
+        $pastDates = array_filter($this->fullData->workingDays, function ($date) use ($today) {
+            return $date <= $today;
+        });
+        $countPastDates = count($pastDates);
+        $countWorkingDays = count($this->fullData->workingDays);
+
+        foreach ($pivotUsers as $user) {
+            $res['mounthPlan'] += $user['mounthPlan']['goal'];
+        }
+
+        $res['needOnDay'] = $res['mounthPlan'] / $countWorkingDays;
+
+        $res['faktOnDay'] = $this->fullData->newMoney / $countPastDates;
+
+        $res['difference'] = $res['faktOnDay'] * $countPastDates - $res['needOnDay'] * $countPastDates;
+
+        $res['prognosis'] = $res['faktOnDay'] * $countWorkingDays;
+
+        return $res;
+    }
+
+    public function pivotUsers(Collection $users): Collection
     {
         $report = collect();
 
-        foreach($users as $user){
-            $report[] = $this->motivationReport($user);
+        foreach ($users as $user) {
+            $res = $this->motivationReport($user);
+            $res['name'] = $user->first_name . ' ' . $user->last_name;
+            $report[] = $res;
         }
 
         return $report;
     }
 
-    public function pivotWeek() : Collection
+    public function pivotWeek(): Collection
     {
-        if($this->fullData){
-            $reportInfo = $this->fullData;
-        }
         $report = collect();
-        
-        $this->planService->prepareData($reportInfo);
-        $report['weeks'] = $this->planService->weeksReport();     
-        $report['totalValues'] = $this->planService->totalValues(); 
+
+        $this->planService->prepareData($this->fullData);
+        $report['weeks'] = $this->planService->weeksReport();
+        $report['totalValues'] = $this->planService->totalValues();
 
         return $report;
-
     }
 
     public function motivationReport(User $user): Collection
     {
         $report = collect();
 
-        if($this->fullData){
-            $reportInfo = $this->fullData->getUserSubdata($user);
-        }
+        $reportInfo = $this->fullData->getUserSubdata($user);
 
         $this->planService->prepareData($reportInfo);
         $report['mounthPlan'] = $this->planService->mounthPlan();
@@ -83,15 +103,16 @@ class ReportService
 
     public function mounthByDayReport(User $user = null): Collection
     {
-        if($this->fullData && $user != null){
+        if ($this->fullData && $user != null) {
             $reportInfo = $this->fullData->getUserSubdata($user);
-        }else{
+        } else {
             $reportInfo = $this->fullData;
         }
 
         $report = collect();
 
         $newPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->newPayments)->isNotEmpty() ? $reportInfo->newPayments : collect(), $reportInfo->workingDays);
+
         $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->newPayments)->unique('contract_id') ?? collect(), $reportInfo->workingDays);
 
         $oldPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->oldPayments)->isNotEmpty() ? $reportInfo->oldPayments : collect(), $reportInfo->workingDays);

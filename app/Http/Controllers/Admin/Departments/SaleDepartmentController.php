@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\ServiceCategory;
 use App\Models\User;
-use App\Services\SaleDepartmentService;
+use App\Models\WorkPlan;
+use App\Services\SaleDepartmentServices\PlansService;
 use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,12 +15,11 @@ use Illuminate\Support\Facades\DB;
 
 class SaleDepartmentController extends Controller
 {
-    protected $saleDepartmentReportService;
+    protected $plansService;
 
-    public function __construct(
-        ReportService $saleDepartmentReportService,
-    ) {
-        $this->saleDepartmentReportService = $saleDepartmentReportService;
+    public function __construct(PlansService $plansService)
+    {
+        $this->plansService = $plansService;
     }
 
 
@@ -33,13 +33,6 @@ class SaleDepartmentController extends Controller
     {
 
         $users = Department::getMainSaleDepartment()->activeUsers();
-        $date = null;
-        $user = null;
-        $daylyReport = collect();
-        $motivationReport = collect();
-        $pivotWeeks = collect();
-        $pivotDaily = collect();
-        $pivotUsers = collect();
 
         $requestData = $request->only(['user', 'date']);
 
@@ -47,42 +40,54 @@ class SaleDepartmentController extends Controller
             $date = new Carbon($requestData['date']);
             $user = User::find($requestData['user']);
 
-            $queryCount = 0;
-            DB::listen(function ($query) use (&$queryCount) {
-                $queryCount++;
-            });
-            $start = microtime(true);
+            $reportService = new ReportService($this->plansService, $date);
 
+            $daylyReport = $reportService->mounthByDayReport($user);
+            $motivationReport = $reportService->motivationReport($user);
 
-
-            $this->saleDepartmentReportService->prepareData($date);
-
-            $daylyReport = $this->saleDepartmentReportService->mounthByDayReport($user);
-            $motivationReport = $this->saleDepartmentReportService->motivationReport($user);
-
-            $pivotWeeks = $this->saleDepartmentReportService->pivotWeek();
-            $pivotDaily = $this->saleDepartmentReportService->mounthByDayReport();
+            $pivotWeeks = $reportService->pivotWeek();
+            $pivotDaily = $reportService->mounthByDayReport();
 
             $users = Department::getMainSaleDepartment()->activeUsers();
-            $pivotUsers = $this->saleDepartmentReportService->pivotUsers($users);
+            $pivotUsers = $reportService->pivotUsers($users);
 
-
-            // $end = microtime(true);
-            // dd($end - $start);
-            // dd($queryCount);
+            $generalPlan = $reportService->generalPlan($pivotUsers);
         }
         return view(
-            'admin.departments.sale.userReport',
+            'admin.departments.sale.report',
             [
                 'users' => $users,
-                'user' => $user,
-                'daylyReport' => $daylyReport,
-                'motivationReport' => $motivationReport,
-                'pivotWeeks' => $pivotWeeks,
-                'pivotDaily' => $pivotDaily,
-                'serviceCategoryModel' => ServiceCategory::class,
-                'date' => $date
+                'user' => isset($user) ? $user : null,
+                'date' => isset($date) ? $date : null,
+                'daylyReport' => isset($daylyReport) ? $daylyReport : collect(),
+                'motivationReport' => isset($motivationReport) ? $motivationReport : collect(),
+                'pivotWeeks' => isset($pivotWeeks) ? $pivotWeeks : collect(),
+                'pivotDaily' => isset($pivotDaily) ? $pivotDaily : collect(),
+                'pivotUsers' => isset($pivotUsers) ? $pivotUsers : collect(),
+                'generalPlan' => isset($generalPlan) ? $generalPlan : collect(),
+                'serviceCategoryModel' => ServiceCategory::class
             ]
         );
     }
+    public function reportSettings()
+    {
+        $departmentId = Department::getMainSaleDepartment()->id;
+        $plans = WorkPlan::where('department_id', $departmentId)
+            ->where('type', WorkPlan::MOUNTH_PLAN)
+            ->whereNotNull('mounth')
+            ->orderBy('mounth')
+            ->get();
+        return view('admin.departments.sale.reportSettings', [
+            'plans' => $plans
+        ]);
+    }
 }
+
+// $queryCount = 0;
+// DB::listen(function ($query) use (&$queryCount) {
+//     $queryCount++;
+// });
+// $start = microtime(true);
+// $end = microtime(true);
+// dd($end - $start);
+// dd($queryCount);

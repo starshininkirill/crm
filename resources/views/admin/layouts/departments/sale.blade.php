@@ -9,6 +9,9 @@
             <x-admin-subnav-link route="admin.department.sale.user-report">
                 Отчёт по менеджерам
             </x-admin-subnav-link>
+            <x-admin-subnav-link route="admin.department.sale.report-settings">
+                Настройка отчётов
+            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')

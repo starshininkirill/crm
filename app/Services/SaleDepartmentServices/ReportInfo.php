@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class ReportInfo
 {
@@ -37,13 +36,13 @@ class ReportInfo
             return null;
         }
         if ($user == null) {
-            $this->prepareData($date);
+            $this->prepareFullData($date);
         } else {
             $this->prepareUserData($date, $user);
         }
     }
 
-    private function prepareData(Carbon $date): void
+    private function prepareFullData(Carbon $date): void
     {
         $this->date = $date;
         $this->departmentId = Department::getMainSaleDepartment()->id;
@@ -51,6 +50,7 @@ class ReportInfo
         $this->workPlans = WorkPlan::where('department_id', $this->departmentId)
             ->with('serviceCategory')
             ->get();
+            
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
 
         $this->payments = Payment::getMonthlyPayments($date);
@@ -66,33 +66,6 @@ class ReportInfo
         $this->services = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
     }
 
-    private function prepareUserData(Carbon $date, User $user)
-    {
-        $this->date = $date;
-        $this->user = $user;
-        $this->departmentId = Department::getMainSaleDepartment()->id;
-
-        $this->workPlans = WorkPlan::where('department_id', $this->departmentId)->get();
-
-        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
-        $this->mounthWorkPlan = $this->getMounthPlan();
-        $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
-
-        $this->payments = $this->user->monthlyClosePaymentsWithRelations($this->date);
-
-        $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
-        $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
-
-        $this->contracts = Payment::getContractsByPaymentsWithRelations($this->newPayments);
-
-        $this->newMoney = $this->newPayments->sum('value');
-        $this->oldMoney = $this->oldPayments->sum('value');
-
-        $this->services = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
-        $this->isUserData = true;
-    }
-
-    
     public function getUserSubdata(User $user): ?ReportInfo
     {
         if ($this->isUserData) {
@@ -130,6 +103,33 @@ class ReportInfo
         $subdataInstance->isUserData = true;
 
         return $subdataInstance;
+    }
+
+
+    private function prepareUserData(Carbon $date, User $user)
+    {
+        $this->date = $date;
+        $this->user = $user;
+        $this->departmentId = Department::getMainSaleDepartment()->id;
+
+        $this->workPlans = WorkPlan::where('department_id', $this->departmentId)->get();
+
+        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
+        $this->mounthWorkPlan = $this->getMounthPlan();
+        $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
+
+        $this->payments = $this->user->monthlyClosePaymentsWithRelations($this->date);
+
+        $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
+        $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
+
+        $this->contracts = Payment::getContractsByPaymentsWithRelations($this->newPayments);
+
+        $this->newMoney = $this->newPayments->sum('value');
+        $this->oldMoney = $this->oldPayments->sum('value');
+
+        $this->services = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
+        $this->isUserData = true;
     }
 
 
