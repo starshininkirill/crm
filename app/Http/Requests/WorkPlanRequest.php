@@ -69,6 +69,10 @@ class WorkPlanRequest extends FormRequest
             $rules['goal'] = ['required', 'numeric', 'min:0'];  
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
+
+        if ($this->input('type') == WorkPlan::PERCENT_LADDER) {
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
         
 
         return $rules;

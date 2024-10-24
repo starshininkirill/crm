@@ -49,9 +49,9 @@ class ReportService
             $res['faktOnDay'] = $this->fullData->newMoney;
         }
 
-        $res['difference'] = $res['faktOnDay'] * $countPastDates - $res['needOnDay'] * $countPastDates;
-
         $res['needOnDay'] = $res['mounthPlan'] / $countWorkingDays;
+
+        $res['difference'] = ($res['faktOnDay'] * $countPastDates) - ($res['needOnDay'] * $countPastDates);
 
         $res['prognosis'] = $res['faktOnDay'] * $countWorkingDays;
 

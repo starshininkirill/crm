@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Departments;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
@@ -83,13 +84,16 @@ class SaleDepartmentController extends Controller
         }
 
         $departmentId = Department::getMainSaleDepartment()->id;
-
         $plans = WorkPlan::plansForSaleSettings($date);
+        
+        $option = Option::where('name', 'sale_department_ladder_mounth')->first();
 
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
             'workPlanClass' => WorkPlan::class,
-            'plans' => $plans
+            'plans' => $plans,
+            'mounthOption' => $option,
+            'date' => $date,
         ]);
     }
 }

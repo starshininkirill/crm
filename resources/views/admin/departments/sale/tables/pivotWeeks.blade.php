@@ -1,7 +1,7 @@
 <table class="min-w-full border border-gray-300">
     <thead>
         <tr class="bg-gray-800">
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: " class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Неделя
             </th>
             <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">NEW $

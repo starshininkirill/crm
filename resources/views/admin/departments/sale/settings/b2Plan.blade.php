@@ -9,7 +9,7 @@
         </div>
     @else
         <div class="grid grid-cols-2 gap-2">
-            @foreach ($plans[$workPlanClass::B2_PLAN] as $plan)
+            @foreach ($plans[$workPlanClass::B2_PLAN]->sortBy('service_category_id') as $plan)
                 <form class="flex flex-col gap-4 border-b-2 py-1 pb-3" method="POST"
                     action="{{ $plan == null ? route('workPlan.store') : route('workPlan.update', $plan->id) }}">
                     @csrf

@@ -445,16 +445,16 @@ class PlansService
             }
         }
 
-        $workPlan = WorkPlan::where('goal', '<', $this->reportInfo->newMoney)
+        $workPlan = WorkPlan::where('goal', '>', $this->reportInfo->newMoney)
             ->where('type', WorkPlan::PERCENT_LADDER)
             ->where('department_id', $this->reportInfo->departmentId)
-            ->orderBy('goal', 'desc')
+            ->orderBy('goal')
             ->first();
 
         if ($workPlan == null) {
             $workPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->reportInfo->departmentId)
-                ->orderBy('goal', 'desc')
+                ->orderBy('bonus', 'desc')
                 ->first();
         }
 
@@ -480,13 +480,9 @@ class PlansService
             $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->bonus / 100));
             $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->bonus / 100));
 
-            $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
         };
 
-        if (!$report['b1']['completed']) {
-            $res['amount'] = $res['amount'] * (1 - $report['b1']['bonus'] / 100);
-        }
-
+        $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
 
         if ($report['b2']['completed']) {
             $res['amount'] = $res['amount'] * (1 + $report['b2']['bonus'] / 100);

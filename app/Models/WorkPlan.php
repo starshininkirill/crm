@@ -63,7 +63,8 @@ class WorkPlan extends Model
         $plans = WorkPlan::where('department_id', $departmentId)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month) 
-            ->orderBy('mounth')
+            ->orderBy('bonus')
+            ->orderBy('goal')
             ->get()
             ->groupBy('type');
 

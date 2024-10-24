@@ -2,8 +2,16 @@
 
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">Настройка планов</h1>
+    <form action="{{ route('admin.department.sale.report-settings') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
+        <input type="month" name="date" class="border px-3 py-1"
+            value="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}">
+        <button type="submit" class="btn">
+            Выбрать
+        </button>
+    </form>
     @if (session('success'))
-        <div class="mb-3 w-fit bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+        <div class="mb-3 w-fit bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+            role="alert">
             <span class="block sm:inline">{{ session('success') }}</span>
         </div>
     @endif
@@ -29,4 +37,5 @@
             @include('admin.departments.sale.settings.b2Plan')
         </div>
     </div>
+    @include('admin.departments.sale.settings.percentLadder')
 @endsection

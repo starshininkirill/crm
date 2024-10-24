@@ -24,22 +24,30 @@ class ServiceSeeder extends Seeder
         ServiceCategory::create([
             'name' => 'Сайты с индивидуальным дизайном',
             'type' => ServiceCategory::INDIVIDUAL_SITE,
+            'needed_for_calculations' => 1
         ]);
         ServiceCategory::create([
             'name' => 'Сайты с готовым дизайном',
             'type' => ServiceCategory::READY_SITE,
+            'needed_for_calculations' => 1
         ]);
         ServiceCategory::create([
             'name' => 'РК',
             'type' => ServiceCategory::RK,
+            'needed_for_calculations' => 1
         ]);
         ServiceCategory::create([
             'name' => 'SEO',
             'type' => ServiceCategory::SEO,
+            'needed_for_calculations' => 1
         ]);
         ServiceCategory::create([
             'name' => 'Допы',
             'type' => ServiceCategory::OTHER,
+            'needed_for_calculations' => 1
+        ]);
+        ServiceCategory::create([
+            'name' => 'Курсы',
         ]);
 
         Service::create([

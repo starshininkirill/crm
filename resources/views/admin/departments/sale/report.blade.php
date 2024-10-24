@@ -4,7 +4,7 @@
     <h1 class="text-4xl font-semibold mb-6">
         Отчёт по Сотрудникам
     </h1>
-    <form action="{{ route('admin.department.sale.user-report') }}" method="GET" class="flex w-6/12 gap-3 mb-6">
+    <form action="{{ route('admin.department.sale.user-report') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
         <input type="month" name="date" class="border px-3 py-1"
             value="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}">
         <select class="select max-w-md" name="user" id="">
@@ -24,7 +24,7 @@
     </form>
 
     <div class="flex gap-4">
-        <div class="reports flex flex-col gap-6 w-5/12">
+        <div class="reports flex flex-col gap-6 w-1/2">
             @if ($daylyReport->isEmpty() && $motivationReport->isEmpty())
                 <h2>Данные для отчёта не найдены</h2>
             @endif
@@ -47,11 +47,11 @@
             @if (!$pivotDaily->isEmpty())
                 @include('admin.departments.sale.tables.pivotDaily')
             @endif
-            @if (!$pivotUsers->isEmpty())
-                <div class="w-100">
-                    @include('admin.departments.sale.tables.pivotUsers')
-                </div>
-            @endif
         </div>
     </div>
+    @if (!$pivotUsers->isEmpty())
+        <div class="w-100 mt-6">
+            @include('admin.departments.sale.tables.pivotUsers')
+        </div>
+    @endif
 @endsection

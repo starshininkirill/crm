@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\OptionController;
 use App\Http\Controllers\WorkPlanController;
 use App\Models\Department;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +104,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('role:admin')->group(function(){
     Route::resource('workPlan', WorkPlanController::class)->only([
+        'store', 'update', 'destroy'
+    ]);
+    Route::resource('option', OptionController::class)->only([
         'store', 'update', 'destroy'
     ]);
 });
