@@ -43,11 +43,15 @@ class ReportService
             $res['mounthPlan'] += $user['mounthPlan']['goal'];
         }
 
-        $res['needOnDay'] = $res['mounthPlan'] / $countWorkingDays;
-
-        $res['faktOnDay'] = $this->fullData->newMoney / $countPastDates;
+        if($countPastDates > 0){
+            $res['faktOnDay'] = $this->fullData->newMoney / $countPastDates;
+        }else{
+            $res['faktOnDay'] = $this->fullData->newMoney;
+        }
 
         $res['difference'] = $res['faktOnDay'] * $countPastDates - $res['needOnDay'] * $countPastDates;
+
+        $res['needOnDay'] = $res['mounthPlan'] / $countWorkingDays;
 
         $res['prognosis'] = $res['faktOnDay'] * $countWorkingDays;
 

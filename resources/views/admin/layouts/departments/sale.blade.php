@@ -10,7 +10,7 @@
                 Отчёт по менеджерам
             </x-admin-subnav-link>
             <x-admin-subnav-link route="admin.department.sale.report-settings">
-                Настройка отчётов
+                Настройка планов
             </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">

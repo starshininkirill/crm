@@ -138,28 +138,28 @@ class WorkPlanSeeder extends Seeder
             'department_id' => 1,
             'goal' => 5,
             'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
-            'bonus' => 10
+            'bonus' => 7
         ]);
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,
             'goal' => 6,
             'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
-            'bonus' => 10
+            'bonus' => 7
         ]);
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,
             'goal' => 7,
             'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
-            'bonus' => 10
+            'bonus' => 7
         ]);
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,
             'goal' => 3,
             'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
-            'bonus' => 10
+            'bonus' => 7
         ]);
 
         // Б3 план продажников

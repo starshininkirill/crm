@@ -5,6 +5,7 @@ namespace App\Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Carbon\CarbonPeriod;
+use Exception;
 
 class DateHelper
 {
@@ -25,7 +26,18 @@ class DateHelper
         return $days;
     }
 
-    public static function splitMounthIntoWeek(Carbon $date) : Collection
+    public static function isValidYearMonth(string $date, $format = 'Y-m'): bool
+    {
+        try {
+            $parsedDate = Carbon::createFromFormat($format, $date);
+
+            return $parsedDate && $parsedDate->format($format) === $date;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function splitMounthIntoWeek(Carbon $date): Collection
     {
         $weeks = collect();
         $startOfMonth = $date->copy()->startOfMonth();

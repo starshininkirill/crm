@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Departments;
 
+use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\ServiceCategory;
@@ -10,6 +11,7 @@ use App\Models\WorkPlan;
 use App\Services\SaleDepartmentServices\PlansService;
 use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +23,6 @@ class SaleDepartmentController extends Controller
     {
         $this->plansService = $plansService;
     }
-
 
     public function index()
     {
@@ -69,15 +70,25 @@ class SaleDepartmentController extends Controller
             ]
         );
     }
-    public function reportSettings()
+
+    public function reportSettings(Request $request)
     {
+
+        $requestDate = $request->query('date');
+
+        if($requestDate && DateHelper::isValidYearMonth($requestDate)){
+            $date = Carbon::parse($requestDate);
+        }else{
+            $date = Carbon::now();
+        }
+
         $departmentId = Department::getMainSaleDepartment()->id;
-        $plans = WorkPlan::where('department_id', $departmentId)
-            ->where('type', WorkPlan::MOUNTH_PLAN)
-            ->whereNotNull('mounth')
-            ->orderBy('mounth')
-            ->get();
+
+        $plans = WorkPlan::plansForSaleSettings($date);
+
         return view('admin.departments.sale.reportSettings', [
+            'departmentId' => $departmentId,
+            'workPlanClass' => WorkPlan::class,
             'plans' => $plans
         ]);
     }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('service_category_id')->nullable()->constrained('service_categories')->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             $table->foreignId('position_id')->nullable()->constrained('positions')->onDelete('set null');
+            $table->timestamps();
         });
     }
 
