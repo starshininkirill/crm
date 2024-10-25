@@ -14,9 +14,10 @@
         @csrf
         @if ($plan)
             @method('PUT')
+        @else
+            <input type="hidden" name="department_id" value="{{ $departmentId }}">
         @endif
         <input type="hidden" name="type" value="{{ $workPlanClass::SUPER_PLAN }}">
-        <input type="hidden" name="department_id" value="{{ $departmentId }}">
         <label class="flex gap-2 items-center" for="goal">
             Цель
             <input class="input" name="goal" type="number" value="{{ $plan['goal'] ?? '' }}">

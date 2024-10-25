@@ -44,7 +44,6 @@ class ServiceSeeder extends Seeder
         ServiceCategory::create([
             'name' => 'Допы',
             'type' => ServiceCategory::OTHER,
-            'needed_for_calculations' => 1
         ]);
         ServiceCategory::create([
             'name' => 'Курсы',

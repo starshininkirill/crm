@@ -16,7 +16,6 @@
             @method('PUT')
         @endif
         <input type="hidden" name="type" value="{{ $workPlanClass::DOUBLE_PLAN }}">
-        <input type="hidden" name="department_id" value="{{ $departmentId }}">
         <label class="flex gap-2 items-center" for="bonus">
             Бонус
             <input class="input" name="bonus" type="number" value="{{ $plan['bonus'] ?? '' }}">

@@ -88,12 +88,15 @@ class SaleDepartmentController extends Controller
         
         $option = Option::where('name', 'sale_department_ladder_mounth')->first();
 
+        $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
+
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
             'workPlanClass' => WorkPlan::class,
             'plans' => $plans,
             'mounthOption' => $option,
             'date' => $date,
+            'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect()
         ]);
     }
 }

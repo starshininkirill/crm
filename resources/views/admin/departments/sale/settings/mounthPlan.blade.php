@@ -13,8 +13,6 @@
                     <form class="flex gap-4" method="POST" action="{{ route('workPlan.update', $plan->id) }}">
                         @method('PUT')
                         @csrf
-                        <input type="hidden" name="type" value="{{ $workPlanClass::MOUNTH_PLAN }}">
-                        <input type="hidden" name="department_id" value="{{ $departmentId }}">
                         <label class="flex gap-2 items-center" for="mounth">
                             Месяц
                             <input class="input" name="mounth" type="number" value="{{ $plan['mounth'] }}">

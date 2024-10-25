@@ -33,8 +33,14 @@
             @include('admin.departments.sale.settings.b4Plan')
         </div>
         <div class="flex flex-col gap-4">
-            @include('admin.departments.sale.settings.b1Plan')
-            @include('admin.departments.sale.settings.b2Plan')
+            @include('admin.departments.sale.settings.bPlan', [
+                'title' => 'План Б1',
+                'planType' => $workPlanClass::B1_PLAN,
+            ])
+            @include('admin.departments.sale.settings.bPlan', [
+                'title' => 'План Б2',
+                'planType' => $workPlanClass::B2_PLAN,
+            ])
         </div>
     </div>
     @include('admin.departments.sale.settings.percentLadder')

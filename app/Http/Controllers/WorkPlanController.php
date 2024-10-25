@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreWorkPlanRequest;
+use App\Http\Requests\UpdateWorkPlanRequest;
 use App\Http\Requests\WorkPlanRequest;
 use App\Models\WorkPlan;
 use Illuminate\Http\Request;
@@ -9,7 +11,7 @@ use Illuminate\Http\Request;
 class WorkPlanController extends Controller
 {
 
-    public function store(WorkPlanRequest $request)
+    public function store(StoreWorkPlanRequest $request)
     {
         $validated = $request->validated();
 
@@ -19,7 +21,7 @@ class WorkPlanController extends Controller
     }
 
 
-    public function update(WorkPlanRequest $request, WorkPlan $workPlan)
+    public function update(UpdateWorkPlanRequest $request, WorkPlan $workPlan)
     {
 
         if ($workPlan->type == WorkPlan::B1_PLAN || $workPlan->type == WorkPlan::B2_PLAN) {
