@@ -42,7 +42,6 @@ class UpdateWorkPlanRequest extends FormRequest
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
 
-
         if ($this->input('type') == WorkPlan::WEEK_PLAN) {
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
@@ -73,6 +72,7 @@ class UpdateWorkPlanRequest extends FormRequest
 
         return $rules;
     }
+    
 
     public function updateData(): array
     {

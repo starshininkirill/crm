@@ -77,15 +77,17 @@ class SaleDepartmentController extends Controller
 
         $requestDate = $request->query('date');
 
-        if($requestDate && DateHelper::isValidYearMonth($requestDate)){
+        if ($requestDate && DateHelper::isValidYearMonth($requestDate)) {
             $date = Carbon::parse($requestDate);
-        }else{
+        } else {
             $date = Carbon::now();
         }
 
+        $date->format('Y-m') == Carbon::now()->format('Y-m') ? $isCurrentMonth = true : $isCurrentMonth = false;
+
         $departmentId = Department::getMainSaleDepartment()->id;
         $plans = WorkPlan::plansForSaleSettings($date);
-        
+
         $option = Option::where('name', 'sale_department_ladder_mounth')->first();
 
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
@@ -96,7 +98,8 @@ class SaleDepartmentController extends Controller
             'plans' => $plans,
             'mounthOption' => $option,
             'date' => $date,
-            'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect()
+            'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect(),
+            'isCurrentMonth' => $isCurrentMonth
         ]);
     }
 }

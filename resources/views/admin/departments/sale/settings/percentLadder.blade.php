@@ -17,70 +17,78 @@
                         <input type="hidden" name="department_id" value="{{ $departmentId }}">
                         <label class="flex gap-2 items-center" for="goal">
                             До
-                            <input class="input" name="goal" type="number" value="{{ $plan['goal'] }}">
+                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="goal" type="number"
+                                value="{{ $plan['goal'] }}">
                         </label>
                         <label class="flex gap-2 items-center" for="bonus">
                             %
-                            <input class="input" name="bonus" type="number" step="0.1"
-                                value="{{ $plan['bonus'] }}">
+                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="bonus" type="number"
+                                step="0.1" value="{{ $plan['bonus'] }}">
                         </label>
-                        <button class=" hover:text-blue-400">
-                            Изменить
-                        </button>
+                        @if ($isCurrentMonth)
+                            <button class=" hover:text-blue-400">
+                                Изменить
+                            </button>
+                        @endif
                     </form>
-                    <form method="POST" action="{{ route('workPlan.destroy', $plan->id) }}">
-                        @method('DELETE')
-                        @csrf
-                        <button class="hover:text-red-500">
-                            Удалить
-                        </button>
-                    </form>
+                    @if ($isCurrentMonth)
+                        <form method="POST" action="{{ route('workPlan.destroy', $plan->id) }}">
+                            @method('DELETE')
+                            @csrf
+                            <button class="hover:text-red-500">
+                                Удалить
+                            </button>
+                        </form>
+                    @endif
                 </div>
             @endforeach
         @endif
     </div>
-    <form class="mb-4" method="POST" action="{{ route('workPlan.store') }}">
-        @csrf
-        <div class=" text-xl mb-2">
-            Новая цель
-        </div>
-        <div class="flex flex-col gap-2">
-            <input type="hidden" name="type" value="{{ $workPlanClass::PERCENT_LADDER }}">
-            <input type="hidden" name="department_id" value="{{ $departmentId }}">
-            <label class="flex gap-2 items-center" for="goal">
-                До
-                <input class="input" name="goal" type="number"">
-            </label>
-            <label class="flex gap-2 items-center" for="bonus">
-                %
-                <input class="input" name="bonus" type="number" step="0.1">
-            </label>
-            <button class="btn">
-                Создать
-            </button>
-        </div>
-    </form>
-    <form method="POST" action="{{ $mounthOption == null ? route('option.store') : route('option.update', $mounthOption->id) }}">
-        @csrf
-        <div class=" text-xl mb-2">
-            До какого месяца всегда начисляются проценты
-        </div>
-        <div class="flex flex-col gap-2">
-            @if ($mounthOption)
-                @method('PUT')
-            @endif
-            <input type="hidden" name="name" value="sale_department_ladder_mounth">
-            <label class="flex gap-2 items-center" for="value">
-                <input class="input" name="value" type="number" step="1" min="0"
-                    value="{{ $mounthOption != null ? $mounthOption['value'] : '' }}">
-            </label>
-            <button class="btn">
-                @if ($mounthOption)
-                    Изменить
-                @else
+    @if ($isCurrentMonth)
+        <form class="mb-4" method="POST" action="{{ route('workPlan.store') }}">
+            @csrf
+            <div class=" text-xl mb-2">
+                Новая цель
+            </div>
+            <div class="flex flex-col gap-2">
+                <input type="hidden" name="type" value="{{ $workPlanClass::PERCENT_LADDER }}">
+                <input type="hidden" name="department_id" value="{{ $departmentId }}">
+                <label class="flex gap-2 items-center" for="goal">
+                    До
+                    <input class="input" name="goal" type="number"">
+                </label>
+                <label class="flex gap-2 items-center" for="bonus">
+                    %
+                    <input class="input" name="bonus" type="number" step="0.1">
+                </label>
+                <button class="btn">
                     Создать
+                </button>
+            </div>
+        </form>
+        <form method="POST"
+            action="{{ $mounthOption == null ? route('option.store') : route('option.update', $mounthOption->id) }}">
+            @csrf
+            <div class=" text-xl mb-2">
+                До какого месяца всегда начисляются проценты
+            </div>
+            <div class="flex flex-col gap-2">
+                @if ($mounthOption)
+                    @method('PUT')
                 @endif
-            </button>
-        </div>
-    </form>
+                <input type="hidden" name="name" value="sale_department_ladder_mounth">
+                <label class="flex gap-2 items-center" for="value">
+                    <input class="input" name="value" type="number" step="1" min="0"
+                        value="{{ $mounthOption != null ? $mounthOption['value'] : '' }}">
+                </label>
+                <button class="btn">
+                    @if ($mounthOption)
+                        Изменить
+                    @else
+                        Создать
+                    @endif
+                </button>
+            </div>
+        </form>
+    @endif
 </div>

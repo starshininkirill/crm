@@ -28,9 +28,50 @@ class StoreWorkPlanRequest extends FormRequest
             'mounth' => ['nullable', 'integer', 'min:1'],
             'bonus' => ['nullable', 'numeric', 'min:0'],
             'service_category_id' => ['nullable', 'exists:service_categories,id'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'department_id' => ['required', 'exists:departments,id'],
             'position_id' => ['nullable', 'exists:positions,id'],
+            'created_at' => ['nullable'],
         ];
+
+        if ($this->input('type') == WorkPlan::B1_PLAN || $this->input('type') == WorkPlan::B2_PLAN) {
+            $rules['service_category_id'] = ['required', 'exists:service_categories,id'];
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::BONUS_PLAN) {
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::DOUBLE_PLAN) {
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::WEEK_PLAN) {
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::SUPER_PLAN) {
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::B3_PLAN) {
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::B4_PLAN) {
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+        if ($this->input('type') == WorkPlan::PERCENT_LADDER) {
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+
+
 
         return $rules;
     }

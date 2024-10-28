@@ -19,14 +19,16 @@
         <input type="hidden" name="department_id" value="{{ $departmentId }}">
         <label class="flex gap-2 items-center whitespace-nowrap" for="goal">
             Цель
-            <input class="input" name="goal" type="number" value="{{ $plan['goal'] ?? '' }}">
+            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="goal" type="number" value="{{ $plan['goal'] ?? '' }}">
         </label>
         <label class="flex gap-2 items-center" for="bonus">
             Бонус
-            <input class="input" name="bonus" type="number" value="{{ $plan['bonus'] ?? '' }}">
+            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="bonus" type="number" value="{{ $plan['bonus'] ?? '' }}">
         </label>
-        <button class=" hover:text-blue-400">
-            Изменить
-        </button>
+        @if ($isCurrentMonth)
+            <button class=" hover:text-blue-400">
+                Изменить
+            </button>
+        @endif
     </form>
 </div>

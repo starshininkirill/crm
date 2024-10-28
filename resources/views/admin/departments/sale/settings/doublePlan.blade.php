@@ -16,12 +16,16 @@
             @method('PUT')
         @endif
         <input type="hidden" name="type" value="{{ $workPlanClass::DOUBLE_PLAN }}">
+        <input type="hidden" name="department_id" value="{{ $departmentId }}">
         <label class="flex gap-2 items-center" for="bonus">
             Бонус
-            <input class="input" name="bonus" type="number" value="{{ $plan['bonus'] ?? '' }}">
+            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="bonus" type="number"
+                value="{{ $plan['bonus'] ?? '' }}">
         </label>
-        <button class=" hover:text-blue-400">
-            Изменить
-        </button>
+        @if ($isCurrentMonth)
+            <button class=" hover:text-blue-400">
+                Изменить
+            </button>
+        @endif
     </form>
 </div>

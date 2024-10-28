@@ -15,47 +15,56 @@
                         @csrf
                         <label class="flex gap-2 items-center" for="mounth">
                             Месяц
-                            <input class="input" name="mounth" type="number" value="{{ $plan['mounth'] }}">
+                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="mounth" type="number"
+                                value="{{ $plan['mounth'] }}">
                         </label>
                         <label class="flex gap-2 items-center" for="goal">
                             Цель
-                            <input class="input" name="goal" type="number" value="{{ $plan['goal'] }}">
+                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="goal" type="number"
+                                value="{{ $plan['goal'] }}">
                         </label>
-                        <button class=" hover:text-blue-400">
-                            Изменить
-                        </button>
+                        @if ($isCurrentMonth)
+                            <button class=" hover:text-blue-400">
+                                Изменить
+                            </button>
+                        @endif
                     </form>
-                    <form method="POST" action="{{ route('workPlan.destroy', $plan->id) }}">
-                        @method('DELETE')
-                        @csrf
-                        <button class="hover:text-red-500">
-                            Удалить
-                        </button>
-                    </form>
+                    @if ($isCurrentMonth)
+                        <form method="POST" action="{{ route('workPlan.destroy', $plan->id) }}">
+                            @method('DELETE')
+                            @csrf
+                            <button class="hover:text-red-500">
+                                Удалить
+                            </button>
+                        </form>
+                    @endif
                 </div>
             @endforeach
         @endif
     </div>
-    <form method="POST" action="{{ route('workPlan.store') }}">
-        @csrf
-        <div class=" text-xl mb-2">
-            Новый план
-        </div>
-        @csrf
-        <div class="flex flex-col gap-2">
-            <input type="hidden" name="type" value="{{ $workPlanClass::MOUNTH_PLAN }}">
-            <input type="hidden" name="department_id" value="{{ $departmentId }}">
-            <label class="flex gap-2 items-center" for="mounth">
-                Месяц
-                <input class="input" name="mounth" type="number"">
-            </label>
-            <label class="flex gap-2 items-center" for="goal">
-                Цель
-                <input class="input" name="goal" type="number"">
-            </label>
-            <button class="btn">
-                Создать
-            </button>
-        </div>
-    </form>
+    @if ($isCurrentMonth)
+        <form method="POST" action="{{ route('workPlan.store') }}">
+            @csrf
+            <div class=" text-xl mb-2">
+                Новый план
+            </div>
+            @csrf
+            <div class="flex flex-col gap-2">
+                <input type="hidden" name="type" value="{{ $workPlanClass::MOUNTH_PLAN }}">
+                <input type="hidden" name="department_id" value="{{ $departmentId }}">
+                <input type="hidden" name="created_at" value="{{ $date->format('Y-m-d') }}">
+                <label class="flex gap-2 items-center" for="mounth">
+                    Месяц
+                    <input class="input" name="mounth" type="number"">
+                </label>
+                <label class="flex gap-2 items-center" for="goal">
+                    Цель
+                    <input class="input" name="goal" type="number"">
+                </label>
+                <button class="btn">
+                    Создать
+                </button>
+            </div>
+        </form>
+    @endif
 </div>

@@ -40,7 +40,7 @@ class WorkPlan extends Model
 
 
 
-    protected $fillable = ['type', 'goal', 'mounth', 'bonus', 'service_category_id', 'department_id', 'position_id',];
+    protected $fillable = ['type', 'goal', 'mounth', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
 
     public function position(): HasOne
     {

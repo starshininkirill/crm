@@ -22,6 +22,7 @@
             @endforeach
         </ul>
     @endif
+
     <div class="grid grid-cols-3 gap-8">
         @include('admin.departments.sale.settings.mounthPlan')
         <div class="flex flex-col gap-4">
