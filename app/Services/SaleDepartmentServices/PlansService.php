@@ -222,26 +222,25 @@ class PlansService
         $isCompletedPlan = true;
         foreach ($this->reportInfo->services as $key => $service) {
             $servicePlan = $this->reportInfo->workPlans
-            ->filter(function ($workPlan) use ($planType, $departmentId, $key) {
-                return $workPlan->type === $planType
-                && $workPlan->department_id === $departmentId
-                && isset($workPlan->serviceCategory)
-                && $workPlan->serviceCategory->type === $key;
-            })
-            ->first();
+                ->filter(function ($workPlan) use ($planType, $departmentId, $key) {
+                    return $workPlan->type === $planType
+                        && $workPlan->department_id === $departmentId
+                        && isset($workPlan->serviceCategory)
+                        && $workPlan->serviceCategory->type === $key;
+                })
+                ->first();
             if ($servicePlan) {
                 if ($service < $servicePlan->goal) {
                     $isCompletedPlan = false;
                     break;
                 }
             }
-
         }
-        
-        $b1Plan = $this->getPlan($planType);
 
-        if ($b1Plan) {
-            $b1Plan->type == WorkPlan::B1_PLAN ? $res['bonus'] = '-' . $b1Plan->bonus : '';
+        $bPlan = $this->getPlan($planType);
+
+        if ($bPlan) {
+            $bPlan->type == WorkPlan::B1_PLAN ? $res['bonus'] = '-' . $bPlan->bonus : '';
         }
 
         if (!$isCompletedPlan) {
@@ -250,9 +249,10 @@ class PlansService
 
         $res['completed'] = true;
 
-        if ($b1Plan) {
-            $b1Plan->type == WorkPlan::B1_PLAN ? $res['bonus'] = 0 : $b1Plan->bonus;
+        if ($bPlan->type != WorkPlan::B1_PLAN) {
+            $res['bonus'] =  $bPlan->bonus;
         }
+
 
         return $res;
     }
@@ -277,6 +277,7 @@ class PlansService
         if ($this->reportInfo->newMoney >= $plan->goal) {
             $res['completed'] = true;
             $res['bonus'] = $plan->bonus;
+            $this->reportInfo->bonuses += $plan->bonus;
             return $res;
         }
 
@@ -479,7 +480,6 @@ class PlansService
             $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->bonus / 100));
             $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->bonus / 100));
             $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->bonus / 100));
-
         };
 
         $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];

@@ -8,27 +8,43 @@
             Нет планов
         </div>
     @else
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-4">
             @foreach ($plans[$planType]->sortBy('service_category_id') as $plan)
-                <form class="flex flex-col gap-4 border-b-2 py-1 pb-3" method="POST"
-                    action="{{ $plan == null ? route('workPlan.store') : route('workPlan.update', $plan->id) }}">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="type" value="{{ $planType }}">
-                    <input type="hidden" name="bonus" value="{{ $plan['bonus'] }}">
-                    {{ $plan->serviceCategory->name }}
-                    <div class="flex gap-2 mt-auto items-end">
-                        <label class="flex flex-col gap-2" for="goal">
-                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="goal" type="number"
-                                value="{{ $plan['goal'] ?? '' }}">
-                        </label>
+                <div class="flex flex-col gap-4 border-b-2 py-1 pb-3 w-full items-start">
+                    <div class="top">
+                        {{ $plan->serviceCategory->name }}
+                    </div>
+                    <div class="flex gap-2 items-end">
+                        <form class="flex flex-col gap-2" method="POST"
+                            action="{{ $plan == null ? route('workPlan.store') : route('workPlan.update', $plan->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="type" value="{{ $planType }}">
+                            <input type="hidden" name="bonus" value="{{ $plan['bonus'] }}">
+                            <div class="flex gap-2 mt-auto items-end">
+                                <label class="flex flex-col gap-2" for="goal">
+                                    <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="goal"
+                                        type="number" value="{{ $plan['goal'] ?? '' }}">
+                                </label>
+                                @if ($isCurrentMonth)
+                                    <button class=" hover:text-blue-400">
+                                        Изменить
+                                    </button>
+                                @endif
+                            </div>
+                        </form>
                         @if ($isCurrentMonth)
-                            <button class=" hover:text-blue-400">
-                                Изменить
-                            </button>
+                            <form method="POST" action="{{ route('workPlan.destroy', $plan->id) }}">
+                                @method('DELETE')
+                                @csrf
+                                <button class="hover:text-red-500">
+                                    Удалить
+                                </button>
+                            </form>
                         @endif
                     </div>
-                </form>
+
+                </div>
             @endforeach
         </div>
         <form class="flex items-end gap-4 border-b-2 py-1 pb-3" method="POST"
@@ -43,7 +59,8 @@
             <input name="goal" type="hidden" value="{{ $plan['goal'] }}">
             <label class="flex flex-col gap-2 w-full" for="bonus">
                 Бонус (%)
-                <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="bonus" type="number" value="{{ $plan['bonus'] ?? '' }}">
+                <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="bonus" type="number"
+                    value="{{ $plan['bonus'] ?? '' }}">
             </label>
             @if ($isCurrentMonth)
                 <button class=" hover:text-blue-400">
@@ -63,6 +80,9 @@
         @endif
 
         @if (!$categoriesForCalculations->isEmpty())
+            <div class=" text-xl font-semibold">
+                Создать план
+            </div>
             <form class="flex flex-col gap-2" method="POST" action="{{ route('workPlan.store') }}">
                 @csrf
                 <input type="hidden" name="type" value="{{ $planType }}">

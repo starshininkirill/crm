@@ -48,9 +48,11 @@ class ReportInfo
         $this->departmentId = Department::getMainSaleDepartment()->id;
 
         $this->workPlans = WorkPlan::where('department_id', $this->departmentId)
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
             ->with('serviceCategory')
             ->get();
-            
+
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
 
         $this->payments = Payment::getMonthlyPayments($date);
@@ -71,28 +73,28 @@ class ReportInfo
         if ($this->isUserData) {
             return null;
         }
-        
+
         $subdataInstance = new ReportInfo();
-        
+
         $subdataInstance->date = $this->date;
         $subdataInstance->user = $user;
         $subdataInstance->departmentId = $this->departmentId;
-        
+
         $subdataInstance->workPlans = $this->workPlans;
-        
+
         $subdataInstance->workingDays = $this->workingDays;
         $subdataInstance->mounthWorkPlan = $this->getMounthPlan($user);
         $subdataInstance->mounthWorkPlanGoal = $subdataInstance->mounthWorkPlan->goal;
-        
-        
+
+
         $subdataInstance->payments = $this->payments->filter(function ($payment) use ($user) {
             return $payment->contract && $payment->contract->users->contains('id', $user->id);
         });
-        
+
         $subdataInstance->newPayments = $subdataInstance->payments->where('type', Payment::TYPE_NEW);
         $subdataInstance->oldPayments = $subdataInstance->payments->where('type', Payment::TYPE_OLD);
-        
-        $subdataInstance->contracts = $this->contracts->filter(function($contract) use ($user) {
+
+        $subdataInstance->contracts = $this->contracts->filter(function ($contract) use ($user) {
             return $contract->users->contains('id', $user->id);
         });
 
@@ -133,7 +135,7 @@ class ReportInfo
     }
 
 
-    private function getMounthPlan($user = null): ?WorkPlan
+    private function getMounthPlan(?User $user = null): ?WorkPlan
     {
 
         if ($user == null) {
@@ -141,23 +143,29 @@ class ReportInfo
         }
         $monthsWorked = $user->getMounthWorked();
         $departmentId = $this->departmentId;
-        $userPositionId = $user->position->id;
+        $userPosition = $user->position;
+        $userPosition == null ? $userPositionId = null : $userPositionId = $userPosition->id;
 
-        $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $userPositionId) {
-            return $plan->department_id == $departmentId &&
-                $plan->position_id == $userPositionId &&
-                $plan->type == WorkPlan::MOUNTH_PLAN;
-        });
+        if ($userPositionId != null) {
+            $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $userPositionId) {
+                return $plan->department_id == $departmentId &&
+                    $plan->position_id == $userPositionId &&
+                    $plan->type == WorkPlan::MOUNTH_PLAN;
+            });
+        }
 
-        if ($mounthPlan) {
+        if (isset($mounthPlan) && $mounthPlan != null) {
             return $mounthPlan;
         }
+
+
 
         $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $monthsWorked) {
             return $plan->department_id == $departmentId &&
                 $plan->mounth == $monthsWorked &&
                 $plan->type == WorkPlan::MOUNTH_PLAN;
         });
+
 
         if ($mounthPlan) {
             return $mounthPlan;

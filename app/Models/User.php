@@ -99,6 +99,9 @@ class User extends Authenticatable
     {
         $employmentDate = $this->getFirstWorkingDay();
         $nowDate = Carbon::now();
+        if($nowDate->format('Y-m') == $employmentDate->format('Y-m')){
+            return 1;
+        }
 
         $startWorkingDay = $employmentDate->format('d');
 
@@ -106,7 +109,6 @@ class User extends Authenticatable
         if ($startWorkingDay > 7) {
             $monthsWorked--;
         }
-
         return $monthsWorked;
     }
 

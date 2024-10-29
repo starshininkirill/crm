@@ -26,12 +26,37 @@
     <div class="grid grid-cols-3 gap-8">
         @include('admin.departments.sale.settings.mounthPlan')
         <div class="flex flex-col gap-4">
-            @include('admin.departments.sale.settings.bonusPlan')
-            @include('admin.departments.sale.settings.doublePlan')
-            @include('admin.departments.sale.settings.weekPlan')
-            @include('admin.departments.sale.settings.superPlan')
-            @include('admin.departments.sale.settings.b3Plan')
-            @include('admin.departments.sale.settings.b4Plan')
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'Бонус план',
+                'planType' => $workPlanClass::BONUS_PLAN,
+                'hasGoalField' => true,
+            ])
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'Двойной план',
+                'planType' => $workPlanClass::DOUBLE_PLAN,
+                'hasGoalField' => false,
+            ])
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'План недели',
+                'planType' => $workPlanClass::WEEK_PLAN,
+                'hasGoalField' => false,
+            ])
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'Супер план',
+                'planType' => $workPlanClass::SUPER_PLAN,
+                'hasGoalField' => true,
+            ])
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'План Б3',
+                'planType' => $workPlanClass::B3_PLAN,
+                'hasGoalField' => true,
+                'isPercentGoal' => true,
+            ])
+            @include('admin.departments.sale.settings.universalPlan', [
+                'planTitle' => 'План Б4',
+                'planType' => $workPlanClass::B4_PLAN,
+                'hasGoalField' => true,
+            ])
         </div>
         <div class="flex flex-col gap-4">
             @include('admin.departments.sale.settings.bPlan', [
