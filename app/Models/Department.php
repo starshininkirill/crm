@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Position;
 use App\Models\User;
 use App\Models\WorkPlan;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SimpleCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,15 +51,13 @@ class Department extends Model
         return $users;
     }
 
-    public function activeUsers():  SimpleCollection
+    public function activeUsers(Carbon $date = null):  SimpleCollection
     {
-        $users = collect();
+        $users = $this->users();
         
-        $users = $users->merge($this->hasMany(User::class, 'department_id')->where('active', 1)->get());
-
-        $this->childDepartments->each(function ($childDepartment) use (&$users) {
-            $users = $users->merge($childDepartment->users());
-        });
+        if($date != null){
+            $users = $users->where('created_at', '<=', $date->endOfMonth());
+        }
 
         return $users;
     }

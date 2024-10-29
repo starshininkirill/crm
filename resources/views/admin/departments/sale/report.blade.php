@@ -11,7 +11,7 @@
             <option disabled {{ $user != null ? '' : 'selected' }} value="">
                 Выберите сотрудника
             </option>
-            @foreach ($users as $optionUser)
+            @foreach ($selectUsers as $optionUser)
                 <option {{ optional($user)->id == $optionUser->id ? 'selected' : '' }} value="{{ $optionUser->id }}">
                     {{ $optionUser->first_name }} {{ $optionUser->last_name }}
                 </option>
@@ -22,12 +22,18 @@
             Выбрать
         </button>
     </form>
-
+    @if ($daylyReport->isEmpty() && $motivationReport->isEmpty())
+        @if (!$error)
+            <h2>Данные для отчёта не найдены</h2>
+        @endif
+    @endif
+    @if ($error)
+        <div class="mb-2 font-semibold">
+            {{ $error }}
+        </div>
+    @endif
     <div class="flex gap-4">
         <div class="reports flex flex-col gap-6 w-1/2">
-            @if ($daylyReport->isEmpty() && $motivationReport->isEmpty())
-                <h2>Данные для отчёта не найдены</h2>
-            @endif
             @if (!$daylyReport->isEmpty())
                 @include('admin.departments.sale.tables.userDailyReport')
             @endif

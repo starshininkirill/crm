@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class SaleDepartmentController extends Controller
 {
@@ -34,31 +35,45 @@ class SaleDepartmentController extends Controller
     public function userReport(Request $request)
     {
 
-        $users = Department::getMainSaleDepartment()->activeUsers();
+        $selectUsers = Department::getMainSaleDepartment()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
 
         if ($request->filled(['user', 'date'])) {
-            $date = new Carbon($requestData['date']);
-            $user = User::find($requestData['user']);
+            try {
+                $date = new Carbon($requestData['date']);
+                $user = User::find($requestData['user']);
 
-            $reportService = new ReportService($this->plansService, $date);
+                if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+                    $error = 'Сотрудник ещё не работал в этот месяц.';
+                }
 
-            $daylyReport = $reportService->mounthByDayReport($user);
-            $motivationReport = $reportService->motivationReport($user);
+                $reportService = new ReportService($this->plansService, $date);
 
-            $pivotWeeks = $reportService->pivotWeek();
-            $pivotDaily = $reportService->mounthByDayReport();
+                $daylyReport = $reportService->mounthByDayReport($user);
+                $motivationReport = $reportService->motivationReport($user);
 
-            $users = Department::getMainSaleDepartment()->activeUsers();
-            $pivotUsers = $reportService->pivotUsers($users);
+                $pivotWeeks = $reportService->pivotWeek();
+                $pivotDaily = $reportService->mounthByDayReport();
 
-            $generalPlan = $reportService->generalPlan($pivotUsers);
+                $users = Department::getMainSaleDepartment()->activeUsers($date);
+
+                $pivotUsers = $reportService->pivotUsers($users);
+
+                $generalPlan = $reportService->generalPlan($pivotUsers);
+            } catch (Exception $e) {
+                    if(isset($error)){
+                        $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                    }else{
+                        $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                    }
+            }
         }
         return view(
             'admin.departments.sale.report',
             [
-                'users' => $users,
+                'selectUsers' => $selectUsers,
+                'users' => $users ?? collect(),
                 'user' => isset($user) ? $user : null,
                 'date' => isset($date) ? $date : null,
                 'daylyReport' => isset($daylyReport) ? $daylyReport : collect(),
@@ -67,7 +82,8 @@ class SaleDepartmentController extends Controller
                 'pivotDaily' => isset($pivotDaily) ? $pivotDaily : collect(),
                 'pivotUsers' => isset($pivotUsers) ? $pivotUsers : collect(),
                 'generalPlan' => isset($generalPlan) ? $generalPlan : collect(),
-                'serviceCategoryModel' => ServiceCategory::class
+                'serviceCategoryModel' => ServiceCategory::class,
+                'error' => $error ?? ''
             ]
         );
     }

@@ -422,7 +422,7 @@ class PlansService
 
     public function calculateSalary(Collection $report): Collection
     {
-        $mounthWorked = $this->reportInfo->user->getMounthWorked();
+        $mounthWorked = $this->reportInfo->user->getMounthWorked($this->reportInfo->date);
         $bonus = null;
 
 

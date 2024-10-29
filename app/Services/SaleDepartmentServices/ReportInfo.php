@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 
 class ReportInfo
@@ -52,6 +53,10 @@ class ReportInfo
             ->whereMonth('created_at', $date->month)
             ->with('serviceCategory')
             ->get();
+        
+        if($this->workPlans->isEmpty()){
+            throw new Exception('Нет планов для рассчёта');
+        }
 
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
 
@@ -141,7 +146,7 @@ class ReportInfo
         if ($user == null) {
             $user = $this->user;
         }
-        $monthsWorked = $user->getMounthWorked();
+        $monthsWorked = $user->getMounthWorked($this->date);
         $departmentId = $this->departmentId;
         $userPosition = $user->position;
         $userPosition == null ? $userPositionId = null : $userPositionId = $userPosition->id;

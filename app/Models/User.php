@@ -95,17 +95,18 @@ class User extends Authenticatable
 
         return $employmentDate;
     }
-    public function getMounthWorked(): int
+    public function getMounthWorked(Carbon $date = null): int
     {
+        $date = $date ?? Carbon::now();
+        
         $employmentDate = $this->getFirstWorkingDay();
-        $nowDate = Carbon::now();
-        if($nowDate->format('Y-m') == $employmentDate->format('Y-m')){
+        if($date->format('Y-m') == $employmentDate->format('Y-m')){
             return 1;
         }
 
         $startWorkingDay = $employmentDate->format('d');
 
-        $monthsWorked = $employmentDate->floorMonth()->diffInMonths($nowDate->floorMonth()) + 1;
+        $monthsWorked = $employmentDate->floorMonth()->diffInMonths($date->floorMonth()) + 1;
         if ($startWorkingDay > 7) {
             $monthsWorked--;
         }
