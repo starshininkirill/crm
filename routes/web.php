@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -16,7 +17,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\WorkPlanController;
 use App\Models\Department;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
@@ -98,7 +99,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 
     Route::prefix('settings')->group(function () {
-        Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.settings');
+        Route::get('/', [SettingsController::class, 'index'])->name('admin.settings.index');
+        Route::get('/calendar', [SettingsController::class, 'calendar'])->name('admin.settings.calendar');
     });
 });
 

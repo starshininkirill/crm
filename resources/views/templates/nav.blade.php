@@ -17,7 +17,7 @@
     <a class="text-xl {{ Route::is('admin.department.sale*') ? 'font-bold' : '' }}" href="{{ route('admin.department.sale.index') }}">
         Отдел продаж
     </a>
-    <a class="text-xl {{ Route::is('admin.settings*') ? 'font-bold' : '' }}" href="{{ route('admin.settings') }}">
+    <a class="text-xl {{ Route::is('admin.settings*') ? 'font-bold' : '' }}" href="{{ route('admin.settings.index') }}">
         Настройки
     </a>
 </nav>
