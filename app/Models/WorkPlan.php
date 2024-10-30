@@ -24,6 +24,7 @@ class WorkPlan extends Model
     public const B3_PLAN = 7;
     public const B4_PLAN = 8;
     public const PERCENT_LADDER = 9;
+    public const NO_PERCENTAGE_MONTH = 10 ;
 
     public const ALL_PLANS = [
         self::MOUNTH_PLAN,
@@ -36,6 +37,7 @@ class WorkPlan extends Model
         self::B3_PLAN,
         self::B4_PLAN,
         self::PERCENT_LADDER,
+        self::NO_PERCENTAGE_MONTH,
     ];
 
 

@@ -28,25 +28,23 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
-
 });
 
 Route::middleware('auth')->group(function () {
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-    Route::prefix('/lk')->group(function(){
+    Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');
-        Route::prefix('/payments')->group(function(){
+        Route::prefix('/payments')->group(function () {
             Route::get('/create', [LkPaymentController::class, 'create'])->name('lk.payment.create');
             Route::post('/store', [LkPaymentController::class, 'store'])->name('lk.payment.store');
         });
     });
+});
 
- });
- 
 
- Route::prefix('admin')->middleware('role:admin')->group(function () {
+Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     Route::prefix('contracts')->group(function () {
@@ -90,7 +88,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
             Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.department.sale.report-settings');
         });
-
     });
 
     Route::prefix('users')->group(function () {
@@ -99,14 +96,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
         Route::get('/show/{user}', [UserController::class, 'show'])->name('admin.user.show');
     });
+
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.settings');
+    });
 });
 
 
-Route::middleware('role:admin')->group(function(){
+Route::middleware('role:admin')->group(function () {
     Route::resource('workPlan', WorkPlanController::class)->only([
-        'store', 'update', 'destroy'
+        'store',
+        'update',
+        'destroy'
     ]);
     Route::resource('option', OptionController::class)->only([
-        'store', 'update', 'destroy'
+        'store',
+        'update',
+        'destroy'
     ]);
 });

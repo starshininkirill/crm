@@ -71,7 +71,7 @@ class DateHelper
             // Переходим к следующему дню после конца текущей недели
             $current = $endOfWeek->copy()->addDay();
         };
-
+        
         return $weeks;
     }
     public static function getNearestPreviousWorkingDay(Carbon $date): string

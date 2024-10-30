@@ -38,7 +38,6 @@ class SaleDepartmentController extends Controller
         $selectUsers = Department::getMainSaleDepartment()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
-
         if ($request->filled(['user', 'date'])) {
             try {
                 $date = new Carbon($requestData['date']);
@@ -62,11 +61,11 @@ class SaleDepartmentController extends Controller
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
             } catch (Exception $e) {
-                    if(isset($error)){
-                        $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                    }else{
-                        $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                    }
+                if (isset($error)) {
+                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                } else {
+                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                }
             }
         }
         return view(
@@ -104,27 +103,15 @@ class SaleDepartmentController extends Controller
         $departmentId = Department::getMainSaleDepartment()->id;
         $plans = WorkPlan::plansForSaleSettings($date);
 
-        $option = Option::where('name', 'sale_department_ladder_mounth')->first();
-
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
 
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
             'workPlanClass' => WorkPlan::class,
             'plans' => $plans,
-            'mounthOption' => $option,
             'date' => $date,
             'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect(),
             'isCurrentMonth' => $isCurrentMonth
         ]);
     }
 }
-
-// $queryCount = 0;
-// DB::listen(function ($query) use (&$queryCount) {
-//     $queryCount++;
-// });
-// $start = microtime(true);
-// $end = microtime(true);
-// dd($end - $start);
-// dd($queryCount);

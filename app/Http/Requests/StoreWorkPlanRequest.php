@@ -70,6 +70,10 @@ class StoreWorkPlanRequest extends FormRequest
         if ($this->input('type') == WorkPlan::PERCENT_LADDER) {
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
+        
+        if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
+            $rules['mounth'] = ['required', 'numeric', 'min:0'];
+        };
 
 
 

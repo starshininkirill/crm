@@ -70,9 +70,13 @@ class UpdateWorkPlanRequest extends FormRequest
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
 
+        if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
+            $rules['mounth'] = ['required', 'numeric', 'min:0'];
+        };
+
         return $rules;
     }
-    
+
 
     public function updateData(): array
     {

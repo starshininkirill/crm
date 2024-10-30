@@ -11,10 +11,13 @@
     <a class="text-xl {{ Route::is('admin.service*') ? 'font-bold' : '' }}" href="{{ route('admin.service.category.index') }}">
         Услуги
     </a>
-    <a class="text-xl {{ Route::is('admin.department*') ? 'font-bold' : '' }}" href="{{ route('admin.department.index') }}">
+    <a class="text-xl {{ Route::is('admin.department.index') ? 'font-bold' : '' }}" href="{{ route('admin.department.index') }}">
         Отделы
     </a>
     <a class="text-xl {{ Route::is('admin.department.sale*') ? 'font-bold' : '' }}" href="{{ route('admin.department.sale.index') }}">
         Отдел продаж
+    </a>
+    <a class="text-xl {{ Route::is('admin.settings*') ? 'font-bold' : '' }}" href="{{ route('admin.settings') }}">
+        Настройки
     </a>
 </nav>

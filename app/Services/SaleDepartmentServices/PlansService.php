@@ -425,7 +425,6 @@ class PlansService
         $mounthWorked = $this->reportInfo->user->getMounthWorked($this->reportInfo->date);
         $bonus = null;
 
-
         $res = collect([
             'bonuses' => $this->reportInfo->bonuses,
             'newMoney' => 0,
@@ -433,11 +432,13 @@ class PlansService
             'amount' => $this->reportInfo->bonuses
         ]);
 
-        // TODO
-        // Добавить в настройках значение после которого до 60к не будет процента
-        if ($mounthWorked > 3) {
+        $noPercentageMonth = $this->reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
+
+
+        if ($noPercentageMonth != null && $mounthWorked > $noPercentageMonth->mounth) {
             $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->reportInfo->departmentId)
+                ->whereNotNull('goal')
                 ->orderBy('goal', 'asc')
                 ->skip(1)
                 ->first();
@@ -464,7 +465,6 @@ class PlansService
         }
 
         $bonus !== 0 ? $bonus = $workPlan->bonus : '';
-
 
         $res['percentage'] = $bonus;
         $res['newMoney'] = ($this->reportInfo->newMoney * $bonus) / 100;
