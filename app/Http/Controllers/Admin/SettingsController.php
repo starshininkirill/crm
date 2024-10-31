@@ -15,20 +15,19 @@ class SettingsController extends Controller
         return view('admin.layouts.settings');
     }
 
-    public function calendar()
+    public function calendar(Request $request)
     {
-        $year = 2024;
-        $months = DateHelper::workingCalendar($year);
+        $requestDate = $request->query('date');
 
-        $daysInstances = WorkingDay::whereYear('date', $year)->get();
+        if ($requestDate && DateHelper::isValidYearMonth($requestDate)) {
+            $date = Carbon::createFromDate($requestDate);
+        } else {
+            $date = Carbon::now();
+        }
 
-        // dd(Carbon::now()->addDay(1)->format('Y-m-d'));
 
-        // $date = WorkingDay::create([
-        //     'date' => Carbon::now()->addDay(1),
-        //     'is_working_day' => 0
-        // ]);
+        $months = DateHelper::workingCalendar($date->format('Y'));
 
-        return view('admin.settings.calendar', ['months' => $months]);
+        return view('admin.settings.calendar', ['months' => $months, 'date' => $date ]);
     }
 }

@@ -2,6 +2,13 @@
 
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">Календарь рабочих дней</h1>
+    <form action="{{ route('admin.settings.calendar') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
+        <input type="month" name="date" class="border px-3 py-1"
+            value="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}">
+        <button type="submit" class="btn">
+            Выбрать
+        </button>
+    </form>
 
     <div class="grid grid-cols-4 auto-rows-max gap-6">
         @foreach ($months as $month)
@@ -29,13 +36,9 @@
                             <tr>
                                 @foreach ($week as $day)
                                     @if ($day)
-                                        <td
-                                            class="w-12 h-12 border border-gray-200
-                                        {{ $day['is_workday'] ? 'bg-white text-black' : 'bg-red-500 text-white' }}">
-                                            {{ $day['date']->day }}
-                                        </td>
-                                    @else
-                                        <td class=" bg-white w-12 h-12 border border-gray-200"></td>
+                                        <livewire:calendar-day :$day>
+                                        @else
+                                            <td class=" bg-white w-12 h-12 border border-gray-200"></td>
                                     @endif
                                 @endforeach
                             </tr>

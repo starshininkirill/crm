@@ -93,7 +93,7 @@ class DateHelper
     public static function isValidYearMonth(string $date, $format = 'Y-m'): bool
     {
         try {
-            $parsedDate = Carbon::createFromFormat($format, $date);
+            $parsedDate = Carbon::createFromDate($date);
 
             return $parsedDate && $parsedDate->format($format) === $date;
         } catch (Exception $e) {
