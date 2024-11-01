@@ -4,8 +4,6 @@ namespace App\Http\Controllers\admin;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Models\WorkingDay;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -19,15 +17,19 @@ class SettingsController extends Controller
     {
         $requestDate = $request->query('date');
 
-        if ($requestDate && DateHelper::isValidYearMonth($requestDate)) {
-            $date = Carbon::createFromDate($requestDate);
-        } else {
-            $date = Carbon::now();
-        }
-
+        $date = DateHelper::getValidatedDateOrNow($requestDate);
 
         $months = DateHelper::workingCalendar($date->format('Y'));
 
-        return view('admin.settings.calendar', ['months' => $months, 'date' => $date ]);
+        return view('admin.settings.calendar', ['months' => $months, 'date' => $date]);
+    }
+
+    public function financeWeek(Request $request)
+    {
+        $requestDate = $request->query('date');
+
+        $date = DateHelper::getValidatedDateOrNow($requestDate);
+
+        return view('admin.settings.financeWeek', ['date' => $date]);
     }
 }

@@ -57,6 +57,7 @@
                 'planType' => $workPlanClass::B4_PLAN,
                 'hasGoalField' => true,
             ])
+
         </div>
         <div class="flex flex-col gap-4">
             @include('admin.departments.sale.settings.bPlan', [

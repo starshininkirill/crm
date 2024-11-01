@@ -6,7 +6,7 @@
             <x-admin-subnav-link route="admin.settings.calendar">
                 Календарь рабочих дней
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.settings.index">
+            <x-admin-subnav-link route="admin.settings.finance-week">
                 Настройка рабочих недель
             </x-admin-subnav-link>
         </div>

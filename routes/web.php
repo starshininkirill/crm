@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\WorkingDayController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
@@ -17,7 +18,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\WorkPlanController;
 use App\Models\Department;
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
@@ -101,11 +102,11 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('admin.settings.index');
         Route::get('/calendar', [SettingsController::class, 'calendar'])->name('admin.settings.calendar');
+        Route::get('/finance-week', [SettingsController::class, 'financeWeek'])->name('admin.settings.finance-week');
     });
 });
 
-
-Route::middleware('role:admin')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::resource('workPlan', WorkPlanController::class)->only([
         'store',
         'update',
@@ -116,4 +117,6 @@ Route::middleware('role:admin')->group(function () {
         'update',
         'destroy'
     ]);
-});
+
+    Route::post('/working-day', [WorkingDayController::class, 'toggleType']);
+})->middleware('role:admin');

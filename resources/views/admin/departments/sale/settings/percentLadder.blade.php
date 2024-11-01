@@ -55,7 +55,7 @@
                 <input type="hidden" name="department_id" value="{{ $departmentId }}">
                 <label class="flex gap-2 items-center" for="goal">
                     До
-                    <input class="input" name="goal" type="number"">
+                    <input class="input" name="goal" type="number">
                 </label>
                 <label class="flex gap-2 items-center" for="bonus">
                     %

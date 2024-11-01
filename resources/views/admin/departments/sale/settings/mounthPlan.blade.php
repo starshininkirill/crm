@@ -55,11 +55,11 @@
                 <input type="hidden" name="created_at" value="{{ $date->format('Y-m-d') }}">
                 <label class="flex gap-2 items-center" for="mounth">
                     Месяц
-                    <input class="input" name="mounth" type="number"">
+                    <input class="input" name="mounth" type="number">
                 </label>
                 <label class="flex gap-2 items-center" for="goal">
                     Цель
-                    <input class="input" name="goal" type="number"">
+                    <input class="input" name="goal" type="number">
                 </label>
                 <button class="btn">
                     Создать

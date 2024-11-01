@@ -59,10 +59,10 @@ class DateHelper
 
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
-        
+
         if ($workingDays == null || $workingDays->isEmpty()) {
             $dateInstance = WorkingDay::whereDate('date', $date)->first();
-        }else{
+        } else {
             $dateInstance = $workingDays->where('date', $date->format('Y-m-d'))->first();
         }
 
@@ -88,6 +88,17 @@ class DateHelper
         }
 
         return $days;
+    }
+
+    public static function getValidatedDateOrNow(string|null $date , string $format = 'Y-m'): Carbon
+    {
+
+        if ($date != null && DateHelper::isValidYearMonth($date, $format)) {
+            $date = Carbon::createFromDate($date);
+        } else {
+            $date = Carbon::now();
+        }
+        return $date;
     }
 
     public static function isValidYearMonth(string $date, $format = 'Y-m'): bool
