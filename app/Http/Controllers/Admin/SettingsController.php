@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
+use App\Models\FinanceWeek;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -30,6 +31,16 @@ class SettingsController extends Controller
 
         $date = DateHelper::getValidatedDateOrNow($requestDate);
 
-        return view('admin.settings.financeWeek', ['date' => $date]);
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        $financeWeeks = FinanceWeek::where('date_start' , '>=',  $startOfMonth)
+            ->where('date_end', '<=', $endOfMonth)
+            ->get();
+            
+        return view('admin.settings.financeWeek', [
+            'date' => $date,
+            'financeWeeks' => $financeWeeks ?? collect()
+        ]);
     }
 }

@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreFinanceWeekRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return auth()->check() && auth()->user()->role === 'admin';
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'week' => 'array|min:1|max:5',
+            'week.*' => 'array', 
+            'week.*.date_start' => 'nullable|date|before_or_equal:week.*.date_end', 
+            'week.*.date_end' => 'nullable|date|after_or_equal:week.*.date_start',  
+            'week.*.weeknum' => 'required|integer|min:1|max:5',
+        ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $validated = parent::validated($key, $default);
+
+        if (isset($validated['week']) && is_array($validated['week'])) {
+            $validated['week'] = array_filter($validated['week'], function ($week) {
+                return !is_null($week['date_start']) && !is_null($week['date_end']);
+            });
+        }
+
+        return $validated;
+    }
+}

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Departments;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
-use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
@@ -14,8 +13,6 @@ use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class SaleDepartmentController extends Controller
 {

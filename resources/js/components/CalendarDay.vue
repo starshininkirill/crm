@@ -27,7 +27,6 @@
                         {{ day ? formatDate(day.date) : '' }}
                     </td>
                 </tr>
-
             </tbody>
         </table>
     </div>
