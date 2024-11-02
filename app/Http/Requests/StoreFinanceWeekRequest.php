@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreFinanceWeekRequest extends FormRequest
@@ -38,6 +39,18 @@ class StoreFinanceWeekRequest extends FormRequest
             $validated['week'] = array_filter($validated['week'], function ($week) {
                 return !is_null($week['date_start']) && !is_null($week['date_end']);
             });
+        }
+
+        foreach($validated['week'] as $key => $week){
+            if($key <= 1){
+                continue;
+            }
+
+            if($validated['week'][$key - 1]['date_end'] >= $week['date_start'] ){
+                $updatedStartDaye = Carbon::parse($validated['week'][$key - 1]['date_end'])->addDay()->format('Y-m-d'); 
+                $validated['week'][$key]['date_start'] =  $updatedStartDaye;
+            }
+
         }
 
         return $validated;

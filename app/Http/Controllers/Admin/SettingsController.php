@@ -34,10 +34,10 @@ class SettingsController extends Controller
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
 
-        $financeWeeks = FinanceWeek::where('date_start' , '>=',  $startOfMonth)
+        $financeWeeks = FinanceWeek::where('date_start', '>=',  $startOfMonth)
             ->where('date_end', '<=', $endOfMonth)
             ->get();
-            
+
         return view('admin.settings.financeWeek', [
             'date' => $date,
             'financeWeeks' => $financeWeeks ?? collect()

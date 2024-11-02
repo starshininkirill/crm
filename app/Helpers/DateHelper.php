@@ -82,7 +82,7 @@ class DateHelper
         $period = CarbonPeriod::create($start, $end);
 
         foreach ($period as $day) {
-            if ($day->isWeekday()) {
+            if (self::isWorkingDay($day)) {
                 $days[] = $day->format('Y-m-d');
             }
         }

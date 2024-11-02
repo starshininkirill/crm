@@ -37,24 +37,42 @@
         @for ($i = 1; $i < 6; $i++)
             @if ($financeWeeks->where('weeknum', $i)->first() != null)
                 @php
-                 $week = $financeWeeks->where('weeknum', $i)->first();
+                    $week = $financeWeeks->where('weeknum', $i)->first();
                 @endphp
                 <div class="flex justify-between gap-4">
-                    <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
-                        name="week[{{ $i }}][date_start]" value="{{ $week['date_start'] }}">
-                    <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
-                        name="week[{{ $i }}][date_end]" value="{{ $week['date_end'] }}">
-                    <input class="border px-3 py-1" type="number" name="week[{{ $i }}][weeknum]" readonly
-                        value="{{ $i }}">
+                    <label class="flex flex-col font-semibold gap-2">
+                        Начало недели
+                        <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
+                            name="week[{{ $i }}][date_start]" value="{{ $week['date_start'] }}">
+                    </label>
+                    <label class="flex flex-col font-semibold gap-2">
+                        Конец недели
+                        <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
+                            name="week[{{ $i }}][date_end]" value="{{ $week['date_end'] }}">
+                    </label>
+                    <label class="flex flex-col font-semibold gap-2">
+                        Номер недели
+                        <input class="border px-3 py-1" type="number" name="week[{{ $i }}][weeknum]" readonly
+                            value="{{ $i }}">
+                    </label>
                 </div>
             @else
                 <div class="flex justify-between gap-4">
-                    <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
-                        name="week[{{ $i }}][date_start]" value="{{ $date }}">
-                    <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
-                        name="week[{{ $i }}][date_end]" value="{{ $date }}">
-                    <input class="border px-3 py-1" type="number" name="week[{{ $i }}][weeknum]" readonly
-                        value="{{ $i }}">
+                    <label class="flex flex-col font-semibold gap-2">
+                        Начало недели
+                        <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
+                            name="week[{{ $i }}][date_start]" value="{{ $date }}">
+                    </label>
+                    <label class="flex flex-col font-semibold gap-2">
+                        Конец недели
+                        <input min="{{ $startOfMonth }}" max="{{ $endOfMonth }}" class="border px-3 py-1" type="date"
+                            name="week[{{ $i }}][date_end]" value="{{ $date }}">
+                    </label>
+                    <label class="flex flex-col font-semibold gap-2">
+                        Номер недели
+                        <input class="border px-3 py-1" type="number" name="week[{{ $i }}][weeknum]" readonly
+                            value="{{ $i }}">
+                    </label>
                 </div>
             @endif
         @endfor
