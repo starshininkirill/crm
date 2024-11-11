@@ -115,7 +115,7 @@ class ServiceSeeder extends Seeder
         foreach ($clients as $key => $client) {
             $contractData = [
                 'number' => $key + 1,
-                'amount_price' => rand(10000, 50000),
+                'amount_price' => rand(100000, 500000),
                 'comment' => 'Auto-generated contract',
                 'client_id' => $client->id,
             ];
@@ -131,7 +131,7 @@ class ServiceSeeder extends Seeder
                 ]);
             }
             $payments = array_map(function () {
-                return rand(1000, 10000);
+                return rand(10000, 100000);
             }, range(1, rand(2, 5)));
 
 

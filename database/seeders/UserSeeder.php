@@ -38,6 +38,15 @@ class UserSeeder extends Seeder
             'department_id' => 2,
         ]);
 
+        $sale2 = User::create([
+            'first_name' => 'Игорь',
+            'last_name' => 'Продажник 2 отд',
+            'email' => 'sale3@mail.ru',
+            'password' => Hash::make('1409199696Rust'),
+            // 'position_id' => 2,
+            'department_id' => 3,
+        ]);
+
         // $users = User::factory()->count(5)->create();
     }
 }

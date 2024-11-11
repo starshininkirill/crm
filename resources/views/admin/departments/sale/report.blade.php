@@ -33,12 +33,13 @@
         </div>
     @endif
     <div class="flex gap-4">
-        <div class="reports flex flex-col gap-5 w-1/2">
-            @if (!$daylyReport->isEmpty())
-                <div class="text-2xl font-semibold">
-                    {{ $optionUser->first_name }} {{ $optionUser->last_name }}
-                </div>
+        {{-- <div class="text-2xl font-semibold">
+            {{ $optionUser->first_name }} {{ $optionUser->last_name }}
+        </div> --}}
 
+
+        <table class="reports w-1/2">
+            @if (!$daylyReport->isEmpty())
                 @include('admin.departments.sale.tables.DailyReport', [
                     'daylyReport' => $daylyReport,
                 ])
@@ -49,27 +50,25 @@
                 ])
                 @include('admin.departments.sale.tables.userMotivationReport')
             @endif
-        </div>
-        <div class="pivot-reports flex flex-col gap-5 w-7/12">
+        </table>
+
+
+
+        <table class="pivot-reports w-1/2 h-fit">
             @if (!$pivotDaily->isEmpty())
-                <div class="text-2xl font-semibold">
-                    СВОД
-                </div>
                 @include('admin.departments.sale.tables.DailyReport', [
                     'daylyReport' => $pivotDaily,
                 ])
             @endif
-            <div class="w-full flex flex-col gap-5">
-                @if (!$pivotWeeks->isEmpty())
-                    @include('admin.departments.sale.tables.weeksReport', [
-                        'weeks' => $pivotWeeks,
-                    ])
-                @endif
-                @if (!$generalPlan->isEmpty())
-                    @include('admin.departments.sale.tables.generalPlan')
-                @endif
-            </div>
-        </div>
+            @if (!$pivotWeeks->isEmpty())
+                @include('admin.departments.sale.tables.weeksReport', [
+                    'weeks' => $pivotWeeks,
+                ])
+            @endif
+            @if (!$generalPlan->isEmpty())
+                @include('admin.departments.sale.tables.generalPlan')
+            @endif
+        </table>
     </div>
     @if (!$pivotUsers->isEmpty())
         <div class="w-100 mt-6">

@@ -22,7 +22,7 @@ class Department extends Model
     public const ADVERTISING_DEPARTMENT = 1;
 
     protected $fillable = ['name', 'parent_id', 'type'];
-    
+
     public static function getMainDepartments(): Collection
     {
         return Department::whereNull('parent_id')->get();
@@ -30,9 +30,9 @@ class Department extends Model
 
     public function positions(): HasMany
     {
-        if($this->parent_id == null){
-            return $this->hasMany(Position::class);   
-        }else{
+        if ($this->parent_id == null) {
+            return $this->hasMany(Position::class);
+        } else {
             return $this->parent()->first()->hasMany(Position::class);
         }
     }
@@ -41,7 +41,7 @@ class Department extends Model
     public function users(): SimpleCollection
     {
         $users = collect();
-        
+
         $users = $users->merge($this->hasMany(User::class, 'department_id')->get());
 
         $this->childDepartments->each(function ($childDepartment) use (&$users) {
@@ -51,11 +51,11 @@ class Department extends Model
         return $users;
     }
 
-    public function activeUsers(Carbon $date = null):  SimpleCollection
+    public function activeUsers(Carbon $date = null): SimpleCollection
     {
         $users = $this->users();
-        
-        if($date != null){
+
+        if ($date != null) {
             $users = $users->where('created_at', '<=', $date->endOfMonth());
         }
 
@@ -66,7 +66,7 @@ class Department extends Model
     {
         return $this->belongsTo(Department::class, 'parent_id');
     }
-    
+
     public function childDepartments(): HasMany
     {
         return $this->hasMany(Department::class, 'parent_id');
@@ -77,12 +77,16 @@ class Department extends Model
         return $this->hasMany(WorkPlan::class);
     }
 
-    public static function getMainSaleDepartment() : ?Department
+    public static function getSaleDepartments()
+    {
+        return Department::where('type', Department::SALE_DEPARTMENT)
+            ->get();
+    }
+
+    public static function getMainSaleDepartment(): ?Department
     {
         return Department::where('type', Department::SALE_DEPARTMENT)
             ->whereNull('parent_id')
             ->first();
     }
-
 }
- 

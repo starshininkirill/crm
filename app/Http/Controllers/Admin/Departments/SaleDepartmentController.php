@@ -32,8 +32,14 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
+        $departments = Department::getSaleDepartments();
+        if ($request->filled(['department'])) {
+            $selectDepartment = $departments->where('id', $request->department)->first();
+        } else {
+            $selectDepartment = $departments->whereNull('parent_id')->first();
+        }
 
-        $selectUsers = Department::getMainSaleDepartment()->activeUsers();
+        $selectUsers = $selectDepartment->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
 

@@ -114,7 +114,6 @@ class ReportService
             $reportInfo = $this->fullData;
         }
 
-
         $report = collect();
         $newPaymentsGroupedByDate = $this->groupPaymentsByDate(
             optional($reportInfo->newPayments)->isNotEmpty() ? $reportInfo->newPayments : collect(),
