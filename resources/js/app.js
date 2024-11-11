@@ -3,11 +3,11 @@ import '../css/app.css';
 
 
 import { createApp } from 'vue/dist/vue.esm-bundler';
-import CalendarDay from './components/CalendarDay.vue';
+import CalendarMonth from './components/CalendarMonth.vue';
 
 const app = createApp({
     components: {
-        'calendar-day': CalendarDay,
+        'vue-calendar-month': CalendarMonth,
     }
 });
 

@@ -89,7 +89,7 @@ class User extends Authenticatable
 
         $workingDays = DateHelper::getWorkingDaysInMonth($employmentDate);
 
-        while (!in_array($employmentDate->format('Y-m-d'), $workingDays)) {
+        while (!$workingDays->contains($employmentDate->format('Y-m-d'))) {
             $employmentDate->add(1, 'day');
         }
 

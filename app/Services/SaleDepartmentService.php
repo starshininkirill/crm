@@ -8,6 +8,7 @@ use App\Helpers\DateHelper;
 use App\Models\Contract;
 use App\Models\Department;
 use App\Models\ServiceCategory;
+use App\Models\WorkingDay;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -36,7 +37,8 @@ class SaleDepartmentService
         $this->user = $user;
         $this->department = Department::getMainSaleDepartment();
 
-        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
+
+        $this->workingDays = DateHelper::getWorkingDaysInMonth($date, WorkingDay::whereYear('date', $date->format('Y')));
         $this->mounthWorkPlan = $this->getMounthPlan();
         $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
 
@@ -423,7 +425,7 @@ class SaleDepartmentService
 
         foreach ($weeks as $week) {
             $newFilteredPayments = $this->newPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFiltredContractsIds = $newFilteredPayments->pluck('contract_id')->unique();
@@ -440,7 +442,7 @@ class SaleDepartmentService
             $newUniqueContracts = Contract::whereIn('id', $newUniqueContractsIds)->get();
 
             $oldFilteredPayments = $this->oldPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFilteredPaymentsSum = $newFilteredPayments->sum('value');
@@ -448,8 +450,8 @@ class SaleDepartmentService
 
 
             $weekResult = [
-                'start' => $week['start']->format('d'),
-                'end' => $week['end']->format('d'),
+                'start' => $week['date_start']->format('d'),
+                'end' => $week['date_end']->format('d'),
                 'goal' => $weekPlan,
                 'newMoney' => $newFilteredPaymentsSum,
                 'oldMoney' => $oldFilteredPaymentsSum,

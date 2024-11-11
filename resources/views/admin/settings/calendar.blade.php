@@ -11,10 +11,10 @@
     </form>
     <div class="grid grid-cols-4 auto-rows-max gap-6">
         @foreach ($months as $month)
-            <calendar-day 
+            <vue-calendar-month 
                 :month-name="{{ json_encode($month['name']) }}" 
                 :weeks="{{ json_encode($month['weeks']) }}">
-            </calendar-day>
+            </vue-calendar-month>
         @endforeach
     </div>
 @endsection

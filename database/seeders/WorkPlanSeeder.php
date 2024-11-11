@@ -218,7 +218,7 @@ class WorkPlanSeeder extends Seeder
         // Создание месячных планов продажников
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 150000,
+            'goal' => 140000,
             'mounth' => 1,
             'department_id' => 1,
             'created_at' => $lastMonth,

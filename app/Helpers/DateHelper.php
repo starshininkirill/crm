@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\FinanceWeek;
 use App\Models\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -57,6 +58,29 @@ class DateHelper
         return $months;
     }
 
+
+    public static function getWorkingDaysInMonth(Carbon $date, Collection $workingDays = null): Collection
+    {
+        $start = $date->copy()->startOfMonth();
+        $end = $date->copy()->endOfMonth();
+        $days = collect();
+
+        if ($workingDays == null) {
+            $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
+        }
+
+
+        $period = CarbonPeriod::create($start, $end);
+
+        foreach ($period as $day) {
+            if (self::isWorkingDay($day, $workingDays)) {
+                $days[] = $day->format('Y-m-d');
+            }
+        }
+
+        return $days;
+    }
+
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
 
@@ -73,24 +97,7 @@ class DateHelper
         return $date->isWeekday();
     }
 
-    public static function getWorkingDaysInMonth(Carbon $date): array
-    {
-        $start = $date->copy()->startOfMonth();
-        $end = $date->copy()->endOfMonth();
-        $days = [];
-
-        $period = CarbonPeriod::create($start, $end);
-
-        foreach ($period as $day) {
-            if (self::isWorkingDay($day)) {
-                $days[] = $day->format('Y-m-d');
-            }
-        }
-
-        return $days;
-    }
-
-    public static function getValidatedDateOrNow(string|null $date , string $format = 'Y-m'): Carbon
+    public static function getValidatedDateOrNow(string|null $date, string $format = 'Y-m'): Carbon
     {
 
         if ($date != null && DateHelper::isValidYearMonth($date, $format)) {
@@ -118,6 +125,18 @@ class DateHelper
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
 
+        $financeWeeks = FinanceWeek::where('date_start', '>=',  $startOfMonth)
+            ->where('date_end', '<=', $endOfMonth)
+            ->get();
+        if (!$financeWeeks->isEmpty()) {
+            $financeWeeks->map(function ($week) {
+                $week->date_start = Carbon::parse($week->date_start);
+                $week->date_end = Carbon::parse($week->date_end);
+                return $week;
+            });
+            return $financeWeeks;
+        }
+
         // Начинаем с первого дня месяца
         $current = $startOfMonth->copy();
 
@@ -140,8 +159,8 @@ class DateHelper
 
             // Добавляем неделю в массив
             $weeks[] = [
-                'start' => $startOfWeek,
-                'end' => $endOfWeek,
+                'date_start' => $startOfWeek,
+                'date_end' => $endOfWeek,
             ];
             // Переходим к следующему дню после конца текущей недели
             $current = $endOfWeek->copy()->addDay();
@@ -149,13 +168,21 @@ class DateHelper
 
         return $weeks;
     }
-    public static function getNearestPreviousWorkingDay(Carbon $date): string
-    {
-        $workingDays = self::getWorkingDaysInMonth($date);
-        $date = Carbon::parse($date);
 
-        while (!in_array($date->format('Y-m-d'), $workingDays)) {
+    public static function getNearestPreviousWorkingDay(Carbon $date, Collection|array $workingDays = null): string
+    {
+        if ($workingDays == null) {
+            $workingDays = self::getWorkingDaysInMonth($date);
+        }
+
+        $date = Carbon::parse($date);
+        $startOfMonth = $date->copy()->startOfMonth();
+
+        while (!$workingDays->contains($date->format('Y-m-d'))) {
             $date->subDay();
+            if ($date->lessThan($startOfMonth)) {
+                return $workingDays->first();
+            }
         }
 
         return $date->format('Y-m-d');

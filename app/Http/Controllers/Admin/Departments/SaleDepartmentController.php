@@ -13,6 +13,7 @@ use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SaleDepartmentController extends Controller
 {
@@ -35,6 +36,7 @@ class SaleDepartmentController extends Controller
         $selectUsers = Department::getMainSaleDepartment()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
+
         if ($request->filled(['user', 'date'])) {
             try {
                 $date = new Carbon($requestData['date']);
@@ -47,8 +49,8 @@ class SaleDepartmentController extends Controller
                 $reportService = new ReportService($this->plansService, $date);
 
                 $daylyReport = $reportService->mounthByDayReport($user);
-                $motivationReport = $reportService->motivationReport($user);
 
+                $motivationReport = $reportService->motivationReport($user);
                 $pivotWeeks = $reportService->pivotWeek();
                 $pivotDaily = $reportService->mounthByDayReport();
 
@@ -65,19 +67,20 @@ class SaleDepartmentController extends Controller
                 }
             }
         }
+
         return view(
             'admin.departments.sale.report',
             [
                 'selectUsers' => $selectUsers,
                 'users' => $users ?? collect(),
-                'user' => isset($user) ? $user : null,
-                'date' => isset($date) ? $date : null,
-                'daylyReport' => isset($daylyReport) ? $daylyReport : collect(),
-                'motivationReport' => isset($motivationReport) ? $motivationReport : collect(),
-                'pivotWeeks' => isset($pivotWeeks) ? $pivotWeeks : collect(),
-                'pivotDaily' => isset($pivotDaily) ? $pivotDaily : collect(),
-                'pivotUsers' => isset($pivotUsers) ? $pivotUsers : collect(),
-                'generalPlan' => isset($generalPlan) ? $generalPlan : collect(),
+                'user' => $user ?? null,
+                'date' => $date ?? null,
+                'daylyReport' => $daylyReport ?? collect(),
+                'motivationReport' => $motivationReport ?? collect(),
+                'pivotWeeks' => $pivotWeeks ?? collect(),
+                'pivotDaily' => $pivotDaily ?? collect(),
+                'pivotUsers' => $pivotUsers ?? collect(),
+                'generalPlan' => $generalPlan ?? collect(),
                 'serviceCategoryModel' => ServiceCategory::class,
                 'error' => $error ?? ''
             ]
@@ -86,7 +89,6 @@ class SaleDepartmentController extends Controller
 
     public function reportSettings(Request $request)
     {
-
         $requestDate = $request->query('date');
 
         if ($requestDate && DateHelper::isValidYearMonth($requestDate)) {

@@ -37,7 +37,7 @@ import axios from 'axios';
 
 export default {
     props: {
-        monthName: String,
+        monthName: String, 
         weeks: Array,
     },
     methods: {

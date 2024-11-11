@@ -10,6 +10,7 @@ use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleDepartmentServices\PlansService;
+use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
@@ -33,7 +34,7 @@ class ReportService
         ]);
 
         $today = date("Y-m-d");
-        $pastDates = array_filter($this->fullData->workingDays, function ($date) use ($today) {
+        $pastDates = $this->fullData->workingDays->filter(function ($date) use ($today) {
             return $date <= $today;
         });
         $countPastDates = count($pastDates);
@@ -43,9 +44,9 @@ class ReportService
             $res['mounthPlan'] += $user['mounthPlan']['goal'];
         }
 
-        if($countPastDates > 0){
+        if ($countPastDates > 0) {
             $res['faktOnDay'] = $this->fullData->newMoney / $countPastDates;
-        }else{
+        } else {
             $res['faktOnDay'] = $this->fullData->newMoney;
         }
 
@@ -76,7 +77,7 @@ class ReportService
         $report = collect();
 
         $this->planService->prepareData($this->fullData);
-        $report['weeks'] = $this->planService->weeksReport();
+        $report['weeksPlan'] = $this->planService->weeksReport();
         $report['totalValues'] = $this->planService->totalValues();
 
         return $report;
@@ -113,14 +114,14 @@ class ReportService
             $reportInfo = $this->fullData;
         }
 
+
         $report = collect();
-
-        $newPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->newPayments)->isNotEmpty() ? $reportInfo->newPayments : collect(), $reportInfo->workingDays);
-
+        $newPaymentsGroupedByDate = $this->groupPaymentsByDate(
+            optional($reportInfo->newPayments)->isNotEmpty() ? $reportInfo->newPayments : collect(),
+            $reportInfo->workingDays
+        );
         $uniqueNewPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->newPayments)->unique('contract_id') ?? collect(), $reportInfo->workingDays);
-
         $oldPaymentsGroupedByDate = $this->groupPaymentsByDate(optional($reportInfo->oldPayments)->isNotEmpty() ? $reportInfo->oldPayments : collect(), $reportInfo->workingDays);
-
         foreach ($reportInfo->workingDays as $day) {
             $dayFormatted = Carbon::parse($day)->format('Y-m-d');
             $report[] = $this->generateDailyReport($dayFormatted, $newPaymentsGroupedByDate, $oldPaymentsGroupedByDate, $uniqueNewPaymentsGroupedByDate);
@@ -154,13 +155,13 @@ class ReportService
 
     private function groupPaymentsByDate(Collection $payments, $workingDays): Collection
     {
-        $workingDays = $workingDays;
         return $payments->groupBy(function ($payment) use ($workingDays) {
             $paymentDate = Carbon::parse($payment->created_at);
 
-            return in_array($paymentDate, $workingDays)
+            return $workingDays->contains($paymentDate)
                 ? $paymentDate
-                : DateHelper::getNearestPreviousWorkingDay($paymentDate);
+                : DateHelper::getNearestPreviousWorkingDay($paymentDate, $this->fullData->workingDays);
         });
     }
+
 }

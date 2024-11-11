@@ -103,7 +103,7 @@ class PlansService
         foreach ($weeks as $week) {
 
             $newFilteredPayments = $this->reportInfo->newPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFiltredContractsIds = $newFilteredPayments->pluck('contract_id')->unique();
@@ -119,7 +119,7 @@ class PlansService
             $newUniqueContracts = $this->reportInfo->contracts->whereIn('id', $newUniqueContractsIds);
 
             $oldFilteredPayments = $this->reportInfo->oldPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFilteredPaymentsSum = $newFilteredPayments->sum('value');
@@ -127,8 +127,8 @@ class PlansService
 
 
             $weekResult = collect([
-                'start' => $week['start']->format('d'),
-                'end' => $week['end']->format('d'),
+                'start' => $week['date_start']->format('d'),
+                'end' => $week['date_end']->format('d'),
                 'goal' => $weekPlan,
                 'newMoney' => $newFilteredPaymentsSum,
                 'oldMoney' => $oldFilteredPaymentsSum,
@@ -160,7 +160,7 @@ class PlansService
         foreach ($weeks as $week) {
 
             $newFilteredPayments = $this->reportInfo->newPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFiltredContractsIds = $newFilteredPayments->pluck('contract_id')->unique();
@@ -176,7 +176,7 @@ class PlansService
             $newUniqueContracts = $this->reportInfo->contracts->whereIn('id', $newUniqueContractsIds);
 
             $oldFilteredPayments = $this->reportInfo->oldPayments->filter(function ($payment) use ($week) {
-                return $payment->created_at->between($week['start'], $week['end']);
+                return $payment->created_at->between($week['date_start'], $week['date_end']);
             });
 
             $newFilteredPaymentsSum = $newFilteredPayments->sum('value');
@@ -184,8 +184,8 @@ class PlansService
 
 
             $weekResult = collect([
-                'start' => $week['start']->format('d'),
-                'end' => $week['end']->format('d'),
+                'start' => $week['date_start']->format('d'),
+                'end' => $week['date_end']->format('d'),
                 'newMoney' => $newFilteredPaymentsSum,
                 'oldMoney' => $oldFilteredPaymentsSum,
             ]);

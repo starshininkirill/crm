@@ -1,55 +1,55 @@
 <table class="min-w-full border border-gray-300">
     <thead>
         <tr class="bg-gray-800">
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Менеджер
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 NEW $
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 OLD $
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Инд
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Гот
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 РК
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 СЕО
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Иное
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 План Месяц
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Двойной план
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Бонус план
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Супер план
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Б1
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Б2
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Б3
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Б4
             </th>
-            <th class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+            <th style="width: calc(100% / 17)" class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                 Итого
             </th>
         </tr>

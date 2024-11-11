@@ -7,10 +7,12 @@ use App\Helpers\ServiceCountHelper;
 use App\Models\Department;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\WorkingDay;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReportInfo
 {
@@ -18,7 +20,7 @@ class ReportInfo
     public float|int $oldMoney = 0;
     public WorkPlan $mounthWorkPlan;
     public float|int $mounthWorkPlanGoal;
-    public array $workingDays;
+    public Collection $workingDays;
     public Collection $payments;
     public Collection $newPayments;
     public Collection $oldPayments;
@@ -57,9 +59,9 @@ class ReportInfo
         if($this->workPlans->isEmpty()){
             throw new Exception('Нет планов для рассчёта');
         }
-
-        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
-
+    
+        $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
+        $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
         $this->payments = Payment::getMonthlyPayments($date);
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
@@ -121,7 +123,9 @@ class ReportInfo
 
         $this->workPlans = WorkPlan::where('department_id', $this->departmentId)->get();
 
-        $this->workingDays = DateHelper::getWorkingDaysInMonth($date);
+        $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
+        $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
+
         $this->mounthWorkPlan = $this->getMounthPlan();
         $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
 
@@ -162,8 +166,6 @@ class ReportInfo
         if (isset($mounthPlan) && $mounthPlan != null) {
             return $mounthPlan;
         }
-
-
 
         $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $monthsWorked) {
             return $plan->department_id == $departmentId &&
