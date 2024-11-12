@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\ContractController;
+use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -12,7 +12,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WorkingDayController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\FinanceWeekController;
+use App\Http\Controllers\Lk\ContractController as LkContractController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
@@ -43,6 +45,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [LkPaymentController::class, 'create'])->name('lk.payment.create');
             Route::post('/store', [LkPaymentController::class, 'store'])->name('lk.payment.store');
         });
+        Route::prefix('/contracts')->group(function () {
+            Route::get('/create', [LkContractController::class, 'create'])->name('lk.contract.create');
+        });
     });
 });
 
@@ -51,11 +56,11 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     Route::prefix('contracts')->group(function () {
-        Route::get('', [ContractController::class, 'index'])->name('admin.contract.index');
-        Route::get('/create', [ContractController::class, 'create'])->name('admin.contract.create');
-        Route::post('/store', [ContractController::class, 'store'])->name('admin.contract.store');
-        Route::post('/{contract}/attach-user', [ContractController::class, 'attachUser'])->name('admin.contract.attachUser');
-        Route::get('/show/{contract}', [ContractController::class, 'show'])->name('admin.contract.show');
+        Route::get('', [AdminContractController::class, 'index'])->name('admin.contract.index');
+        Route::get('/create', [AdminContractController::class, 'create'])->name('admin.contract.create');
+        Route::post('/store', [AdminContractController::class, 'store'])->name('admin.contract.store');
+        Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
+        Route::get('/show/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
     });
 
     Route::prefix('payments')->group(function () {
@@ -119,10 +124,13 @@ Route::middleware('auth')->group(function () {
         'destroy'
     ]);
 
+    Route::resource('contract', ContractController::class)->only([
+        'store',
+    ]);
+
+
     Route::post('/working-day', [WorkingDayController::class, 'toggleType']);
 
     Route::post('/finance-week', [FinanceWeekController::class, 'setWeeks'])->name('finance-week.set-weeks');
     Route::put('/finance-week', [FinanceWeekController::class, 'updateWeeks'])->name('finance-week.set-weeks');
-
-
 })->middleware('role:admin');

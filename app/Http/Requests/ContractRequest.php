@@ -61,7 +61,7 @@ class ContractRequest extends FormRequest
             ]);
         }
 
-        return [];
+        return $default;
     }
 
     public function messages(): array

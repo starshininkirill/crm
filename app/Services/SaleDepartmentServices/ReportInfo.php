@@ -55,11 +55,11 @@ class ReportInfo
             ->whereMonth('created_at', $date->month)
             ->with('serviceCategory')
             ->get();
-        
-        if($this->workPlans->isEmpty()){
+
+        if ($this->workPlans->isEmpty()) {
             throw new Exception('Нет планов для рассчёта');
         }
-    
+
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
         $this->payments = Payment::getMonthlyPayments($date);
