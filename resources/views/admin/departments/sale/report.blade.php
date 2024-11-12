@@ -4,24 +4,14 @@
     <h1 class="text-4xl font-semibold mb-6">
         Отчёт по Сотрудникам
     </h1>
-    <form action="{{ route('admin.department.sale.user-report') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
-        <input type="month" name="date" class="border px-3 py-1"
-            value="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}">
-        <select class="select max-w-52 w-fit" name="user" id="">
-            <option disabled {{ $user != null ? '' : 'selected' }} value="">
-                Выберите сотрудника
-            </option>
-            @foreach ($selectUsers as $optionUser)
-                <option {{ optional($user)->id == $optionUser->id ? 'selected' : '' }} value="{{ $optionUser->id }}">
-                    {{ $optionUser->first_name }} {{ $optionUser->last_name }}
-                </option>
-            @endforeach
-        </select>
-
-        <button type="submit" class="btn">
-            Выбрать
-        </button>
-    </form>
+    <vue-user-sale-report-form
+        action="{{ route('admin.department.sale.user-report') }}"
+        :departments="{{ json_encode($departments) }}"
+        :users="{{ json_encode($selectUsers) }}"
+        :initial-department="{{ json_encode($selectedDepartment) }}"
+        :initial-user="{{ json_encode($user) }}"
+        initial-date="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}"
+    ></vue-user-sale-report-form>
     @if ($daylyReport->isEmpty() && $motivationReport->isEmpty())
         @if (!$error)
             <h2>Данные для отчёта не найдены</h2>

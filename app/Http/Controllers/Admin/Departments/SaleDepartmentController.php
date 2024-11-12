@@ -39,13 +39,13 @@ class SaleDepartmentController extends Controller
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
 
-        $selectUsers = $selectDepartment->activeUsers();
+        $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
 
         if ($request->filled(['user', 'date'])) {
             try {
-                $date = new Carbon($requestData['date']);
+                $date = DateHelper::getValidatedDateOrNow($requestData['date']);
                 $user = User::find($requestData['user']);
 
                 if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
@@ -77,6 +77,8 @@ class SaleDepartmentController extends Controller
         return view(
             'admin.departments.sale.report',
             [
+                'departments' => $departments ?? collect(),
+                'selectedDepartment' => $selectDepartment ?? null,
                 'selectUsers' => $selectUsers,
                 'users' => $users ?? collect(),
                 'user' => $user ?? null,
@@ -97,11 +99,7 @@ class SaleDepartmentController extends Controller
     {
         $requestDate = $request->query('date');
 
-        if ($requestDate && DateHelper::isValidYearMonth($requestDate)) {
-            $date = Carbon::parse($requestDate);
-        } else {
-            $date = Carbon::now();
-        }
+        $date = DateHelper::getValidatedDateOrNow($requestDate);
 
         $date->format('Y-m') == Carbon::now()->format('Y-m') ? $isCurrentMonth = true : $isCurrentMonth = false;
 
