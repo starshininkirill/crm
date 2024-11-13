@@ -4,8 +4,13 @@
          {{ label }}
       </label>
       <div class="mt-1">
-         <input :type="type" :name="name" :placeholder="placeholder" :value="value" :required="required"
-            @input="$emit('update:value', $event.target.value)"
+         <input 
+            :type="type" 
+            :name="name" 
+            :placeholder="placeholder" 
+            :value="modelValue" 
+            :required="required"
+            @input="$emit('update:modelValue', $event.target.value)" 
             class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
       </div>
    </div>
@@ -13,7 +18,12 @@
 
 <script>
 export default {
+   name: 'vue-form-input',
    props: {
+      modelValue: { 
+         type: [String, Number],
+         default: ''
+      },
       type: {
          type: String,
          default: 'text'
@@ -28,10 +38,6 @@ export default {
       },
       label: {
          type: String,
-         default: ''
-      },
-      value: {
-         type: [String, Number],
          default: ''
       },
       required: {
