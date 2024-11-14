@@ -69,7 +69,6 @@ class DateHelper
             $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         }
 
-
         $period = CarbonPeriod::create($start, $end);
 
         foreach ($period as $day) {
@@ -83,8 +82,7 @@ class DateHelper
 
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
-
-        if ($workingDays == null || $workingDays->isEmpty()) {
+        if ($workingDays == null) {
             $dateInstance = WorkingDay::whereDate('date', $date)->first();
         } else {
             $dateInstance = $workingDays->where('date', $date->format('Y-m-d'))->first();

@@ -4,6 +4,7 @@ namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
+use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Payment;
 use App\Models\User;
@@ -70,7 +71,7 @@ class ReportInfo
 
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
-        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, $this->department->users()->pluck('id'));
+        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, $this->department->users()->pluck('id'), ContractUser::SALLER);
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
         $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
@@ -148,7 +149,7 @@ class ReportInfo
         $this->mounthWorkPlan = $this->getMounthPlan();
         $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
 
-        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id]);
+        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SALLER);
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
         $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);

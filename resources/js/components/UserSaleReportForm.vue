@@ -1,5 +1,8 @@
 <template>
    <form :action="action" class="flex w-1/2 gap-3 mb-6">
+      <!-- Select Date -->
+      <input type="month" name="date" class="border px-3 py-1" v-model="selectedDate">
+
       <!-- Select Department -->
       <select name="department" class="select max-w-52 w-fit" v-model="selectedDepartmentId">
          <option disabled :selected="!selectedDepartmentId" value="">
@@ -9,9 +12,6 @@
             {{ department.name }}
          </option>
       </select>
-
-      <!-- Select Date -->
-      <input type="month" name="date" class="border px-3 py-1" v-model="selectedDate">
 
       <!-- Select User -->
       <select name="user" class="select max-w-52 w-fit" v-model="selectedUser">

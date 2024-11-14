@@ -25,11 +25,6 @@ class User extends Authenticatable
     const ROLE_SALLER = 'saller';
     const ROLE_USER = 'user';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'first_name',
         'last_name',
@@ -39,21 +34,11 @@ class User extends Authenticatable
         'position_id'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -126,16 +111,16 @@ class User extends Authenticatable
             ->get();
     }
 
-    public static function monthlyClosePaymentsForRoleGroup(Carbon $date, array|Collection $userIds)
+    public static function monthlyClosePaymentsForRoleGroup(Carbon $date, array|Collection $userIds, int $role)
     {
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
 
         return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
         ->where('status', Payment::STATUS_CLOSE)
-        ->whereHas('contract.contractUsers', function ($query) use ($userIds) {
+        ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
             $query->whereIn('user_id', $userIds)
-                  ->where('role', ContractUser::SALLER);
+                  ->where('role', $role);
         })
         ->with([
             'contract.services.category',

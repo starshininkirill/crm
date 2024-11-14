@@ -33,7 +33,6 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
-
         $departments = Department::getSaleDepartments();
 
         if ($request->filled(['department'])) {
@@ -46,10 +45,10 @@ class SaleDepartmentController extends Controller
 
         $requestData = $request->only(['user', 'date']);
 
+
         if ($request->filled(['user', 'date'])) {
             try {
                 $date = DateHelper::getValidatedDateOrNow($requestData['date']);
-
                 $user = User::find($requestData['user']);
 
                 if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
@@ -66,7 +65,6 @@ class SaleDepartmentController extends Controller
                 $pivotDaily = $reportService->mounthByDayReport();
 
                 $users = $selectDepartment->activeUsers($date);
-
                 $pivotUsers = $reportService->pivotUsers($users);
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
@@ -78,7 +76,6 @@ class SaleDepartmentController extends Controller
                 }
             }
         }
-
         return view(
             'admin.departments.sale.report',
             [
