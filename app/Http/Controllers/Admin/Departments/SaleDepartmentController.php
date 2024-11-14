@@ -9,6 +9,7 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use App\Services\SaleDepartmentServices\PlansService;
+use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Exception;
@@ -32,7 +33,10 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
+
+
         $departments = Department::getSaleDepartments();
+
         if ($request->filled(['department'])) {
             $selectDepartment = $departments->where('id', $request->department)->first();
         } else {
@@ -52,8 +56,8 @@ class SaleDepartmentController extends Controller
                     $error = 'Сотрудник ещё не работал в этот месяц.';
                 }
 
-                
-                $reportService = new ReportService($this->plansService, $date);
+                $reportInfo = new ReportInfo($date, null, $selectDepartment->id);
+                $reportService = new ReportService($this->plansService, $reportInfo);
 
                 $daylyReport = $reportService->mounthByDayReport($user);
 

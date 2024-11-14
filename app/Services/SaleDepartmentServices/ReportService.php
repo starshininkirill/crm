@@ -17,10 +17,10 @@ class ReportService
     protected $planService;
     protected $fullData;
 
-    public function __construct(PlansService $planService, Carbon $date)
+    public function __construct(PlansService $planService, ReportInfo $reportInfo)
     {
         $this->planService = $planService;
-        $this->fullData = new ReportInfo($date);
+        $this->fullData = $reportInfo;
     }
 
     public function generalPlan($pivotUsers): Collection

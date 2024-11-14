@@ -118,4 +118,18 @@ class Payment extends Model
             ])
             ->get();
     }
+
+    public static function getMonthlyPaymentsByUserGroup(Carbon $date, Collection $users, RoleInContract $role): Collection
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->where('status', Payment::STATUS_CLOSE)
+            ->with([
+                'contract.services.category',
+                'contract.users'
+            ])
+            ->get();
+    }
 }

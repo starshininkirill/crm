@@ -33,7 +33,7 @@ class ReportInfo
     public Collection $workPlans;
     public $isUserData = false;
 
-    public function __construct(Carbon $date = null, User $user = null)
+    public function __construct(Carbon $date = null, User $user = null, int $departmentId = null)
     {
         if ($user == null && $date == null) {
             return null;
@@ -45,10 +45,15 @@ class ReportInfo
         }
     }
 
-    private function prepareFullData(Carbon $date): void
+    private function prepareFullData(Carbon $date, int $departmentId = null): void
     {
         $this->date = $date;
-        $this->departmentId = Department::getMainSaleDepartment()->id;
+
+        if($departmentId != null){  
+            $this->departmentId = $departmentId;
+        }else{
+            $this->departmentId = Department::getMainSaleDepartment()->id;
+        }
 
         $this->workPlans = WorkPlan::where('department_id', $this->departmentId)
             ->whereYear('created_at', $date->year)
