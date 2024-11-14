@@ -13,7 +13,7 @@
                               @endauth
                               <x-header-nav-link href="{{ route('admin') }}" route="admin*">
                                   Админка
-                                  </x-nav-link>
+                                </x-nav-link>
 
                   </div>
                   <div class="flex items-center space-x-4">

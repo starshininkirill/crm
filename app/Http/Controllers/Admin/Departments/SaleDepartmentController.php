@@ -52,6 +52,7 @@ class SaleDepartmentController extends Controller
                     $error = 'Сотрудник ещё не работал в этот месяц.';
                 }
 
+                
                 $reportService = new ReportService($this->plansService, $date);
 
                 $daylyReport = $reportService->mounthByDayReport($user);

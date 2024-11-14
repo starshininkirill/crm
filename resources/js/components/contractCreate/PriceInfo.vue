@@ -6,7 +6,7 @@
             </div>
             <div v-show="showForm" class="flex flex-col gap-4 p-2 mt-2">
                 <div class="grid grid-cols-2 gap-2">
-                    <vue-form-input v-model="amountPrice" type="number" name="amount_price" placeholder="Общая сумма" label="Общая сумма" />
+                    <vue-form-input min="0" v-model="amountPrice" type="number" name="amount_price" placeholder="Общая сумма" label="Общая сумма" />
                     <vue-form-input type="text" name="test" placeholder="В разработке" label="Срок оказания услуг(В разработке)" />
                 </div>
             </div>
