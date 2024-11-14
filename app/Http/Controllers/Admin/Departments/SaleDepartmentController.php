@@ -34,7 +34,6 @@ class SaleDepartmentController extends Controller
     public function userReport(Request $request)
     {
 
-
         $departments = Department::getSaleDepartments();
 
         if ($request->filled(['department'])) {
@@ -42,7 +41,7 @@ class SaleDepartmentController extends Controller
         } else {
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
-
+ 
         $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
@@ -50,13 +49,14 @@ class SaleDepartmentController extends Controller
         if ($request->filled(['user', 'date'])) {
             try {
                 $date = DateHelper::getValidatedDateOrNow($requestData['date']);
+
                 $user = User::find($requestData['user']);
 
                 if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
                     $error = 'Сотрудник ещё не работал в этот месяц.';
                 }
 
-                $reportInfo = new ReportInfo($date, null, $selectDepartment->id);
+                $reportInfo = new ReportInfo($date, null, $selectDepartment);
                 $reportService = new ReportService($this->plansService, $reportInfo);
 
                 $daylyReport = $reportService->mounthByDayReport($user);
@@ -65,7 +65,7 @@ class SaleDepartmentController extends Controller
                 $pivotWeeks = $reportService->pivotWeek();
                 $pivotDaily = $reportService->mounthByDayReport();
 
-                $users = Department::getMainSaleDepartment()->activeUsers($date);
+                $users = $selectDepartment->activeUsers($date);
 
                 $pivotUsers = $reportService->pivotUsers($users);
 

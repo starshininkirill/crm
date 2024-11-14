@@ -125,4 +125,22 @@ class User extends Authenticatable
             ->with(['contract.services.category'])
             ->get();
     }
+
+    public static function monthlyClosePaymentsForRoleGroup(Carbon $date, array|Collection $userIds)
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+        ->where('status', Payment::STATUS_CLOSE)
+        ->whereHas('contract.contractUsers', function ($query) use ($userIds) {
+            $query->whereIn('user_id', $userIds)
+                  ->where('role', ContractUser::SALLER);
+        })
+        ->with([
+            'contract.services.category',
+            'contract.users'
+        ])
+        ->get();
+    }
 }

@@ -52,7 +52,7 @@
                         <div class="flex flex-col gap-2 text-xl font-semibold">
                             <div class="flex flex-col gap-1">
                                 <div class="text-2xl font-semibold">
-                                    {{ $data['role']->name }}:
+                                    {{ $data['role_name'] }}:
                                 </div>
                                 @foreach ($data['performers'] as $performer)
                                     <div class=" text-lg font-normal">
@@ -64,16 +64,16 @@
                             <form action="{{ route('admin.contract.attachUser', $contract->id) }}" method="post"
                                 class="flex flex-col gap-3">
                                 @csrf
-                                <input type="hidden" name="role_in_contracts_id" value="{{ $data['role']->id }}">
+                                <input type="hidden" name="role" value="{{ $data['role'] }}">
                                 <select id="user_id" name="user_id" class="select">
                                     <option disabled selected value="">
                                         Выберите исполнителя
                                     </option>
-                                    @foreach ($data['role']->getPerformers() as $performer)
+                                    {{-- @foreach ($data['role']->getPerformers() as $performer)
                                         <option value="{{ $performer->id }}">
                                             {{ $performer->first_name }} {{ $performer->last_name }}
                                         </option>
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                                 <button class="btn">
                                     Добавить

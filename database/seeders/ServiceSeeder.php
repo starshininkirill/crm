@@ -5,14 +5,12 @@ namespace Database\Seeders;
 
 use App\Models\Client; 
 use App\Models\Contract;
+use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Service;
 use App\Models\Payment;
-use App\Models\RoleInContract;
 use App\Models\ServiceCategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
 
 class ServiceSeeder extends Seeder
 {
@@ -139,10 +137,9 @@ class ServiceSeeder extends Seeder
 
             if ($users->count() > 0) {
                 $randomUser = $users->random();
-                $roleInContractId = RoleInContract::where('is_saller', RoleInContract::IS_SALLER)->value('id');
                 
                 $randomUser->contracts()->attach($contract->id, [
-                    'role_in_contracts_id' => $roleInContractId,
+                    'role' => ContractUser::SALLER,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

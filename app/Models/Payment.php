@@ -119,7 +119,7 @@ class Payment extends Model
             ->get();
     }
 
-    public static function getMonthlyPaymentsByUserGroup(Carbon $date, Collection $users, RoleInContract $role): Collection
+    public static function getMonthlyPaymentsByUserGroup(Carbon $date, Collection $users, $role): Collection
     {
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();

@@ -218,13 +218,14 @@ class PlansService
             'completed' => false,
             'bonus' => 0,
         ]);
-        $departmentId = $this->reportInfo->departmentId;
+        // dd($this->reportInfo);
+        $mainDepartmentId = $this->reportInfo->mainDepartmentId;
         $isCompletedPlan = true;
         foreach ($this->reportInfo->services as $key => $service) {
             $servicePlan = $this->reportInfo->workPlans
-                ->filter(function ($workPlan) use ($planType, $departmentId, $key) {
+                ->filter(function ($workPlan) use ($planType, $mainDepartmentId, $key) {
                     return $workPlan->type === $planType
-                        && $workPlan->department_id === $departmentId
+                        && $workPlan->department_id === $mainDepartmentId
                         && isset($workPlan->serviceCategory)
                         && $workPlan->serviceCategory->type === $key;
                 })
@@ -437,7 +438,7 @@ class PlansService
 
         if ($noPercentageMonth != null && $mounthWorked > $noPercentageMonth->mounth) {
             $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
-                ->where('department_id', $this->reportInfo->departmentId)
+                ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->whereNotNull('goal')
                 ->orderBy('goal', 'asc')
                 ->skip(1)
@@ -449,13 +450,13 @@ class PlansService
 
         $workPlan = WorkPlan::where('goal', '>', $this->reportInfo->newMoney)
             ->where('type', WorkPlan::PERCENT_LADDER)
-            ->where('department_id', $this->reportInfo->departmentId)
+            ->where('department_id', $this->reportInfo->mainDepartmentId)
             ->orderBy('goal')
             ->first();
 
         if ($workPlan == null) {
             $workPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
-                ->where('department_id', $this->reportInfo->departmentId)
+                ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->orderBy('bonus', 'desc')
                 ->first();
         }
@@ -475,7 +476,7 @@ class PlansService
 
         if (!$report['b1']['completed']) {
             $b1Plan = WorkPlan::where('type', WorkPlan::B1_PLAN)
-                ->where('department_id', $this->reportInfo->departmentId)
+                ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->first();
             $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->bonus / 100));
             $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->bonus / 100));

@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractRequest;
 use App\Models\Client;
 use App\Models\Contract;
+use App\Models\ContractUser;
 use App\Models\Payment;
-use App\Models\RoleInContract;
 use App\Models\Service;
 use App\Services\ContractService;
 use Exception;
@@ -58,7 +58,7 @@ class ContractController extends Controller
 
             if ($createdContract) {
                 $this->contractService->addPaymentsToContract($createdContract, $data['payments']);
-                $this->contractService->attachPerformer($createdContract, $user->id, RoleInContract::IS_SALLER);
+                $this->contractService->attachPerformer($createdContract, $user->id, ContractUser::SALLER);
 
                 $services = Service::whereIn('id', $data['service'])->get();
                 $totalServicesPrice = $services->sum('price');

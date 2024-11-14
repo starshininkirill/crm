@@ -25,7 +25,8 @@ class ReportInfo
     public Collection $newPayments;
     public Collection $oldPayments;
     public Collection $contracts;
-    public int $departmentId;
+    public int $mainDepartmentId;
+    public Department $department;
     public Carbon $date;
     public User $user;
     public Collection $services;
@@ -33,29 +34,31 @@ class ReportInfo
     public Collection $workPlans;
     public $isUserData = false;
 
-    public function __construct(Carbon $date = null, User $user = null, int $departmentId = null)
+    public function __construct(Carbon $date = null, User $user = null, Department $department = null)
     {
         if ($user == null && $date == null) {
             return null;
         }
         if ($user == null) {
-            $this->prepareFullData($date);
+            $this->prepareFullData($date, $department);
         } else {
             $this->prepareUserData($date, $user);
         }
     }
 
-    private function prepareFullData(Carbon $date, int $departmentId = null): void
+    private function prepareFullData(Carbon $date, Department $department = null): void
     {
         $this->date = $date;
+        $mainDepartment = Department::getMainSaleDepartment();
+        $this->mainDepartmentId = $mainDepartment->id;
 
-        if($departmentId != null){  
-            $this->departmentId = $departmentId;
-        }else{
-            $this->departmentId = Department::getMainSaleDepartment()->id;
+        if ($department != null) {
+            $this->department = $department;
+        } else {
+            $this->department = $mainDepartment;
         }
 
-        $this->workPlans = WorkPlan::where('department_id', $this->departmentId)
+        $this->workPlans = WorkPlan::where('department_id', $this->mainDepartmentId)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month)
             ->with('serviceCategory')
@@ -67,7 +70,7 @@ class ReportInfo
 
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
-        $this->payments = Payment::getMonthlyPayments($date);
+        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, $this->department->users()->pluck('id'));
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
         $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
@@ -90,7 +93,7 @@ class ReportInfo
 
         $subdataInstance->date = $this->date;
         $subdataInstance->user = $user;
-        $subdataInstance->departmentId = $this->departmentId;
+        $subdataInstance->mainDepartmentId = $this->mainDepartmentId;
 
         $subdataInstance->workPlans = $this->workPlans;
 
@@ -120,13 +123,24 @@ class ReportInfo
     }
 
 
+    // TODO 
+    // Функция не импользуется( может не работать, нужно тестить )
     private function prepareUserData(Carbon $date, User $user)
     {
         $this->date = $date;
         $this->user = $user;
-        $this->departmentId = Department::getMainSaleDepartment()->id;
+        $mainDepartment = Department::getMainSaleDepartment();
+        $this->mainDepartmentId = $mainDepartment->id;
 
-        $this->workPlans = WorkPlan::where('department_id', $this->departmentId)->get();
+        $this->workPlans = WorkPlan::where('department_id', $this->mainDepartmentId)
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
+            ->with('serviceCategory')
+            ->get();
+
+        if ($this->workPlans->isEmpty()) {
+            throw new Exception('Нет планов для рассчёта');
+        }
 
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
@@ -134,7 +148,7 @@ class ReportInfo
         $this->mounthWorkPlan = $this->getMounthPlan();
         $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
 
-        $this->payments = $this->user->monthlyClosePaymentsWithRelations($this->date);
+        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id]);
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
         $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
@@ -156,7 +170,7 @@ class ReportInfo
             $user = $this->user;
         }
         $monthsWorked = $user->getMounthWorked($this->date);
-        $departmentId = $this->departmentId;
+        $departmentId = $this->mainDepartmentId;
         $userPosition = $user->position;
         $userPosition == null ? $userPositionId = null : $userPositionId = $userPosition->id;
 

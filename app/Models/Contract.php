@@ -52,6 +52,10 @@ class Contract extends Model
 
     public function saller()
     {
-        return $this->users()->wherePivot('role_in_contracts_id', RoleInContract::IS_SALLER)->first();
+        return $this->users()->wherePivot('role', ContractUser::SALLER)->first();
     }
+    public function contractUsers()
+{
+    return $this->hasMany(ContractUser::class);
+}
 }
