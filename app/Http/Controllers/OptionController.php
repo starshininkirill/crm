@@ -13,7 +13,13 @@ class OptionController extends Controller
     {
         $validated = $request->validated();
 
-        Option::create($validated);
+        $value = $validated['value'];        
+        $value = is_array($value) ? json_encode($value) : $value;
+
+        Option::create([
+            'name' => $validated['name'],
+            'value' => $value
+        ]);
 
         return redirect()->back()->with('success', 'Опция успешно создана');
     }
@@ -21,8 +27,11 @@ class OptionController extends Controller
     public function update(OptionRequest $request, Option $option)
     {
         $validated = $request->validated();
+
+        $value = $validated['value'];        
+        $value = is_array($value) ? json_encode($value) : $value;
         
-        $option->update($validated);
+        $option->update(['value' => $value]);
 
         return redirect()->back()->with('success', 'Опция успешно изменена');
     }

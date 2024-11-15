@@ -9,8 +9,9 @@
       </div>
 
       <vue-agent-info />
-      <vue-services-info :cats="cats" @updateService="updateServicePrice" :servicePrices="servicePrices" />
-      <vue-price-info :servicePrices="servicePrices" />
+      <vue-services-info :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
+         @updateService="updateServicePrice" :servicePrices="servicePrices" />
+      <vue-price-info :servicePrices="servicePrices" v-model:amountPrice="amountPrice" v-model="sale"  />
 
       <button type="submit" class="btn">Отправить</button>
    </form>
@@ -34,6 +35,12 @@ export default {
       stringCats: {
          type: String,
          required: true
+      },
+      stringMainCats: {
+         type: String,
+      },
+      stringSecondaryCats: {
+         type: String,
       }
    },
    components: {
@@ -44,35 +51,48 @@ export default {
    data() {
       return {
          cats: JSON.parse(this.stringCats),
-         servicePrices: [
-            {
-               'price': 0,
-               'duration': 0
-            }, {
-               'price': 0,
-               'duration': 0
-            }, {
-               'price': 0,
-               'duration': 0
-            }, {
-               'price': 0,
-               'duration': 0
-            }, {
-               'price': 0,
-               'duration': 0
-            }, {
-               'price': 0,
-               'duration': 0
-            },
+         mainCatsIds: JSON.parse(this.stringMainCats),
+         secondaryCatsIds: JSON.parse(this.stringSecondaryCats),
+         sale: 0,
+         amountPrice: 0,
+            servicePrices: [
+               {
+                  'price': 0,
+                  'duration': 0
+               }, {
+                  'price': 0,
+                  'duration': 0
+               }, {
+                  'price': 0,
+                  'duration': 0
+               }, {
+                  'price': 0,
+                  'duration': 0
+               }, {
+                  'price': 0,
+                  'duration': 0
+               }, {
+                  'price': 0,
+                  'duration': 0
+               },
          ],
       };
    },
+   watch: {
+      sale: 'recalculateAmountPrice',
+      servicePrices: {
+         handler: 'recalculateAmountPrice',
+         deep: true,
+      }
+   },
    methods: {
+      recalculateAmountPrice() {
+         const total = this.servicePrices.reduce((acc, item) => acc + parseInt(item.price), 0);
+         this.amountPrice = total - this.sale;
+      },
       updateServicePrice(index, price, duration) {
          this.servicePrices[index].price = price || 0;
          this.servicePrices[index].duration = duration || 0;
-         console.log(this.servicePrices);
-         
       }
    }
 };

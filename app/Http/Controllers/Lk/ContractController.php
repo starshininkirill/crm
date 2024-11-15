@@ -17,6 +17,7 @@ class ContractController extends Controller
         if (!$cats->isEmpty()) {
             $catsWithServices = $cats->map(function ($category) {
                 return [
+                    'id' => $category->id,
                     'category' => $category->name,
                     'services' => $category->services->map(function ($service) {
                         return [
@@ -29,14 +30,17 @@ class ContractController extends Controller
                 ];
             })->toJson();
         }
+        
+        $mainCategoriesOption = Option::where('name', 'contract_main_categories')->first();
+        $mainCats = $mainCategoriesOption != null ? $mainCategoriesOption->value : [];
 
-        $mainCats = Option::where('name', 'contract_main_categories')->first();
-        dd($mainCats);
+        $secondaryCategoriesOption = Option::where('name', 'contract_secondary_categories')->first();
+        $secondaryCats = $secondaryCategoriesOption != null ? $secondaryCategoriesOption->value : [];
 
         return view('lk.contract.create', [
             'cats' => $catsWithServices ?? [],
-            'mainCats' => [],
-            'secondaryCats' => []
+            'mainCats' => $mainCats,
+            'secondaryCats' => $secondaryCats
         ]);
     }
 }

@@ -19,7 +19,12 @@
         @endif
 
 
-        <vue-contract-create-form :string-cats='@json($cats)' action="{{ route('contract.store') }}" token="{{ csrf_token() }}" />
+        <vue-contract-create-form 
+            :string-cats='@json($cats)'
+            :string-main-cats='@json($mainCats)' 
+            :string-secondary-cats='@json($secondaryCats)' 
+            action="{{ route('contract.store') }}" 
+            token="{{ csrf_token() }}" />
 
 
     </div>

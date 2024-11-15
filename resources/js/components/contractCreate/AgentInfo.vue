@@ -1,14 +1,10 @@
 <template>
     <div class="flex flex-col w-full mb-6">
         <div class="flex flex-col rounded-md border border-gray-400 shadow-xl">
-            <div 
-                @click="toggleForm"
-                class="bg-gray-800 p-2 rounded-md text-white font-semibold text-xl cursor-pointer">
+            <div @click="toggleForm" class="bg-gray-800 p-2 rounded-md text-white font-semibold text-xl cursor-pointer">
                 Контрагент
             </div>
-            <div
-                v-show="showForm" 
-                class="flex flex-col gap-4 p-2 mt-2">
+            <div v-show="showForm" class="flex flex-col gap-4 p-2 mt-2">
                 <div class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Контрагент</div>
 
@@ -89,6 +85,14 @@
                             label="Наименование банка" />
                         <vue-form-input type="number" name="bank_bik" placeholder="БИК Банка" label="БИК Банка" />
                     </div>
+
+                    <div class="text-xl font-semibold">Данные заполнения счета и акта</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <vue-form-input type="number" name="summ" placeholder="Сумма"
+                            label="Сумма" />
+                        <vue-form-input type="text" name="payment_goal" placeholder="Назначение платежа"
+                            label="Назначение платежа" />
+                    </div>
                 </fieldset>
             </div>
         </div>
@@ -105,9 +109,9 @@ export default {
         };
     },
     methods: {
-    toggleForm() {
-      this.showForm = !this.showForm;
+        toggleForm() {
+            this.showForm = !this.showForm;
+        }
     }
-  }
 };
 </script>

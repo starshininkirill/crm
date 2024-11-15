@@ -17,7 +17,7 @@
                                 <option selected disabled>
                                     Выберите услугу
                                 </option>
-                                <optgroup :label="cat.category" v-for="cat in allCats" :key="cat.category">
+                                <optgroup :label="cat.category" v-for="cat in mainCats" :key="cat.category">
                                     <option v-for="service in cat.services" :key="service.id" :value="service.id"
                                         :data-price="service.price"
                                         :data-duration="service.work_days_duration"
@@ -159,16 +159,25 @@ export default {
             type: Array,
             required: true
         },
+        mainCatsIds: {
+            type: Array,
+            required: true
+        },
+        secondaryCatsIds: {
+            type: Array,
+            required: true
+        },
         servicePrices:{
             type: Array,
             required: true
         },
     },
-    data() {
+    data() {                
         return {
             showForm: true,
             allCats: this.cats,
-            secondaryCats: this.cats.flatMap(cat => cat.services),
+            mainCats: this.cats.filter(cat => this.mainCatsIds.map(Number).includes(cat.id)),
+            secondaryCats: this.cats.filter(cat => this.secondaryCatsIds.map(Number).includes(cat.id)).flatMap(cat => cat.services),
             visibleServices: 1,
         };
     },
