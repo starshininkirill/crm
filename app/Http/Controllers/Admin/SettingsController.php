@@ -5,13 +5,17 @@ namespace App\Http\Controllers\admin;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\FinanceWeek;
+use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
     public function index(Request $request)
     {
-        return view('admin.layouts.settings');
+        $serviceCats = ServiceCategory::all();
+        return view('admin.settings.index',[
+            'serviceCategories' => $serviceCats,
+        ]);
     }
 
     public function calendar(Request $request)

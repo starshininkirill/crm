@@ -18,8 +18,8 @@ class SaleDepartmentService
 
     private $newMoney = 0;
     private $oldMoney = 0;
-    private $mounthWorkPlan;
-    private $mounthWorkPlanGoal;
+    private $monthWorkPlan;
+    private $monthWorkPlanGoal;
     private $workingDays;
     private $payments;
     private $newPayments;
@@ -39,8 +39,8 @@ class SaleDepartmentService
 
 
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, WorkingDay::whereYear('date', $date->format('Y')));
-        $this->mounthWorkPlan = $this->getMounthPlan();
-        $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
+        $this->monthWorkPlan = $this->getMonthPlan();
+        $this->monthWorkPlanGoal = $this->monthWorkPlan->goal;
 
         $this->payments = $this->getPaymentsForUserGroupByType();
         $this->newPayments = $this->payments->has(Payment::TYPE_NEW) ? $this->payments->get(Payment::TYPE_NEW) : collect();
@@ -59,16 +59,16 @@ class SaleDepartmentService
 
         $report = collect();
 
-        $report['mounthPlan'] = $this->generateMounthPlanReport();
-        $report['doublePlan'] = $this->generateDoubleMounthPlanReport();
-        $report['bonusPlan'] = $this->generateBonusMounthPlanReport();
-        $report['weeksPlan'] = $this->generateWeeksMounthPlanReport();
+        $report['monthPlan'] = $this->generateMonthPlanReport();
+        $report['doublePlan'] = $this->generateDoubleMonthPlanReport();
+        $report['bonusPlan'] = $this->generateBonusMonthPlanReport();
+        $report['weeksPlan'] = $this->generateWeeksMonthPlanReport();
         $report['superPlan'] = $this->generateSuperPlanReport($report['weeksPlan']);
-        $report['totalValues'] = $this->generateTotalMounthValuesReport();
-        $report['b1'] = $this->generateBServiceMounthPlanReport(WorkPlan::B1_PLAN);
-        $report['b2'] = $this->generateBServiceMounthPlanReport(WorkPlan::B2_PLAN);
-        $report['b3'] = $this->generateB3MounthPlanReport();
-        $report['b4'] = $this->generateB4MounthPlanReport();
+        $report['totalValues'] = $this->generateTotalMonthValuesReport();
+        $report['b1'] = $this->generateBServiceMonthPlanReport(WorkPlan::B1_PLAN);
+        $report['b2'] = $this->generateBServiceMonthPlanReport(WorkPlan::B2_PLAN);
+        $report['b3'] = $this->generateB3MonthPlanReport();
+        $report['b4'] = $this->generateB4MonthPlanReport();
         $report['salary'] = $this->calculateSalary($report);
 
         return $report;
@@ -104,7 +104,7 @@ class SaleDepartmentService
 
     private function calculateSalary(Collection $report): Collection
     {
-        $mounthWorked = $this->user->getMounthWorked();
+        $monthWorked = $this->user->getMonthWorked();
         $bonus = null;
 
 
@@ -117,7 +117,7 @@ class SaleDepartmentService
 
         // TODO
         // Добавить в настройках значение после которого до 60к не будет процента
-        if ($mounthWorked > 3) {
+        if ($monthWorked > 3) {
             $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->department->id)
                 ->orderBy('goal', 'asc')
@@ -196,7 +196,7 @@ class SaleDepartmentService
 
         $res['goal'] = $plan->goal;
 
-        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->mounthWorkPlan);
+        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->monthWorkPlan);
 
         if (!$weeksCompleted->every(fn($weekStat) => $weekStat['completed'])) {
             return $res;
@@ -247,7 +247,7 @@ class SaleDepartmentService
         }
     }
 
-    private function generateB4MounthPlanReport(): Collection
+    private function generateB4MonthPlanReport(): Collection
     {
         $res = collect([
             'completed' => false,
@@ -279,7 +279,7 @@ class SaleDepartmentService
         return $res;
     }
 
-    private function generateB3MounthPlanReport(): Collection
+    private function generateB3MonthPlanReport(): Collection
     {
         $result = collect([
             'completed' => false,
@@ -354,7 +354,7 @@ class SaleDepartmentService
 
         return $result;
     }
-    private function generateBServiceMounthPlanReport(int $plan): Collection
+    private function generateBServiceMonthPlanReport(int $plan): Collection
     {
         $res = collect([
             'completed' => false,
@@ -397,7 +397,7 @@ class SaleDepartmentService
         return $res;
     }
 
-    private function generateTotalMounthValuesReport(): Collection
+    private function generateTotalMonthValuesReport(): Collection
     {
         $res = collect([
             'newMoney' => $this->newMoney,
@@ -412,14 +412,14 @@ class SaleDepartmentService
         return $res;
     }
 
-    private function generateWeeksMounthPlanReport(): Collection
+    private function generateWeeksMonthPlanReport(): Collection
     {
 
         $res = collect();
 
-        $weekPlan = $this->mounthWorkPlanGoal / 4;
+        $weekPlan = $this->monthWorkPlanGoal / 4;
 
-        $weeks = DateHelper::splitMounthIntoWeek($this->date);
+        $weeks = DateHelper::splitMonthIntoWeek($this->date);
 
         $trackedContractsIds = collect();
 
@@ -476,19 +476,19 @@ class SaleDepartmentService
         return $res;
     }
 
-    private function generateMounthPlanReport(): Collection
+    private function generateMonthPlanReport(): Collection
     {
 
         return  collect(
             [
-                'goal' => $this->mounthWorkPlanGoal,
+                'goal' => $this->monthWorkPlanGoal,
                 'value' => $this->newMoney,
-                'completed' => $this->newMoney >= $this->mounthWorkPlanGoal ? true : false,
+                'completed' => $this->newMoney >= $this->monthWorkPlanGoal ? true : false,
             ]
         );
     }
 
-    private function generateBonusMounthPlanReport(): Collection
+    private function generateBonusMonthPlanReport(): Collection
     {
         $res = collect(
             [
@@ -517,19 +517,19 @@ class SaleDepartmentService
 
         return $res;
     }
-    private function generateDoubleMounthPlanReport(): Collection
+    private function generateDoubleMonthPlanReport(): Collection
     {
 
         $res = collect(
             [
-                'goal' => $this->mounthWorkPlanGoal * 2,
+                'goal' => $this->monthWorkPlanGoal * 2,
                 'value' => $this->newMoney,
                 'completed' => false,
                 'bonus' => 0
             ]
         );
 
-        $completed = $this->newMoney >= $this->mounthWorkPlanGoal * 2 ? true : false;
+        $completed = $this->newMoney >= $this->monthWorkPlanGoal * 2 ? true : false;
 
         if ($completed) {
             $res['completed'] = true;
@@ -547,36 +547,36 @@ class SaleDepartmentService
         return $res;
     }
 
-    private function getMounthPlan()
+    private function getMonthPlan()
     {
 
-        $monthsWorked = $this->user->getMounthWorked();
+        $monthsWorked = $this->user->getMonthWorked();
 
 
         $departmentId = $this->department->id;
         $userPositionId = $this->user->position->id;
 
-        $mounthPlan = WorkPlan::where('department_id', $departmentId)
+        $monthPlan = WorkPlan::where('department_id', $departmentId)
             ->where('position_id', $userPositionId)
             ->where('type', WorkPlan::MOUNTH_PLAN)
             ->first();
 
-        if ($mounthPlan) {
-            return $mounthPlan;
+        if ($monthPlan) {
+            return $monthPlan;
         }
 
-        $mounthPlan = WorkPlan::where('department_id', $departmentId)
-            ->where('mounth', $monthsWorked)
+        $monthPlan = WorkPlan::where('department_id', $departmentId)
+            ->where('month', $monthsWorked)
             ->where('type', WorkPlan::MOUNTH_PLAN)
             ->first();
 
-        if ($mounthPlan) {
-            return $mounthPlan;
+        if ($monthPlan) {
+            return $monthPlan;
         }
 
         return WorkPlan::where('department_id', $departmentId)
             ->where('type', WorkPlan::MOUNTH_PLAN)
-            ->orderBy('mounth', 'desc')
+            ->orderBy('month', 'desc')
             ->first();
     }
 

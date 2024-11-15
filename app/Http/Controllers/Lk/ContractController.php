@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Lk;
 
 use App\Http\Controllers\Controller;
+use App\Models\Option;
 use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\DB;
 
@@ -22,14 +23,20 @@ class ContractController extends Controller
                             'id' => $service->id,
                             'name' => $service->name,
                             'price' => $service->price,
+                            'work_days_duration' => $service->work_days_duration
                         ];
                     })->toArray()
                 ];
             })->toJson();
         }
 
+        $mainCats = Option::where('name', 'contract_main_categories')->first();
+        dd($mainCats);
+
         return view('lk.contract.create', [
             'cats' => $catsWithServices ?? [],
+            'mainCats' => [],
+            'secondaryCats' => []
         ]);
     }
 }

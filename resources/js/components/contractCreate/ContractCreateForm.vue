@@ -9,8 +9,8 @@
       </div>
 
       <vue-agent-info />
-      <vue-services-info :cats="cats" @updatePrice="updateServicePrice"  :servicePrices="servicePrices"/>
-      <vue-price-info  :servicePrices="servicePrices" />
+      <vue-services-info :cats="cats" @updateService="updateServicePrice" :servicePrices="servicePrices" />
+      <vue-price-info :servicePrices="servicePrices" />
 
       <button type="submit" class="btn">Отправить</button>
    </form>
@@ -44,12 +44,35 @@ export default {
    data() {
       return {
          cats: JSON.parse(this.stringCats),
-         servicePrices: [0, 0, 0, 0, 0, 0],
+         servicePrices: [
+            {
+               'price': 0,
+               'duration': 0
+            }, {
+               'price': 0,
+               'duration': 0
+            }, {
+               'price': 0,
+               'duration': 0
+            }, {
+               'price': 0,
+               'duration': 0
+            }, {
+               'price': 0,
+               'duration': 0
+            }, {
+               'price': 0,
+               'duration': 0
+            },
+         ],
       };
    },
    methods: {
-      updateServicePrice(index, price) {
-         this.servicePrices[index] = price || 0;   
+      updateServicePrice(index, price, duration) {
+         this.servicePrices[index].price = price || 0;
+         this.servicePrices[index].duration = duration || 0;
+         console.log(this.servicePrices);
+         
       }
    }
 };

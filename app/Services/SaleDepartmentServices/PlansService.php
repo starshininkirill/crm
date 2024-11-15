@@ -24,14 +24,14 @@ class PlansService
         return $this->reportInfo->workPlans->firstWhere('type', $planType);
     }
 
-    public function mounthPlan(): Collection
+    public function monthPlan(): Collection
     {
 
         return  collect(
             [
-                'goal' => $this->reportInfo->mounthWorkPlanGoal,
+                'goal' => $this->reportInfo->monthWorkPlanGoal,
                 'value' => $this->reportInfo->newMoney,
-                'completed' => $this->reportInfo->newMoney >= $this->reportInfo->mounthWorkPlanGoal ? true : false,
+                'completed' => $this->reportInfo->newMoney >= $this->reportInfo->monthWorkPlanGoal ? true : false,
             ]
         );
     }
@@ -41,14 +41,14 @@ class PlansService
 
         $res = collect(
             [
-                'goal' => $this->reportInfo->mounthWorkPlanGoal * 2,
+                'goal' => $this->reportInfo->monthWorkPlanGoal * 2,
                 'value' => $this->reportInfo->newMoney,
                 'completed' => false,
                 'bonus' => 0
             ]
         );
 
-        $completed = $this->reportInfo->newMoney >= $this->reportInfo->mounthWorkPlanGoal * 2 ? true : false;
+        $completed = $this->reportInfo->newMoney >= $this->reportInfo->monthWorkPlanGoal * 2 ? true : false;
 
         if ($completed) {
             $res['completed'] = true;
@@ -96,8 +96,8 @@ class PlansService
     public function weeksPlan(): Collection
     {
         $res = collect();
-        $weekPlan = $this->reportInfo->mounthWorkPlanGoal / 4;
-        $weeks = DateHelper::splitMounthIntoWeek($this->reportInfo->date);
+        $weekPlan = $this->reportInfo->monthWorkPlanGoal / 4;
+        $weeks = DateHelper::splitMonthIntoWeek($this->reportInfo->date);
         $trackedContractsIds = collect();
 
         foreach ($weeks as $week) {
@@ -154,7 +154,7 @@ class PlansService
     public function weeksReport(): Collection
     {
         $res = collect();
-        $weeks = DateHelper::splitMounthIntoWeek($this->reportInfo->date);
+        $weeks = DateHelper::splitMonthIntoWeek($this->reportInfo->date);
         $trackedContractsIds = collect();
 
         foreach ($weeks as $week) {
@@ -282,7 +282,7 @@ class PlansService
             return $res;
         }
 
-        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->reportInfo->mounthWorkPlan);
+        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->reportInfo->monthWorkPlan);
 
         if (!$weeksCompleted->every(fn($weekStat) => $weekStat['completed'])) {
             return $res;
@@ -423,7 +423,7 @@ class PlansService
 
     public function calculateSalary(Collection $report): Collection
     {
-        $mounthWorked = $this->reportInfo->user->getMounthWorked($this->reportInfo->date);
+        $monthWorked = $this->reportInfo->user->getMonthWorked($this->reportInfo->date);
         $bonus = null;
 
         $res = collect([
@@ -436,7 +436,7 @@ class PlansService
         $noPercentageMonth = $this->reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
 
 
-        if ($noPercentageMonth != null && $mounthWorked > $noPercentageMonth->mounth) {
+        if ($noPercentageMonth != null && $monthWorked > $noPercentageMonth->month) {
             $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->whereNotNull('goal')

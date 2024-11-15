@@ -20,7 +20,7 @@
 <tbody>
     <tr>
         <td class="border text-xs border-gray-300 text-md px-1 py-1">
-            {{ number_format($generalPlan['mounthPlan'], 0, ' ', ' ') }} ₽
+            {{ number_format($generalPlan['monthPlan'], 0, ' ', ' ') }} ₽
         </td>
         <td class="border text-xs border-gray-300 text-md px-1 py-1">
             {{ number_format($generalPlan['needOnDay'], 0, ' ', ' ') }} ₽

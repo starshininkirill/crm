@@ -3,6 +3,9 @@
 @section('main')
     <div class="grow w-full py-8 px-2" id="contract-page">
         <div class="flex gap-3 mb-4 border-b">
+            <x-admin-subnav-link route="admin.settings.index">
+                Основные настройки
+            </x-admin-subnav-link>
             <x-admin-subnav-link route="admin.settings.calendar">
                 Календарь рабочих дней
             </x-admin-subnav-link>

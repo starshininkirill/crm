@@ -117,7 +117,7 @@ class DateHelper
         }
     }
 
-    public static function splitMounthIntoWeek(Carbon $date): Collection
+    public static function splitMonthIntoWeek(Carbon $date): Collection
     {
         $weeks = collect();
         $startOfMonth = $date->copy()->startOfMonth();

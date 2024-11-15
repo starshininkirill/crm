@@ -42,7 +42,7 @@ class WorkPlan extends Model
 
 
 
-    protected $fillable = ['type', 'goal', 'mounth', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
+    protected $fillable = ['type', 'goal', 'month', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
 
     public function position(): HasOne
     {
@@ -72,7 +72,7 @@ class WorkPlan extends Model
 
         if($plans->has(WorkPlan::MOUNTH_PLAN)){
             $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->filter(function ($plan) {
-                return $plan->mounth != null;
+                return $plan->month != null;
             });
     
         }

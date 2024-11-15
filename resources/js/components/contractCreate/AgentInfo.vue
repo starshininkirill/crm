@@ -66,7 +66,7 @@
                     <div class="text-xl font-semibold">ОГРН или ОГРНИП</div>
                     <div class="grid grid-cols-2 w-fit gap-5 mb-4">
                         <label class="cursor-pointer">
-                            <input type="radio" value="0" name="ogrn" /> ОГРН
+                            <input checked type="radio" value="0" name="ogrn" /> ОГРН
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" value="1" name="ogrn" /> ОГРНИП

@@ -25,7 +25,7 @@ class StoreWorkPlanRequest extends FormRequest
         $rules = [
             'type' => ['required', 'integer', 'in:' . implode(',', WorkPlan::ALL_PLANS)],
             'goal' => ['nullable', 'numeric', 'min:0'],
-            'mounth' => ['nullable', 'integer', 'min:1'],
+            'month' => ['nullable', 'integer', 'min:1'],
             'bonus' => ['nullable', 'numeric', 'min:0'],
             'service_category_id' => ['nullable', 'exists:service_categories,id'],
             'department_id' => ['required', 'exists:departments,id'],
@@ -72,7 +72,7 @@ class StoreWorkPlanRequest extends FormRequest
         };
         
         if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
-            $rules['mounth'] = ['required', 'numeric', 'min:0'];
+            $rules['month'] = ['required', 'numeric', 'min:0'];
         };
 
 

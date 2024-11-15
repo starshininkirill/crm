@@ -24,7 +24,7 @@
     @endif
 
     <div class="grid grid-cols-3 gap-8">
-        @include('admin.departments.sale.settings.mounthPlan')
+        @include('admin.departments.sale.settings.monthPlan')
         <div class="flex flex-col gap-4">
             @include('admin.departments.sale.settings.universalPlan', [
                 'planTitle' => 'Бонус план',

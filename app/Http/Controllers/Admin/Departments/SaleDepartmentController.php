@@ -58,11 +58,11 @@ class SaleDepartmentController extends Controller
                 $reportInfo = new ReportInfo($date, null, $selectDepartment);
                 $reportService = new ReportService($this->plansService, $reportInfo);
 
-                $daylyReport = $reportService->mounthByDayReport($user);
+                $daylyReport = $reportService->monthByDayReport($user);
 
                 $motivationReport = $reportService->motivationReport($user);
                 $pivotWeeks = $reportService->pivotWeek();
-                $pivotDaily = $reportService->mounthByDayReport();
+                $pivotDaily = $reportService->monthByDayReport();
 
                 $users = $selectDepartment->activeUsers($date);
                 $pivotUsers = $reportService->pivotUsers($users);

@@ -12,20 +12,22 @@
                             Услуга 1
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(0, $event)"
+                            <select id="service" name="service" @change="updateService(0, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу
                                 </option>
                                 <optgroup :label="cat.category" v-for="cat in allCats" :key="cat.category">
                                     <option v-for="service in cat.services" :key="service.id" :value="service.id"
-                                        :data-price="service.price">
+                                        :data-price="service.price"
+                                        :data-duration="service.work_days_duration"
+                                        >
                                         {{ service.name }}
                                     </option>
                                 </optgroup>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[0]" label="Стоимость услуги" />
+                                v-model="servicePrices[0].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -34,18 +36,19 @@
                             Услуга 2
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(1, $event)"
+                            <select id="service" name="service" @change="updateService(1, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 2
                                 </option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price">
+                                    :data-price="service.price"
+                                    :data-duration="service.work_days_duration">
                                     {{ service.name }}
                                 </option>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[1]" label="Стоимость услуги" />
+                                v-model="servicePrices[1].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -54,18 +57,20 @@
                             Услуга 3
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(2, $event)"
+                            <select id="service" name="service" @change="updateService(2, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 3
                                 </option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price">
+                                    :data-price="service.price"
+                                    :data-duration="service.work_days_duration"
+                                    >
                                     {{ service.name }}
                                 </option>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[2]" label="Стоимость услуги" />
+                                v-model="servicePrices[2].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -74,18 +79,19 @@
                             Услуга 4
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(3, $event)"
+                            <select id="service" name="service" @change="updateService(3, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 4
                                 </option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price">
+                                    :data-price="service.price"
+                                    :data-duration="service.work_days_duration">
                                     {{ service.name }}
                                 </option>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[3]" label="Стоимость услуги" />
+                                v-model="servicePrices[3].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -94,18 +100,19 @@
                             Услуга 5
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(4, $event)"
+                            <select id="service" name="service" @change="updateService(4, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 5
                                 </option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price">
+                                    :data-price="service.price"
+                                    :data-duration="service.work_days_duration">
                                     {{ service.name }}
                                 </option>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[4]" label="Стоимость услуги" />
+                                v-model="servicePrices[4].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -114,18 +121,19 @@
                             Услуга 6
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updatePrice(5, $event)"
+                            <select id="service" name="service" @change="updateService(5, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 6
                                 </option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price">
+                                    :data-price="service.price"
+                                    :data-duration="service.work_days_duration">
                                     {{ service.name }}
                                 </option>
                             </select>
                             <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
-                                v-model="servicePrices[5]" label="Стоимость услуги" />
+                                v-model="servicePrices[5].price" label="Стоимость услуги" />
                         </div>
                     </div>
 
@@ -165,10 +173,11 @@ export default {
         };
     },
     methods: {
-        updatePrice (index, event){
+        updateService (index, event){
             const selectedOption = event.target.options[event.target.selectedIndex];
             const price = selectedOption.getAttribute('data-price');
-            this.$emit('updatePrice', index, price)
+            const duration = selectedOption.getAttribute('data-duration');            
+            this.$emit('updateService', index, price, duration)            
         },  
         toggleForm() {
             this.showForm = !this.showForm;
@@ -180,7 +189,8 @@ export default {
         },
         removeService(){
             if (this.visibleServices > 1) {
-                this.servicePrices[this.visibleServices - 1] = 0                
+                this.servicePrices[this.visibleServices - 1].price = 0
+                this.servicePrices[this.visibleServices - 1].duration = 0                
                 this.visibleServices -= 1;
             }
         },

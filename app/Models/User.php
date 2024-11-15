@@ -80,7 +80,7 @@ class User extends Authenticatable
 
         return $employmentDate;
     }
-    public function getMounthWorked(Carbon $date = null): int
+    public function getMonthWorked(Carbon $date = null): int
     {
         $date = $date ?? Carbon::now();
         

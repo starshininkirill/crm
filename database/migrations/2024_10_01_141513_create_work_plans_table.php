@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('type');
             $table->float('goal')->nullable();
-            $table->integer('mounth')->nullable();
+            $table->integer('month')->nullable();
             $table->float('bonus')->nullable();
             $table->foreignId('service_category_id')->nullable()->constrained('service_categories')->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');

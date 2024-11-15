@@ -13,10 +13,10 @@
                     <form class="flex gap-4" method="POST" action="{{ route('workPlan.update', $plan->id) }}">
                         @method('PUT')
                         @csrf
-                        <label class="flex gap-2 items-center" for="mounth">
+                        <label class="flex gap-2 items-center" for="month">
                             Месяц
-                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="mounth" type="number"
-                                value="{{ $plan['mounth'] }}">
+                            <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="month" type="number"
+                                value="{{ $plan['month'] }}">
                         </label>
                         <label class="flex gap-2 items-center" for="goal">
                             Цель
@@ -53,9 +53,9 @@
                 <input type="hidden" name="type" value="{{ $workPlanClass::MOUNTH_PLAN }}">
                 <input type="hidden" name="department_id" value="{{ $departmentId }}">
                 <input type="hidden" name="created_at" value="{{ $date->format('Y-m-d') }}">
-                <label class="flex gap-2 items-center" for="mounth">
+                <label class="flex gap-2 items-center" for="month">
                     Месяц
-                    <input class="input" name="mounth" type="number">
+                    <input class="input" name="month" type="number">
                 </label>
                 <label class="flex gap-2 items-center" for="goal">
                     Цель

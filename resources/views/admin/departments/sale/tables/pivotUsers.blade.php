@@ -80,7 +80,7 @@
                     {{ $user['totalValues'][$serviceCategoryModel::OTHER] }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    {{ $user['mounthPlan']['completed'] ? 'Да' : 'Нет' }}
+                    {{ $user['monthPlan']['completed'] ? 'Да' : 'Нет' }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ $user['doublePlan']['completed'] ? 'Да' : 'Нет' }}

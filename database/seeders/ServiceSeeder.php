@@ -50,17 +50,20 @@ class ServiceSeeder extends Seeder
         Service::create([
             'name' => 'Инд Лендинг',
             'service_category_id' => '1',
-            'price' => 10000
+            'price' => 10000,
+            'work_days_duration' => 5,
         ]);
         Service::create([
             'name' => 'Инд Каталог',
             'service_category_id' => 1,
-            'price' => 25000
+            'price' => 25000,
+            'work_days_duration' => 10,
         ]);
         Service::create([
             'name' => 'Инд Интернет магазин',
             'service_category_id' => 1,
-            'price' => 50000
+            'price' => 50000,
+            'work_days_duration' => 15,
         ]);
         Service::create([
             'name' => 'Гот Лендинг',
@@ -70,12 +73,14 @@ class ServiceSeeder extends Seeder
         Service::create([
             'name' => 'Гот Каталог',
             'service_category_id' => 2,
-            'price' => 15000
+            'price' => 15000,
+            'work_days_duration' => 4,
         ]);
         Service::create([
             'name' => 'Первичная настройка + ведение',
             'service_category_id' => 3,
-            'price' => 15000
+            'price' => 15000,
+            'work_days_duration' => 4,
         ]);
         Service::create([
             'name' => 'Ведение РК',
@@ -85,17 +90,19 @@ class ServiceSeeder extends Seeder
         Service::create([
             'name' => 'Настройка РК',
             'service_category_id' => 3,
-            'price' => 7500
+            'price' => 7500,
+            'work_days_duration' => 1,
         ]);
         Service::create([
             'name' => 'Базовое SEO',
             'service_category_id' => 4,
-            'price' => 10000
+            'price' => 10000,
+            'work_days_duration' => 1,
         ]);
         Service::create([
             'name' => 'Вариативная карточка товара',
             'service_category_id' => 5,
-            'price' => 5000
+            'price' => 5000,
         ]);
         Service::create([
             'name' => 'Калькулятор',

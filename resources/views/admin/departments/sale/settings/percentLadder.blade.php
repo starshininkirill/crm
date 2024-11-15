@@ -69,15 +69,15 @@
     @endif
     @if ($plans->has($workPlanClass::NO_PERCENTAGE_MONTH) && !$plans[$workPlanClass::NO_PERCENTAGE_MONTH]->isEmpty())
         @php
-            $mounthOption = $plans[$workPlanClass::NO_PERCENTAGE_MONTH]->first();
+            $monthOption = $plans[$workPlanClass::NO_PERCENTAGE_MONTH]->first();
         @endphp
     @else
         @php
-            $mounthOption = null;
+            $monthOption = null;
         @endphp
     @endif
     <form method="POST"
-        action="{{ $mounthOption == null ? route('workPlan.store') : route('workPlan.update', $mounthOption->id) }}">
+        action="{{ $monthOption == null ? route('workPlan.store') : route('workPlan.update', $monthOption->id) }}">
         @csrf
         <input type="hidden" name="type" value="{{ $workPlanClass::NO_PERCENTAGE_MONTH }}">
         <input type="hidden" name="department_id" value="{{ $departmentId }}">
@@ -85,17 +85,17 @@
             До какого месяца всегда начисляются проценты
         </div>
         <div class="flex flex-col gap-2">
-            @if ($mounthOption)
+            @if ($monthOption)
                 @method('PUT')
             @endif
-            <input type="hidden" name="name" month="sale_department_ladder_mounth">
-            <label class="flex gap-2 items-center" for="mounth">
-                <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="mounth" type="number" step="1" min="0"
-                    value="{{ $mounthOption != null ? $mounthOption['mounth'] : '' }}">
+            <input type="hidden" name="name" month="sale_department_ladder_month">
+            <label class="flex gap-2 items-center" for="month">
+                <input {{ $isCurrentMonth ? '' : 'disabled' }} class="input" name="month" type="number" step="1" min="0"
+                    value="{{ $monthOption != null ? $monthOption['month'] : '' }}">
             </label>
             @if ($isCurrentMonth)
                 <button class="btn">
-                    @if ($mounthOption)
+                    @if ($monthOption)
                         Изменить
                     @else
                         Создать

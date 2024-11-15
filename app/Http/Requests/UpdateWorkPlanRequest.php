@@ -24,13 +24,13 @@ class UpdateWorkPlanRequest extends FormRequest
     {
         $rules = [
             'goal' => ['nullable', 'numeric', 'min:0'],
-            'mounth' => ['nullable', 'integer', 'min:1'],
+            'month' => ['nullable', 'integer', 'min:1'],
             'bonus' => ['nullable', 'numeric', 'min:0'],
         ];
 
         if ($this->input('type') == WorkPlan::MOUNTH_PLAN) {
             $rules['goal'] = ['required', 'numeric', 'min:0'];
-            $rules['mounth'] = ['required', 'integer', 'min:1'];
+            $rules['month'] = ['required', 'integer', 'min:1'];
         };
 
         if ($this->input('type') == WorkPlan::BONUS_PLAN) {
@@ -71,7 +71,7 @@ class UpdateWorkPlanRequest extends FormRequest
         };
 
         if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
-            $rules['mounth'] = ['required', 'numeric', 'min:0'];
+            $rules['month'] = ['required', 'numeric', 'min:0'];
         };
 
         return $rules;
@@ -83,7 +83,7 @@ class UpdateWorkPlanRequest extends FormRequest
         return $this->only([
             'goal',
             'bonus',
-            'mounth',
+            'month',
         ]);
     }
 }

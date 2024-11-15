@@ -26,7 +26,7 @@ class ReportService
     public function generalPlan($pivotUsers): Collection
     {
         $res = collect([
-            'mounthPlan' => 0,
+            'monthPlan' => 0,
             'needOnDay' => 0,
             'faktOnDay' => 0,
             'difference' => 0,
@@ -41,7 +41,7 @@ class ReportService
         $countWorkingDays = count($this->fullData->workingDays);
 
         foreach ($pivotUsers as $user) {
-            $res['mounthPlan'] += $user['mounthPlan']['goal'];
+            $res['monthPlan'] += $user['monthPlan']['goal'];
         }
 
         if ($countPastDates > 0) {
@@ -50,7 +50,7 @@ class ReportService
             $res['faktOnDay'] = $this->fullData->newMoney;
         }
 
-        $res['needOnDay'] = $res['mounthPlan'] / $countWorkingDays;
+        $res['needOnDay'] = $res['monthPlan'] / $countWorkingDays;
 
         $res['difference'] = ($res['faktOnDay'] * $countPastDates) - ($res['needOnDay'] * $countPastDates);
 
@@ -90,7 +90,7 @@ class ReportService
         $reportInfo = $this->fullData->getUserSubdata($user);
 
         $this->planService->prepareData($reportInfo);
-        $report['mounthPlan'] = $this->planService->mounthPlan();
+        $report['monthPlan'] = $this->planService->monthPlan();
         $report['doublePlan'] = $this->planService->doublePlan();
         $report['bonusPlan'] = $this->planService->bonusPlan();
         $report['weeksPlan'] = $this->planService->weeksPlan();
@@ -106,7 +106,7 @@ class ReportService
     }
 
 
-    public function mounthByDayReport(User $user = null): Collection
+    public function monthByDayReport(User $user = null): Collection
     {
         if ($this->fullData && $user != null) {
             $reportInfo = $this->fullData->getUserSubdata($user);

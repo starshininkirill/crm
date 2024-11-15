@@ -19,8 +19,8 @@ class ReportInfo
 {
     public float|int $newMoney = 0;
     public float|int $oldMoney = 0;
-    public WorkPlan $mounthWorkPlan;
-    public float|int $mounthWorkPlanGoal;
+    public WorkPlan $monthWorkPlan;
+    public float|int $monthWorkPlanGoal;
     public Collection $workingDays;
     public Collection $payments;
     public Collection $newPayments;
@@ -99,8 +99,8 @@ class ReportInfo
         $subdataInstance->workPlans = $this->workPlans;
 
         $subdataInstance->workingDays = $this->workingDays;
-        $subdataInstance->mounthWorkPlan = $this->getMounthPlan($user);
-        $subdataInstance->mounthWorkPlanGoal = $subdataInstance->mounthWorkPlan->goal;
+        $subdataInstance->monthWorkPlan = $this->getMonthPlan($user);
+        $subdataInstance->monthWorkPlanGoal = $subdataInstance->monthWorkPlan->goal;
 
 
         $subdataInstance->payments = $this->payments->filter(function ($payment) use ($user) {
@@ -146,8 +146,8 @@ class ReportInfo
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
 
-        $this->mounthWorkPlan = $this->getMounthPlan();
-        $this->mounthWorkPlanGoal = $this->mounthWorkPlan->goal;
+        $this->monthWorkPlan = $this->getMonthPlan();
+        $this->monthWorkPlanGoal = $this->monthWorkPlan->goal;
 
         $this->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SALLER);
 
@@ -164,42 +164,42 @@ class ReportInfo
     }
 
 
-    private function getMounthPlan(?User $user = null): ?WorkPlan
+    private function getMonthPlan(?User $user = null): ?WorkPlan
     {
 
         if ($user == null) {
             $user = $this->user;
         }
-        $monthsWorked = $user->getMounthWorked($this->date);
+        $monthsWorked = $user->getMonthWorked($this->date);
         $departmentId = $this->mainDepartmentId;
         $userPosition = $user->position;
         $userPosition == null ? $userPositionId = null : $userPositionId = $userPosition->id;
 
         if ($userPositionId != null) {
-            $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $userPositionId) {
+            $monthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $userPositionId) {
                 return $plan->department_id == $departmentId &&
                     $plan->position_id == $userPositionId &&
                     $plan->type == WorkPlan::MOUNTH_PLAN;
             });
         }
 
-        if (isset($mounthPlan) && $mounthPlan != null) {
-            return $mounthPlan;
+        if (isset($monthPlan) && $monthPlan != null) {
+            return $monthPlan;
         }
 
-        $mounthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $monthsWorked) {
+        $monthPlan = $this->workPlans->first(function ($plan) use ($departmentId, $monthsWorked) {
             return $plan->department_id == $departmentId &&
-                $plan->mounth == $monthsWorked &&
+                $plan->month == $monthsWorked &&
                 $plan->type == WorkPlan::MOUNTH_PLAN;
         });
 
 
-        if ($mounthPlan) {
-            return $mounthPlan;
+        if ($monthPlan) {
+            return $monthPlan;
         }
 
         return $this->workPlans->where('type', WorkPlan::MOUNTH_PLAN)
-            ->sortByDesc('mounth')
+            ->sortByDesc('month')
             ->first();
     }
 }

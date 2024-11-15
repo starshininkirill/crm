@@ -45,7 +45,7 @@
 <tbody>
     <tr>
         <td class="border text-xs border-gray-300 text-md px-1 py-1">
-            {{ number_format($motivationReport['mounthPlan']['goal'], 0, ' ', ' ') }} ₽
+            {{ number_format($motivationReport['monthPlan']['goal'], 0, ' ', ' ') }} ₽
         </td>
         <td class="border text-xs border-gray-300 text-md px-1 py-1">
             {{ $motivationReport['doublePlan']['completed'] ? 'Да' : 'Нет' }}
