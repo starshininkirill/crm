@@ -9,6 +9,12 @@ class Client extends Model
 {
     use HasFactory;
 
+    const TYPE_INDIVIDUAL = 0;
+    const TYPE_LEGAL_ENTITY = 1;
+
+    const TAX_OGRN = 0;
+    const TAX_OGRNIP = 1;
+
     protected $fillable = [
         'type',
         'tax',

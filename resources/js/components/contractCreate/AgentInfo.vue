@@ -53,36 +53,36 @@
                 <fieldset v-show="clientType === '1'" :disabled="clientType !== '1'" class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Данные для Юридического лица</div>
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <vue-form-input required type="text" name="full_corp_name" placeholder="Полное название организации"
+                        <vue-form-input required type="text" name="organization_name" placeholder="Полное название организации"
                             label="Полное название организации" />
-                        <vue-form-input required type="text" name="short_corp_name"
+                        <vue-form-input required type="text" name="organization_short_name"
                             placeholder="Кратное наименование организации" label="Кратное наименование организации" />
                     </div>
 
                     <div class="text-xl font-semibold">ОГРН или ОГРНИП</div>
                     <div class="grid grid-cols-2 w-fit gap-5 mb-4">
                         <label class="cursor-pointer">
-                            <input checked type="radio" value="0" v-model="ogrnType" name="ogrn" /> ОГРН
+                            <input checked type="radio" value="0" v-model="ogrnType" name="register_number_type" /> ОГРН
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" value="1" v-model="ogrnType" name="ogrn" /> ОГРНИП
+                            <input type="radio" value="1" v-model="ogrnType" name="register_number_type" /> ОГРНИП
                         </label>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <vue-form-input required type="text" name="ogrn" placeholder="Номер ОГРН/ОГРНИП"
+                        <vue-form-input required type="text" name="register_number" placeholder="Номер ОГРН/ОГРНИП"
                             label="Номер ОГРН/ОГРНИП" />
                         <vue-form-input required type="text" v-if="ogrnType === '0'" name="director_name" placeholder="(Иванова Ивана Ивановича)"
                             label="ФИО Ген.дира в РОД ПАДЕЖЕ" />
                         <div v-if="ogrnType === '1'">
 
                         </div>
-                        <vue-form-input required type="text" name="ur_address" placeholder="Юридический адрес"
+                        <vue-form-input required type="text" name="legal_address" placeholder="Юридический адрес"
                             label="Юридический адрес" />
                         <vue-form-input required type="number" name="inn" placeholder="ИНН/КПП" label="ИНН/КПП" />
-                        <vue-form-input required type="number" name="payment_account" placeholder="Расчётный счёт"
+                        <vue-form-input required type="number" name="current_account" placeholder="Расчётный счёт"
                             label="Расчётный счёт" />
-                        <vue-form-input required type="number" name="сorrespondent_account" placeholder="Корреспондентский счёт"
+                        <vue-form-input required type="number" name="correspondent_account" placeholder="Корреспондентский счёт"
                             label="Корреспондентский счёт" />
                         <vue-form-input required type="text" name="bank_name" placeholder="Наименование банка"
                             label="Наименование банка" />

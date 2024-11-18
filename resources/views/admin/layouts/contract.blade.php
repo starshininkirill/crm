@@ -6,9 +6,6 @@
             <x-admin-subnav-link route="admin.contract.index">
                 Все Договора
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.contract.create">
-                Создать договор
-            </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">
             @yield('content')
