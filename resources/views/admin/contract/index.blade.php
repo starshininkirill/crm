@@ -42,10 +42,10 @@
                                     </a>
                                 </td>
                                 <td class="border border-gray-300 px-2 py-1">
-                                    {{ $contract->client->company }}
+                                    {{ $contract->client->organization_name != '' ? $contract->client->organization_name : $contract->client->fio }}
                                 </td>
                                 <td class="border border-gray-300 px-2 py-1">
-                                    {{ $contract->client->phone }}
+                                    {{ $contract->phone }}
                                 </td>
                                 <td class="border border-gray-300 px-2 py-1">
                                     @foreach ($contract->services as $service)

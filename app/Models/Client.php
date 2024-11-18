@@ -10,9 +10,24 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company',
+        'type',
+        'tax',
+        'fio',
+        'passport_series',
+        'passport_number',
+        'passport_issued',
+        'physical_address',
+        'organization_name',
+        'organization_short_name',
+        'register_number_type',
+        'register_number',
+        'director_name',
+        'legal_address',
         'inn',
-        'phone',
+        'current_account',
+        'correspondent_account',
+        'bank_name',
+        'bank_bik',
     ];
 
     public function contracts()

@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('number')->nullable()->constrained()->onDelete('cascade');
+            $table->string('fio')->nullable();
+            $table->string('phone')->nullable();
+            $table->float('sale')->default(0);
             $table->float('amount_price')->nullable();
-            $table->text('comment')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('contracts')->references('id')->onDelete('set null');
             $table->foreignId('client_id');
         }); 

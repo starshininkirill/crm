@@ -11,10 +11,10 @@
                     <!-- Выбор физ/юр лица -->
                     <div class="grid grid-cols-2 w-fit gap-5">
                         <label class="cursor-pointer">
-                            <input type="radio" value="fizic" v-model="clientType" name="client_type" /> Физическое лицо
+                            <input type="radio" value="0" v-model="clientType" name="client_type" /> Физическое лицо
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" value="uric" v-model="clientType" name="client_type" /> Юридическое лицо
+                            <input type="radio" value="1" v-model="clientType" name="client_type" /> Юридическое лицо
                         </label>
                     </div>
                 </div>
@@ -34,23 +34,23 @@
                 </div>
 
                 <!-- Поля для физического лица -->
-                <fieldset v-if="clientType === 'fizic'" :disabled="clientType !== 'fizic'" class="flex flex-col gap-2">
+                <fieldset v-if="clientType === '0'" :disabled="clientType !== '0'" class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Данные для Физического лица</div>
                     <div class="grid grid-cols-2 gap-3">
-                        <vue-form-input type="text" name="fio" placeholder="ФИО" label="ФИО" />
-                        <vue-form-input type="number" name="pasport_seria" placeholder="Серия паспорта"
+                        <vue-form-input type="text" name="client_fio" placeholder="ФИО" label="ФИО" />
+                        <vue-form-input type="number" name="passport_series" placeholder="Серия паспорта"
                             label="Серия паспорта" />
-                        <vue-form-input type="number" name="pasport_number" placeholder="Номер паспорта"
+                        <vue-form-input type="number" name="passport_number" placeholder="Номер паспорта"
                             label="Номер паспорта" />
-                        <vue-form-input type="text" name="pasport_who" placeholder="Паспорт кем выдан"
+                        <vue-form-input type="text" name="passport_issued" placeholder="Паспорт кем выдан"
                             label="Паспорт кем выдан" />
-                        <vue-form-input type="text" name="address" placeholder="Адрес регистрации"
+                        <vue-form-input type="text" name="physical_address" placeholder="Адрес регистрации"
                             label="Адрес регистрации" />
                     </div>
                 </fieldset>
 
                 <!-- Поля для юридического лица -->
-                <fieldset v-if="clientType === 'uric'" :disabled="clientType !== 'uric'" class="flex flex-col gap-2">
+                <fieldset v-if="clientType === '1'" :disabled="clientType !== '1'" class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Данные для Юридического лица</div>
                     <div class="grid grid-cols-2 gap-3 mb-2">
                         <vue-form-input type="text" name="full_corp_name" placeholder="Полное название организации"
@@ -62,18 +62,21 @@
                     <div class="text-xl font-semibold">ОГРН или ОГРНИП</div>
                     <div class="grid grid-cols-2 w-fit gap-5 mb-4">
                         <label class="cursor-pointer">
-                            <input checked type="radio" value="0" name="ogrn" /> ОГРН
+                            <input checked type="radio" value="0" v-model="ogrnType" name="ogrn" /> ОГРН
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" value="1" name="ogrn" /> ОГРНИП
+                            <input type="radio" value="1" v-model="ogrnType" name="ogrn" /> ОГРНИП
                         </label>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 mb-2">
                         <vue-form-input type="text" name="ogrn" placeholder="Номер ОГРН/ОГРНИП"
                             label="Номер ОГРН/ОГРНИП" />
-                        <vue-form-input type="text" name="director_name" placeholder="(Иванова Ивана Ивановича)"
+                        <vue-form-input type="text" v-if="ogrnType === '0'" name="director_name" placeholder="(Иванова Ивана Ивановича)"
                             label="ФИО Ген.дира в РОД ПАДЕЖЕ" />
+                        <div v-if="ogrnType === '1'">
+
+                        </div>
                         <vue-form-input type="text" name="ur_address" placeholder="Юридический адрес"
                             label="Юридический адрес" />
                         <vue-form-input type="number" name="inn" placeholder="ИНН/КПП" label="ИНН/КПП" />
@@ -104,8 +107,9 @@ export default {
     data() {
         return {
             showForm: true,
-            clientType: 'fizic',
+            clientType: '0',
             taxType: '0',
+            ogrnType: '0',
         };
     },
     methods: {

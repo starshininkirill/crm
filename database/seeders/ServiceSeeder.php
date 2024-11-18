@@ -120,8 +120,8 @@ class ServiceSeeder extends Seeder
         foreach ($clients as $key => $client) {
             $contractData = [
                 'number' => $key + 1,
+                'phone' => '+8-(999)-999-99-99',
                 'amount_price' => rand(100000, 500000),
-                'comment' => 'Auto-generated contract',
                 'client_id' => $client->id,
             ];
 
