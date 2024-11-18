@@ -10,7 +10,7 @@
                         placeholder="Скидка" label="Скидка" />
                     <vue-form-input readonly min="0" v-model="computedAmountPrice" type="number" name="amount_price"
                         placeholder="Общая сумма" label="Общая сумма" />
-                    <vue-form-input readonly v-model="amountDuration" type="number" name="test"
+                    <vue-form-input readonly v-model="amountDuration" type="number" name="development_time"
                         placeholder="В разработке" label="Срок оказания услуг(раб. дней)" />
                 </div>
                 <div class="text-2xl font-semibold">

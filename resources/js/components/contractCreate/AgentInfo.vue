@@ -34,28 +34,28 @@
                 </div>
 
                 <!-- Поля для физического лица -->
-                <fieldset v-if="clientType === '0'" :disabled="clientType !== '0'" class="flex flex-col gap-2">
+                <fieldset v-show="clientType === '0'" :disabled="clientType !== '0'" class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Данные для Физического лица</div>
                     <div class="grid grid-cols-2 gap-3">
-                        <vue-form-input type="text" name="client_fio" placeholder="ФИО" label="ФИО" />
-                        <vue-form-input type="number" name="passport_series" placeholder="Серия паспорта"
+                        <vue-form-input required type="text" name="client_fio" placeholder="ФИО" label="ФИО" />
+                        <vue-form-input required type="number" name="passport_series" placeholder="Серия паспорта"
                             label="Серия паспорта" />
-                        <vue-form-input type="number" name="passport_number" placeholder="Номер паспорта"
+                        <vue-form-input required type="number" name="passport_number" placeholder="Номер паспорта"
                             label="Номер паспорта" />
-                        <vue-form-input type="text" name="passport_issued" placeholder="Паспорт кем выдан"
+                        <vue-form-input required type="text" name="passport_issued" placeholder="Паспорт кем выдан"
                             label="Паспорт кем выдан" />
-                        <vue-form-input type="text" name="physical_address" placeholder="Адрес регистрации"
+                        <vue-form-input required type="text" name="physical_address" placeholder="Адрес регистрации"
                             label="Адрес регистрации" />
                     </div>
                 </fieldset>
 
                 <!-- Поля для юридического лица -->
-                <fieldset v-if="clientType === '1'" :disabled="clientType !== '1'" class="flex flex-col gap-2">
+                <fieldset v-show="clientType === '1'" :disabled="clientType !== '1'" class="flex flex-col gap-2">
                     <div class="text-xl font-semibold">Данные для Юридического лица</div>
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <vue-form-input type="text" name="full_corp_name" placeholder="Полное название организации"
+                        <vue-form-input required type="text" name="full_corp_name" placeholder="Полное название организации"
                             label="Полное название организации" />
-                        <vue-form-input type="text" name="short_corp_name"
+                        <vue-form-input required type="text" name="short_corp_name"
                             placeholder="Кратное наименование организации" label="Кратное наименование организации" />
                     </div>
 
@@ -70,30 +70,30 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <vue-form-input type="text" name="ogrn" placeholder="Номер ОГРН/ОГРНИП"
+                        <vue-form-input required type="text" name="ogrn" placeholder="Номер ОГРН/ОГРНИП"
                             label="Номер ОГРН/ОГРНИП" />
-                        <vue-form-input type="text" v-if="ogrnType === '0'" name="director_name" placeholder="(Иванова Ивана Ивановича)"
+                        <vue-form-input required type="text" v-if="ogrnType === '0'" name="director_name" placeholder="(Иванова Ивана Ивановича)"
                             label="ФИО Ген.дира в РОД ПАДЕЖЕ" />
                         <div v-if="ogrnType === '1'">
 
                         </div>
-                        <vue-form-input type="text" name="ur_address" placeholder="Юридический адрес"
+                        <vue-form-input required type="text" name="ur_address" placeholder="Юридический адрес"
                             label="Юридический адрес" />
-                        <vue-form-input type="number" name="inn" placeholder="ИНН/КПП" label="ИНН/КПП" />
-                        <vue-form-input type="number" name="payment_account" placeholder="Расчётный счёт"
+                        <vue-form-input required type="number" name="inn" placeholder="ИНН/КПП" label="ИНН/КПП" />
+                        <vue-form-input required type="number" name="payment_account" placeholder="Расчётный счёт"
                             label="Расчётный счёт" />
-                        <vue-form-input type="number" name="сorrespondent_account" placeholder="Корреспондентский счёт"
+                        <vue-form-input required type="number" name="сorrespondent_account" placeholder="Корреспондентский счёт"
                             label="Корреспондентский счёт" />
-                        <vue-form-input type="text" name="bank_name" placeholder="Наименование банка"
+                        <vue-form-input required type="text" name="bank_name" placeholder="Наименование банка"
                             label="Наименование банка" />
-                        <vue-form-input type="number" name="bank_bik" placeholder="БИК Банка" label="БИК Банка" />
+                        <vue-form-input required type="number" name="bank_bik" placeholder="БИК Банка" label="БИК Банка" />
                     </div>
 
                     <div class="text-xl font-semibold">Данные заполнения счета и акта</div>
                     <div class="grid grid-cols-2 gap-3">
-                        <vue-form-input type="number" name="summ" placeholder="Сумма"
+                        <vue-form-input required type="number" name="act_payment_summ" placeholder="Сумма"
                             label="Сумма" />
-                        <vue-form-input type="text" name="payment_goal" placeholder="Назначение платежа"
+                        <vue-form-input required type="text" name="act_payment_goal" placeholder="Назначение платежа"
                             label="Назначение платежа" />
                     </div>
                 </fieldset>

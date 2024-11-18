@@ -2,10 +2,10 @@
    <form :action="action" method="POST">
       <input type="hidden" name="_token" :value="token">
       <div class="grid grid-cols-2 gap-4 max-w-xl mb-6">
-         <vue-form-input type="number" name="leed" placeholder="Лид" label="Лид" />
-         <vue-form-input type="number" name="number" placeholder="Номер договора" label="Номер договора" />
-         <vue-form-input type="text" name="contact_fio" placeholder="ФИО представителя" label="ФИО представителя" />
-         <vue-form-input type="tel" name="contact_phone" placeholder="Телефон" label="Телефон" />
+         <vue-form-input required type="number" name="leed" placeholder="Лид" label="Лид" />
+         <vue-form-input required type="number" name="number" placeholder="Номер договора" label="Номер договора" />
+         <vue-form-input required type="text" name="contact_fio" placeholder="ФИО представителя" label="ФИО представителя" />
+         <vue-form-input required type="tel" name="contact_phone" placeholder="Телефон" label="Телефон" />
       </div>
 
       <vue-agent-info />

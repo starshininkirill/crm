@@ -12,7 +12,7 @@
                             Услуга 1
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(0, $event)"
+                            <select id="service" name="service[]" @change="updateService(0, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу
@@ -26,7 +26,7 @@
                                     </option>
                                 </optgroup>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[0].price" label="Стоимость услуги" />
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                             Услуга 2
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(1, $event)"
+                            <select id="service" name="service[]" @change="updateService(1, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 2
@@ -47,7 +47,7 @@
                                     {{ service.name }}
                                 </option>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[1].price" label="Стоимость услуги" />
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                             Услуга 3
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(2, $event)"
+                            <select id="service" name="service[]" @change="updateService(2, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 3
@@ -69,7 +69,7 @@
                                     {{ service.name }}
                                 </option>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[2].price" label="Стоимость услуги" />
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                             Услуга 4
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(3, $event)"
+                            <select id="service" name="service[]" @change="updateService(3, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 4
@@ -90,7 +90,7 @@
                                     {{ service.name }}
                                 </option>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[3].price" label="Стоимость услуги" />
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                             Услуга 5
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(4, $event)"
+                            <select id="service" name="service[]" @change="updateService(4, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 5
@@ -111,7 +111,7 @@
                                     {{ service.name }}
                                 </option>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[4].price" label="Стоимость услуги" />
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                             Услуга 6
                         </label>
                         <div class="grid grid-cols-2 items-end gap-3">
-                            <select id="service" name="service" @change="updateService(5, $event)"
+                            <select id="service" name="service[]" @change="updateService(5, $event)"
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>
                                     Выберите услугу 6
@@ -132,7 +132,7 @@
                                     {{ service.name }}
                                 </option>
                             </select>
-                            <vue-form-input type="number" name="service_price" placeholder="Стоимость услуги"
+                            <vue-form-input type="number" name="service_price[]" placeholder="Стоимость услуги"
                                 v-model="servicePrices[5].price" label="Стоимость услуги" />
                         </div>
                     </div>
