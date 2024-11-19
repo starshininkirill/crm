@@ -65,22 +65,15 @@ class Contract extends Model
 
     public function addPayments(array $payments): void
     {
-        $order = 1;
-
-        if(empty($payments)){
-            return;
-        }
-
-        foreach ($payments as $payment) {
-            if (!empty($payment)) {
+        collect($payments)
+            ->filter()
+            ->each(function ($payment, $index) {
                 $this->payments()->create([
                     'value' => $payment,
                     'status' => Payment::STATUS_WAIT,
-                    'order' => $order,
+                    'order' => $index + 1,
                 ]);
-                $order++;
-            }
-        }
+            });
     }
 
     public function getPerformers(): Collection
@@ -122,7 +115,7 @@ class Contract extends Model
         return false;
     }
 
-    public function attachServices(array|Collection $services): void
+    public function attachServices(array $services): void
     {
         if (!empty($services)) {
             foreach ($services as $service) {

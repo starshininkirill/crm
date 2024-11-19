@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col w-full mb-6">
         <div class="flex flex-col rounded-md border border-gray-400 shadow-xl">
-            <div @click="toggleForm" class="bg-gray-800 p-2 rounded-md text-white font-semibold text-xl cursor-pointer">
+            <div class="bg-gray-800 p-2 rounded-md text-white font-semibold text-xl">
                 Суммы
             </div>
             <div v-show="showForm" class="flex flex-col gap-4 p-2 mt-2">
@@ -17,14 +17,9 @@
                     Платежи
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <vue-form-input v-for="(payment, index) in payments" 
-                   :key="index" 
-                   type="number" 
-                   :name="'payments[' + index + ']'" 
-                   v-model="payments[index]" 
-                   :placeholder="'Платёж ' + (index + 1)" 
-                   :label="'Платёж ' + (index + 1)" 
-                   />
+                    <vue-form-input v-for="(payment, index) in payments" :key="index" type="number"
+                        :name="'payments[' + index + ']'" v-model="payments[index]"
+                        :placeholder="'Платёж ' + (index + 1)" :label="'Платёж ' + (index + 1)" />
                 </div>
                 <div class="text-xl font-semibold">
                     Сплит платежей
@@ -62,14 +57,20 @@ export default {
         amountPrice: {
             type: Number,
             required: true
-        }
+        },
+        old: {
+            type: Object,
+            default: [],
+        },
     },
     data() {
+        const paymentsFromOld = Array.isArray(this.old.payments) ? this.old.payments : [];
+
         return {
             showForm: true,
             localSale: this.modelValue,
             localAmountPrice: this.amountPrice,
-            payments: [0, 0, 0, 0, 0]
+            payments: Array.from({ length: 5 }, (_, index) => paymentsFromOld[index] || 0),
         };
     },
     computed: {
@@ -95,9 +96,6 @@ export default {
         },
     },
     methods: {
-        toggleForm() {
-            this.showForm = !this.showForm;
-        },
         handleSaleChange(event) {
             const value = Number(event.target.value);
             this.localSale = value;
@@ -114,16 +112,16 @@ export default {
             }
 
             this.payments.fill(0);
-            
+
             const th = this
 
             args.forEach((arg, idx) => {
-                const value = this.localAmountPrice / 100 * arg; 
+                const value = this.localAmountPrice / 100 * arg;
                 if (idx < this.payments.length) {
-                    th.payments[idx] =  value; 
+                    th.payments[idx] = value;
                 }
             });
-            
+
         }
     }
 };

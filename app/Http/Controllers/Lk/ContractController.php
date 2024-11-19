@@ -40,7 +40,7 @@ class ContractController extends Controller
         return view('lk.contract.create', [
             'cats' => $catsWithServices ?? [],
             'mainCats' => $mainCats,
-            'secondaryCats' => $secondaryCats
+            'secondaryCats' => $secondaryCats,
         ]);
     }
 }

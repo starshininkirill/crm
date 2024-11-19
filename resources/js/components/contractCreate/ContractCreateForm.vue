@@ -2,16 +2,19 @@
    <form :action="action" method="POST">
       <input type="hidden" name="_token" :value="token">
       <div class="grid grid-cols-2 gap-4 max-w-xl mb-6">
-         <vue-form-input required type="number" name="leed" placeholder="Лид" label="Лид" />
-         <vue-form-input required type="number" name="number" placeholder="Номер договора" label="Номер договора" />
-         <vue-form-input required type="text" name="contact_fio" placeholder="ФИО представителя" label="ФИО представителя" />
-         <vue-form-input required type="tel" name="contact_phone" placeholder="Телефон" label="Телефон" />
+         <vue-form-input required :value="old['leed']" type="number" name="leed" placeholder="Лид" label="Лид" />
+         <vue-form-input required :value="old['number']" type="number" name="number" placeholder="Номер договора"
+            label="Номер договора" />
+         <vue-form-input required :value="old['contact_fio']" type="text" name="contact_fio"
+            placeholder="ФИО представителя" label="ФИО представителя" />
+         <vue-form-input required :value="old['contact_phone']" type="tel" name="contact_phone" placeholder="Телефон"
+            label="Телефон" />
       </div>
 
-      <vue-agent-info />
-      <vue-services-info :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
+      <vue-agent-info :old="old" />
+      <vue-services-info :old="old" :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
          @updateService="updateServicePrice" :servicePrices="servicePrices" />
-      <vue-price-info :servicePrices="servicePrices" v-model:amountPrice="amountPrice" v-model="sale"  />
+      <vue-price-info :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice" v-model="sale" />
 
       <button type="submit" class="btn">Отправить</button>
    </form>
@@ -41,7 +44,10 @@ export default {
       },
       stringSecondaryCats: {
          type: String,
-      }
+      },
+      rowOld: {
+         type: String,
+      },
    },
    components: {
       'vue-agent-info': AgentInfo,
@@ -49,33 +55,26 @@ export default {
       'vue-price-info': PriceInfo
    },
    data() {
+      const old = this.rowOld ? JSON.parse(this.rowOld) : {};
+
+      const oldServices = Array.isArray(old.service) ? old.service : [];
+      const oldPrices = Array.isArray(old.service_price) ? old.service_price : [];
+      const oldDuration = Array.isArray(old.service_duration) ? old.service_duration : [];
+
+      const servicePrices = Array.from({ length: 6 }, (_, index) => ({
+         service: oldServices[index] || 0,
+         price: oldPrices[index] || 0,
+         duration: oldDuration[index] || 0,
+      }));      
+
       return {
+         old,
          cats: JSON.parse(this.stringCats),
          mainCatsIds: JSON.parse(this.stringMainCats),
          secondaryCatsIds: JSON.parse(this.stringSecondaryCats),
-         sale: 0,
+         sale: parseInt(old.sale) || 0,
          amountPrice: 0,
-            servicePrices: [
-               {
-                  'price': 0,
-                  'duration': 0
-               }, {
-                  'price': 0,
-                  'duration': 0
-               }, {
-                  'price': 0,
-                  'duration': 0
-               }, {
-                  'price': 0,
-                  'duration': 0
-               }, {
-                  'price': 0,
-                  'duration': 0
-               }, {
-                  'price': 0,
-                  'duration': 0
-               },
-         ],
+         servicePrices,
       };
    },
    watch: {
@@ -84,6 +83,9 @@ export default {
          handler: 'recalculateAmountPrice',
          deep: true,
       }
+   },
+   mounted() {
+      this.recalculateAmountPrice();
    },
    methods: {
       recalculateAmountPrice() {

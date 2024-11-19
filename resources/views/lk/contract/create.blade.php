@@ -18,13 +18,14 @@
             </ul>
         @endif
 
-
         <vue-contract-create-form 
             :string-cats='@json($cats)'
             :string-main-cats='@json($mainCats)' 
             :string-secondary-cats='@json($secondaryCats)' 
             action="{{ route('contract.store') }}" 
-            token="{{ csrf_token() }}" />
+            token="{{ csrf_token() }}"
+            row-old='@json(old())'
+            />
 
 
     </div>

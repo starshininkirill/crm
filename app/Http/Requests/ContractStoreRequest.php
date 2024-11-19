@@ -99,14 +99,22 @@ class ContractStoreRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $services = $this->input('services', []);
-            $amountPrice = $this->input('amount_price', 0);
-            $sale = $this->input('sale', 0);
-
             $servicesTotal = collect($services)->sum('price');
+
+            $payments = $this->input('payments', []);
+            $paymentsTotal = collect($payments)->sum();
+
+            $sale = $this->input('sale', 0);
+            $amountPrice = $this->input('amount_price', 0);
 
             if ($servicesTotal - $sale != $amountPrice) {
                 $validator->errors()->add('amount_price', 'Сумма Услуг со Скидкой должна быть равна Общей сумме.');
             }
+
+            if ($paymentsTotal != $amountPrice) {
+                $validator->errors()->add('amount_price', 'Сумма Платежей должна быть равна Общей сумме.');
+            }
+            
         });
     }
 
