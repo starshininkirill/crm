@@ -11,12 +11,32 @@
             label="Телефон" />
       </div>
 
-      <vue-agent-info :old="old" />
-      <vue-services-info :old="old" :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
-         @updateService="updateServicePrice" :servicePrices="servicePrices" />
-      <vue-price-info :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice" v-model="sale" />
 
-      <button type="submit" class="btn">Отправить</button>
+      <div class="navigation-buttons flex gap-3 mb-4">
+         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': currentStep === 1 }" @click="goBack">
+            Назад
+         </div>
+
+         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': !canGoNext() }" @click="goNext">
+            Вперёд
+         </div>
+      </div>
+      <div>
+         <div v-show="currentStep === 1">
+            <vue-agent-info :old="old" v-model:valid="stepsValid[0]" />
+         </div>
+
+         <div v-show="currentStep === 2">
+            <vue-services-info v-model:valid="stepsValid[1]" :old="old" :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
+               @updateService="updateServicePrice" :servicePrices="servicePrices" />
+         </div>
+
+         <div v-show="currentStep === 3">
+            <vue-price-info :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice"
+               v-model="sale" />
+         </div>
+      </div>
+
    </form>
 </template>
 
@@ -56,7 +76,7 @@ export default {
    },
    data() {
       const old = this.rowOld ? JSON.parse(this.rowOld) : {};
-
+      
       const oldServices = Array.isArray(old.service) ? old.service : [];
       const oldPrices = Array.isArray(old.service_price) ? old.service_price : [];
       const oldDuration = Array.isArray(old.service_duration) ? old.service_duration : [];
@@ -65,7 +85,7 @@ export default {
          service: oldServices[index] || 0,
          price: oldPrices[index] || 0,
          duration: oldDuration[index] || 0,
-      }));      
+      }));
 
       return {
          old,
@@ -75,6 +95,8 @@ export default {
          sale: parseInt(old.sale) || 0,
          amountPrice: 0,
          servicePrices,
+         currentStep: 1,
+         stepsValid: [false, false],
       };
    },
    watch: {
@@ -95,6 +117,20 @@ export default {
       updateServicePrice(index, price, duration) {
          this.servicePrices[index].price = price || 0;
          this.servicePrices[index].duration = duration || 0;
+      },
+      canGoNext() {
+         return this.stepsValid[this.currentStep - 1];
+      },
+      goNext() {
+               
+         if (this.canGoNext() && this.currentStep < 3) {
+            this.currentStep++;
+         }
+      },
+      goBack() {
+         if (this.currentStep > 1) {
+            this.currentStep--;
+         }
       }
    }
 };

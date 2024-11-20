@@ -38,6 +38,7 @@
                         100
                     </div>
                 </div>
+                <button type="submit" class="btn">Отправить</button>
             </div>
         </div>
     </div>

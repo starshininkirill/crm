@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Lk;
 use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\ServiceCategory;
-use Illuminate\Support\Facades\DB;
 
 class ContractController extends Controller
 {
