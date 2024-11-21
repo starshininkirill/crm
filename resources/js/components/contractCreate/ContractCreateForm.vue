@@ -27,8 +27,9 @@
          </div>
 
          <div v-show="currentStep === 2">
-            <vue-services-info v-model:valid="stepsValid[1]" :old="old" :mainCatsIds="mainCatsIds" :secondaryCatsIds="secondaryCatsIds" :cats="cats"
-               @updateService="updateServicePrice" :servicePrices="servicePrices" />
+            <vue-services-info v-model:valid="stepsValid[1]" :old="old" :mainCatsIds="mainCatsIds"
+               :secondaryCatsIds="secondaryCatsIds" :cats="cats" @updateService="updateServicePrice"
+               :servicePrices="servicePrices" />
          </div>
 
          <div v-show="currentStep === 3">
@@ -76,7 +77,7 @@ export default {
    },
    data() {
       const old = this.rowOld ? JSON.parse(this.rowOld) : {};
-      
+
       const oldServices = Array.isArray(old.service) ? old.service : [];
       const oldPrices = Array.isArray(old.service_price) ? old.service_price : [];
       const oldDuration = Array.isArray(old.service_duration) ? old.service_duration : [];
@@ -122,7 +123,7 @@ export default {
          return this.stepsValid[this.currentStep - 1];
       },
       goNext() {
-               
+
          if (this.canGoNext() && this.currentStep < 3) {
             this.currentStep++;
          }

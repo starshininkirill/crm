@@ -36,14 +36,14 @@ class ContractStoreRequest extends FormRequest
         return $this->input('payments');
     }
 
-    public function storeClient(): array 
+    public function storeClient(): array
     {
         $default = [
             'type' => $this->input('client_type'),
             'tax' => $this->input('tax'),
         ];
 
-        if($this->input('client_type') == Client::TYPE_INDIVIDUAL){
+        if ($this->input('client_type') == Client::TYPE_INDIVIDUAL) {
             $res = array_merge($default, [
                 'fio' => $this->input('client_fio'),
                 'passport_series' => $this->input('passport_series'),
@@ -51,7 +51,7 @@ class ContractStoreRequest extends FormRequest
                 'passport_issued' => $this->input('passport_issued'),
                 'physical_address' => $this->input('physical_address')
             ]);
-        }else{
+        } else {
             $res = array_merge($default, [
                 'organization_name' => $this->input('organization_name'),
                 'organization_short_name' => $this->input('organization_short_name'),
@@ -62,15 +62,14 @@ class ContractStoreRequest extends FormRequest
                 'current_account' => $this->input('current_account'),
                 'correspondent_account' => $this->input('correspondent_account'),
                 'bank_name' => $this->input('bank_name'),
-                'bank_bik' => $this->input('bank_bik'),            
+                'bank_bik' => $this->input('bank_bik'),
             ]);
 
-            if($this->input('register_number_type') == Client::TAX_OGRN){
+            if ($this->input('register_number_type') == Client::TAX_OGRN) {
                 $res = array_merge($res, [
                     'director_name' => $this->input('director_name'),
                 ]);
             }
-
         }
 
         return $res;
@@ -93,7 +92,6 @@ class ContractStoreRequest extends FormRequest
                 'payments' => array_values($filteredPayments),
             ]);
         }
-
     }
 
     protected function withValidator($validator)
@@ -115,7 +113,6 @@ class ContractStoreRequest extends FormRequest
             if ($paymentsTotal != $amountPrice) {
                 $validator->errors()->add('amount_price', 'Сумма Платежей должна быть равна Общей сумме.');
             }
-            
         });
     }
 
@@ -126,6 +123,54 @@ class ContractStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        // $rules = [
+        //     // Валидация договора
+        //     'leed' => 'required',
+        //     'number' => 'required|unique:contracts|numeric',
+        //     'contact_fio' => 'required|min:4|max:255',
+        //     'contact_phone' => 'required|min:4|max:255',
+        //     'amount_price' => 'required|numeric',
+        //     'sale' => 'nullable|numeric',
+
+        //     'development_time' => 'required|numeric',
+
+        //     // Валидация всех клиентов
+        //     'client_type' => 'required|numeric|in:0,1',
+        //     'tax' => 'required|numeric',
+
+        //     // Валидация для Физ. лица
+        //     'client_fio' => 'required_if:client_type,0|string|min:2|max:255',
+        //     'passport_series' => 'required_if:client_type,0',
+        //     'passport_number' => 'required_if:client_type,0',
+        //     'passport_issued' => 'required_if:client_type,0|string|max:255',
+        //     'physical_address' => 'required_if:client_type,0|string|max:255',
+
+        //     // Валидация для Юр. лица
+        //     'organization_name' => 'required_if:client_type,1|string|max:255',
+        //     'organization_short_name' => 'required_if:client_type,1|string|max:255',
+        //     'register_number_type' => 'required_if:client_type,1|integer|in:0,1',
+        //     'register_number' => 'required_if:client_type,1|digits_between:1,20',
+        //     'legal_address' => 'required_if:client_type,1|string|max:255',
+        //     'inn' => 'required_if:client_type,1|digits_between:10,12',
+        //     'current_account' => 'required_if:client_type,1|digits:20',
+        //     'correspondent_account' => 'required_if:client_type,1|digits:20',
+        //     'bank_name' => 'required_if:client_type,1|string|max:255',
+        //     'bank_bik' => 'required_if:client_type,1|digits:9',
+        //     'act_payment_summ' => 'required_if:client_type,1|integer',
+        //     'act_payment_goal' => 'required_if:client_type,1|string|max:255',
+
+        //     // Валидация услуг
+        //     'services' => 'required|array|min:1',
+        //     'services.*.service_id' => 'required|exists:services,id',
+        //     'services.*.price' => 'required|numeric|min:0',
+        //     'services.*.duration' => 'required|numeric|min:0',
+
+        //     // Валидация платежей
+        //     'payments' => 'nullable|array',
+        //     'payments.*' => 'nullable|numeric|min:0',
+
+        // ];
+
         $rules = [
             // Валидация договора
             'leed' => 'required',
@@ -173,6 +218,7 @@ class ContractStoreRequest extends FormRequest
             'payments.*' => 'nullable|numeric|min:0',
 
         ];
+
 
         if ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY && $this->input('register_number_type') == Client::TAX_OGRN) {
             $rules['director_name'] = 'required|string|max:255';

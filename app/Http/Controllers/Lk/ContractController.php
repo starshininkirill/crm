@@ -23,13 +23,15 @@ class ContractController extends Controller
                             'id' => $service->id,
                             'name' => $service->name,
                             'price' => $service->price,
-                            'work_days_duration' => $service->work_days_duration
+                            'work_days_duration' => $service->work_days_duration,
+                            'description' => $service->description,
+                            'type' => $service->category->type
                         ];
                     })->toArray()
                 ];
             })->toJson();
         }
-        
+
         $mainCategoriesOption = Option::where('name', 'contract_main_categories')->first();
         $mainCats = $mainCategoriesOption != null ? $mainCategoriesOption->value : [];
 

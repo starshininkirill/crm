@@ -52,62 +52,80 @@ class ServiceSeeder extends Seeder
             'service_category_id' => '1',
             'price' => 10000,
             'work_days_duration' => 5,
+            'description' => 'описание Инд лендинг'
         ]);
         Service::create([
             'name' => 'Инд Каталог',
             'service_category_id' => 1,
             'price' => 25000,
             'work_days_duration' => 10,
+            'description' => 'описание Инд каталог'
         ]);
         Service::create([
             'name' => 'Инд Интернет магазин',
             'service_category_id' => 1,
             'price' => 50000,
             'work_days_duration' => 15,
+            'description' => 'описание Инд ИМ'
         ]);
         Service::create([
             'name' => 'Гот Лендинг',
             'service_category_id' => 2,
-            'price' => 7500
+            'price' => 7500,
+            'description' => 'описание Гот лендинг'
         ]);
         Service::create([
             'name' => 'Гот Каталог',
             'service_category_id' => 2,
             'price' => 15000,
             'work_days_duration' => 4,
+            'description' => 'описание Гот Каталог'
         ]);
         Service::create([
             'name' => 'Первичная настройка + ведение',
             'service_category_id' => 3,
             'price' => 15000,
             'work_days_duration' => 4,
+            'description' => 'описание рк ведение и настройка'
         ]);
         Service::create([
             'name' => 'Ведение РК',
             'service_category_id' => 3,
-            'price' => 10000
+            'price' => 10000,
+            'description' => 'описание Ведение РК'
         ]);
         Service::create([
             'name' => 'Настройка РК',
             'service_category_id' => 3,
             'price' => 7500,
             'work_days_duration' => 1,
+            'description' => 'описание Настройка РК'
         ]);
         Service::create([
             'name' => 'Базовое SEO',
             'service_category_id' => 4,
             'price' => 10000,
             'work_days_duration' => 1,
+            'description' => 'описание Базовое СЕО'
+        ]);
+        Service::create([
+            'name' => 'Внутреннее SEO',
+            'service_category_id' => 4,
+            'price' => 10000,
+            'work_days_duration' => 1,
+            'description' => 'описание Внутреннее СЕО'
         ]);
         Service::create([
             'name' => 'Вариативная карточка товара',
             'service_category_id' => 5,
             'price' => 5000,
+            'description' => 'описание Вариативная карточка товара'
         ]);
         Service::create([
             'name' => 'Калькулятор',
             'service_category_id' => 5,
-            'price' => 10000
+            'price' => 10000,
+            'description' => 'описание Калькулятор'
         ]);
 
 
