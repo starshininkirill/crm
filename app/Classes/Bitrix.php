@@ -180,6 +180,12 @@ class Bitrix
                 foreach ($service as $field => $value) {
                     if (isset($additional_services[$key][$field])) {
                         $newFieldName = $additional_services[$key][$field];
+                        if ($field == 'duration') {
+                            $value = self::visualFormatDeadline($value);
+                        }
+                        if ($field == 'price') {
+                            $value = self::visualFormatNumber($value, true, true);
+                        }
                         $mergedServices[$key][$newFieldName] = $value;
                         unset($mergedServices[$key][$field]);
                     }
@@ -305,48 +311,75 @@ class Bitrix
 
 
 
-    // private static function visual_format_deadline($number)
-    // {
-    //     $words = [];
-    //     $formatted_number = intval(preg_replace("/[^,.0-9]/", '', $number));
-    //     if (!$formatted_number) {
-    //         return $number;
-    //     }
+    private static function visualFormatDeadline($number)
+    {
+        $words = [];
+        $formatted_number = intval(preg_replace("/[^,.0-9]/", '', $number));
+        if (!$formatted_number) {
+            return $number;
+        }
 
-    //     $words[] = $formatted_number;
-    //     $words[] = '(' .  num2str($formatted_number) . ')';
-    //     $words[] = deadlineWorkWordTermination($formatted_number);
-    //     $words[] = deadlineDayTermination($formatted_number);
+        $words[] = $formatted_number;
+        $words[] = '(' .  self::num2str($formatted_number) . ')';
+        $words[] = self::deadlineWorkWordTermination($formatted_number);
+        $words[] = self::deadlineDayTermination($formatted_number);
 
-    //     return implode(' ', $words);
-    // }
+        return implode(' ', $words);
+    }
 
 
-    // private static function deadlineWorkWordTermination($num)
-    // {
+    private static function deadlineWorkWordTermination($num)
+    {
 
-    //     //Оставляем две последние цифры от $num
-    //     $number = substr($num, -2);
+        //Оставляем две последние цифры от $num
+        $number = substr($num, -2);
 
-    //     //Если 2 последние цифры входят в диапазон от 11 до 14
-    //     //Тогда подставляем окончание "ЕВ"
-    //     if ($number > 4 and $number < 21) {
-    //         $term = "х";
-    //     } else {
+        //Если 2 последние цифры входят в диапазон от 11 до 14
+        //Тогда подставляем окончание "ЕВ"
+        if ($number > 4 and $number < 21) {
+            $term = "х";
+        } else {
 
-    //         $number = substr($number, -1);
+            $number = substr($number, -1);
 
-    //         if ($number == 0) {
-    //             $term = "х";
-    //         }
-    //         if ($number == 1) {
-    //             $term = "й";
-    //         }
-    //         if ($number > 1) {
-    //             $term = "х";
-    //         }
-    //     }
+            if ($number == 0) {
+                $term = "х";
+            }
+            if ($number == 1) {
+                $term = "й";
+            }
+            if ($number > 1) {
+                $term = "х";
+            }
+        }
 
-    //     return 'рабочи' . $term;
-    // }
+        return 'рабочи' . $term;
+    }
+
+    private static function deadlineDayTermination($num)
+    {
+        //Оставляем две последние цифры от $num
+        $number = substr($num, -2);
+
+        //Если 2 последние цифры входят в диапазон от 11 до 14
+        //Тогда подставляем окончание "ЕВ"
+        if ($number > 4 and $number < 21) {
+            $term = "ней";
+        } else {
+
+            $number = substr($number, -1);
+
+            if ($number == 0) {
+                $term = "ней";
+            }
+            if ($number == 1) {
+                $term = "ень";
+            }
+            if ($number > 1) {
+                $term = "ня";
+            }
+        }
+
+        return 'д' . $term;
+    }
 }
