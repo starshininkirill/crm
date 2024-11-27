@@ -3,9 +3,9 @@
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">Основные настройки</h1>
     @if (!$serviceCategories->isEmpty())
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
             <div>
-                <div class="text-2xl font-semibold mb-3">
+                <div class="text-xl font-semibold mb-3">
                     Основные категории услуг ( Первая услуга в генераторе документов )
                 </div>
                 <form
@@ -36,7 +36,7 @@
                 </form>
             </div>
             <div>
-                <div class="text-2xl font-semibold mb-3">
+                <div class="text-xl font-semibold mb-3">
                     Дополнительные категории услуг ( 2 и далее услуги в генераторе документов )
                 </div>
                 <form
@@ -60,6 +60,24 @@
                             {{ $category->name }}
                         </label>
                     @endforeach
+                    <input type="hidden" name="name" value="contract_secondary_categories">
+                    <button class="btn mt-3">
+                        Изменить
+                    </button>
+                </form>
+            </div>
+            <div>
+                <div class="text-xl font-semibold mb-3">
+                    Описание условий для сделки с РК
+                </div>
+                <form
+                    action="{{ $contractRkText == null ? route('option.store') : route('option.update', $contractRkText->id) }}"
+                    method="POST" class="flex flex-col gap-1">
+                    @csrf
+                    @if ($contractRkText != null)
+                        @method('PUT')
+                    @endif
+                    <textarea name="value" value="{{ $contractRkText->value }}" class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 h-32 resize-none" placeholder="Условия..." label="Условия..."  ></textarea>
                     <input type="hidden" name="name" value="contract_secondary_categories">
                     <button class="btn mt-3">
                         Изменить

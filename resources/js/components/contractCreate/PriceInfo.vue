@@ -71,7 +71,7 @@ export default {
             showForm: true,
             localSale: this.modelValue,
             localAmountPrice: this.amountPrice,
-            payments: Array.from({ length: 5 }, (_, index) => paymentsFromOld[index] || 0),
+            payments: Array.from({ length: 3 }, (_, index) => paymentsFromOld[index] || 0),
         };
     },
     computed: {

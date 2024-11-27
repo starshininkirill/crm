@@ -19,9 +19,10 @@
         @endif
 
         <vue-contract-create-form 
+            :rk-text='@json($rkText)'
             :string-cats='@json($cats)'
             :string-main-cats='@json($mainCats)' 
-            :string-secondary-cats='@json($secondaryCats)' 
+            :string-secondary-cats='@json($secondaryCats)'
             action="{{ route('contract.store') }}" 
             token="{{ csrf_token() }}"
             row-old='@json(old())'

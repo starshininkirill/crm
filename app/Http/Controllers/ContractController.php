@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ContractController extends Controller
 {
@@ -18,6 +19,8 @@ class ContractController extends Controller
     public function store(ContractStoreRequest $request)
     {
         $data = $request->validated();
+        
+        dd($data);
 
         Bitrix::generateDealDocument($data);
 

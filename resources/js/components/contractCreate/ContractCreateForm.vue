@@ -1,5 +1,5 @@
 <template>
-   <form :action="action" method="POST">
+   <form :action="action" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_token" :value="token">
       <div class="grid grid-cols-2 gap-4 max-w-xl mb-6">
          <vue-form-input required :value="old['leed']" type="number" name="leed" placeholder="Лид" label="Лид" />
@@ -29,7 +29,8 @@
          <div v-show="currentStep === 2">
             <vue-services-info v-model:valid="stepsValid[1]" :old="old" :mainCatsIds="mainCatsIds"
                :secondaryCatsIds="secondaryCatsIds" :cats="cats" @updateService="updateServicePrice"
-               :servicePrices="servicePrices" v-model:isRk="isRk" v-model:isSeo="isSeo" v-model:isReady="isReady" />
+               :servicePrices="servicePrices" v-model:isRk="isRk" v-model:isSeo="isSeo" v-model:isReady="isReady" 
+               :rkText="rkText"/>
          </div>
 
          <div v-show="currentStep === 3">
@@ -69,13 +70,16 @@ export default {
       rowOld: {
          type: String,
       },
+      rkText: {
+         type: String,
+      }
    },
    components: {
       'vue-agent-info': AgentInfo,
       'vue-services-info': ServicesInfo,
       'vue-price-info': PriceInfo
    },
-   data() {
+   data() {      
       let cats = JSON.parse(this.stringCats)
       let allServices = cats.flatMap(cat => cat.services)
 

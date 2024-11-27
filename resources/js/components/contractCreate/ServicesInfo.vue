@@ -58,9 +58,16 @@
                         </div>
                     </div>
 
-                    <vue-form-input v-if="isSeo" type="number" v-model="seoPages" required name="seo_pages" placeholder="Кол-во страниц SEO"
-                        label="Кол-во страниц SEO" />
-
+                    <div v-if="isReady" class="grid grid-cols-2 gap-3">
+                        <vue-form-input type="text" required name="ready_site_link"
+                            placeholder="Ссылка на готовый дизайн" label="Ссылка на готовый дизайн" />
+                        <vue-form-input type="file" required name="ready_site_image"
+                            placeholder="Скриншот главной страницы готового дизайна (для приложения №2)"
+                            label="Скриншот главной страницы готового дизайна (для приложения №2)" />
+                    </div>
+                    <vue-form-input v-if="isSeo" type="number" v-model="seoPages" required name="seo_pages"
+                        placeholder="Кол-во страниц SEO" label="Кол-во страниц SEO" />
+                    <vue-form-input v-if="isRk" type="hidden" :value="rkText" required name="rk_text" />
                 </div>
 
                 <div class="flex gap-3">
@@ -111,8 +118,11 @@ export default {
             type: Boolean,
             required: true,
         },
-        old:{
+        old: {
             Array
+        },
+        rkText: {
+            type: String,
         }
     },
     data() {
@@ -120,6 +130,7 @@ export default {
         if (visibleServices == 0) {
             visibleServices = 1
         }
+
         return {
             seoPages: this.old?.seo_pages !== undefined ? this.old.seo_pages : 0,
             showForm: true,
@@ -134,12 +145,12 @@ export default {
             let valid = this.servicePrices.slice(0, this.visibleServices).every(service => {
                 return service.service !== 0 && service.price > 0;
             });
-            
-            if(this.isSeo){
+
+            if (this.isSeo) {
                 valid = valid && this.seoPages != '' && this.seoPages != 0;
             }
 
-            return valid  
+            return valid
 
 
         },
@@ -181,8 +192,8 @@ export default {
             },
             deep: true
         },
-        seoPages: {            
-            handler() {                
+        seoPages: {
+            handler() {
                 this.$emit('update:valid', this.checkValidFieldsFilled());
             },
         }

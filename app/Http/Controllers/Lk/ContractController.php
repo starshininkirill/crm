@@ -27,23 +27,23 @@ class ContractController extends Controller
                             'isRk' => $service->category->type == ServiceCategory::RK ? true : false,
                             'isSeo' => $service->category->type == ServiceCategory::SEO ? true : false,
                             'isReady' => $service->category->type == ServiceCategory::READY_SITE ? true : false,
-                            'type' => $service->category->type
                         ];
                     })->toArray()
                 ];
             })->toJson();
         }
 
-        $mainCategoriesOption = Option::where('name', 'contract_main_categories')->first();
-        $mainCats = $mainCategoriesOption != null ? $mainCategoriesOption->value : [];
+        $options = Option::whereIn('name', ['contract_main_categories', 'contract_secondary_categories', 'contract_rk_text'])->get()->keyBy('name');
 
-        $secondaryCategoriesOption = Option::where('name', 'contract_secondary_categories')->first();
-        $secondaryCats = $secondaryCategoriesOption != null ? $secondaryCategoriesOption->value : [];
+        $mainCats = $options->get('contract_main_categories')->value ?? [];
+        $secondaryCats = $options->get('contract_secondary_categories')->value ?? [];
+        $contractRkText = $options->get('contract_rk_text')->value ?? [];
 
         return view('lk.contract.create', [
             'cats' => $catsWithServices ?? [],
             'mainCats' => $mainCats,
             'secondaryCats' => $secondaryCats,
+            'rkText' => $contractRkText,
         ]);
     }
 }
