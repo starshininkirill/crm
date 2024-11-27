@@ -24,7 +24,9 @@ class ContractController extends Controller
                             'name' => $service->name,
                             'price' => $service->price,
                             'work_days_duration' => $service->work_days_duration,
-                            'description' => $service->description,
+                            'isRk' => $service->category->type == ServiceCategory::RK ? true : false,
+                            'isSeo' => $service->category->type == ServiceCategory::SEO ? true : false,
+                            'isReady' => $service->category->type == ServiceCategory::READY_SITE ? true : false,
                             'type' => $service->category->type
                         ];
                     })->toArray()

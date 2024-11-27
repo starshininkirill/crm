@@ -165,6 +165,8 @@ class ContractStoreRequest extends FormRequest
         //     'services.*.price' => 'required|numeric|min:0',
         //     'services.*.duration' => 'required|numeric|min:0',
 
+        // 'seo_pages' => 'nullable|numeric|min:0',
+
         //     // Валидация платежей
         //     'payments' => 'nullable|array',
         //     'payments.*' => 'nullable|numeric|min:0',
@@ -212,6 +214,8 @@ class ContractStoreRequest extends FormRequest
             'services.*.service_id' => 'required|exists:services,id',
             'services.*.price' => 'required|numeric|min:0',
             'services.*.duration' => 'required|numeric|min:0',
+            
+            'seo_pages' => 'nullable|numeric|min:0',
 
             // Валидация платежей
             'payments' => 'nullable|array',

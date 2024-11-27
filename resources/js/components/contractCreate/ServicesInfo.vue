@@ -20,7 +20,9 @@
                                 </option>
                                 <optgroup :label="cat.category" v-for="cat in mainCats" :key="cat.category">
                                     <option v-for="service in cat.services" :key="service.id" :value="service.id"
-                                        :data-price="service.price" :data-duration="service.work_days_duration">
+                                        :data-price="service.price" :data-duration="service.work_days_duration"
+                                        :data-isRk="service.isRk" :data-isReady="service.isReady"
+                                        :data-isSeo="service.isSeo">
                                         {{ service.name }}
                                     </option>
                                 </optgroup>
@@ -44,7 +46,9 @@
                                 class="block h-fit w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option selected disabled>Выберите услугу {{ index + 2 }}</option>
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
-                                    :data-price="service.price" :data-duration="service.work_days_duration">
+                                    :data-price="service.price" :data-duration="service.work_days_duration"
+                                    :data-isRk="service.isRk" :data-isReady="service.isReady"
+                                    :data-isSeo="service.isSeo">
                                     {{ service.name }}
                                 </option>
                             </select>
@@ -53,6 +57,9 @@
                             <vue-form-input type="hidden" name="service_duration[]" v-model="servicePrice.duration" />
                         </div>
                     </div>
+
+                    <vue-form-input v-if="isSeo" type="number" v-model="seoPages" required name="seo_pages" placeholder="Кол-во страниц SEO"
+                        label="Кол-во страниц SEO" />
 
                 </div>
 
@@ -92,6 +99,21 @@ export default {
             type: Boolean,
             required: true,
         },
+        isRk: {
+            type: Boolean,
+            required: true,
+        },
+        isSeo: {
+            type: Boolean,
+            required: true,
+        },
+        isReady: {
+            type: Boolean,
+            required: true,
+        },
+        old:{
+            Array
+        }
     },
     data() {
         let visibleServices = this.servicePrices.filter(item => item.service !== 0).length
@@ -99,6 +121,7 @@ export default {
             visibleServices = 1
         }
         return {
+            seoPages: this.old?.seo_pages !== undefined ? this.old.seo_pages : 0,
             showForm: true,
             allCats: this.cats,
             mainCats: this.cats.filter(cat => this.mainCatsIds.map(Number).includes(cat.id)),
@@ -107,16 +130,27 @@ export default {
         };
     },
     methods: {
-        checkAllFieldsFilled() {
-            return this.servicePrices.slice(0, this.visibleServices).every(service => {
+        checkValidFieldsFilled() {
+            let valid = this.servicePrices.slice(0, this.visibleServices).every(service => {
                 return service.service !== 0 && service.price > 0;
             });
+            
+            if(this.isSeo){
+                valid = valid && this.seoPages != '' && this.seoPages != 0;
+            }
+
+            return valid  
+
+
         },
         updateService(index, event) {
             const selectedOption = event.target.options[event.target.selectedIndex];
             const price = selectedOption.getAttribute('data-price');
             const duration = selectedOption.getAttribute('data-duration');
-            this.$emit('updateService', index, price, duration)
+            const isRk = selectedOption.getAttribute('data-isRk');
+            const isSeo = selectedOption.getAttribute('data-isSeo');
+            const isReady = selectedOption.getAttribute('data-isReady');
+            this.$emit('updateService', index, price, duration, isRk, isSeo, isReady)
         },
         addService() {
             if (this.visibleServices < 6) {
@@ -128,6 +162,9 @@ export default {
                 this.servicePrices[this.visibleServices - 1].service = 0
                 this.servicePrices[this.visibleServices - 1].price = 0
                 this.servicePrices[this.visibleServices - 1].duration = 0
+                this.servicePrices[this.visibleServices - 1].isRk = false
+                this.servicePrices[this.visibleServices - 1].isSeo = false
+                this.servicePrices[this.visibleServices - 1].isReady = false
                 this.visibleServices -= 1;
             }
         },
@@ -135,18 +172,23 @@ export default {
     watch: {
         visibleServices: {
             handler() {
-                this.$emit('update:valid', this.checkAllFieldsFilled());
+                this.$emit('update:valid', this.checkValidFieldsFilled());
             }
         },
         servicePrices: {
             handler() {
-                this.$emit('update:valid', this.checkAllFieldsFilled());
+                this.$emit('update:valid', this.checkValidFieldsFilled());
             },
             deep: true
         },
+        seoPages: {            
+            handler() {                
+                this.$emit('update:valid', this.checkValidFieldsFilled());
+            },
+        }
     },
     mounted() {
-        this.$emit('update:valid', this.checkAllFieldsFilled());
+        this.$emit('update:valid', this.checkValidFieldsFilled());
     },
 }
 </script>
