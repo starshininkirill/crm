@@ -19,8 +19,6 @@ class ContractController extends Controller
     public function store(ContractStoreRequest $request)
     {
         $data = $request->validated();
-        
-        dd($data);
 
         Bitrix::generateDealDocument($data);
 

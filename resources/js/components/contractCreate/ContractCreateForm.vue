@@ -46,7 +46,7 @@
 import AgentInfo from './AgentInfo.vue';
 import ServicesInfo from './ServicesInfo.vue';
 import PriceInfo from './PriceInfo.vue';
-
+ 
 export default {
    props: {
       token: {
@@ -81,9 +81,11 @@ export default {
    },
    data() {      
       let cats = JSON.parse(this.stringCats)
-      let allServices = cats.flatMap(cat => cat.services)
+      let allServices = cats.flatMap(cat => cat.services)      
 
       const old = this.rowOld ? JSON.parse(this.rowOld) : {};
+
+      console.log(old);
 
       const oldServices = Array.isArray(old.service) ? old.service : [];
       const oldPrices = Array.isArray(old.service_price) ? old.service_price : [];

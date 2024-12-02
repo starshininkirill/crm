@@ -9,7 +9,7 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'service_category_id', 'price', 'description'];
+    protected $fillable = ['name', 'service_category_id', 'price', 'description', 'deal_template_ids'];
 
     public function contracts()
     {
@@ -19,5 +19,12 @@ class Service extends Model
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
+    }
+
+    public function dealTemplateId(bool $isIndividual, bool $isDefault)
+    {
+        $searchString = $isIndividual ? 'physic_' : 'law_';
+        $searchString = $isDefault ? $searchString . 'default' : $searchString . 'complex';
+        return json_decode($this->deal_template_ids, true)[$searchString];
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->integer('work_days_duration')->nullable();
             $table->float('price')->nullable();
+            $table->json('deal_template_ids')->nullable();
         });
     }
 

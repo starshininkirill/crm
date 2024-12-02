@@ -52,68 +52,128 @@ class ServiceSeeder extends Seeder
             'service_category_id' => '1',
             'price' => 10000,
             'work_days_duration' => 5,
-            'description' => 'описание Инд лендинг'
+            'description' => 'описание Инд лендинг',
+            'deal_template_ids' => json_encode([
+                'law_default' => 54,
+                'law_complex' => 228,
+                'physic_default' => 30,
+                'physic_complex' => 246
+            ]),
         ]);
         Service::create([
             'name' => 'Инд Каталог',
             'service_category_id' => 1,
             'price' => 25000,
             'work_days_duration' => 10,
-            'description' => 'описание Инд каталог'
+            'description' => 'описание Инд каталог',
+            'deal_template_ids' => json_encode([
+                'law_default' => 70,
+                'law_complex' => 232,
+                'physic_default' => 34,
+                'physic_complex' => 250
+            ]),
         ]);
         Service::create([
             'name' => 'Инд Интернет магазин',
             'service_category_id' => 1,
             'price' => 50000,
             'work_days_duration' => 15,
-            'description' => 'описание Инд ИМ'
+            'description' => 'описание Инд ИМ',
+            'deal_template_ids' => json_encode([
+                'law_default' => 198,
+                'law_complex' => 234,
+                'physic_default' => 36,
+                'physic_complex' => 254
+            ]),
         ]);
         Service::create([
             'name' => 'Гот Лендинг',
             'service_category_id' => 2,
             'price' => 7500,
-            'description' => 'описание Гот лендинг'
+            'description' => 'описание Гот лендинг',
+            'deal_template_ids' => json_encode([
+                'law_default' => 46,
+                'law_complex' => 220,
+                'physic_default' => 22,
+                'physic_complex' => 238
+            ]),
         ]);
         Service::create([
             'name' => 'Гот Каталог',
             'service_category_id' => 2,
             'price' => 15000,
             'work_days_duration' => 4,
-            'description' => 'описание Гот Каталог'
+            'description' => 'описание Гот Каталог',
+            'deal_template_ids' => json_encode([
+                'law_default' => 50,
+                'law_complex' => 224,
+                'physic_default' => 26,
+                'physic_complex' => 242
+            ]),
         ]);
         Service::create([
-            'name' => 'Первичная настройка + ведение',
+            'name' => 'Первичная настройка + ведение РК',
             'service_category_id' => 3,
             'price' => 15000,
             'work_days_duration' => 4,
-            'description' => 'описание рк ведение и настройка'
+            'description' => 'описание рк ведение и настройка',
+            'deal_template_ids' => json_encode([
+                'law_default' => 62,
+                'law_complex' => 62,
+                'physic_default' => 38,
+                'physic_complex' => 38
+            ]),
         ]);
         Service::create([
             'name' => 'Ведение РК',
             'service_category_id' => 3,
             'price' => 10000,
-            'description' => 'описание Ведение РК'
+            'description' => 'описание Ведение РК',
+            'deal_template_ids' => json_encode([
+                'law_default' => 62,
+                'law_complex' => 62,
+                'physic_default' => 38,
+                'physic_complex' => 38
+            ]),
         ]);
         Service::create([
             'name' => 'Настройка РК',
             'service_category_id' => 3,
             'price' => 7500,
             'work_days_duration' => 1,
-            'description' => 'описание Настройка РК'
+            'description' => 'описание Настройка РК',
+            'deal_template_ids' => json_encode([
+                'law_default' => 62,
+                'law_complex' => 62,
+                'physic_default' => 38,
+                'physic_complex' => 38
+            ]),
         ]);
         Service::create([
             'name' => 'Базовое SEO',
             'service_category_id' => 4,
             'price' => 10000,
             'work_days_duration' => 1,
-            'description' => 'описание Базовое СЕО'
+            'description' => 'описание Базовое СЕО',
+            'deal_template_ids' => json_encode([
+                'law_default' => 68,
+                'law_complex' => 68,
+                'physic_default' => 68,
+                'physic_complex' => 68
+            ]),
         ]);
         Service::create([
             'name' => 'Внутреннее SEO',
             'service_category_id' => 4,
             'price' => 10000,
             'work_days_duration' => 1,
-            'description' => 'описание Внутреннее СЕО'
+            'description' => 'описание Внутреннее СЕО',
+            'deal_template_ids' => json_encode([
+                'law_default' => 68,
+                'law_complex' => 68,
+                'physic_default' => 44,
+                'physic_complex' => 44
+            ]),
         ]);
         Service::create([
             'name' => 'Вариативная карточка товара',
