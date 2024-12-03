@@ -23,7 +23,7 @@ class ContractController extends Controller
                             'id' => $service->id,
                             'name' => $service->name,
                             'price' => $service->price,
-                            'work_days_duration' => $service->work_days_duration,
+                            'work_days_duration' => $service->numeric_working_days(),
                             'isRk' => $service->category->type == ServiceCategory::RK ? true : false,
                             'isSeo' => $service->category->type == ServiceCategory::SEO ? true : false,
                             'isReady' => $service->category->type == ServiceCategory::READY_SITE ? true : false,

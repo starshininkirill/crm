@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('service_category_id')->constrained('service_categories')->onDelete('cascade');
             $table->string('name');
             $table->longText('description')->nullable();
-            $table->integer('work_days_duration')->nullable();
+            $table->string('work_days_duration')->nullable();
             $table->float('price')->nullable();
             $table->json('deal_template_ids')->nullable();
         });

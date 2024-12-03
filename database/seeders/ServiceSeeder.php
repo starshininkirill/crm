@@ -51,7 +51,7 @@ class ServiceSeeder extends Seeder
             'name' => 'Инд Лендинг',
             'service_category_id' => '1',
             'price' => 10000,
-            'work_days_duration' => 5,
+            'work_days_duration' => '24 (двадцать четыре) рабочих дня',
             'description' => 'описание Инд лендинг',
             'deal_template_ids' => json_encode([
                 'law_default' => 54,
@@ -61,10 +61,10 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Инд Каталог',
+            'name' => 'Сайт-Каталог',
             'service_category_id' => 1,
             'price' => 25000,
-            'work_days_duration' => 10,
+            'work_days_duration' => '30 (тридцать) рабочих дней',
             'description' => 'описание Инд каталог',
             'deal_template_ids' => json_encode([
                 'law_default' => 70,
@@ -74,10 +74,10 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Инд Интернет магазин',
+            'name' => 'Интернет-магазин',
             'service_category_id' => 1,
-            'price' => 50000,
-            'work_days_duration' => 15,
+            'price' => 140000,
+            'work_days_duration' => '35 (тридцать пять) рабочих дней',
             'description' => 'описание Инд ИМ',
             'deal_template_ids' => json_encode([
                 'law_default' => 198,
@@ -89,8 +89,9 @@ class ServiceSeeder extends Seeder
         Service::create([
             'name' => 'Гот Лендинг',
             'service_category_id' => 2,
-            'price' => 7500,
+            'price' => 25000,
             'description' => 'описание Гот лендинг',
+            'work_days_duration' => '8 (восемь) рабочих дней',
             'deal_template_ids' => json_encode([
                 'law_default' => 46,
                 'law_complex' => 220,
@@ -101,8 +102,8 @@ class ServiceSeeder extends Seeder
         Service::create([
             'name' => 'Гот Каталог',
             'service_category_id' => 2,
-            'price' => 15000,
-            'work_days_duration' => 4,
+            'price' => 58000,
+            'work_days_duration' => '19 (девятнадцать) рабочих дней',
             'description' => 'описание Гот Каталог',
             'deal_template_ids' => json_encode([
                 'law_default' => 50,
@@ -112,10 +113,10 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Первичная настройка + ведение РК',
+            'name' => 'Настройка и ведение рекламы в Яндекс Директ',
             'service_category_id' => 3,
-            'price' => 15000,
-            'work_days_duration' => 4,
+            'price' => 25000,
+            'work_days_duration' => '5 (пять) рабочих дней с момента согласования списка ключевых слов и фраз',
             'description' => 'описание рк ведение и настройка',
             'deal_template_ids' => json_encode([
                 'law_default' => 62,
@@ -125,35 +126,10 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Ведение РК',
-            'service_category_id' => 3,
-            'price' => 10000,
-            'description' => 'описание Ведение РК',
-            'deal_template_ids' => json_encode([
-                'law_default' => 62,
-                'law_complex' => 62,
-                'physic_default' => 38,
-                'physic_complex' => 38
-            ]),
-        ]);
-        Service::create([
-            'name' => 'Настройка РК',
-            'service_category_id' => 3,
-            'price' => 7500,
-            'work_days_duration' => 1,
-            'description' => 'описание Настройка РК',
-            'deal_template_ids' => json_encode([
-                'law_default' => 62,
-                'law_complex' => 62,
-                'physic_default' => 38,
-                'physic_complex' => 38
-            ]),
-        ]);
-        Service::create([
-            'name' => 'Базовое SEO',
+            'name' => 'Базовая SEO-оптимизация',
             'service_category_id' => 4,
-            'price' => 10000,
-            'work_days_duration' => 1,
+            'price' => 20000,
+            'work_days_duration' => '15 (пятнадцать) рабочих дней',
             'description' => 'описание Базовое СЕО',
             'deal_template_ids' => json_encode([
                 'law_default' => 68,
@@ -163,10 +139,10 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Внутреннее SEO',
+            'name' => 'Внешняя SEO-оптимизация',
             'service_category_id' => 4,
-            'price' => 10000,
-            'work_days_duration' => 1,
+            'price' => 20000,
+            'work_days_duration' => '1 (один) календарный месяц',
             'description' => 'описание Внутреннее СЕО',
             'deal_template_ids' => json_encode([
                 'law_default' => 68,
@@ -176,15 +152,17 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Вариативная карточка товара',
+            'name' => 'Вариативность',
             'service_category_id' => 5,
-            'price' => 5000,
+            'price' => 39000,
+            'work_days_duration' => '5 (пять) рабочих дней',
             'description' => 'описание Вариативная карточка товара'
         ]);
         Service::create([
             'name' => 'Калькулятор',
             'service_category_id' => 5,
-            'price' => 10000,
+            'price' => 15000,
+            'work_days_duration' => '3 (пять) рабочих дней',
             'description' => 'описание Калькулятор'
         ]);
 

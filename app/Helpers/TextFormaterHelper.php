@@ -30,6 +30,11 @@ class TextFormaterHelper
         return $words;
     }
 
+    public static function getNumberFromString(string $string): int
+    {
+        return intval(preg_replace("/[^,.0-9]/", '', $string));
+    }
+
     public static function rubleTermination($num)
     {
 

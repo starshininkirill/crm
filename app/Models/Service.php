@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\TextFormaterHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,5 +27,10 @@ class Service extends Model
         $searchString = $isIndividual ? 'physic_' : 'law_';
         $searchString = $isDefault ? $searchString . 'default' : $searchString . 'complex';
         return json_decode($this->deal_template_ids, true)[$searchString];
+    }
+
+    public function numeric_working_days() : int
+    {
+        return TextFormaterHelper::getNumberFromString($this->work_days_duration) ;
     }
 }

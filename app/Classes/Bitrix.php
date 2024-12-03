@@ -16,7 +16,6 @@ class Bitrix
         $bitrixData = self::prepareDealData($data);
         $response = Http::withOptions(["verify"=>false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
             
-            dd($bitrixData);
         if($response->status() == 200){
             $result = $response->json()['download_link'];
         }else{
@@ -178,14 +177,15 @@ class Bitrix
 
         // Получение услуг из базы данных
         $serviceIds = collect($services)->pluck('service_id');
-        $dbServices = Service::whereIn('id', $serviceIds)->get(['id', 'name', 'description'])->keyBy('id');
+        $dbServices = Service::whereIn('id', $serviceIds)->get(['id', 'name', 'description', 'work_days_duration'])->keyBy('id');
 
         // Объединение массивов
         $mergedServices = collect($services)->map(function ($service) use ($dbServices) {
             $dbService = $dbServices->get($service['service_id']);
             return array_merge($service, [
                 'name' => $dbService->name ?? null,
-                'description' => $dbService->description ?? null
+                'description' => $dbService->description ?? null,
+                'duration' => $dbService->work_days_duration,
             ]);
         });
 
@@ -233,7 +233,7 @@ class Bitrix
                     if (isset($additional_services[$key][$field])) {
                         $newFieldName = $additional_services[$key][$field];
                         if ($field == 'duration') {
-                            $value = TextFormaterHelper::visualFormatDeadline($value);
+                            $value = $service['duration'] ?? TextFormaterHelper::visualFormatDeadline($value);
                         }
                         if ($field == 'price') {
                             $value = TextFormaterHelper::visualFormatNumber($value, true, true);
@@ -245,6 +245,7 @@ class Bitrix
             }
         }
 
+
         unset($mergedServices[0]);
         $mergedServices = array_values($mergedServices);
 
@@ -254,11 +255,26 @@ class Bitrix
 
         $maybeEmptyFields = [
             'UF_CRM_1712130712',
+            'UF_CRM_1671029057',
+            'UF_CRM_1671029066',
+            'UF_CRM_1671029073',
             'UF_CRM_1712130734',
+            'UF_CRM_1671029090',
+            'UF_CRM_1671029108',
+            'UF_CRM_1671029119',
             'UF_CRM_1712130746',
+            'UF_CRM_1671029322',
+            'UF_CRM_1671029335',
+            'UF_CRM_1671029342',
             'UF_CRM_1712130768',
+            'UF_CRM_1712130835',
+            'UF_CRM_1712130843',
+            'UF_CRM_1712130851',
             'UF_CRM_1712130866',
+            'UF_CRM_1712130896',
+            'UF_CRM_1712130903',
             'UF_CRM_1640601264',
+            'UF_CRM_1712130910',
             'UF_CRM_1640601276',
             'UF_CRM_1724337871',
             'UF_CRM_1724337878',
