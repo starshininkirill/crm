@@ -6,7 +6,8 @@
             Создание Договора
         </h1>
         @if (session('success'))
-            <div class="mb-3 w-fit bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <div class="mb-3 w-fit bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
@@ -17,17 +18,15 @@
                 @endforeach
             </ul>
         @endif
-
-        <vue-contract-create-form 
-            :rk-text='@json($rkText)'
-            :string-cats='@json($cats)'
-            :string-main-cats='@json($mainCats)' 
-            :string-secondary-cats='@json($secondaryCats)'
-            action="{{ route('contract.store') }}" 
-            token="{{ csrf_token() }}"
-            row-old='@json(old())'
-            />
-
+        @if (session('link'))
+            <a href="{{ session('link') }}" download target="_blank" class="btn">
+                Скачать документ
+            </a>
+        @else
+            <vue-contract-create-form :rk-text='@json($rkText)' :string-cats='@json($cats)'
+                :string-main-cats='@json($mainCats)' :string-secondary-cats='@json($secondaryCats)'
+                action="{{ route('contract.store') }}" token="{{ csrf_token() }}" row-old='@json(old())' />
+        @endif
 
     </div>
 @endsection

@@ -3,13 +3,27 @@
 namespace App\Classes;
 
 use App\Models\Client;
+use App\Models\Option;
 use App\Models\Service;
+use App\Helpers\TextFormaterHelper;
+use App\Models\ServiceCategory;
+use Illuminate\Support\Facades\Http;
 
 class Bitrix
 {
     public static function generateDealDocument(array $data)
     {
         $bitrixData = self::prepareDealData($data);
+        $response = Http::withOptions(["verify"=>false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
+            
+            dd($bitrixData);
+        if($response->status() == 200){
+            $result = $response->json()['download_link'];
+        }else{
+            $result = [];
+        }
+
+        return $result;
     }
 
     private static function prepareDealData(array $data): array
@@ -19,11 +33,8 @@ class Bitrix
 
         // Временные данные
         $isIndividual = self::validKeyInArray($data, 'client_type') && $data['client_type'] == Client::TYPE_INDIVIDUAL;
-        $isNds = self::validKeyInArray($data, 'nds') && $data['nds'] == 1;
+        $isNds = self::validKeyInArray($data, 'tax') && $data['tax'] == 1;
         $isOgrn = self::validKeyInArray($data, 'register_number_type') && $data['register_number_type'] == 0;
-
-
-        $services = $data['services'];
 
         // Номер лида
         if (self::validKeyInArray($data, 'leed')) {
@@ -55,9 +66,9 @@ class Bitrix
             $result['crm_fields']['UF_CRM_1640600338'] = $data['ready_site_link'];
         }
 
-        // Тут будет файл готового дизайна
+        // Файл готового дизайна в base64
         if (self::validKeyInArray($data, 'ready_site_image')) {
-            $result['crm_fields']['UF_CRM_1642753651'] = $data['ready_site_image'];
+            $result['crm_fields']['crm_files']['UF_CRM_1642753651'] = $data['ready_site_image'];
         }
 
         // ФИО представителя и номер
@@ -66,19 +77,54 @@ class Bitrix
         }
 
 
+        self::generatePaymentsData($data, $result);
 
-        self::generateClientData($data, $result, $isIndividual);
+        self::generateClientData($data, $result, $isIndividual, $isOgrn, $isNds);
 
         self::generateMainService($data, $result, $isIndividual);
 
         self::generateServiceFields($data, $result);
 
-
-        dd($data);
         return $result;
     }
 
-    private static function generateMainService(array $data, &$result, $isIndividual)
+    private static function generatePaymentsData(array $data, &$result): void
+    {
+        // Итоговая сумма
+        if (self::validKeyInArray($data, 'amount_price')) {
+            $result['crm_fields']['UF_CRM_1671029365'] = TextFormaterHelper::visualFormatNumber($data['amount_price'], true, true);
+        }
+
+        // Скидка
+        if (self::validKeyInArray($data, 'sale')) {
+            $result['crm_fields']['UF_CRM_1671029351'] = TextFormaterHelper::visualFormatNumber($data['sale'], true, true);
+        }
+
+        // Общий срок разработки
+        if (self::validKeyInArray($data, 'development_time')) {
+            $result['crm_fields']['UF_CRM_1671029378'] = TextFormaterHelper::visualFormatDeadline($data['development_time']);
+        }
+
+
+        if (empty($data['payments'])) {
+            return;
+        }
+
+        $payments = $data['payments'];
+
+        $paymentsBitrixFields = [
+            'UF_CRM_1640601250',
+            'UF_CRM_1640601264',
+            'UF_CRM_1640601276'
+        ];
+
+        foreach ($payments as $key => $value) {
+            $result['crm_fields'][$paymentsBitrixFields[$key]] = TextFormaterHelper::visualFormatNumber($value, false, true);
+        }
+
+    }
+
+    private static function generateMainService(array $data, &$result, $isIndividual): void
     {
         if (empty($data['services'])) {
             return;
@@ -89,10 +135,37 @@ class Bitrix
         $service = Service::where('id', $serviceId)->first();
 
         // Цена главной услуги
-        $result['crm_fields']['UF_CRM_1671028990'] = self::visualFormatNumber($data['services'][0]['price'], true, true);
+        $result['crm_fields']['UF_CRM_1671028990'] = TextFormaterHelper::visualFormatNumber($data['services'][0]['price'], true, true);
 
         // Устанавливаем ID шаблона
         $result['template_id'] = $service->dealTemplateId($isIndividual, count($data['services']) == 1);
+
+
+        // Добавляем текст для оплат
+        if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601264')) {
+			$avance_text = '';
+			if ($service->category->type == ServiceCategory::READY_SITE) {
+				$avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+			} else {
+				/*-------- проверка на наличие 3 аванса ------------*/
+				if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
+					$avance_text = "1.2 После согласования дизайна сайта Заказчик перечисляет оплату в размере " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней.";
+				} else {
+					$avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+				}
+			}
+			$result['crm_fields']['UF_CRM_1724337871'] = $avance_text;
+		}
+		/*----------- 3 аванс ----------*/
+		if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
+			$avance_text = '';
+			if ($service->category->type != ServiceCategory::READY_SITE) {
+				$avance_text = "1.3 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601276'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+			}
+			$result['crm_fields']['UF_CRM_1724337878'] = $avance_text;
+		}
+
+
     }
 
     private static function generateServiceFields(array $data, &$result): void
@@ -160,10 +233,10 @@ class Bitrix
                     if (isset($additional_services[$key][$field])) {
                         $newFieldName = $additional_services[$key][$field];
                         if ($field == 'duration') {
-                            $value = self::visualFormatDeadline($value);
+                            $value = TextFormaterHelper::visualFormatDeadline($value);
                         }
                         if ($field == 'price') {
-                            $value = self::visualFormatNumber($value, true, true);
+                            $value = TextFormaterHelper::visualFormatNumber($value, true, true);
                         }
                         $mergedServices[$key][$newFieldName] = $value;
                         unset($mergedServices[$key][$field]);
@@ -179,7 +252,7 @@ class Bitrix
             $result['crm_fields'] = [...$result['crm_fields'], ...$service];
         }
 
-        $maybe_empty_fields = [
+        $maybeEmptyFields = [
             'UF_CRM_1712130712',
             'UF_CRM_1712130734',
             'UF_CRM_1712130746',
@@ -191,14 +264,14 @@ class Bitrix
             'UF_CRM_1724337878',
         ];
 
-        foreach ($maybe_empty_fields as $key => $field) {
+        foreach ($maybeEmptyFields as $key => $field) {
             if (!array_key_exists($field, $result['crm_fields'])) {
                 $result['crm_fields'][$field] = ' ';
             }
         }
     }
 
-    private static function generateClientData($data, &$result, $isIndividual): void
+    private static function generateClientData($data, &$result, $isIndividual, $isOgrn, $isNds): void
     {
         // Данные контрагента
         // Физик
@@ -254,193 +327,23 @@ class Bitrix
 
             // Данные для заполненея счёта и акта
             if (self::validKeyInArray($data, 'act_payment_summ')) {
-                $result['crm_fields']['UF_CRM_1711519450'] = self::visualFormatNumber($data['act_payment_summ'], true, true);
+                $result['crm_fields']['UF_CRM_1711519450'] = TextFormaterHelper::visualFormatNumber($data['act_payment_summ'], true, true);
+
+                if ($isNds) {
+                    $ndsInstance = Option::where('name', 'tax_nds')->first();
+                    $nds = $ndsInstance != null ? intval($ndsInstance->value) : 20;
+                    $ndsDecimal = $nds / 100;
+                    $ndsAmount = intval((intval($data['act_payment_summ']) / (1 + $ndsDecimal)) * $ndsDecimal);
+                    $result['crm_fields']['UF_CRM_1723109815'] = TextFormaterHelper::visualFormatNumber($ndsAmount, true, true);
+                }
             }
             if (self::validKeyInArray($data, 'act_payment_goal')) {
                 $result['crm_fields']['UF_CRM_1711519550'] = $data['act_payment_goal'];
             }
         }
     }
-
-
-
-    private static function visualFormatNumber($number, $with_rubles = false, $stringify = false)
-    {
-        $words = [];
-        $formatted_number = intval(preg_replace("/[^,.0-9]/", '', $number));
-        if (!$formatted_number) {
-            return $number;
-        }
-
-        $words['num'] = $formatted_number;
-        $words['text'] = self::num2str($formatted_number);
-
-        if ($with_rubles) {
-            $words['ruble'] = self::rubleTermination($formatted_number);
-        }
-        if ($stringify) {
-
-            $words['text'] = '(' . $words['text'] . ')';
-
-            return implode(' ', $words);
-        }
-
-        return $words;
-    }
-
-    private static function rubleTermination($num)
-    {
-
-        //Оставляем две последние цифры от $num
-        $number = substr($num, -2);
-
-        //Если 2 последние цифры входят в диапазон от 11 до 14
-        //Тогда подставляем окончание "ЕЙ"
-        if ($number > 4 and $number < 21) {
-            $term = "ей";
-        } else {
-
-            $number = substr($number, -1);
-
-            if ($number == 0) {
-                $term = "ей";
-            }
-            if ($number == 1) {
-                $term = "ь";
-            }
-            if ($number > 1) {
-                $term = "я";
-            }
-        }
-
-        return 'рубл' . $term;
-    }
-
-    private static function num2str($num)
-    {
-        $nul = 'ноль';
-        $ten = array(
-            array('', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'),
-            array('', 'одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'),
-        );
-        $a20 = array('десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать');
-        $tens = array(2 => 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто');
-        $hundred = array('', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот');
-        $unit = array( // Units
-            array('', '', '',     1),
-            array('', '', '', 0),
-            array('тысяча', 'тысячи', 'тысяч', 1),
-            array('миллион', 'миллиона', 'миллионов', 0),
-            array('миллиард', 'милиарда', 'миллиардов', 0),
-        );
-        //
-        list($rub, $kop) = explode('.', sprintf("%015.2f", floatval($num)));
-        $out = array();
-        if (intval($rub) > 0) {
-            foreach (str_split($rub, 3) as $uk => $v) { // by 3 symbols
-                if (!intval($v)) continue;
-                $uk = sizeof($unit) - $uk - 1; // unit key
-                $gender = $unit[$uk][3];
-                list($i1, $i2, $i3) = array_map('intval', str_split($v, 1));
-                // mega-logic
-                $out[] = $hundred[$i1]; # 1xx-9xx
-                if ($i2 > 1) $out[] = $tens[$i2] . ' ' . $ten[$gender][$i3]; # 20-99
-                else $out[] = $i2 > 0 ? $a20[$i3] : $ten[$gender][$i3]; # 10-19 | 1-9
-                // units without rub & kop
-                if ($uk > 1) $out[] = self::morph($v, $unit[$uk][0], $unit[$uk][1], $unit[$uk][2]);
-            } //foreach
-        } else $out[] = $nul;
-        $out[] = self::morph(intval($rub), $unit[1][0], $unit[1][1], $unit[1][2]); // rub
-        return trim(preg_replace('/ {2,}/', ' ', join(' ', $out)));
-    }
-
-    private static function morph($n, $f1, $f2, $f5)
-    {
-        $n = abs(intval($n)) % 100;
-        if ($n > 10 && $n < 20) return $f5;
-        $n = $n % 10;
-        if ($n > 1 && $n < 5) return $f2;
-        if ($n == 1) return $f1;
-        return $f5;
-    }
-
-
     private static function validKeyInArray(array $data, string $key)
     {
         return array_key_exists($key, $data) && $data[$key] != '';
-    }
-
-
-
-    private static function visualFormatDeadline($number)
-    {
-        $words = [];
-        $formatted_number = intval(preg_replace("/[^,.0-9]/", '', $number));
-        if (!$formatted_number) {
-            return $number;
-        }
-
-        $words[] = $formatted_number;
-        $words[] = '(' .  self::num2str($formatted_number) . ')';
-        $words[] = self::deadlineWorkWordTermination($formatted_number);
-        $words[] = self::deadlineDayTermination($formatted_number);
-
-        return implode(' ', $words);
-    }
-
-
-    private static function deadlineWorkWordTermination($num)
-    {
-
-        //Оставляем две последние цифры от $num
-        $number = substr($num, -2);
-
-        //Если 2 последние цифры входят в диапазон от 11 до 14
-        //Тогда подставляем окончание "ЕВ"
-        if ($number > 4 and $number < 21) {
-            $term = "х";
-        } else {
-
-            $number = substr($number, -1);
-
-            if ($number == 0) {
-                $term = "х";
-            }
-            if ($number == 1) {
-                $term = "й";
-            }
-            if ($number > 1) {
-                $term = "х";
-            }
-        }
-
-        return 'рабочи' . $term;
-    }
-
-    private static function deadlineDayTermination($num)
-    {
-        //Оставляем две последние цифры от $num
-        $number = substr($num, -2);
-
-        //Если 2 последние цифры входят в диапазон от 11 до 14
-        //Тогда подставляем окончание "ЕВ"
-        if ($number > 4 and $number < 21) {
-            $term = "ней";
-        } else {
-
-            $number = substr($number, -1);
-
-            if ($number == 0) {
-                $term = "ней";
-            }
-            if ($number == 1) {
-                $term = "ень";
-            }
-            if ($number > 1) {
-                $term = "ня";
-            }
-        }
-
-        return 'д' . $term;
     }
 }

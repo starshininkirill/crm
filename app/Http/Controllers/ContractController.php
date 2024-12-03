@@ -19,8 +19,24 @@ class ContractController extends Controller
     public function store(ContractStoreRequest $request)
     {
         $data = $request->validated();
+        
+        if ($request->hasFile('ready_site_image')) {
+            $file = $request->file('ready_site_image');
+        
+            $fileContent = $file->getContent();
+            $base64String = base64_encode($fileContent);
+            $mimeType = $file->getMimeType();
+        
+            $fullBase64String = 'data:' . $mimeType . ';base64,' . $base64String;
+        
+            $data['ready_site_image'] = $fullBase64String;
+        }
 
-        Bitrix::generateDealDocument($data);
+        $link = Bitrix::generateDealDocument($data);
+
+        if(empty($link) || $link == ''){
+            return back()->withErrors('Ошибка Создания договора в Bitrix')->withInput();
+        };
 
         try {
             DB::beginTransaction();
@@ -57,6 +73,6 @@ class ContractController extends Controller
             return back()->withErrors('Ошибка при созданни договора')->withInput();
         }
 
-        return back()->with('success', 'Договор успешно создан');
+        return back()->with('link', $link);
     }
 }
