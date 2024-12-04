@@ -6,9 +6,6 @@
             <x-admin-subnav-link route="admin.service.category.index">
                 Категории услуг
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.service.category.create">
-                Создать Категорию услуг
-            </x-admin-subnav-link>
             <x-admin-subnav-link route="admin.service.index">
                 Все Услуги
             </x-admin-subnav-link>

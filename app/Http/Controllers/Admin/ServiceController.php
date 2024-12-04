@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ServiceRequest;
+use App\Http\Requests\ServiceStoreRequest;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function index(){
+    public function index($serviceCategoryId = null){
 
-        $services = Service::all();
+        if ($serviceCategoryId) {
+            $services = Service::where('service_category_id', $serviceCategoryId)->get();
+        } else {
+            $services = Service::all();
+        };
 
-        return view('admin.service.index', ['services' => $services]);
+        return view('admin.service.index', ['services' => $services->sortBy('name')]);
     }
 
     public function create(){
@@ -23,12 +27,15 @@ class ServiceController extends Controller
         return view('admin.service.create', ['categories' => $categories]);
     }
 
-    public function store(ServiceRequest $request){
+    public function edit(Service $service){
+        
+        $categories = ServiceCategory::all();
 
-        $validated = $request->validated();
-
-        Service::create($validated);
-
-        return redirect()->back()->with('success', 'Услуга успешно создана');
+        return view('admin.service.edit', [
+            'categories' => $categories,
+            'service' => $service
+        ]);
     }
+
+
 }

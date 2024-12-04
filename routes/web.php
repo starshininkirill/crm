@@ -12,14 +12,16 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WorkingDayController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\ContractController;
+use App\Http\Controllers\Resources\ContractController;
 use App\Http\Controllers\FinanceWeekController;
 use App\Http\Controllers\Lk\ContractController as LkContractController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\OptionController;
-use App\Http\Controllers\WorkPlanController;
+use App\Http\Controllers\Resources\OptionController;
+use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
+use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
+use App\Http\Controllers\Resources\WorkPlanController;
 use App\Models\Department;
 use Illuminate\Support\Facades\Route;
 
@@ -70,14 +72,13 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 
     Route::prefix('servicies')->group(function () {
-        Route::get('', [ServiceController::class, 'index'])->name('admin.service.index');
-        Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
-        Route::post('/store', [ServiceController::class, 'store'])->name('admin.service.store');
         Route::prefix('categories')->group(function () {
             Route::get('/', [ServiceCategoryController::class, 'index'])->name('admin.service.category.index');
-            Route::get('/create', [ServiceCategoryController::class, 'create'])->name('admin.service.category.create');
-            Route::post('/store', [ServiceCategoryController::class, 'store'])->name('admin.service.category.store');
+            Route::get('/{serviceCategory}/edit', [ServiceCategoryController::class, 'edit'])->name('admin.service.category.edit');
         });
+        Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
+        Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
+        Route::get('/{serviceCategoryId?}', [ServiceController::class, 'index'])->name('admin.service.index');
     });
 
     Route::prefix('departments')->group(function () {
@@ -126,6 +127,16 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('contract', ContractController::class)->only([
         'store',
+    ]);
+
+    Route::resource('serviceCategory', ResourcesServiceCategoryController::class)->only([
+        'store',
+        'update',
+    ]);
+
+    Route::resource('service', ResourcesServiceController::class)->only([
+        'store',
+        'update',
     ]);
 
 

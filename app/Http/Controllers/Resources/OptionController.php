@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Resources;
 
 use App\Http\Requests\OptionRequest;
+use App\Http\Controllers\Controller;
 use App\Models\Option;
-use Illuminate\Http\Request;
 
 class OptionController extends Controller
 {

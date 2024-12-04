@@ -7,7 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Database\Eloquent\Collection;
 
-class SelectInput extends Component
+class KeyValueSelectInput extends Component
 {
     public $options;
     public $label;
@@ -22,7 +22,7 @@ class SelectInput extends Component
      * @param string $name
      * @param string $id
      */
-    public function __construct(Collection $options, $label = 'Выберите опцию', $name = 'select', $id = 'select')
+    public function __construct(iterable $options, $label = 'Выберите опцию', $name = 'select', $id = 'select')
     {
         $this->options = $options;
         $this->label = $label;
@@ -37,6 +37,6 @@ class SelectInput extends Component
      */
     public function render()
     {
-        return view('components.select-input');
+        return view('components.key-value-select-input');
     }
 }

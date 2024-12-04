@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Resources;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkPlanRequest;
 use App\Http\Requests\UpdateWorkPlanRequest;
-use App\Http\Requests\WorkPlanRequest;
 use App\Models\WorkPlan;
-use Illuminate\Http\Request;
 
 class WorkPlanController extends Controller
 {

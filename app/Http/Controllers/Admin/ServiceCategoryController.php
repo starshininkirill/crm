@@ -9,23 +9,26 @@ use Illuminate\Http\Request;
 
 class ServiceCategoryController extends Controller
 {
-    public function index(){
+    public function index()
+    {
 
-        $categories = ServiceCategory::all();
+        $categories = ServiceCategory::withCount('services')->get();
 
-        return view('admin.service.category.index', ['categories' => $categories]);
+        $types = ServiceCategory::getUnusedTypes();
+
+        return view('admin.service.category.index', [
+            'categories' => $categories,
+            'types' => $types
+        ]);
     }
 
-    public function create(){
-        return view('admin.service.category.create');
-    }
+    public function edit(ServiceCategory $serviceCategory)
+    {
+        $types = ServiceCategory::getTypes();
 
-    public function store(ServiceCategoryRequest $request){
-
-        $validated = $request->validated();
-
-        ServiceCategory::create($validated);
-
-        return redirect()->back()->with('success', 'Категория успешно создана');
+        return view('admin.service.category.edit', [
+            'serviceCategory' => $serviceCategory,
+            'types' => $types
+        ]);
     }
 }

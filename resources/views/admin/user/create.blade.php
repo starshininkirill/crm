@@ -24,7 +24,7 @@
             <x-form-input type="email" name="email" placeholder="Почта" label="Почта" />
             <x-form-input type="password" name="password" placeholder="******" label="Пароль" />
             <x-form-input type="password" name="password2" placeholder="******" label="Повторите пароль" />
-            <x-select-input :options="$positions" label="Должность" name="position_id" id="position_id" />
+            <x-id-select-input :options="$positions" label="Должность" name="position_id" id="position_id" />
 
             <button class="btn" type="submit">
                 Создать

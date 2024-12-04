@@ -7,7 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Database\Eloquent\Collection;
 
-class DepartmentSelectInputs extends Component
+class IdSelectInput extends Component
 {
     public $options;
     public $label;
@@ -37,6 +37,6 @@ class DepartmentSelectInputs extends Component
      */
     public function render()
     {
-        return view('components.select-input');
+        return view('components.id-select-input');
     }
 }

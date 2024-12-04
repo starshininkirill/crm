@@ -5,11 +5,11 @@
     <a class="text-xl {{ Route::is('admin.payment*') ? 'font-bold' : '' }}" href="{{ route('admin.payment.index') }}">
         Платежи
     </a>
-    <a class="text-xl {{ Route::is('admin.user*') ? 'font-bold' : '' }}" href="{{ route('admin.user.index') }}">
-        Сотрудники
-    </a>
     <a class="text-xl {{ Route::is('admin.service*') ? 'font-bold' : '' }}" href="{{ route('admin.service.category.index') }}">
         Услуги
+    </a>
+    <a class="text-xl {{ Route::is('admin.user*') ? 'font-bold' : '' }}" href="{{ route('admin.user.index') }}">
+        Сотрудники
     </a>
     <a class="text-xl {{ Route::is('admin.department.index') ? 'font-bold' : '' }}" href="{{ route('admin.department.index') }}">
         Отделы
