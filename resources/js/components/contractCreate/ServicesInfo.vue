@@ -61,8 +61,7 @@
                     <div v-if="isReady" class="grid grid-cols-2 gap-3">
                         <vue-form-input v-model="readySiteLink" type="text" required name="ready_site_link"
                             placeholder="Ссылка на готовый дизайн" label="Ссылка на готовый дизайн" />
-                        <vue-form-input type="file" required name="ready_site_image"
-                             accept="image/*"
+                        <vue-form-input type="file" required name="ready_site_image" accept="image/*"
                             v-model="readySiteFile"
                             placeholder="Скриншот главной страницы готового дизайна (для приложения №2)"
                             label="Скриншот главной страницы готового дизайна (для приложения №2)" />
@@ -136,7 +135,7 @@ export default {
         return {
             seoPages: this.old?.seo_pages !== undefined ? this.old.seo_pages : 0,
             readySiteLink: this.old?.ready_site_link !== undefined ? this.old.ready_site_link : '',
-            readySiteFile: '',
+            readySiteFile: this.old?.ready_site_image !== undefined ? this.old.ready_site_image : '',
             showForm: true,
             allCats: this.cats,
             mainCats: this.cats.filter(cat => this.mainCatsIds.map(Number).includes(cat.id)),
@@ -153,7 +152,7 @@ export default {
             if (this.isSeo) {
                 valid = valid && this.seoPages != '' && this.seoPages != 0;
             }
-
+            
             if (this.isReady) {
                 valid = valid && this.readySiteLink != '' && this.readySiteLink != 0;
                 valid = valid && this.readySiteFile != '' && this.readySiteFile != 0;
@@ -190,13 +189,13 @@ export default {
         },
     },
     watch: {
-        readySiteFile:{
-            handler(){
+        readySiteFile: {
+            handler() {
                 this.$emit('update:valid', this.checkValidFieldsFilled());
             }
         },
-        readySiteLink:{
-            handler(){
+        readySiteLink: {
+            handler() {
                 this.$emit('update:valid', this.checkValidFieldsFilled());
             }
         },

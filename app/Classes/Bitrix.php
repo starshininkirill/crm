@@ -19,7 +19,7 @@ class Bitrix
         if($response->status() == 200){
             $result = $response->json()['download_link'];
         }else{
-            $result = [];
+            $result = '';
         }
 
         return $result;

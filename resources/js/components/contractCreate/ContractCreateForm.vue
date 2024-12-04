@@ -85,8 +85,6 @@ export default {
 
       const old = this.rowOld ? JSON.parse(this.rowOld) : {};
 
-      console.log(old);
-
       const oldServices = Array.isArray(old.service) ? old.service : [];
       const oldPrices = Array.isArray(old.service_price) ? old.service_price : [];
       const oldDuration = Array.isArray(old.service_duration) ? old.service_duration : [];
@@ -103,7 +101,7 @@ export default {
             isSeo: foundService ? foundService.isSeo : false,
          };
       });
-
+      
       return {
          old,
          cats,
@@ -114,9 +112,10 @@ export default {
          servicePrices,
          currentStep: 1,
          stepsValid: [false, false],
-         isRk: false,
-         isSeo: false,
-         isReady: false,
+         
+         isRk: servicePrices.filter(el => el.isRk == 'true' || el.isRk == true).length != 0 ? true : false,
+         isSeo: servicePrices.filter(el => el.isSeo == 'true' || el.isSeo == true).length != 0 ? true : false,
+         isReady: servicePrices.filter(el => el.isReady == 'true' || el.isReady == true).length != 0 ? true : false,
       };
    },
    watch: {
