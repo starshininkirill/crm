@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ServiceUpdateRequest extends FormRequest
 {
@@ -21,13 +22,24 @@ class ServiceUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+
+        $service = $this->route('service');
         return [
-            'name' => 'required|min:2|max:255|unique:services,name',
+            'name' => [
+                'required',
+                'min:2',
+                'max:255',
+                Rule::unique('services', 'name')->ignore($service->id), 
+            ],
             'description' => 'nullable|min:2',
             'work_days_duration' => 'nullable|min:1',
             'price' => 'required|numeric',
             'service_category_id' => 'required|exists:service_categories,id',
-            'deal_template_ids' => 'nullable|json'
+            'deal_template_ids' => 'nullable|json',
+            'law_default' => 'nullable|numeric|required_with:law_complex,physic_default,physic_complex',
+            'law_complex' => 'nullable|numeric|required_with:law_default,physic_default,physic_complex',
+            'physic_default' => 'nullable|numeric|required_with:law_default,law_complex,physic_complex',
+            'physic_complex' => 'nullable|numeric|required_with:law_default,physic_default,law_complex',
         ];
     }
 

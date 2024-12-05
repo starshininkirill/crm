@@ -25,7 +25,12 @@ class ServiceCategoryUpdateRequest extends FormRequest
         $serviceCategory = $this->route('serviceCategory');
 
         return [
-            'name' => 'required|min:2|max:255|unique:service_categories,name',
+            'name' => [
+                'required',
+                'min:2',
+                'max:255',
+                Rule::unique('service_categories', 'name')->ignore($serviceCategory->id), 
+            ],
             'type' => [
                 'nullable',
                 'numeric',

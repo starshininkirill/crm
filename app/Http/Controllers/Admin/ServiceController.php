@@ -28,7 +28,7 @@ class ServiceController extends Controller
     }
 
     public function edit(Service $service){
-        
+
         $categories = ServiceCategory::all();
 
         return view('admin.service.edit', [

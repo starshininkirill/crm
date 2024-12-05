@@ -12,6 +12,10 @@ class Service extends Model
 
     protected $fillable = ['name', 'service_category_id', 'price', 'description', 'deal_template_ids', 'work_days_duration'];
 
+    protected $casts = [
+        'deal_template_ids' => 'array',
+    ];
+
     public function contracts()
     {
         return $this->belongsToMany(Contract::class);
@@ -26,11 +30,15 @@ class Service extends Model
     {
         $searchString = $isIndividual ? 'physic_' : 'law_';
         $searchString = $isDefault ? $searchString . 'default' : $searchString . 'complex';
-        return json_decode($this->deal_template_ids, true)[$searchString];
+        return $this->deal_template_ids[$searchString];
     }
 
     public function numeric_working_days() : int
     {
-        return TextFormaterHelper::getNumberFromString($this->work_days_duration) ;
+        if($this->work_days_duration){
+            return TextFormaterHelper::getNumberFromString($this->work_days_duration);
+        }else{
+            return 0;
+        };
     }
 }

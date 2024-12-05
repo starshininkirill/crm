@@ -44,6 +44,31 @@
                 </select>
             </div>
 
+            <div class="font-semibold my-3">
+                ID шаблонов для генератора документов( необязательно )
+            </div>
+
+            @if (!empty($service->deal_template_ids))
+                <x-form-input type="number" name="law_default" placeholder="Юр. лицо одна услуга"
+                    label="Юр. лицо одна услуга"
+                    value="{{ json_decode($service->deal_template_ids, true)['law_default'] }}" />
+                <x-form-input type="number" name="law_complex" placeholder="Юр. лицо комплекс" label="Юр. лицо комплекс"
+                    value="{{ json_decode($service->deal_template_ids, true)['law_complex'] }}" />
+                <x-form-input type="number" name="physic_default" placeholder="Физ. лицо одна услуга"
+                    label="Физ. лицо одна услуга" value="{{ json_decode($service->deal_template_ids, true)['physic_default'] }}" />
+                <x-form-input type="number" name="physic_complex" placeholder="Физ. лицо комплекс"
+                    label="Физ. лицо комплекс" value="{{ json_decode($service->deal_template_ids, true)['physic_complex'] }}" />
+            @else
+                <x-form-input type="number" name="law_default" placeholder="Юр. лицо одна услуга"
+                    label="Юр. лицо одна услуга"
+                    value="{{ !empty($service->deal_template_ids) && array_key_exists('law_default', $service->deal_template_ids) ? $service->deal_template_ids['law_default'] : '' }}" />
+                <x-form-input type="number" name="law_complex" placeholder="Юр. лицо комплекс" label="Юр. лицо комплекс"
+                    value="{{ old('law_complex') }}" />
+                <x-form-input type="number" name="physic_default" placeholder="Физ. лицо одна услуга"
+                    label="Физ. лицо одна услуга" value="{{ old('physic_default') }}" />
+                <x-form-input type="number" name="physic_complex" placeholder="Физ. лицо комплекс"
+                    label="Физ. лицо комплекс" value="{{ old('physic_complex') }}" />
+            @endif
 
             <button type="submit"
                 class="middle w-full none center mr-4 rounded-lg bg-blue-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

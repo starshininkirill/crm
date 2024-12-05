@@ -278,6 +278,8 @@ class Bitrix
             'UF_CRM_1640601276',
             'UF_CRM_1724337871',
             'UF_CRM_1724337878',
+            'UF_CRM_1671029036',
+            'UF_CRM_1700118214',
         ];
 
         foreach ($maybeEmptyFields as $key => $field) {

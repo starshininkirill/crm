@@ -26,11 +26,25 @@
                 value="{{ old('description') }}" required="true" />
             <x-form-input type="text" name="work_days_duration" placeholder="5 ( пять ) рабочих дней" label="Срок исполнения"
                 value="{{ old('work_days_duration') }}" />
-                <x-form-input required type="number" name="price" placeholder="20000" label="Рекомендованая цена"
+            <x-form-input required type="number" name="price" placeholder="20000" label="Рекомендованая цена"
                 value="{{ old('price') }}" />
 
             <x-id-select-input :options="$categories" label="Выберите категорию" name="service_category_id"
                 id="service_category_id" />
+            
+            <div class="font-semibold my-3">
+                ID шаблонов для генератора документов( необязательно )
+            </div>
+
+            <x-form-input type="number" name="law_default" placeholder="Юр. лицо одна услуга" label="Юр. лицо одна услуга"
+            value="{{ old('law_default') }}" />
+            <x-form-input type="number" name="law_complex" placeholder="Юр. лицо комплекс" label="Юр. лицо комплекс"
+            value="{{ old('law_complex') }}" />
+            <x-form-input type="number" name="physic_default" placeholder="Физ. лицо одна услуга" label="Физ. лицо одна услуга"
+            value="{{ old('physic_default') }}" />
+            <x-form-input type="number" name="physic_complex" placeholder="Физ. лицо комплекс" label="Физ. лицо комплекс"
+            value="{{ old('physic_complex') }}" />
+
             <button type="submit"
                 class="middle w-full none center mr-4 rounded-lg bg-blue-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 data-ripple-light="true">
