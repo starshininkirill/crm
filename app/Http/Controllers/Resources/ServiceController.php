@@ -50,4 +50,11 @@ class ServiceController extends Controller
 
         return redirect()->back()->with('success', 'Услуга успешно обновлена');
     }
+
+    public function destroy(Service $service)
+    {
+        $service->delete();
+
+        return redirect()->back()->with('success', 'Услуга успешно Удалена');
+    }
 }

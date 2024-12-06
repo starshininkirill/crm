@@ -11,23 +11,13 @@
             label="Телефон" />
       </div>
 
-
-      <div class="navigation-buttons flex gap-3 mb-4">
-         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': currentStep === 1 }" @click="goBack">
-            Назад
-         </div>
-
-         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': !canGoNext() }" @click="goNext">
-            Вперёд
-         </div>
-      </div>
       <div>
          <div v-show="currentStep === 1">
-            <vue-agent-info :old="old" v-model:valid="stepsValid[0]" />
+            <vue-agent-info :old="old" v-model:nds="nds" v-model:valid="stepsValid[0]" />
          </div>
 
          <div v-show="currentStep === 2">
-            <vue-services-info v-model:valid="stepsValid[1]" :old="old" :mainCatsIds="mainCatsIds"
+            <vue-services-info v-model:valid="stepsValid[1]" v-model:nds="nds" :old="old" v-model:mainCatsIds="mainCatsIds"
                :secondaryCatsIds="secondaryCatsIds" :cats="cats" @updateService="updateServicePrice"
                :servicePrices="servicePrices" v-model:isRk="isRk" v-model:isSeo="isSeo" v-model:isReady="isReady" 
                :rkText="rkText"/>
@@ -36,6 +26,16 @@
          <div v-show="currentStep === 3">
             <vue-price-info :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice"
                v-model="sale" />
+         </div>
+      </div>
+
+      <div class="navigation-buttons flex gap-3 mb-4">
+         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': currentStep === 1 }" @click="goBack">
+            Назад
+         </div>
+
+         <div class="btn" :class="{ 'cursor-not-allowed opacity-50': !canGoNext() }" @click="goNext">
+            Вперёд
          </div>
       </div>
 
@@ -112,6 +112,7 @@ export default {
          servicePrices,
          currentStep: 1,
          stepsValid: [false, false],
+         nds: old['tax'] || '0',
          
          isRk: servicePrices.filter(el => el.isRk == 'true' || el.isRk == true).length != 0 ? true : false,
          isSeo: servicePrices.filter(el => el.isSeo == 'true' || el.isSeo == true).length != 0 ? true : false,
@@ -123,6 +124,14 @@ export default {
       servicePrices: {
          handler: 'recalculateAmountPrice',
          deep: true,
+      }, 
+      nds(newValue){
+         if(newValue == true){
+            this.mainCatsIds = this.cats.filter((cat) => cat.isRk == true).map((el) => el.id);            
+         }else{
+            this.mainCatsIds = JSON.parse(this.stringMainCats);
+         }
+         
       }
    },
    mounted() {
@@ -149,7 +158,6 @@ export default {
          return this.stepsValid[this.currentStep - 1];
       },
       goNext() {
-
          if (this.canGoNext() && this.currentStep < 3) {
             this.currentStep++;
          }

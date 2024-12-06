@@ -8,6 +8,7 @@ import UserSaleReportForm from './components/UserSaleReportForm.vue'
 import ContractCreateForm from './components/contractCreate/ContractCreateForm.vue'
 import AgentInfo from './components/contractCreate/AgentInfo.vue'
 import components from './components/UI'
+import PaymentCreateForm from './components/paymentCreate/PaymentCreateForm.vue';
 
 
 
@@ -16,6 +17,7 @@ const app = createApp({
         'vue-calendar-month': CalendarMonth,
         'vue-user-sale-report-form': UserSaleReportForm,
         'vue-contract-create-form': ContractCreateForm,
+        'vue-payment-create-form': PaymentCreateForm,
         'vue-contract-agent-info': AgentInfo,
     }
 });

@@ -1,23 +1,51 @@
-<nav class="flex flex-shrink-0 flex-col gap-1 w-1/8 pl-1 pr-6 py-6 bg-light border-r border-solid border-gray-300">
-    <a class=" text-xl {{ Route::is('admin.contract*') ? 'font-bold' : '' }}" href="{{ route('admin.contract.index') }}">
-        Договоры
-    </a>
-    <a class="text-xl {{ Route::is('admin.payment*') ? 'font-bold' : '' }}" href="{{ route('admin.payment.index') }}">
-        Платежи
-    </a>
-    <a class="text-xl {{ Route::is('admin.service*') ? 'font-bold' : '' }}" href="{{ route('admin.service.category.index') }}">
-        Услуги
-    </a>
-    <a class="text-xl {{ Route::is('admin.user*') ? 'font-bold' : '' }}" href="{{ route('admin.user.index') }}">
-        Сотрудники
-    </a>
-    <a class="text-xl {{ Route::is('admin.department.index') ? 'font-bold' : '' }}" href="{{ route('admin.department.index') }}">
-        Отделы
-    </a>
-    <a class="text-xl {{ Route::is('admin.department.sale*') ? 'font-bold' : '' }}" href="{{ route('admin.department.sale.index') }}">
-        Отдел продаж
-    </a>
-    <a class="text-xl {{ Route::is('admin.settings*') ? 'font-bold' : '' }}" href="{{ route('admin.settings.index') }}">
-        Настройки
-    </a>
-</nav>
+<div class=" w-56 bg-gray-800 text-white flex flex-col">
+    <!-- Navigation -->
+    <nav class="flex-1">
+        <ul class="space-y-1 p-4">
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.contract*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.contract.index') }}">
+                    Договоры
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.payment*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.payment.index') }}">
+                    Платежи
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.service*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.service.category.index') }}">
+                    Услуги
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.user*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.user.index') }}">
+                    Сотрудники
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.department.index') }}">
+                    Отделы
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department.sale*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.department.sale.index') }}">
+                    Отдел продаж
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.settings*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.settings.index') }}">
+                    Настройки
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>

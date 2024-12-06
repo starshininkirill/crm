@@ -38,7 +38,7 @@
                         100
                     </div>
                 </div>
-                <button type="submit" class="btn">Отправить</button>
+                <button type="submit" @click="handleSubmit" :disabled="isSubmitting" class="btn">Отправить</button>
             </div>
         </div>
     </div>
@@ -72,6 +72,7 @@ export default {
             localSale: this.modelValue,
             localAmountPrice: this.amountPrice,
             payments: Array.from({ length: 3 }, (_, index) => paymentsFromOld[index] || 0),
+            isSubmitting: false,
         };
     },
     computed: {
@@ -101,6 +102,10 @@ export default {
             const value = Number(event.target.value);
             this.localSale = value;
             this.$emit('update:modelValue', value);
+        },
+        handleSubmit(){
+            this.$refs.form.submit();
+            this.isSubmitting = true;
         },
         splitPayments(...args) {
             if (args.length === 0) {

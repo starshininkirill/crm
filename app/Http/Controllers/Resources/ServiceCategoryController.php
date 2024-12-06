@@ -28,4 +28,11 @@ class ServiceCategoryController extends Controller
 
         return redirect()->back()->with('success', 'Категория успешно обновлена');
     }
+
+    public function destroy(ServiceCategory $serviceCategory)
+    {
+        $serviceCategory->delete();
+
+        return redirect()->back()->with('success', 'Категория услуг успешно Удалена');
+    }
 }

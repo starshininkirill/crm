@@ -71,7 +71,7 @@
                     <vue-form-input v-if="isRk" type="hidden" :value="rkText" required name="rk_text" />
                 </div>
 
-                <div class="flex gap-3">
+                <div v-if="this.nds != true" class="flex gap-3">
                     <div v-if="visibleServices < 6" class="btn" @click="addService">
                         Добавить услугу
                     </div>
@@ -124,13 +124,17 @@ export default {
         },
         rkText: {
             type: String,
-        }
+        },
+        nds: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         let visibleServices = this.servicePrices.filter(item => item.service !== 0).length
         if (visibleServices == 0) {
             visibleServices = 1
-        }
+        }        
 
         return {
             seoPages: this.old?.seo_pages !== undefined ? this.old.seo_pages : 0,
@@ -214,7 +218,10 @@ export default {
             handler() {
                 this.$emit('update:valid', this.checkValidFieldsFilled());
             },
-        }
+        },
+        mainCatsIds(newValue) {
+            this.mainCats = this.cats.filter(cat => newValue.map(Number).includes(cat.id));
+        },
     },
     mounted() {
         this.$emit('update:valid', this.checkValidFieldsFilled());

@@ -30,7 +30,7 @@ class Service extends Model
     {
         $searchString = $isIndividual ? 'physic_' : 'law_';
         $searchString = $isDefault ? $searchString . 'default' : $searchString . 'complex';
-        return $this->deal_template_ids[$searchString];
+        return json_decode($this->deal_template_ids, true)[$searchString];
     }
 
     public function numeric_working_days() : int

@@ -18,6 +18,7 @@ class ContractController extends Controller
                 return [
                     'id' => $category->id,
                     'category' => $category->name,
+                    'isRk' => $category->type == ServiceCategory::RK,
                     'services' => $category->services->map(function ($service) {
                         return [
                             'id' => $service->id,

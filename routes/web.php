@@ -22,7 +22,6 @@ use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
 use App\Http\Controllers\Resources\WorkPlanController;
-use App\Models\Department;
 use Illuminate\Support\Facades\Route;
 
 
@@ -132,11 +131,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('serviceCategory', ResourcesServiceCategoryController::class)->only([
         'store',
         'update',
+        'destroy'
     ]);
 
     Route::resource('service', ResourcesServiceController::class)->only([
         'store',
         'update',
+        'destroy'
     ]);
 
 

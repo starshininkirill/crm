@@ -40,35 +40,61 @@
             @if ($categories->isEmpty())
                 <h2 class="text-xl">Категорий услуг не найдено</h2>
             @else
-                <table class="border border-gray-300 border-collapse w-full">
-                    <thead>
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <td class="text-xl font-bold p-3 border border-gray-300">
+                            <th scope="col" class="px-6 py-3">
                                 Категория
-                            </td>
-                            <td class="text-xl font-bold p-3 border border-gray-300">
-                                Тип категории
-                            </td>
-                            <td class="text-xl font-bold p-3 border border-gray-300">
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Тип Категории
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right w-12">
                                 Услуги
-                            </td>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right w-12">
+                                Редактировать
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right w-12">
+                                Удалить
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($categories as $category)
-                            <tr class="">
-                                <td class="p-3 border border-gray-300">
-                                    <a class="text-xl text-blue-700" href="{{ route('admin.service.category.edit', $category->id) }}">
-                                        {{ $category->name }}
-                                    </a>
+                            <tr
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <th scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ $category->name }}
+                                </th>
+
+                                <td class="px-6 py-4">
+                                    {{ $category->readableType() }}
                                 </td>
-                                <td class="p-3 border border-gray-300">
-                                    {{  $category->readableType() }}
-                                </td>
-                                <td class="p-3 border border-gray-300">
-                                    <a class="text-xl text-blue-700" href="{{ route('admin.service.index', $category->id) }}">
+
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{{ route('admin.service.index', $category->id) }}"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                         {{ $category->services_count }}
                                     </a>
+                                </td>
+
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{{ route('admin.service.category.edit', $category->id) }}"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                        Редактировать
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <form method="POST" action="{{ route('serviceCategory.destroy', $category->id) }}"
+                                        class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button type="submit">
+                                            Удалить
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

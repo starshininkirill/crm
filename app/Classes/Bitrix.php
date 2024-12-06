@@ -177,13 +177,14 @@ class Bitrix
 
         // Получение услуг из базы данных
         $serviceIds = collect($services)->pluck('service_id');
-        $dbServices = Service::whereIn('id', $serviceIds)->get(['id', 'name', 'description', 'work_days_duration'])->keyBy('id');
+        $dbServices = Service::whereIn('id', $serviceIds)->with('category')->get()->keyBy('id');
 
         // Объединение массивов
         $mergedServices = collect($services)->map(function ($service) use ($dbServices) {
             $dbService = $dbServices->get($service['service_id']);
             return array_merge($service, [
                 'name' => $dbService->name ?? null,
+                'type' => $dbService->category->type ?? null,
                 'description' => $dbService->description ?? null,
                 'duration' => $dbService->work_days_duration,
             ]);
@@ -238,6 +239,9 @@ class Bitrix
                         if ($field == 'price') {
                             $value = TextFormaterHelper::visualFormatNumber($value, true, true);
                         }
+                        if ($field == 'name' && $service['type'] == ServiceCategory::SEO && array_key_exists('UF_CRM_1700118214', $result['crm_fields'])) {
+                            $value =  $value . ' (' . $result['crm_fields']['UF_CRM_1700118214'] . ' страниц)';
+                        }
                         $mergedServices[$key][$newFieldName] = $value;
                         unset($mergedServices[$key][$field]);
                     }
@@ -280,6 +284,7 @@ class Bitrix
             'UF_CRM_1724337878',
             'UF_CRM_1671029036',
             'UF_CRM_1700118214',
+            'UF_CRM_1671028801'
         ];
 
         foreach ($maybeEmptyFields as $key => $field) {

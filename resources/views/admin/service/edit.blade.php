@@ -7,7 +7,8 @@
         @csrf
         @method('PUT')
         @if (session('success'))
-            <div class="mb-3 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <div class="mb-3 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded w-fit relative"
+                role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
@@ -36,8 +37,12 @@
                     Категория
                 </label>
                 <select id="service_category_id" name="service_category_id" class="select">
+                    <option {{ !isset($service->category) ? 'selected' : '' }} disabled value="">
+                        Выберите категорию
+                    </option>
                     @foreach ($categories as $category)
-                        <option {{ $category->id == $service->category->id ? 'selected' : '' }} value="{{ $category->id }}">
+                        <option {{ isset($service->category) && $category->id == $service->category->id ? 'selected' : '' }}
+                            value="{{ $category->id }}">
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -55,9 +60,11 @@
                 <x-form-input type="number" name="law_complex" placeholder="Юр. лицо комплекс" label="Юр. лицо комплекс"
                     value="{{ json_decode($service->deal_template_ids, true)['law_complex'] }}" />
                 <x-form-input type="number" name="physic_default" placeholder="Физ. лицо одна услуга"
-                    label="Физ. лицо одна услуга" value="{{ json_decode($service->deal_template_ids, true)['physic_default'] }}" />
+                    label="Физ. лицо одна услуга"
+                    value="{{ json_decode($service->deal_template_ids, true)['physic_default'] }}" />
                 <x-form-input type="number" name="physic_complex" placeholder="Физ. лицо комплекс"
-                    label="Физ. лицо комплекс" value="{{ json_decode($service->deal_template_ids, true)['physic_complex'] }}" />
+                    label="Физ. лицо комплекс"
+                    value="{{ json_decode($service->deal_template_ids, true)['physic_complex'] }}" />
             @else
                 <x-form-input type="number" name="law_default" placeholder="Юр. лицо одна услуга"
                     label="Юр. лицо одна услуга"

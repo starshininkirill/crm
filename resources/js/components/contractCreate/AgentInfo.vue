@@ -74,7 +74,7 @@
                     <div class="grid grid-cols-2 gap-3 mb-2">
                         <vue-form-input required type="text" name="register_number" placeholder="Номер ОГРН/ОГРНИП"
                             v-model="fields.register_number" label="Номер ОГРН/ОГРНИП" />
-                        <vue-form-input required type="text" v-if="ogrnType === '0'" name="director_name"
+                        <vue-form-input required type="text" v-if="ogrnType == '0'" name="director_name"
                             v-model="fields.director_name" placeholder="(Иванова Ивана Ивановича)"
                             label="ФИО Ген.дира в РОД ПАДЕЖЕ" />
                         <div v-if="ogrnType === '1'">
@@ -118,11 +118,15 @@ export default {
             type: Boolean,
             required: true,
         },
+        nds: {
+            type: String,
+            required: true,
+        }
     },
     data() {        
         return {
             clientType: this.old['client_type'] || '0',
-            taxType: this.old['tax'] || '0',
+            taxType: this.nds,
             ogrnType: this.old['register_number_type'] || '0',
             fields: {
                 client_fio: this.old['client_fio'] || '',
@@ -153,6 +157,12 @@ export default {
         },
         clientType: 'validate',
         ogrnType: 'validate',
+        taxType(newValue) {
+            this.$emit("update:nds", newValue);
+        },
+        nds(newValue) {
+            this.taxType = newValue;
+        },
     },
     methods: {
         validate() {
