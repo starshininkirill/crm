@@ -143,6 +143,19 @@ class ServiceSeeder extends Seeder
             'service_category_id' => 4,
             'price' => 20000,
             'work_days_duration' => '1 (один) календарный месяц',
+            'description' => 'описание Внешнее СЕО',
+            'deal_template_ids' => json_encode([
+                'law_default' => 68,
+                'law_complex' => 68,
+                'physic_default' => 44,
+                'physic_complex' => 44
+            ]),
+        ]);
+        Service::create([
+            'name' => 'Внутренняя SEO-оптимизация',
+            'service_category_id' => 4,
+            'price' => 20000,
+            'work_days_duration' => '1 (один) календарный месяц',
             'description' => 'описание Внутреннее СЕО',
             'deal_template_ids' => json_encode([
                 'law_default' => 68,

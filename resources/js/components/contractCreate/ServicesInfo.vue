@@ -22,7 +22,7 @@
                                     <option v-for="service in cat.services" :key="service.id" :value="service.id"
                                         :data-price="service.price" :data-duration="service.work_days_duration"
                                         :data-isRk="service.isRk" :data-isReady="service.isReady"
-                                        :data-isSeo="service.isSeo">
+                                        :data-isSeo="service.needSeoPages">
                                         {{ service.name }}
                                     </option>
                                 </optgroup>
@@ -48,7 +48,7 @@
                                 <option v-for="service in secondaryCats" :key="service.id" :value="service.id"
                                     :data-price="service.price" :data-duration="service.work_days_duration"
                                     :data-isRk="service.isRk" :data-isReady="service.isReady"
-                                    :data-isSeo="service.isSeo">
+                                    :data-isSeo="service.needSeoPages">
                                     {{ service.name }}
                                 </option>
                             </select>

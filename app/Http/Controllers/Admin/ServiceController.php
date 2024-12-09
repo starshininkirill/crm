@@ -24,7 +24,7 @@ class ServiceController extends Controller
 
     public function create(){
         $categories = ServiceCategory::all();
-        $contractTemplateIdsText = Option::where('name', 'contract_template_ids_text')->first();
+        $contractTemplateIdsText = Option::where('name', 'contract_generator_template_ids_text')->first();
 
         return view('admin.service.create', [
             'categories' => $categories,
@@ -35,7 +35,7 @@ class ServiceController extends Controller
     public function edit(Service $service){
 
         $categories = ServiceCategory::all();
-        $contractTemplateIdsText = Option::where('name', 'contract_template_ids_text')->first();
+        $contractTemplateIdsText = Option::where('name', 'contract_generator_template_ids_text')->first();
 
         return view('admin.service.edit', [
             'categories' => $categories,
