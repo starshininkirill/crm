@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceStoreRequest;
+use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
@@ -23,17 +24,23 @@ class ServiceController extends Controller
 
     public function create(){
         $categories = ServiceCategory::all();
+        $contractTemplateIdsText = Option::where('name', 'contract_template_ids_text')->first();
 
-        return view('admin.service.create', ['categories' => $categories]);
+        return view('admin.service.create', [
+            'categories' => $categories,
+            'contractTemplateIdsText' => $contractTemplateIdsText,
+        ]);
     }
 
     public function edit(Service $service){
 
         $categories = ServiceCategory::all();
+        $contractTemplateIdsText = Option::where('name', 'contract_template_ids_text')->first();
 
         return view('admin.service.edit', [
             'categories' => $categories,
-            'service' => $service
+            'service' => $service,
+            'contractTemplateIdsText' => $contractTemplateIdsText
         ]);
     }
 

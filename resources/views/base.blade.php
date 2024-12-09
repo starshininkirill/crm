@@ -10,7 +10,7 @@
     <title>Главная</title>
 </head>
 
-<body id="app" class="flex flex-col min-h-screen">
+<body id="app" class="flex flex-col min-h-screen m-0">
     @include('templates.header')
     <main class="main flex grow container mx-auto gap-6">
         <div class="content flex w-full">

@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/main.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/main.js',])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Главная</title>
 </head>
 
-<body id="app" class="flex flex-col min-h-screen">
+<body id="app" class="flex flex-col min-h-screen m-0">
     @include('templates.header')
     <main class="main flex mr-4 grow w-100 gap-6">
         @include('templates.nav')

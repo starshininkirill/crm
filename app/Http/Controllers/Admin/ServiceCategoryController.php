@@ -20,12 +20,13 @@ class ServiceCategoryController extends Controller
             'categories' => $categories,
             'types' => $types
         ]);
+
+
     }
 
     public function edit(ServiceCategory $serviceCategory)
     {
         $types = ServiceCategory::getTypes();
-
         return view('admin.service.category.edit', [
             'serviceCategory' => $serviceCategory,
             'types' => $types

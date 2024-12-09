@@ -28,5 +28,16 @@ class OptionSeeder extends Seeder
             'name' => 'tax_nds',
             'value' => '20'
         ]);
+        Option::create([
+            'name' => 'contract_template_ids_text',
+            'value' => '<ul>
+<li><strong>30&nbsp;&nbsp;</strong> - Физ_инд_Ленд</li>
+<li><strong>246</strong> - Комплекс_Физ_инд_Ленд</li>
+<li><strong>54</strong>&nbsp; &nbsp;- Юр_инд_Ленд</li>
+<li><strong>228</strong> - Комплекс_Юр_инд_Ленд</li>
+<li><strong>62&nbsp;</strong> &nbsp;- Юр_РК</li>
+<li><strong>38&nbsp; &nbsp;- </strong>Физ_РК</li>
+</ul>'
+        ]);
     }
 }

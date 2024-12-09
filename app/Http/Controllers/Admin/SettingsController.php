@@ -17,13 +17,15 @@ class SettingsController extends Controller
         $mainCategoriesOption = Option::where('name', 'contract_main_categories')->first();
         $secondaryCategoriesOption = Option::where('name', 'contract_secondary_categories')->first();
         $contractRkText = Option::where('name', 'contract_rk_text')->first();
+        $contractTemplateIdsText = Option::where('name', 'contract_template_ids_text')->first();
 
         // dd($mainCategoriesOption);
         return view('admin.settings.index',[
-            'serviceCategories' => $serviceCats,
-            'mainCategoriesOption' => $mainCategoriesOption,
-            'secondaryCategoriesOption' => $secondaryCategoriesOption,
-            'contractRkText' => $contractRkText
+            'serviceCategories' => $serviceCats ?? [],
+            'mainCategoriesOption' => $mainCategoriesOption ?? [],
+            'secondaryCategoriesOption' => $secondaryCategoriesOption ?? [],
+            'contractRkText' => $contractRkText,
+            'contractTemplateIds' => $contractTemplateIdsText,
         ]);
     }
 
