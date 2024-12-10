@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Lk;
 
+use App\Classes\Bitrix;
+use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentStoreRequest;
+use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Services\PaymentService;
@@ -20,15 +23,22 @@ class PaymentController extends Controller
 
     public function create()
     {
-        $paymentMethods = PaymentMethod::all();
-        return view('lk.payment.create', ['paymentMethods' => $paymentMethods]);
+        $organisations = Organization::all()->toArray();
+
+        return view('lk.payment.create', [
+            'organisations' => $organisations
+        ]);
     }
 
     public function store(PaymentStoreRequest $request)
     {
         $data = $request->validated();
-        $data['status'] = Payment::STATUS_CONFIRMATION; 
-        $this->paymentService->store($data);
-        return redirect()->back()->with('success', 'Платёж успешно создан!');
+
+        $responseData = DocumentGenerator::generatePaymentDocument($data);
+
+        return back()->with(
+            $responseData
+        );
+        
     }
 }

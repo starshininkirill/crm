@@ -22,6 +22,7 @@ class SettingsController extends Controller
         $contractTemplateIdsText = Option::where('name', 'contract_generator_template_ids_text')->first();
         $taxNds = Option::where('name', 'tax_nds')->first();
         $needSeoPages = Option::where('name', 'contract_generator_need_seo_pages')->first();
+        $paymentDefaultLawTemplate = Option::where('name', 'payment_generator_default_law_template')->first();
 
         return view('admin.settings.index',[
             'serviceCategories' => $serviceCats ?? [],
@@ -32,6 +33,7 @@ class SettingsController extends Controller
             'contractTemplateIds' => $contractTemplateIdsText,
             'taxNds' => $taxNds,
             'needSeoPages' => $needSeoPages,
+            'paymentDefaultLawTemplate' => $paymentDefaultLawTemplate,
         ]);
     }
 

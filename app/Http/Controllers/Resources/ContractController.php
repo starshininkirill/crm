@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Classes\Bitrix;
+use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractStoreRequest;
 use App\Models\Client;
@@ -32,7 +33,7 @@ class ContractController extends Controller
             $data['ready_site_image'] = $fullBase64String;
         }
 
-        $link = Bitrix::generateDealDocument($data);
+        $link = DocumentGenerator::generateDealDocument($data);
 
         if(empty($link) || $link == ''){
             return back()->withErrors('Ошибка Создания договора в Bitrix')->withInput();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaymentStoreRequest extends FormRequest
@@ -21,13 +22,22 @@ class PaymentStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            // заменить
-            'descr' => 'required|exists:contracts,id', 
-            'value' => 'required|numeric|min:0',
-            'order' => 'nullable|integer|min:0',
-            'id_technical' => 'sometimes|boolean',
-            'payment_method_id' => 'required|exists:payment_methods,id'
+        $rules = [
+            'client_type' => 'required|numeric|in:0,1',
+            'payment_direction' => 'required|numeric|in:0,1,2,3,',
+            'leed' => 'required|numeric|min:1',
+            'number' => 'required|numeric|min:1',
+            'deal_id' => 'required|numeric|min:1'
         ];
+        if ($this->input('client_type') == Client::TYPE_INDIVIDUAL) {
+            $rules = array_merge($rules, [
+                'amount_summ' => 'required|numeric|min:1',
+                'client_fio' => '|max:255',
+                // 'phone' => 'required|regex:/^\+?\d{10,15}$/'
+                'phone' => 'required'
+            ]);
+        } elseif ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY) {
+        }
+        return $rules;
     }
 }

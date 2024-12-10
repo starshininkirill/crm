@@ -43,5 +43,12 @@ class OptionSeeder extends Seeder
 <li><strong>38&nbsp; &nbsp;- </strong>Физ_РК</li>
 </ul>'
         ]);
+
+
+        Option::create([
+            'name' => 'payment_generator_default_law_template',
+            'value' => '198'
+        ]);
+
     }
 }

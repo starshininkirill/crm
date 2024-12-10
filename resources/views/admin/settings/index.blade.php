@@ -118,6 +118,27 @@
             </div>
             <div>
                 <div class="text-xl font-semibold mb-3">
+                    Шаблон для Юр лица генератора Платежей по умолчанию
+                </div>
+                <form action="{{ $paymentDefaultLawTemplate == null ? route('option.store') : route('option.update', $paymentDefaultLawTemplate->id) }}"
+                    method="POST" class="flex flex-col gap-1">
+                    @csrf
+                    @if ($paymentDefaultLawTemplate != null)
+                        @method('PUT')
+                    @endif
+                    <x-form-input type="number" name="value" value="{{ $paymentDefaultLawTemplate->value ?? 0 }}" placeholder="198"
+                        label="Шаблон по умолчанию" />
+                    <input type="hidden" name="name" value="payment_generator_default_law_template">
+                    <button class="btn mt-3">
+                        Изменить
+                    </button>
+                </form>
+            </div>
+            <div>
+
+            </div>
+            <div>
+                <div class="text-xl font-semibold mb-3">
                     Описание условий для сделки с РК
                 </div>
                 <form

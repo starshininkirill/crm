@@ -6,19 +6,21 @@ use App\Models\Client;
 use App\Models\Option;
 use App\Models\Service;
 use App\Helpers\TextFormaterHelper;
+use App\Models\Organization;
 use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\Http;
 
 class Bitrix
 {
+
     public static function generateDealDocument(array $data)
     {
         $bitrixData = self::prepareDealData($data);
-        $response = Http::withOptions(["verify"=>false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
-            
-        if($response->status() == 200){
+        $response = Http::withOptions(["verify" => false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
+
+        if ($response->status() == 200) {
             $result = $response->json()['download_link'];
-        }else{
+        } else {
             $result = '';
         }
 
@@ -120,7 +122,6 @@ class Bitrix
         foreach ($payments as $key => $value) {
             $result['crm_fields'][$paymentsBitrixFields[$key]] = TextFormaterHelper::visualFormatNumber($value, false, true);
         }
-
     }
 
     private static function generateMainService(array $data, &$result, $isIndividual): void
@@ -142,29 +143,27 @@ class Bitrix
 
         // Добавляем текст для оплат
         if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601264')) {
-			$avance_text = '';
-			if ($service->category->type == ServiceCategory::READY_SITE) {
-				$avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
-			} else {
-				/*-------- проверка на наличие 3 аванса ------------*/
-				if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
-					$avance_text = "1.2 После согласования дизайна сайта Заказчик перечисляет оплату в размере " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней.";
-				} else {
-					$avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
-				}
-			}
-			$result['crm_fields']['UF_CRM_1724337871'] = $avance_text;
-		}
-		/*----------- 3 аванс ----------*/
-		if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
-			$avance_text = '';
-			if ($service->category->type != ServiceCategory::READY_SITE) {
-				$avance_text = "1.3 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601276'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
-			}
-			$result['crm_fields']['UF_CRM_1724337878'] = $avance_text;
-		}
-
-
+            $avance_text = '';
+            if ($service->category->type == ServiceCategory::READY_SITE) {
+                $avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+            } else {
+                /*-------- проверка на наличие 3 аванса ------------*/
+                if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
+                    $avance_text = "1.2 После согласования дизайна сайта Заказчик перечисляет оплату в размере " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней.";
+                } else {
+                    $avance_text = "1.2 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601264'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+                }
+            }
+            $result['crm_fields']['UF_CRM_1724337871'] = $avance_text;
+        }
+        /*----------- 3 аванс ----------*/
+        if (self::validKeyInArray($result['crm_fields'], 'UF_CRM_1640601276')) {
+            $avance_text = '';
+            if ($service->category->type != ServiceCategory::READY_SITE) {
+                $avance_text = "1.3 По окончанию работ по разработке сайта Заказчик перечисляет " . TextFormaterHelper::visualFormatNumber($result['crm_fields']['UF_CRM_1640601276'], true, true) . " 00 копеек на расчетный счет Исполнителя на основании выставленного счета в течении 3-х рабочих дней";
+            }
+            $result['crm_fields']['UF_CRM_1724337878'] = $avance_text;
+        }
     }
 
     private static function generateServiceFields(array $data, &$result): void

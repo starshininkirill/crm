@@ -19,6 +19,7 @@ use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\OptionController;
+use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
 use App\Http\Controllers\Resources\WorkPlanController;
@@ -125,6 +126,10 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::resource('contract', ContractController::class)->only([
+        'store',
+    ]);
+
+    Route::resource('payment', ResourcesPaymentController::class)->only([
         'store',
     ]);
 
