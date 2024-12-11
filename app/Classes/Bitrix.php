@@ -15,13 +15,51 @@ class Bitrix
 
     public static function generatePaymentDocument(array $data)
     {
+
+        $bitrixData = self::preparePaymentData($data);
+
+        $response = Http::withOptions(["verify" => false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
+
+        if ($response->status() == 200) {
+            $result = $response->json();
+        } else {
+            $result = [];
+        }
+
+        return $result;
+    }
+
+    private static function preparePaymentData(array $data): array
+    {
         $template_id = Organization::where('id', $data['payment_type'])->first()->template ?? null;
 
-        if($template_id == null){
+        if ($template_id == null) {
             $template_id = Option::where('name', 'payment_generator_default_law_template')->first()->value ?? 0;
         }
-        
 
+        $array_total_summ = TextFormaterHelper::visualFormatNumber($data['act_payment_summ'], true, false);
+        $bitrixData = [
+            'template_id' => $template_id,
+            'lead_id' => $data['leed'],
+            'with_pdf' => true,
+            'physics' => Client::translateType($data['client_type']),
+            'deal_id' => $data['deal_id'],
+            'client_phone' => '',
+            'crm_fields' => [
+                'deal_number' => $data['number'],
+                'amount' => '',
+                'client_phone' => '',
+                'UF_CRM_1671028363' => '', // ФИО
+                'UF_CRM_1671028759' => $data['organization_short_name'],
+                'UF_CRM_1671028872' => $data['legal_address'],
+                'UF_CRM_1671028881' => $data['inn'],
+                'UF_CRM_1711519450' => TextFormaterHelper::visualFormatNumber($data['act_payment_summ'], true, true),
+                'UF_CRM_1711519550' => $data['act_payment_goal'],
+                'UF_CRM_1722077889' => $array_total_summ['text'] . ' ' . $array_total_summ['ruble'],
+            ],
+        ];
+
+        return $bitrixData;
     }
 
     public static function generateDealDocument(array $data)
@@ -34,6 +72,7 @@ class Bitrix
         } else {
             $result = '';
         }
+
 
         return $result;
     }

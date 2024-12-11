@@ -16,8 +16,8 @@ class DocumentGenerator
     {
         $result = [
             'link' => '',
-            'word_document' => '',
-            'pdf_document' => '',
+            'download_link' => '',
+            'pdf_download_link' => '',
         ];
 
         if ($data['client_type'] == Client::TYPE_INDIVIDUAL) {
@@ -38,9 +38,14 @@ class DocumentGenerator
 
             $result['link'] = $link;
         } elseif ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) {
-
             $bitrixResponse = Bitrix::generatePaymentDocument($data);
 
+            if(array_key_exists('download_link', $bitrixResponse) && $bitrixResponse['download_link'] != ''){
+                $result['download_link'] = $bitrixResponse['download_link'];
+            }
+            if(array_key_exists('pdf_download_link', $bitrixResponse) && $bitrixResponse['pdf_download_link'] != ''){
+                $result['pdf_download_link'] = $bitrixResponse['pdf_download_link'];
+            }
         }
 
         return $result;
@@ -56,7 +61,7 @@ class DocumentGenerator
     public static function generatePaymentLink(int $amount, string $name, string $desc, string $phone, int $terminal): string
     {
         $target_payment_link = 'https://grampus-studio.ru/oplata-uslug/';
-        
+
         $payment_query = http_build_query([
             'amount' => $amount,
             'imya' => $name,

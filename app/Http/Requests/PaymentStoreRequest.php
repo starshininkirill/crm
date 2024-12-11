@@ -37,6 +37,15 @@ class PaymentStoreRequest extends FormRequest
                 'phone' => 'required'
             ]);
         } elseif ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY) {
+            $rules = array_merge($rules, [
+                'payment_type' => 'required|numeric',
+                'organization_short_name' => 'required|string|max:255',
+                'legal_address' => 'required|string|max:255',
+                // 'inn' => 'required|digits_between:10,12',
+                'inn' => 'required|numeric',
+                'act_payment_summ' => 'required|integer',
+                'act_payment_goal' => 'required|string|max:255',
+            ]);
         }
         return $rules;
     }

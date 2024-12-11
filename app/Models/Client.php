@@ -36,6 +36,16 @@ class Client extends Model
         'bank_bik',
     ];
 
+    public static function translateType(int $type) : string
+    {
+        $translates = [
+            Client::TYPE_INDIVIDUAL => 'physic',
+            Client::TYPE_LEGAL_ENTITY => 'law',
+        ];
+
+        return $translates[$type];
+    }
+    
     public function contracts()
     {
         return $this->hasMany(Contract::class);

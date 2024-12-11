@@ -17,7 +17,7 @@
             </svg>
          </div>
       </div>
-      <form :action="action" method="POST" enctype="multipart/form-data">
+      <form ref="form" :action="action" method="POST" enctype="multipart/form-data">
          <input type="hidden" name="_token" :value="token">
          <div class="grid grid-cols-2 gap-4 max-w-xl mb-6">
             <vue-form-input required :value="old['leed']" type="number" name="leed" placeholder="Лид" label="Лид" />
@@ -41,8 +41,10 @@
                   v-model:isSeo="isSeo" v-model:isReady="isReady" :rkText="rkText" />
             </div>
 
-            <div v-show="currentStep === 3">
-               <vue-price-info :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice"
+            <div v-if="form" v-show="currentStep === 3">
+               <vue-price-info
+                  :form="form"
+               :old="old" :servicePrices="servicePrices" v-model:amountPrice="amountPrice"
                   v-model="sale" />
             </div>
          </div>
@@ -109,6 +111,7 @@ export default {
    data() {
       let cats = JSON.parse(this.stringCats)
       let allServices = cats.flatMap(cat => cat.services)
+     
 
       const old = this.rowOld ? JSON.parse(this.rowOld) : {};
 
@@ -140,6 +143,7 @@ export default {
          currentStep: 1,
          stepsValid: [false, false],
          nds: old['tax'] || '0',
+         form: null,
 
          isRk: servicePrices.filter(el => el.isRk == 'true' || el.isRk == true).length != 0 ? true : false,
          isSeo: servicePrices.filter(el => el.isSeo == 'true' || el.isSeo == true).length != 0 ? true : false,
@@ -204,6 +208,9 @@ export default {
                console.error("Ошибка при копировании текста: ", err);
             });
       },
-   }
+   },
+   mounted() {
+        this.form = this.$refs.form;
+    },
 };
 </script>

@@ -38,9 +38,12 @@
                         100
                     </div>
                 </div>
-                <button type="submit" @click="handleSubmit" :disabled="isSubmitting" class="btn">Отправить</button>
+                <button type="submit" @click="handleSubmit" :disabled="isSubmitting" class="btn">
+                    {{ isSubmitting ? 'Генерация документа...' : 'Отправить' }}
+                </button>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -63,10 +66,14 @@ export default {
             type: Object,
             default: [],
         },
+        form: {
+            type: Object,
+            required: true,
+        },
     },
     data() {
         const paymentsFromOld = Array.isArray(this.old.payments) ? this.old.payments : [];
-
+        
         return {
             showForm: true,
             localSale: this.modelValue,
@@ -103,9 +110,13 @@ export default {
             this.localSale = value;
             this.$emit('update:modelValue', value);
         },
-        handleSubmit(){
-            this.$refs.form.submit();
+        handleSubmit() {
             this.isSubmitting = true;
+            setTimeout(() => {
+                if (this.form) {
+                    this.form.submit();
+                }
+            }, 0);
         },
         splitPayments(...args) {
             if (args.length === 0) {

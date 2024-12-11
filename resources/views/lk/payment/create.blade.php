@@ -24,6 +24,8 @@
         row-old='@json(old())'
          token="{{ csrf_token() }}"
         link="{{ session('link') ?? '' }}"
+        download-link="{{ session('download_link') ?? '' }}"
+        pdf-download-link="{{ session('pdf_download_link') ?? '' }}"
          />
     </div>
 @endsection
