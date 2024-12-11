@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Http;
 class Bitrix
 {
 
+    public static function generatePaymentDocument(array $data)
+    {
+        $template_id = Organization::where('id', $data['payment_type'])->first()->template ?? null;
+
+        if($template_id == null){
+            $template_id = Option::where('name', 'payment_generator_default_law_template')->first()->value ?? 0;
+        }
+        
+
+    }
+
     public static function generateDealDocument(array $data)
     {
         $bitrixData = self::prepareDealData($data);

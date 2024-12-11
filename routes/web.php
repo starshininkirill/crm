@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::prefix('/contracts')->group(function () {
             Route::get('/create', [LkContractController::class, 'create'])->name('lk.contract.create');
+            Route::post('/store', [LkContractController::class, 'store'])->name('lk.contract.store');
         });
     });
 });

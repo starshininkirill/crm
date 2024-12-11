@@ -9,7 +9,6 @@ export default defineConfig({
             input: [
                 'resources/js/app.js',
                 'resources/js/main.js',
-                'resources/js/tinymce.js',
                 'resources/css/app.css',
             ],
             refresh: true,

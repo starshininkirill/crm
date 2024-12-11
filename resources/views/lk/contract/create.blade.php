@@ -18,15 +18,12 @@
                 @endforeach
             </ul>
         @endif
-        @if (session('link'))
-            <a href="{{ session('link') }}" download target="_blank" class="btn">
-                Скачать документ
-            </a>
-        @else
-            <vue-contract-create-form :rk-text='@json($rkText)' :string-cats='@json($cats)'
-                :string-main-cats='@json($mainCats)' :string-secondary-cats='@json($secondaryCats)'
-                action="{{ route('contract.store') }}" token="{{ csrf_token() }}" row-old='@json(old())' />
-        @endif
+        <vue-contract-create-form :rk-text='@json($rkText)' :string-cats='@json($cats)'
+            :string-main-cats='@json($mainCats)' :string-secondary-cats='@json($secondaryCats)'
+            action="{{ route('lk.contract.store') }}" token="{{ csrf_token() }}" row-old='@json(old())'
+            link="{{ session('link') ?? '' }}"
+            file="{{ session('file') ?? '' }}"
+            />
 
     </div>
 @endsection
