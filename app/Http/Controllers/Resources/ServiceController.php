@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ServiceStoreRequest;
-use App\Http\Requests\ServiceUpdateRequest;
+use App\Http\Requests\ServiceRequest;
 use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function store(ServiceStoreRequest $request)
+    public function store(ServiceRequest $request)
     {
         $validated = $request->validated();
     
@@ -31,7 +30,7 @@ class ServiceController extends Controller
     }
 
     
-    public function update (ServiceUpdateRequest $request, Service $service)
+    public function update (ServiceRequest $request, Service $service)
     {
         $validated = $request->validated();
     

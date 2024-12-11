@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreFinanceWeekRequest;
+use App\Http\Requests\FinanceWeekRequest;
 use App\Models\FinanceWeek;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FinanceWeekController extends Controller
 {
-    public function setWeeks(StoreFinanceWeekRequest $request)
+    public function setWeeks(FinanceWeekRequest $request)
     {
         $data = $request->validated();
 
@@ -20,7 +20,7 @@ class FinanceWeekController extends Controller
         return redirect()->back()->with('success', 'Финансовые недели успешно добавлены');
     }
 
-    public function updateWeeks(StoreFinanceWeekRequest $request)
+    public function updateWeeks(FinanceWeekRequest $request)
     {
         $data = $request->validated();
 

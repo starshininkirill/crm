@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Resources;
 
 use App\Classes\Bitrix;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentStoreRequest;
+use App\Http\Requests\PaymentRequest;
 
 class PaymentController extends Controller
 {
 
-    public function store(PaymentStoreRequest $request)
+    public function store(PaymentRequest $request)
     {
         $data = $request->validated();
 

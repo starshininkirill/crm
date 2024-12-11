@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Lk;
 
-use App\Classes\Bitrix;
 use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentStoreRequest;
+use App\Http\Requests\PaymentRequest;
 use App\Models\Organization;
-use App\Models\Payment;
-use App\Models\PaymentMethod;
 use App\Services\PaymentService;
 
 class PaymentController extends Controller
@@ -30,7 +27,7 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function store(PaymentStoreRequest $request)
+    public function store(PaymentRequest $request)
     {
         $data = $request->validated();
 

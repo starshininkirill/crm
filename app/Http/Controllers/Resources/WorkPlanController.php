@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreWorkPlanRequest;
-use App\Http\Requests\UpdateWorkPlanRequest;
+use App\Http\Requests\WorkPlanRequest;
 use App\Models\WorkPlan;
 
 class WorkPlanController extends Controller
 {
 
-    public function store(StoreWorkPlanRequest $request)
+    public function store(WorkPlanRequest $request)
     {
         $validated = $request->validated();
 
@@ -20,7 +19,7 @@ class WorkPlanController extends Controller
     }
 
 
-    public function update(UpdateWorkPlanRequest $request, WorkPlan $workPlan)
+    public function update(WorkPlanRequest $request, WorkPlan $workPlan)
     {
 
         if ($workPlan->type == WorkPlan::B1_PLAN || $workPlan->type == WorkPlan::B2_PLAN) {

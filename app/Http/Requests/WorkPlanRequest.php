@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use App\Models\WorkPlan;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateWorkPlanRequest extends FormRequest
+class WorkPlanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        return true;
     }
 
     /**
@@ -28,10 +28,29 @@ class UpdateWorkPlanRequest extends FormRequest
             'bonus' => ['nullable', 'numeric', 'min:0'],
         ];
 
-        if ($this->input('type') == WorkPlan::MOUNTH_PLAN) {
+        if($this->isMethod('POST')){
+            $rules = array_merge($rules, [
+                'type' => ['required', 'integer', 'in:' . implode(',', WorkPlan::ALL_PLANS)],
+                'service_category_id' => ['nullable', 'exists:service_categories,id'],
+                'department_id' => ['required', 'exists:departments,id'],
+                'position_id' => ['nullable', 'exists:positions,id'],
+                'created_at' => ['nullable'],
+            ]);
+        }
+
+        if ($this->input('type') == WorkPlan::MOUNTH_PLAN && $this->isMethod('POST')) {
             $rules['goal'] = ['required', 'numeric', 'min:0'];
             $rules['month'] = ['required', 'integer', 'min:1'];
         };
+
+        if ($this->input('type') == WorkPlan::B1_PLAN || $this->input('type') == WorkPlan::B2_PLAN) {
+            if($this->isMethod('POST')){
+                $rules['service_category_id'] = ['required', 'exists:service_categories,id'];
+            }
+            $rules['goal'] = ['required', 'numeric', 'min:0'];
+            $rules['bonus'] = ['required', 'numeric', 'min:0'];
+        };
+        
 
         if ($this->input('type') == WorkPlan::BONUS_PLAN) {
             $rules['goal'] = ['required', 'numeric', 'min:0'];
@@ -51,11 +70,6 @@ class UpdateWorkPlanRequest extends FormRequest
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
 
-        if ($this->input('type') == WorkPlan::B1_PLAN || $this->input('type') == WorkPlan::B2_PLAN) {
-            $rules['goal'] = ['required', 'numeric', 'min:0'];
-            $rules['bonus'] = ['required', 'numeric', 'min:0'];
-        };
-
         if ($this->input('type') == WorkPlan::B3_PLAN) {
             $rules['goal'] = ['required', 'numeric', 'min:0'];
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
@@ -69,14 +83,13 @@ class UpdateWorkPlanRequest extends FormRequest
         if ($this->input('type') == WorkPlan::PERCENT_LADDER) {
             $rules['bonus'] = ['required', 'numeric', 'min:0'];
         };
-
+        
         if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
             $rules['month'] = ['required', 'numeric', 'min:0'];
         };
 
         return $rules;
     }
-
 
     public function updateData(): array
     {

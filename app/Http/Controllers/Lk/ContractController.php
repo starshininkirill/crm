@@ -5,16 +5,14 @@ namespace App\Http\Controllers\Lk;
 use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\ServiceCategory;
-use App\Classes\Bitrix;
 use App\Classes\DocumentGenerator;
-use App\Http\Requests\ContractStoreRequest;
+use App\Http\Requests\ContractRequest;
 use App\Models\Client;
 use App\Models\ContractUser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 
 class ContractController extends Controller
@@ -60,7 +58,7 @@ class ContractController extends Controller
             'rkText' => $contractRkText,
         ]);
     }
-    public function store(ContractStoreRequest $request)
+    public function store(ContractRequest $request)
     {
         $data = $request->validated();
 

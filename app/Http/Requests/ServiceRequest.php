@@ -5,32 +5,19 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ServiceUpdateRequest extends FormRequest
+class ServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-
-        $service = $this->route('service');
-        return [
-            'name' => [
-                'required',
-                'min:2',
-                'max:255',
-                Rule::unique('services', 'name')->ignore($service->id), 
-            ],
+        $rules = [
             'description' => 'nullable|min:2',
             'work_days_duration' => 'nullable|min:1',
             'price' => 'required|numeric',
@@ -41,6 +28,27 @@ class ServiceUpdateRequest extends FormRequest
             'physic_default' => 'nullable|numeric|required_with:law_default,law_complex,physic_complex',
             'physic_complex' => 'nullable|numeric|required_with:law_default,physic_default,law_complex',
         ];
+
+        if($this->isMethod('POST')){
+            $rules = array_merge($rules, [
+                'name' => 'required|min:2|max:255|unique:services,name',
+            ]);
+        }
+
+        if($this->isMethod('PUT') || $this->isMethod('PATCH')){
+            $service = $this->route('service');
+
+            $rules = array_merge($rules, [
+                'name' => [
+                    'required',
+                    'min:2',
+                    'max:255',
+                    Rule::unique('services', 'name')->ignore($service->id), 
+                ],
+            ]);
+        }
+
+        return $rules;
     }
 
     public function messages(): array
