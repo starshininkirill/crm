@@ -1,6 +1,6 @@
 <template>
    <div>
-      <a v-if="file != ''" :href="file" download target="_blank" class="btn mt-6 block">
+      <a v-if="file != ''" :href="file" download target="_blank" class="btn my-6 block">
          Скачать документ
       </a>
       <div v-if="link != ''" class="px-5 py-3 border border-black rounded flex gap-4 items-center my-6">
@@ -109,6 +109,9 @@ export default {
       'vue-price-info': PriceInfo
    },
    data() {
+
+      console.log(this.file);
+      
       let cats = JSON.parse(this.stringCats)
       let allServices = cats.flatMap(cat => cat.services)
      

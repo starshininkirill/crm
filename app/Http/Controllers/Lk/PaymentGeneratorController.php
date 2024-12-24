@@ -4,22 +4,16 @@ namespace App\Http\Controllers\Lk;
 
 use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentRequest;
+use App\Http\Requests\PaymentGeneratorRequest;
 use App\Models\Organization;
-use App\Services\PaymentService;
 
-class PaymentController extends Controller
+class PaymentGeneratorController extends Controller
 {
-    protected $paymentService;
-
-    public function __construct(
-        PaymentService $paymentService,
-    ) {
-        $this->paymentService = $paymentService;
-    }
 
     public function create()
     {
+
+
         $organisations = Organization::all()->toArray();
 
         return view('lk.payment.create', [
@@ -27,12 +21,15 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function store(PaymentRequest $request)
+    public function store(PaymentGeneratorRequest $request)
     {
         $data = $request->validated();
 
-        $responseData = DocumentGenerator::generatePaymentDocument($data);
+        dd($request->contractData());
 
+        // $responseData = DocumentGenerator::generatePaymentDocument($data);
+
+        $responseData = [];
         return back()->with(
             $responseData
         );

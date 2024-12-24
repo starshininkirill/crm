@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaymentRequest extends FormRequest
+class PaymentGeneratorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -48,5 +48,14 @@ class PaymentRequest extends FormRequest
             ]);
         }
         return $rules;
+    }
+
+    public function contractData(): array
+    {
+        return [
+            'parent_id' => $this->input('number'),
+            'number' => $this->input('number'),
+            'amount_price' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
+        ];
     }
 }

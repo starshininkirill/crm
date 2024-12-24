@@ -19,7 +19,7 @@ class Bitrix
         $bitrixData = self::preparePaymentData($data);
 
         $response = Http::withOptions(["verify" => false])->asForm()->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/index2.php', $bitrixData);
-
+        
         if ($response->status() == 200) {
             $result = $response->json();
         } else {

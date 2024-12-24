@@ -14,9 +14,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Resources\ContractController;
 use App\Http\Controllers\FinanceWeekController;
-use App\Http\Controllers\Lk\ContractController as LkContractController;
+use App\Http\Controllers\Lk\ContractGeneratorController as LkContractGeneratorController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
-use App\Http\Controllers\Lk\PaymentController as LkPaymentController;
+use App\Http\Controllers\Lk\PaymentGeneratorController as LkPaymentGeneratorController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
@@ -44,12 +44,12 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');
         Route::prefix('/payments')->group(function () {
-            Route::get('/create', [LkPaymentController::class, 'create'])->name('lk.payment.create');
-            Route::post('/store', [LkPaymentController::class, 'store'])->name('lk.payment.store');
+            Route::get('/create', [LkPaymentGeneratorController::class, 'create'])->name('lk.payment.create');
+            Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
         });
         Route::prefix('/contracts')->group(function () {
-            Route::get('/create', [LkContractController::class, 'create'])->name('lk.contract.create');
-            Route::post('/store', [LkContractController::class, 'store'])->name('lk.contract.store');
+            Route::get('/create', [LkContractGeneratorController::class, 'create'])->name('lk.contract.create');
+            Route::post('/store', [LkContractGeneratorController::class, 'store'])->name('lk.contract.store');
         });
     });
 });

@@ -15,7 +15,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 
 
-class ContractController extends Controller
+class ContractGeneratorController extends Controller
 {
     public function create()
     {

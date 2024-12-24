@@ -25,7 +25,12 @@ class Contract extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Contract::class, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function childs()
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function users(): BelongsToMany

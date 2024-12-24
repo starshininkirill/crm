@@ -22,6 +22,7 @@ class DocumentGenerator
 
         if ($data['client_type'] == Client::TYPE_INDIVIDUAL) {
             $paymentDirection = $data['payment_direction'];
+            
             if ($paymentDirection == 0) {
                 $terminal = Organization::where('nds', Organization::WITH_NDS)->first()->terminal;
             } else {
