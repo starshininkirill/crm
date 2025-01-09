@@ -8,7 +8,7 @@
                 Все Платежи
             </x-admin-subnav-link>
             <x-admin-subnav-link route="admin.payment.unsorted">
-                Неразобранные платежи
+                Неразобранные платежи (РС)
             </x-admin-subnav-link>
         </div>
         <div class="contract-page-wrapper flex flex-col">

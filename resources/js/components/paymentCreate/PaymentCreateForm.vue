@@ -81,8 +81,8 @@
                         <div class="flex w-fit gap-7 mb-4">
                             <label v-for="organisation in organisations" class="cursor-pointer">
                                 <input checked type="radio" :value="organisation.id" v-model="paymentType"
-                                    name="payment_type" />
-                                {{ organisation.name }} {{ organisation.nds == 0 ? '(Без НДС)' : '(С НДС)' }}
+                                    name="organization_id" />
+                                {{ organisation.short_name }} {{ organisation.nds == 0 ? '(Без НДС)' : '(С НДС)' }}
                             </label>
                         </div>
 

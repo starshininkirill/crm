@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Client;
+use App\Models\Contract;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaymentGeneratorRequest extends FormRequest
@@ -26,7 +27,7 @@ class PaymentGeneratorRequest extends FormRequest
             'client_type' => 'required|numeric|in:0,1',
             'payment_direction' => 'required|numeric|in:0,1,2,3,',
             'leed' => 'required|numeric|min:1',
-            'number' => 'required|numeric|min:1',
+            'number' => 'required|numeric|exists:contracts,number',
             'deal_id' => 'required|numeric|min:1'
         ];
         if ($this->input('client_type') == Client::TYPE_INDIVIDUAL) {
@@ -38,6 +39,7 @@ class PaymentGeneratorRequest extends FormRequest
             ]);
         } elseif ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY) {
             $rules = array_merge($rules, [
+                'organization_id' => 'required|numeric|exists:contracts,number',
                 'payment_type' => 'required|numeric',
                 'organization_short_name' => 'required|string|max:255',
                 'legal_address' => 'required|string|max:255',
@@ -52,10 +54,22 @@ class PaymentGeneratorRequest extends FormRequest
 
     public function contractData(): array
     {
+        $parentContract = Contract::where('number', $this->input('number'))->first();
+        $childsCount = $parentContract->childs->count() + 1;
         return [
-            'parent_id' => $this->input('number'),
-            'number' => $this->input('number'),
+            'parent_id' => $parentContract->id,
+            'number' => $this->input('number') . '.' . $childsCount ,
             'amount_price' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
+            'organization_id' => $this->input('organization_id') ?? null,
+        ];
+    }
+
+    public function paymentData():array
+    {
+        return [
+            'value' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
+            'inn' => $this->input('inn') ?? null,
+            ''
         ];
     }
 }

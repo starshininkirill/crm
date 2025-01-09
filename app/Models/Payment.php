@@ -11,8 +11,9 @@ use Illuminate\Support\Collection;
 class Payment extends Model
 {
     use HasFactory;
-    // заменить
-    protected $fillable = ['value', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
+    
+    
+    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
 
     const STATUS_WAIT = 0;
     const STATUS_CONFIRMATION = 1;

@@ -15,6 +15,12 @@
                 </a>
             </li>
             <li>
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.organization*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.organization.index') }}">
+                    Организации
+                </a>
+            </li>
+            <li>
                 <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.service*') ? 'bg-gray-900 text-white' : '' }}"
                     href="{{ route('admin.service.category.index') }}">
                     Услуги

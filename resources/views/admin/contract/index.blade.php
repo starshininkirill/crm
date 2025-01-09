@@ -36,13 +36,29 @@
                                         Не прикреплён
                                     @endif
                                 </td>
-                                <td class="border border-gray-300 px-2 py-1 text-blue-700">
-                                    <a href="{{ route('admin.contract.show', $contract->id) }}">
-                                        {{ $contract->number }}
-                                    </a>
+                                <td class="border border-gray-300 px-2 py-1">
+
+                                    @if ($contract->parent)
+                                        Дочерний договор:
+                                        <a class="text-blue-700" href="{{ route('admin.contract.show', $contract->id) }}">
+                                            {{ $contract->number }}
+                                        </a>
+                                        <br>
+                                        Родитель:
+                                        <a class="text-blue-700"
+                                            href="{{ route('admin.contract.show', $contract->parent->id) }}">
+                                            {{ $contract->parent->number }}
+                                        </a>
+                                    @else
+                                        <a class="text-blue-700" href="{{ route('admin.contract.show', $contract->id) }}">
+                                            {{ $contract->number }}
+                                        </a>
+                                    @endif
                                 </td>
                                 <td class="border border-gray-300 px-2 py-1">
-                                    {{ $contract->client->organization_name != '' ? $contract->client->organization_name : $contract->client->fio }}
+                                    @if ($contract->client)
+                                        {{ $contract->client->organization_name != '' ? $contract->client->organization_name : $contract->client->fio }}
+                                    @endif
                                 </td>
                                 <td class="border border-gray-300 px-2 py-1">
                                     {{ $contract->phone }}

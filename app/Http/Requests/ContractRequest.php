@@ -75,8 +75,6 @@ class ContractRequest extends FormRequest
         return $res;
     }
 
-
-
     protected function prepareForValidation()
     {
         if ($this->has(['service', 'service_price'])) {
@@ -224,7 +222,6 @@ class ContractRequest extends FormRequest
             'ready_site_link' => 'nullable|string|min:0',
             'ready_site_image' => 'nullable|image',
             
-
             // Валидация платежей
             'payments' => 'nullable|array',
             'payments.*' => 'nullable|numeric|min:0',

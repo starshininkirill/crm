@@ -26,7 +26,7 @@
                                 </a>
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
-                                {{ $payment->created_at->format('d.m.y') }}
+                                {{ $payment->created_at->format('H:i d.m.Y') }}
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 @if ($payment->contract)
@@ -40,7 +40,7 @@
                                 {{ $payment->getFormatValue() }}
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
-                                @if ($payment->contract)
+                                @if ($payment->contract->client)
                                 {{ $payment->contract->client->inn }}
                                 @endif
                             </td>

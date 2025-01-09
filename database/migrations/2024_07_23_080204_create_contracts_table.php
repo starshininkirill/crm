@@ -20,7 +20,7 @@ return new class extends Migration
             $table->float('sale')->default(0);
             $table->float('amount_price')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('contracts')->references('id')->onDelete('set null');
-            $table->foreignId('client_id');
+            $table->foreignId('client_id')->nullable();
         }); 
     }
     /**

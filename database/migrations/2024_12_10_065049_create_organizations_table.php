@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
+            $table->string('short_name');
             $table->string('name');
+            $table->bigInteger('inn')->unique();
             $table->tinyInteger('nds');
-            $table->bigInteger('inn');
             $table->integer('terminal');
-            $table->integer('template');
+            $table->integer('template')->nullable();
+            $table->boolean('active')->default(1);
         });
     }
 

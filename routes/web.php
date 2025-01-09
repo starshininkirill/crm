@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
+use App\Http\Controllers\Admin\OrganizationController as AdminOrganizationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentGeneratorController as LkPaymentGeneratorController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\OptionController;
+use App\Http\Controllers\Resources\OrganizationController as ResourcesOrganizationController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
@@ -64,6 +66,12 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::post('/store', [AdminContractController::class, 'store'])->name('admin.contract.store');
         Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
         Route::get('/show/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
+    });
+
+    Route::prefix('organizations')->group(function () {
+        Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
+        Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
+        Route::get('/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
     });
 
     Route::prefix('payments')->group(function () {
@@ -141,6 +149,11 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::resource('service', ResourcesServiceController::class)->only([
+        'store',
+        'update',
+        'destroy'
+    ]);
+    Route::resource('organization', ResourcesOrganizationController::class)->only([
         'store',
         'update',
         'destroy'
