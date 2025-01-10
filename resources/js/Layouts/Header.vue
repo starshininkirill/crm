@@ -1,0 +1,32 @@
+<template>
+    <header class="bg-gray-800 border-b border-white">
+        <div class="mx-auto container px-2">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex items-center justify-between w-full">
+                    <div class=" flex items-baseline space-x-4">
+                        <HeaderNavLink :href="route('home')" route="home">Главная</HeaderNavLink>
+                        <HeaderNavLink :href="route('lk')" route="lk*">Личный кабинет</HeaderNavLink>
+                        <HeaderNavLink :href="route('admin')" route="admin*">Админка</HeaderNavLink>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <HeaderNavLink v-if="!$page.props.user" :href="route('login')" route="login">Вход</HeaderNavLink>
+                        <span v-if="$page.props.user" class=" text-l text-white ">
+                            {{ $page.props.user.first_name }}
+                        </span>
+                        <HeaderNavLink v-if="$page.props.user" :href="route('logout')" route="logout">Выйти</HeaderNavLink>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</template>
+
+<script>
+import HeaderNavLink from '../Components/HeaderNavLink.vue';
+
+export default {
+    name: "Header",
+    components: { HeaderNavLink },
+};
+</script>

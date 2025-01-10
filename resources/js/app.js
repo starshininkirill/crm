@@ -1,7 +1,40 @@
-import './bootstrap';
-import '../css/app.css';
+
+// import './bootstrap';
+
+// import { createApp } from 'vue/dist/vue.esm-bundler';
+// import CalendarMonth from './components/CalendarMonth.vue';
+// import UserSaleReportForm from './components/UserSaleReportForm.vue'
+// import ContractCreateForm from './components/contractCreate/ContractCreateForm.vue'
+// import AgentInfo from './components/contractCreate/AgentInfo.vue'
+// import components from './components/UI'
+// import PaymentCreateForm from './components/paymentCreate/PaymentCreateForm.vue';
+
+
+
+// const app = createApp({
+//     components: {
+//         'vue-calendar-month': CalendarMonth,
+//         'vue-user-sale-report-form': UserSaleReportForm,
+//         'vue-contract-create-form': ContractCreateForm,
+//         'vue-payment-create-form': PaymentCreateForm,
+//         'vue-contract-agent-info': AgentInfo,
+//     }
+// });
+
+// components.forEach(component => {
+//     app.component(component.name, component);
+// });
+
+// app.mount('#app');
 
 import './bootstrap';
+import '../css/app.css';
+import { createApp, h } from 'vue'
+import { createInertiaApp, Link } from '@inertiajs/vue3'
+import { ZiggyVue } from 'ziggy-js';
+import Layout from './Layouts/Layout.vue';
+import AdminLayout from './Layouts/AdminLayout.vue';
+
 import 'tinymce/tinymce';
 import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/icons/default/icons';
@@ -9,32 +42,6 @@ import 'tinymce/themes/silver/theme';
 import 'tinymce/models/dom/model';
 import 'tinymce/plugins/lists';
 
-
-import { createApp } from 'vue/dist/vue.esm-bundler';
-import CalendarMonth from './components/CalendarMonth.vue';
-import UserSaleReportForm from './components/UserSaleReportForm.vue'
-import ContractCreateForm from './components/contractCreate/ContractCreateForm.vue'
-import AgentInfo from './components/contractCreate/AgentInfo.vue'
-import components from './components/UI'
-import PaymentCreateForm from './components/paymentCreate/PaymentCreateForm.vue';
-
-
-
-const app = createApp({
-    components: {
-        'vue-calendar-month': CalendarMonth,
-        'vue-user-sale-report-form': UserSaleReportForm,
-        'vue-contract-create-form': ContractCreateForm,
-        'vue-payment-create-form': PaymentCreateForm,
-        'vue-contract-agent-info': AgentInfo,
-    }
-});
-
-components.forEach(component => {
-    app.component(component.name, component);
-});
-
-app.mount('#app');
 
 tinymce.init({
     selector: '#tinyredactor',
@@ -48,3 +55,25 @@ tinymce.init({
         'removeformat | help',
 });
 
+
+createInertiaApp({
+  resolve: name => {
+    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    const page = pages[`./Pages/${name}.vue`];
+
+    if(name.startsWith('Admin/')){
+      page.default.layout = page.default.layout || AdminLayout;
+    }else{
+      page.default.layout = page.default.layout || Layout;
+    }
+
+    return pages[`./Pages/${name}.vue`]
+  },
+  setup({ el, App, props, plugin }) {
+    const vueApp = createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .use(ZiggyVue)
+      .component('Link', Link)
+      .mount(el)
+  },
+})

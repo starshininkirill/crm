@@ -26,12 +26,19 @@ use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesService
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
 use App\Http\Controllers\Resources\WorkPlanController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
 Route::get('/login-home', [MainController::class, 'loginHome'])->name('loginHome');
 
+Route::get('/test', function(){
+    return Inertia::render('Test');
+})->name('test');
 
+Route::get('/start', function(){
+    return Inertia::render('Test2');
+})->name('start');
 
 Route::middleware('guest')->group(function () {
 
