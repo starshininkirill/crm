@@ -25,10 +25,11 @@ export default {
     methods: {
         isActive() {           
             const page = usePage();
-            const route = this.route
+            const route = this.route            
 
             const currentRoute = page.url.replace(/^\//, ''); 
             const targetRoute = route.replace(/\*$/, '');
+            
             return currentRoute.startsWith(targetRoute);
         }
     },

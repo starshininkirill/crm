@@ -1,7 +1,6 @@
 <template>
-    <Head title="Тест"   />
-    Тест 1
-    <!-- <Link :href="route('test-2')">Тест 2</Link> -->
+    <Head title="Главная"/>
+    Главная
 </template>
 
 <script>

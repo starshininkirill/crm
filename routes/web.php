@@ -32,16 +32,7 @@ use Inertia\Inertia;
 Route::get('/', [MainController::class, 'home'])->name('home');
 Route::get('/login-home', [MainController::class, 'loginHome'])->name('loginHome');
 
-Route::get('/test', function(){
-    return Inertia::render('Test');
-})->name('test');
-
-Route::get('/start', function(){
-    return Inertia::render('Test2');
-})->name('start');
-
 Route::middleware('guest')->group(function () {
-
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
@@ -52,10 +43,12 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');
+        
         Route::prefix('/payments')->group(function () {
             Route::get('/create', [LkPaymentGeneratorController::class, 'create'])->name('lk.payment.create');
             Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
         });
+
         Route::prefix('/contracts')->group(function () {
             Route::get('/create', [LkContractGeneratorController::class, 'create'])->name('lk.contract.create');
             Route::post('/store', [LkContractGeneratorController::class, 'store'])->name('lk.contract.store');
@@ -92,6 +85,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
             Route::get('/', [ServiceCategoryController::class, 'index'])->name('admin.service.category.index');
             Route::get('/{serviceCategory}/edit', [ServiceCategoryController::class, 'edit'])->name('admin.service.category.edit');
         });
+
         Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
         Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
         Route::get('/{serviceCategoryId?}', [ServiceController::class, 'index'])->name('admin.service.index');
@@ -135,6 +129,7 @@ Route::middleware('auth')->group(function () {
         'update',
         'destroy'
     ]);
+
     Route::resource('option', OptionController::class)->only([
         'store',
         'update',
@@ -160,12 +155,12 @@ Route::middleware('auth')->group(function () {
         'update',
         'destroy'
     ]);
+    
     Route::resource('organization', ResourcesOrganizationController::class)->only([
         'store',
         'update',
         'destroy'
     ]);
-
 
     Route::post('/working-day', [WorkingDayController::class, 'toggleType']);
 
