@@ -39,6 +39,15 @@ class Payment extends Model
         return $statuses[$this->type];
     }
 
+    public static function vueStatuses(): array
+    {
+        return [
+            'wait' => self::STATUS_WAIT,
+            'confirmation' => self::STATUS_CONFIRMATION,
+            'close' => self::STATUS_CLOSE,
+        ];
+    }
+
     public static function getStatuses(): array
     {
         return [

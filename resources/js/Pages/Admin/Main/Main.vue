@@ -1,7 +1,6 @@
 <template>
-    <Head title="START" />
-    START
-    <!-- <Link :href="route('test')">Тест 1</Link> -->
+    <Head title="Админ панель"/>
+    Админка
 </template>
 
 <script>

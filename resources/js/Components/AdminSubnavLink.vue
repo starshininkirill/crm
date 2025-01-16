@@ -1,13 +1,11 @@
 <template>
-    <Link :href="href"
-        :class="isActive() ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'"
-        class="rounded-md px-3 py-2 text-sm font-medium">
+    <Link :href="href" :class="[{ 'text-white bg-gray-800': isActive() }, 'px-4 py-2 border border-b-0']">
     <slot />
     </Link>
 </template>
 
 <script>
-import { usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { route as ziggyRoute } from 'ziggy-js';
 
 export default {
@@ -15,23 +13,21 @@ export default {
     props: {
         href: {
             type: String,
-            required: true
+            required: true,
         },
         route: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     methods: {
         isActive() {
             const page = usePage();
-            const route = this.route
-
             const currentRoute = page.props.ziggy.location;
-            const targetRoute = ziggyRoute(route);
+            const targetRoute = ziggyRoute(this.route);
 
             return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');
-        }
+        },
     },
-}
+};
 </script>

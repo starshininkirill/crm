@@ -14,17 +14,20 @@ class MainController extends Controller
     }
 
     
-    public function loginHome()
+    public function loginHome(Request $request)
     {
         Auth::attempt([
             'email' => 'admin@mail.ru',
             'password' => '1409199696Rust'
         ]);
-        
-        return view('base');   
+
+        $request->session()->regenerate();
+
+        return redirect()->route('home');   
     }
     public function admin(){
-        return view('admin');   
+        
+        return Inertia::render('Admin/Main/Main');
     }
 }
  

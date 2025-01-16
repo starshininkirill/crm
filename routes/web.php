@@ -30,7 +30,7 @@ use Inertia\Inertia;
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
-Route::get('/login-home', [MainController::class, 'loginHome'])->name('loginHome');
+Route::get('/fast-login', [MainController::class, 'loginHome'])->name('fastLogin');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -62,7 +62,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('contracts')->group(function () {
         Route::get('', [AdminContractController::class, 'index'])->name('admin.contract.index');
-        Route::get('/create', [AdminContractController::class, 'create'])->name('admin.contract.create');
         Route::post('/store', [AdminContractController::class, 'store'])->name('admin.contract.store');
         Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
         Route::get('/show/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');

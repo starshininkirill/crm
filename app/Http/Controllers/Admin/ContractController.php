@@ -8,6 +8,7 @@ use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ContractController extends Controller
 {
@@ -16,16 +17,57 @@ class ContractController extends Controller
     {
         $contracts = Contract::orderByDesc('created_at')->get();
 
-        return view('admin.contract.index', [
+        $contracts = $contracts->map(function ($contract) {
+            return [
+                'id' => $contract->id,
+                'number' => $contract->number,
+                'created_at' => $contract->created_at->format('d.m.Y'),
+                'saller' => $contract->saller() ?? [],
+                'parent' => $contract->parent ?? [],
+                'client' => $contract->client ?? [],
+                'phone' => $contract->phone ?? '',
+                'services' => $contract->services ?? [],
+                'price' => $contract->getPrice(),
+                'payments' => $contract->payments->map(function ($payment) {
+                    return [
+                        'id' => $payment->id,
+                        'value' => $payment->getFormatValue(),
+                        'status' => $payment->status
+                    ];
+                }),
+            ];
+        })->toArray();
+
+        return Inertia::render('Admin/Contract/Index', [
             'contracts' => $contracts,
-            'paymentClass' => Payment::class, 
+            'paymentStatuses' => Payment::vueStatuses(),
         ]);
     }
 
-    public function create()
+    /**
+     * Display the specified resource.
+     */
+    public function show(Contract $contract)
     {
-        $services = Service::all();
-        return view('admin.contract.create', ['services' => $services]);
+        return Inertia::render('Admin/Contract/Show', [
+            'contract' => [
+                'id' => $contract->id,
+                'number' => $contract->number,
+                'price' => $contract->getPrice(),
+                'services' => $contract->services->map(function($service){
+                    return [
+                        'id' => $service->id,
+                        'name' => $service->name,
+                        'price' => $service->getPrice(),
+                    ];
+                }),
+                'payments' => $contract->payments,
+            ],
+        ]);
+
+        // $performersData = $contract->getPerformers($contract);
+        
+        // return view('admin.contract.show', compact('contract', 'performersData'));
     }
 
     public function attachUser(Request $request, Contract $contract)
@@ -42,38 +84,5 @@ class ContractController extends Controller
         } else {
             return redirect()->back()->withErrors(['user_id' => 'Пользователь уже привязан к данной роли.']);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Contract $contract)
-    {
-        $performersData = $contract->getPerformers($contract);
-        return view('admin.contract.show', compact('contract', 'performersData'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        // 
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

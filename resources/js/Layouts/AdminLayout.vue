@@ -1,15 +1,71 @@
 <template>
   <BaseLayout>
-    <div style="display: flex; gap: 20px;">
-      <aside style="width: 200px; background-color: #f5f5f5; padding: 10px;">
-        <h3>Админ меню</h3>
-        <ul>
-          <li><a href="#">Панель управления</a></li>
-          <li><a href="#">Пользователи</a></li>
-          <li><a href="#">Настройки</a></li>
-          <li><a href="#">Отчёты</a></li>
-        </ul>
-      </aside>
+    <div class="flex gap-5 h-auto grow">
+      <div class=" w-48 bg-gray-800 text-white flex flex-col">
+        <nav class="">
+          <ul class="space-y-1 p-4">
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
+                :href="route('admin.contract.index')">
+              Договоры
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.payment*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.payment.index') }}">
+              Платежи
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.organization*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.organization.index') }}">
+              Организации
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.service*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.service.category.index') }}">
+              Услуги
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.user*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.user.index') }}">
+              Сотрудники
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.department.index') }}">
+              Отделы
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department.sale*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.department.sale.index') }}">
+              Отдел продаж
+              </Link>
+            </li>
+            <li>
+              <Link
+                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.settings*') ? 'bg-gray-900 text-white' : '' }}"
+                href="{{ route('admin.settings.index') }}">
+              Настройки
+              </Link>
+            </li>
+
+          </ul>
+        </nav>
+
+      </div>
+
       <section style="flex: 1;">
         <slot />
       </section>
@@ -19,9 +75,21 @@
 
 <script>
 import BaseLayout from './BaseLayout.vue';
+import { usePage } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
 
 export default {
   name: "AdminLayout",
   components: { BaseLayout },
+
+  methods: {
+    isActive(routeName) {
+      const page = usePage();
+      const currentRoute = page.props.ziggy.location; 
+      const targetRoute = route(routeName);
+
+      return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');
+    }
+  },
 };
 </script>
