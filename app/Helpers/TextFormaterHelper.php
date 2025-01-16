@@ -6,6 +6,13 @@ namespace App\Helpers;
 
 class TextFormaterHelper
 {
+
+    public static function getPrice(int|float $value): string
+    {
+        return number_format($value, 0, '.', ' ') . ' ₽';
+    }
+
+
     public static function visualFormatNumber($number, $with_rubles = false, $stringify = false)
     {
         $words = [];

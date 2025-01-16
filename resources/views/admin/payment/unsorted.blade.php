@@ -15,7 +15,8 @@
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Обоснование</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">ИНН</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Дата</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left text-white">Функ.</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-white">Разделить</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-white">Прикрепить</th>
                     </tr>
                 </thead>
                 <tbody>

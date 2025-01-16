@@ -12,9 +12,9 @@
               </Link>
             </li>
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.payment*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.payment.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.payment.index') }"
+                :href="route('admin.payment.index')">
               Платежи
               </Link>
             </li>
@@ -85,7 +85,7 @@ export default {
   methods: {
     isActive(routeName) {
       const page = usePage();
-      const currentRoute = page.props.ziggy.location; 
+      const currentRoute = page.props.ziggy.location;
       const targetRoute = route(routeName);
 
       return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');

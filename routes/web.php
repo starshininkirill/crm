@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', [MainController::class, 'home'])->name('home');
+Route::get('/home', [MainController::class, 'home'])->name('home');
 Route::get('/fast-login', [MainController::class, 'loginHome'])->name('fastLogin');
 
 Route::middleware('guest')->group(function () {
@@ -62,21 +62,22 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('contracts')->group(function () {
         Route::get('', [AdminContractController::class, 'index'])->name('admin.contract.index');
-        Route::post('/store', [AdminContractController::class, 'store'])->name('admin.contract.store');
-        Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
+        
+        // Нужно будет перенести в ресурс
+        // Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
         Route::get('/show/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
-    });
-
-    Route::prefix('organizations')->group(function () {
-        Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
-        Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
-        Route::get('/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
     });
 
     Route::prefix('payments')->group(function () {
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
         Route::get('/unsettled', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
         Route::get('/show/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
+    });
+
+    Route::prefix('organizations')->group(function () {
+        Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
+        Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
+        Route::get('/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
     });
 
     Route::prefix('servicies')->group(function () {

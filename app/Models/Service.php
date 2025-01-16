@@ -41,9 +41,5 @@ class Service extends Model
             return 0;
         };
     }
-    public function getPrice(): string
-    {
-        return number_format($this->price, 0, '.', ' ') . ' ₽';
-    }
 }
  

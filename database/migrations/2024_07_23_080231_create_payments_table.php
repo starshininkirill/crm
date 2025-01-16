@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->float('value');
-            $table->integer('inn')->nullable();
+            $table->bigInteger('inn')->nullable();
             $table->integer('status')->default(Payment::STATUS_WAIT);
             $table->integer('type')->nullable();
             $table->integer('order')->nullable()->default(1);

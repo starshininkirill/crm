@@ -11,8 +11,8 @@ use Illuminate\Support\Collection;
 class Payment extends Model
 {
     use HasFactory;
-    
-    
+
+
     protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
 
     const STATUS_WAIT = 0;
@@ -28,7 +28,7 @@ class Payment extends Model
 
     public function formatedType(): string
     {
-        if ($this->type == null) {
+        if ($this->type === null) {
             return '';
         }
         $statuses = [
@@ -97,11 +97,6 @@ class Payment extends Model
     {
         $statuses = self::getStatuses();
         return $statuses[$this->status] ?? $this->status;
-    }
-
-    public function getFormatValue()
-    {
-        return number_format($this->value, 0, '.', ' ') . ' ₽';
     }
 
     public static function getContractsByPaymentsWithRelations(Collection $payments): Collection

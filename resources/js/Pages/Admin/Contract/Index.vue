@@ -50,7 +50,7 @@
                             <span v-else>
                                 <Link class="text-blue-700"
                                     :href="route('admin.contract.show', { contract: contract.id })">
-                                {{ contract.number }}
+                                Договор: {{ contract.number }}
                                 </Link>
                             </span>
                         </td>

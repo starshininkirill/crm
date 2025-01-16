@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 
 use App\Models\Contract;
@@ -27,11 +28,11 @@ class ContractController extends Controller
                 'client' => $contract->client ?? [],
                 'phone' => $contract->phone ?? '',
                 'services' => $contract->services ?? [],
-                'price' => $contract->getPrice(),
+                'price' => TextFormaterHelper::getPrice($contract->amount_price),
                 'payments' => $contract->payments->map(function ($payment) {
                     return [
                         'id' => $payment->id,
-                        'value' => $payment->getFormatValue(),
+                        'value' => TextFormaterHelper::getPrice($payment->value),
                         'status' => $payment->status
                     ];
                 }),
@@ -44,24 +45,27 @@ class ContractController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Contract $contract)
     {
         return Inertia::render('Admin/Contract/Show', [
             'contract' => [
                 'id' => $contract->id,
                 'number' => $contract->number,
-                'price' => $contract->getPrice(),
+                'price' => TextFormaterHelper::getPrice($contract->amount_price),
                 'services' => $contract->services->map(function($service){
                     return [
                         'id' => $service->id,
                         'name' => $service->name,
-                        'price' => $service->getPrice(),
+                        'price' => TextFormaterHelper::getPrice($service->price),
                     ];
                 }),
-                'payments' => $contract->payments,
+                'payments' => $contract->payments->map(function($payment){
+                    return [
+                        'id' => $payment->id,
+                        'order' => $payment->order,
+                        'value' =>  TextFormaterHelper::getPrice($payment->value),
+                    ];
+                }),
             ],
         ]);
 

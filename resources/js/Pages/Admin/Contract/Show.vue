@@ -1,6 +1,5 @@
 <template>
-
-    <Head title="Договоры" />
+    <Head :title="`Договор № ${contract.id}`" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Договор: №{{ contract.number }}</h1>
         <div class="flex gap-4">
@@ -26,7 +25,7 @@
                     <h3 class="text-2xl mb-2">Платежи</h3>
                     <div class="flex flex-col gap-1">
                         <Link v-for="payment in contract.payments" :key="payment.id"
-                            :href="route('admin.payment.show', { payment: payment.id })" class="payment">
+                            :href="route('admin.payment.show', { payment: payment.id })" class="w-fit">
                         {{ payment.order }}й платеж: {{ payment.value }}
                         </Link>
                     </div>

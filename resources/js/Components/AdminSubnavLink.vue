@@ -26,7 +26,7 @@ export default {
             const currentRoute = page.props.ziggy.location;
             const targetRoute = ziggyRoute(this.route);
 
-            return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');
+            return currentRoute === targetRoute;
         },
     },
 };

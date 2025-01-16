@@ -22,7 +22,7 @@
                         <tr class="">
                             <td class="border border-gray-300 px-4 py-2">
                                 <a href="{{ route('admin.payment.show', $payment->id) }}" class=" text-blue-700 underline">
-                                   № {{ $payment->id }}
+                                    № {{ $payment->id }}
                                 </a>
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
@@ -41,7 +41,7 @@
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 @if ($payment->contract->client)
-                                {{ $payment->contract->client->inn }}
+                                    {{ $payment->contract->client->inn }}
                                 @endif
                             </td>
                             <td
@@ -54,4 +54,4 @@
             </table>
         @endif
     </div>
-@endsection 
+@endsection

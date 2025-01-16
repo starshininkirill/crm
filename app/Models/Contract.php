@@ -53,11 +53,6 @@ class Contract extends Model
         return $this->belongsToMany(Service::class);
     }
 
-    public function getPrice(): string
-    {
-        return number_format($this->amount_price, 0, '.', ' ') . ' ₽';
-    }
-
     public function saller()
     {
         return $this->users()->wherePivot('role', ContractUser::SALLER)->first();
