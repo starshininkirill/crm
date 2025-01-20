@@ -4,6 +4,7 @@
       <div class=" w-48 bg-gray-800 text-white flex flex-col">
         <nav class="">
           <ul class="space-y-1 p-4">
+            
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
@@ -11,6 +12,7 @@
               Договоры
               </Link>
             </li>
+
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.payment.index') }"
@@ -18,49 +20,53 @@
               Платежи
               </Link>
             </li>
+
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.organization*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.organization.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.organization.index') }"
+                :href="route('admin.organization.index')">
               Организации
               </Link>
             </li>
+            
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.service*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.service.category.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.service.index') }"
+                :href="route('admin.service.category.index')">
               Услуги
               </Link>
             </li>
+            
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.user*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.user.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }" :href="route('admin.user.index')">
               Сотрудники
               </Link>
             </li>
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.department.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
+                :href="route('admin.department.index')">
               Отделы
               </Link>
             </li>
+
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department.sale*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.department.sale.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.department.sale.index') }"
+                :href="route('admin.department.sale.index')">
               Отдел продаж
               </Link>
             </li>
+
             <li>
-              <Link
-                class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.settings*') ? 'bg-gray-900 text-white' : '' }}"
-                href="{{ route('admin.settings.index') }}">
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.settings.index') }"
+                :href="route('admin.settings.index')">
               Настройки
               </Link>
             </li>
-
+            
           </ul>
         </nav>
 
