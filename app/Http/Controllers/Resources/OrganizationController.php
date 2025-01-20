@@ -19,9 +19,13 @@ class OrganizationController extends Controller
         return redirect()->back()->with('success', 'Организация успешно создана');
     }
 
-    public function update(Request $request, string $id)
+    public function update(OrganizationRequest $request, Organization $organization)
     {
-        //
+        $validated = $request->validated();
+
+        $organization->update($validated);
+
+        return redirect()->back()->with('success', 'Организация успешно обновлена');
     }
 
     public function destroy(Organization $organization)

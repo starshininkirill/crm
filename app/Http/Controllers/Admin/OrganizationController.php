@@ -15,11 +15,14 @@ class OrganizationController extends Controller
             'organizations' => $organizations
         ]);
     }
+
     public function create(){
         return Inertia::render('Admin/Organization/Create');
-        return view('admin.organization.create');
     }
-    public function edit(){
-        return view('admin.organization.create');
+    
+    public function edit(Organization $organization){
+        return Inertia::render('Admin/Organization/Edit',[
+            'organization' => $organization,
+        ]);
     }
 }

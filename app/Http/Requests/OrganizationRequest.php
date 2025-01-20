@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OrganizationRequest extends FormRequest
 {
@@ -24,27 +25,20 @@ class OrganizationRequest extends FormRequest
         $rules = [
             'short_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'inn' => 'required|unique:organizations,inn',
+            'inn' => 'required|integer|unique:organizations,inn',
             'nds' => 'required|integer|in:0,1',
             'terminal' => 'required|integer|min:1',
         ];
 
-        // if ($this->isMethod('POST')) {
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            $organization = $this->route('organization');
 
-        // }
-
-        // if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-        //     $service = $this->route('service');
-
-        //     $rules = array_merge($rules, [
-        //         'name' => [
-        //             'required',
-        //             'min:2',
-        //             'max:255',
-        //             Rule::unique('services', 'name')->ignore($service->id),
-        //         ],
-        //     ]);
-        // }
+            $rules['inn'] =  [
+                'required',
+                'integer',
+                Rule::unique('organizations', 'inn')->ignore($organization->id),
+            ];
+        }
 
         return $rules;
     }

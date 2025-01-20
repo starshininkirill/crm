@@ -77,7 +77,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::prefix('organizations')->group(function () {
         Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
         Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
-        Route::get('/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
+        Route::get('/edit/{organization}', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
     });
 
     Route::prefix('servicies')->group(function () {

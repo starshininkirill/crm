@@ -8,7 +8,8 @@
           <input
             type="radio"
             :name="name"
-            :value="true"
+            :value="1"
+            :checked="localValue == 1" 
             v-model="localValue"
             class="form-radio text-indigo-600"
             @change="updateValue"
@@ -19,10 +20,11 @@
           <input
             type="radio"
             :name="name"
-            :value="false"
+            :value="0"
             v-model="localValue"
             class="form-radio text-indigo-600"
             @change="updateValue"
+            :checked="localValue == 0" 
           />
           <span class="ml-2">Нет</span>
         </label>
@@ -34,7 +36,7 @@
   export default {
     props: {
       modelValue: {
-        type: Boolean,
+        type: Number,
         default: null,
       },
       name: {
@@ -52,7 +54,7 @@
           return this.modelValue;
         },
         set(value) {
-          this.$emit('update:modelValue', value); // отправляем событие для обновления
+          this.$emit('update:modelValue', value);
         },
       },
     },
