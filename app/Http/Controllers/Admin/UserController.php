@@ -6,43 +6,41 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\Position;
 use App\Models\User;
-use App\Services\UserService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class UserController
 {
-    protected $userService;
 
-    public function __construct(UserService $userService)
+    public function index()
     {
-        $this->userService = $userService;
+
+        $users = User::with('position')->get();
+
+        $users = $users->map(function ($user) {
+            return array_merge(
+                $user->toArray(),
+                ['position' => $user->position ? $user->position->name : null]
+            );
+        });
+
+        return Inertia::render('Admin/User/Index', [
+            'users' => $users,
+        ]);
     }
 
-    public function index(){
-
-        $users = User::all();
-
-        return view('admin.user.index', ['users' => $users]);
-    }
-
-    public function create(){
+    public function create()
+    {
         $positions = Position::all();
+
+        return Inertia::render('Admin/User/Create');
 
         return view('admin.user.create', ['positions' => $positions]);
     }
 
-    public function store(UserRegisterRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $this->userService->createUser($validatedData);
-
-        return redirect()->back()->with('success', 'Сотрудник успешно создан');
-    }
-
     public function show(User $user)
     {
-        dd($user);
+        return Inertia::render('Admin/User/Show', [
+            'user' => $user,
+        ]);
     }
 }

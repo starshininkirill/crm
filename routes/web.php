@@ -19,12 +19,16 @@ use App\Http\Controllers\Lk\ContractGeneratorController as LkContractGeneratorCo
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentGeneratorController as LkPaymentGeneratorController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\Resources\DepartmentController as ResourcesDepartmentController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\OrganizationController as ResourcesOrganizationController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
+use App\Http\Controllers\Resources\PositionController as ResourcesPositionController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
 use App\Http\Controllers\Resources\WorkPlanController;
+use App\Http\Controllers\Resources\UserController as ResourcesUserController;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -65,7 +69,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         
         // Нужно будет перенести в ресурс
         // Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
-        Route::get('/show/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
+        Route::get('/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
     });
 
     Route::prefix('payments')->group(function () {
@@ -91,15 +95,19 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
     });
 
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
+        Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
+        Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');
+    });
+
     Route::prefix('departments')->group(function () {
         Route::get('', [DepartmentController::class, 'index'])->name('admin.department.index');
         Route::get('/create', [DepartmentController::class, 'create'])->name('admin.department.create');
-        Route::post('/store', [DepartmentController::class, 'store'])->name('admin.department.store');
-        Route::get('/show/{department}', [DepartmentController::class, 'show'])->name('admin.department.show');
+        Route::get('/{department}', [DepartmentController::class, 'show'])->name('admin.department.show');
 
         Route::prefix('positions')->group(function () {
             Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
-            Route::post('/store', [PositionController::class, 'store'])->name('admin.department.position.store');
         });
 
         Route::prefix('sales')->group(function () {
@@ -107,13 +115,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
             Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
             Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.department.sale.report-settings');
         });
-    });
-
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
-        Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
-        Route::post('/store', [UserController::class, 'store'])->name('admin.user.store');
-        Route::get('/show/{user}', [UserController::class, 'show'])->name('admin.user.show');
     });
 
     Route::prefix('settings')->group(function () {
@@ -160,6 +161,17 @@ Route::middleware('auth')->group(function () {
         'store',
         'update',
         'destroy'
+    ]);
+
+    Route::resource('user', ResourcesUserController::class)->only([
+        'store',
+    ]);
+
+    Route::resource('department', ResourcesDepartmentController::class)->only([
+        'store',
+    ]);
+    Route::resource('department', ResourcesPositionController::class)->only([
+        'store',
     ]);
 
     Route::post('/working-day', [WorkingDayController::class, 'toggleType']);

@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'last_name' => 'Продажник',
             'email' => 'sale1@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            // 'position_id' => 4,
+            'position_id' => 4,
             'department_id' => 2,
         ]);
         $sale2 = User::create([
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
             'last_name' => 'Продажник',
             'email' => 'sale2@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            // 'position_id' => 2,
+            'position_id' => 2,
             'department_id' => 2,
         ]);
 
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
             'last_name' => 'Продажник 2 отд',
             'email' => 'sale3@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            // 'position_id' => 2,
+            'position_id' => 2,
             'department_id' => 3,
         ]);
 

@@ -15,14 +15,5 @@ class PositionController extends Controller
 
         return view('admin.department.position.create', ['departments' => $departments]);
     }
-
-    public function store(PositionRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        Position::create($validatedData);
-
-        return redirect()->route('admin.department.position.create')->with('success', 'Должность успешно создана.');
-    }
 }
   
