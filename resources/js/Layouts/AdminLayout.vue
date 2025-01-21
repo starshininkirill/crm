@@ -53,8 +53,8 @@
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.department.sale.index') }"
-                :href="route('admin.department.sale.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.index') }"
+                :href="route('admin.sale-department.index')">
               Отдел продаж
               </Link>
             </li>

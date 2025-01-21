@@ -109,12 +109,12 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::prefix('positions')->group(function () {
             Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
         });
+    });
 
-        Route::prefix('sales')->group(function () {
-            Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.department.sale.index');
-            Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.department.sale.user-report');
-            Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.department.sale.report-settings');
-        });
+    Route::prefix('sale-department')->group(function () {
+        Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
+        Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
+        Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.sale-department.report-settings');
     });
 
     Route::prefix('settings')->group(function () {
@@ -145,7 +145,7 @@ Route::middleware('auth')->group(function () {
         'store',
     ]);
 
-    Route::resource('serviceCategory', ResourcesServiceCategoryController::class)->only([
+    Route::resource('service-category', ResourcesServiceCategoryController::class)->only([
         'store',
         'update',
         'destroy'

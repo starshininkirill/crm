@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
 {
@@ -28,11 +29,16 @@ class SaleDepartmentController extends Controller
     public function index()
     {
         $department = Department::getMainSaleDepartment();
+
+        return Inertia::render('Admin/SaleDapartment/Index', [
+            'department' => $department,
+        ]);
         return view('admin.departments.sale.index', ['department' => $department]);
     }
 
     public function userReport(Request $request)
     {
+
         $departments = Department::getSaleDepartments();
 
         if ($request->filled(['department'])) {
@@ -76,6 +82,15 @@ class SaleDepartmentController extends Controller
                 }
             }
         }
+
+        return Inertia::render('Admin/SaleDapartment/UserReport',[
+            'departments' => $departments,
+            'users' => $selectUsers,
+            'user' => $user ?? null,
+            'selectedDepartment' => $selectDepartment ?? null,
+            'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
+        ]);
+
         return view(
             'admin.departments.sale.report',
             [
@@ -110,6 +125,8 @@ class SaleDepartmentController extends Controller
 
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
 
+        return Inertia::render('Admin/SaleDapartment/ReportSettings');
+        
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
             'workPlanClass' => WorkPlan::class,

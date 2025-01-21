@@ -45,7 +45,7 @@ export default {
     methods: {
         deleteServiceCategory(id) {
             if (confirm('Вы уверены, что хотите удалить эту Категорию?')) {
-                router.delete(route('serviceCategory.destroy', id));
+                router.delete(route('service-category.destroy', id));
             }
         },
     },
@@ -58,7 +58,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.patch(route('serviceCategory.update', { serviceCategory: props.category.id }));
+            form.patch(route('service-category.update', { serviceCategory: props.category.id }));
         };
 
         return {
