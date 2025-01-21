@@ -32,14 +32,27 @@ class DepartmentController extends Controller
 
     public function create()
     {
-        return view('admin.department.create');
+        return Inertia::render('Admin/Department/Create');
     }
 
     public function show(Department $department)
     {
+
+        $users = $department->users()->map(function($user){
+            return [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'position' => $user->position,
+            ];
+        });
+
         return Inertia::render('Admin/Department/Show', [
             'department' => $department,
+            'parent' => $department->parent,
+            'childDepartments' => $department->childDepartments,
+            'users' => $users,
         ]);
-        return view('admin.department.show', ['department' => $department]);
     }
 }

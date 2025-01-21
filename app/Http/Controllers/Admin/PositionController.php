@@ -7,13 +7,12 @@ use App\Http\Requests\PositionRequest;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PositionController extends Controller
 {
     public function create(){
-        $departments = Department::getMainDepartments();
-
-        return view('admin.department.position.create', ['departments' => $departments]);
+        return Inertia::render('Admin/Department/Position/Create');
     }
 }
   
