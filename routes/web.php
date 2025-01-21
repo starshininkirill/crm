@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/home', [MainController::class, 'home'])->name('home');
+Route::get('/', [MainController::class, 'home'])->name('home');
 Route::get('/fast-login', [MainController::class, 'loginHome'])->name('fastLogin');
 
 Route::middleware('guest')->group(function () {
@@ -71,13 +71,13 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::prefix('payments')->group(function () {
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
         Route::get('/unsettled', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
-        Route::get('/show/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
+        Route::get('/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
     });
 
     Route::prefix('organizations')->group(function () {
         Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
         Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
-        Route::get('/edit/{organization}', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
+        Route::get('/{organization}/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
     });
 
     Route::prefix('servicies')->group(function () {
@@ -88,7 +88,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
         Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
         Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
-        Route::get('/{serviceCategoryId?}', [ServiceController::class, 'index'])->name('admin.service.index');
+        Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
     });
 
     Route::prefix('departments')->group(function () {

@@ -20,10 +20,10 @@ export default defineConfig({
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     ],
     server: {
-        host: '127.0.0.1',
+        host: '192.168.1.146',
         port: 3000,
         hmr: {
-            host: '127.0.0.1',
+            host: '192.168.1.146',
         }
     }
 });

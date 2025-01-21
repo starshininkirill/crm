@@ -55,7 +55,7 @@ class ServiceCategory extends Model
     }
 
     public static function getTypes(bool $reverce = false): Collection
-    {  
+    {
         return collect(self::ARRAY_TYPES);
     }
 
