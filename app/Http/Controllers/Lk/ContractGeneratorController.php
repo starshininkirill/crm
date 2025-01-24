@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Log;
-
+use Inertia\Inertia;
 
 class ContractGeneratorController extends Controller
 {
@@ -50,6 +50,13 @@ class ContractGeneratorController extends Controller
         $mainCats = $options->get('contract_generator_main_categories')->value ?? [];
         $secondaryCats = $options->get('contract_generator_secondary_categories')->value ?? [];
         $contractRkText = $options->get('contract_generator_rk_text')->value ?? [];
+
+        return Inertia::render('Lk/Contract/Create', [
+            'cats' => $catsWithServices ?? [],
+            'mainCats' => $mainCats,
+            'secondaryCats' => $secondaryCats,
+            'rkText' => $contractRkText,
+        ]);
 
         return view('lk.contract.create', [
             'cats' => $catsWithServices ?? [],

@@ -108,9 +108,7 @@ export default {
       'vue-services-info': ServicesInfo,
       'vue-price-info': PriceInfo
    },
-   data() {
-
-      console.log(this.file);
+   data() {;
       
       let cats = JSON.parse(this.stringCats)
       let allServices = cats.flatMap(cat => cat.services)

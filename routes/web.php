@@ -47,15 +47,16 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');
-        
-        Route::prefix('/payments')->group(function () {
-            Route::get('/create', [LkPaymentGeneratorController::class, 'create'])->name('lk.payment.create');
-            Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
-        });
+
 
         Route::prefix('/contracts')->group(function () {
             Route::get('/create', [LkContractGeneratorController::class, 'create'])->name('lk.contract.create');
             Route::post('/store', [LkContractGeneratorController::class, 'store'])->name('lk.contract.store');
+        });
+        
+        Route::prefix('/payments')->group(function () {
+            Route::get('/create', [LkPaymentGeneratorController::class, 'create'])->name('lk.payment.create');
+            Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
         });
     });
 });
@@ -66,7 +67,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('contracts')->group(function () {
         Route::get('', [AdminContractController::class, 'index'])->name('admin.contract.index');
-        
+
         // Нужно будет перенести в ресурс
         // Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
         Route::get('/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
@@ -156,7 +157,7 @@ Route::middleware('auth')->group(function () {
         'update',
         'destroy'
     ]);
-    
+
     Route::resource('organization', ResourcesOrganizationController::class)->only([
         'store',
         'update',
