@@ -17,8 +17,9 @@
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.0.0",
+        "@tinymce/tinymce-vue": "^6.1.0",
         "@vitejs/plugin-vue": "^5.1.4",
-        "tinymce": "^7.5.1",
+        "tinymce": "^7.6.1",
         "ziggy-js": "^2.4.2"
     }
 }

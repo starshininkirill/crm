@@ -39,8 +39,8 @@
                 </a>
             </li>
             <li>
-                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.department.sale*') ? 'bg-gray-900 text-white' : '' }}"
-                    href="{{ route('admin.department.sale.index') }}">
+                <a class="flex items-center p-2 hover:bg-gray-900 rounded {{ Route::is('admin.sale-department*') ? 'bg-gray-900 text-white' : '' }}"
+                    href="{{ route('admin.sale-department.index') }}">
                     Отдел продаж
                 </a>
             </li>

@@ -15,15 +15,15 @@ import 'tinymce/plugins/lists';
 
 
 tinymce.init({
-    selector: '#tinyredactor',
-    skin: false,
-    content_css: false,
-    plugins: ['lists'],
-    license_key: 'gpl',
-    toolbar: 'undo redo | blocks | ' +
-        'bold italic backcolor | alignleft aligncenter ' +
-        'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | help',
+  selector: '#tinyredactor',
+  skin: false,
+  content_css: false,
+  plugins: ['lists'],
+  license_key: 'gpl',
+  toolbar: 'undo redo | blocks | ' +
+    'bold italic backcolor | alignleft aligncenter ' +
+    'alignright alignjustify | bullist numlist outdent indent | ' +
+    'removeformat | help',
 });
 
 
@@ -32,9 +32,9 @@ createInertiaApp({
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
     const page = pages[`./Pages/${name}.vue`];
 
-    if(name.startsWith('Admin/')){
+    if (name.startsWith('Admin/')) {
       page.default.layout = page.default.layout || AdminLayout;
-    }else{
+    } else {
       page.default.layout = page.default.layout || Layout;
     }
 

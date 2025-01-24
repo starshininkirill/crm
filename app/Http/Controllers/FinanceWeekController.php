@@ -13,6 +13,7 @@ class FinanceWeekController extends Controller
     {
         $data = $request->validated();
 
+
         if (isset($data['week'])  && !empty($data['week'])) {
             FinanceWeek::insert($data['week']);
         }
@@ -25,7 +26,7 @@ class FinanceWeekController extends Controller
         $data = $request->validated();
 
         if (empty($data)) {
-            return back()->withErrors('Ошибка при созданни договора')->withInput();
+            return back()->withErrors('Ошибка при обновление финансовых недель')->withInput();
         }
 
         foreach ($data['week'] as $week) {

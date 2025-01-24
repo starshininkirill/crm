@@ -19,6 +19,7 @@ export default {
     components: {
         Head,
     },
+
     layout: SaleDepartmentLayout,
 }
 

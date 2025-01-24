@@ -1,7 +1,6 @@
 @extends('admin.layouts.settings')
 
 @section('content')
-    {{-- @vite(['resources/js/tinymce.js']) --}}
     <h1 class="text-4xl font-semibold mb-6">Основные настройки</h1>
     @if (!$serviceCategories->isEmpty())
         <div class="grid grid-cols-2 gap-4 gap-y-7">
@@ -150,7 +149,7 @@
                     <textarea name="value" id="tinyredactor" value="{{ $contractRkText->value ?? '' }}"
                         class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 h-32 resize-none"
                         placeholder="Условия..." label="Условия..."></textarea>
-                    <input type="hidden" name="name" value="contract_generator_secondary_categories">
+                    <input type="hidden" name="name" value="contract_generator_rk_text">
                     <button class="btn mt-3">
                         Изменить
                     </button>

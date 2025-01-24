@@ -9,6 +9,7 @@ use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SettingsController extends Controller
 {
@@ -24,7 +25,18 @@ class SettingsController extends Controller
         $needSeoPages = Option::where('name', 'contract_generator_need_seo_pages')->first();
         $paymentDefaultLawTemplate = Option::where('name', 'payment_generator_default_law_template')->first();
 
-        return view('admin.settings.index',[
+        return Inertia::render('Admin/Settings/Index',[
+            'serviceCategories' => $serviceCats ?? [],
+            'services' => $services ?? [],
+            'mainCategoriesOption' => $mainCategoriesOption ?? [],
+            'secondaryCategoriesOption' => $secondaryCategoriesOption ?? [],
+            'needSeoPages' => $needSeoPages,
+            'taxNds' => $taxNds ?? [],
+            'paymentDefaultLawTemplate' => $paymentDefaultLawTemplate ?? [],
+            'contractRkText' => $contractRkText ?? [],
+
+        ]);
+        return view('admin.settings.index', [
             'serviceCategories' => $serviceCats ?? [],
             'services' => $services ?? [],
             'mainCategoriesOption' => $mainCategoriesOption ?? [],
@@ -42,10 +54,14 @@ class SettingsController extends Controller
         $requestDate = $request->query('date');
 
         $date = DateHelper::getValidatedDateOrNow($requestDate);
+        $date != null ? $formattedDate = $date->format('Y-m') : $formattedDate = now()->format('Y-m');
 
         $months = DateHelper::workingCalendar($date->format('Y'));
 
-        return view('admin.settings.calendar', ['months' => $months, 'date' => $date]);
+        return Inertia::render('Admin/Settings/Calendar', [
+            'months' => $months,
+            'date' => $formattedDate,
+        ]);
     }
 
     public function financeWeek(Request $request)
@@ -57,12 +73,18 @@ class SettingsController extends Controller
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
 
+        $formattedStartOfMonth = $startOfMonth->format('Y-m-d');
+        $formattedEndOfMonth = $endOfMonth->format('Y-m-d');
+
+
         $financeWeeks = FinanceWeek::where('date_start', '>=',  $startOfMonth)
             ->where('date_end', '<=', $endOfMonth)
             ->get();
 
-        return view('admin.settings.financeWeek', [
-            'date' => $date,
+        return Inertia::render('Admin/Settings/FinanceWeek',[
+            'date' => $date->format('Y-m'),
+            'startOfMonth' => $formattedStartOfMonth,
+            'endOfMonth' => $formattedEndOfMonth,
             'financeWeeks' => $financeWeeks ?? collect()
         ]);
     }

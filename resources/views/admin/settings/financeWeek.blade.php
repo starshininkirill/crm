@@ -15,7 +15,7 @@
             <span class="block sm:inline">{{ session('success') }}</span>
         </div>
     @endif
-
+ 
     @csrf
     @if ($errors->any())
         <ul class="flex flex-col gap-1 mb-4">
