@@ -77,12 +77,14 @@ class ContractRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        if ($this->has(['service', 'service_price'])) {
-            $services = array_map(null, $this->input('service', []), $this->input('service_price', []), $this->input('service_duration', []));
-            $this->merge([
-                'services' => array_map(fn($pair) => ['service_id' => $pair[0], 'price' => $pair[1], 'duration' => $pair[2]], $services),
-            ]);
-        }
+
+        $services = array_filter($this->input('services'), function($service){
+            return $service['service_id'] != null && $service['service_id'] != '';
+        });
+
+        $this->merge([
+            'services' => array_map(fn($service) => ['service_id' => $service['service_id'], 'price' => $service['price'], 'duration' => $service['duration']], $services),
+        ]);
 
         if ($this->has('payments')) {
             $filteredPayments = array_filter($this->input('payments', []), fn($payment) => $payment > 0);
@@ -174,7 +176,7 @@ class ContractRequest extends FormRequest
 
         // ];
 
-        $rules = [ 
+        $rules = [
             // Валидация договора
             'leed' => 'required',
             'number' => 'required|unique:contracts|numeric',
@@ -189,45 +191,50 @@ class ContractRequest extends FormRequest
             'client_type' => 'required|numeric|in:0,1',
             'tax' => 'required|numeric',
 
-            // Валидация для Физ. лица
-            'client_fio' => 'required_if:client_type,0|string|min:2|max:255',
-            'passport_series' => 'required_if:client_type,0',
-            'passport_number' => 'required_if:client_type,0',
-            'passport_issued' => 'required_if:client_type,0|string|max:255',
-            'physical_address' => 'required_if:client_type,0|string|max:255',
-
-            // Валидация для Юр. лица
-            'organization_name' => 'required_if:client_type,1|string|max:255',
-            'organization_short_name' => 'required_if:client_type,1|string|max:255',
-            'register_number_type' => 'required_if:client_type,1|integer|in:0,1',
-            'register_number' => 'required_if:client_type,1',
-            'legal_address' => 'required_if:client_type,1|string|max:255',
-            'inn' => 'required_if:client_type,1',
-            'current_account' => 'required_if:client_type,1',
-            'correspondent_account' => 'required_if:client_type,1',
-            'bank_name' => 'required_if:client_type,1|string|max:255',
-            'bank_bik' => 'required_if:client_type,1',
-            'act_payment_summ' => 'required_if:client_type,1|integer',
-            'act_payment_goal' => 'required_if:client_type,1|string|max:255',
-
             // Валидация услуг
             'services' => 'required|array|min:1',
             'services.*.service_id' => 'required|exists:services,id',
             'services.*.price' => 'required|numeric|min:0',
             'services.*.duration' => 'required|numeric|min:0',
-            
+
             // Дополнительные поля
             'seo_pages' => 'nullable|numeric|min:0',
             'rk_text' => 'nullable|string|min:0',
             'ready_site_link' => 'nullable|string|min:0',
             'ready_site_image' => 'nullable|image',
-            
+
             // Валидация платежей
             'payments' => 'nullable|array',
             'payments.*' => 'nullable|numeric|min:0',
 
         ];
 
+        if ($this->input('client_type') == Client::TYPE_INDIVIDUAL) {
+            $rules = array_merge($rules, [
+                'client_fio' => 'required_if:client_type,0|string|min:2|max:255',
+                'passport_series' => 'required_if:client_type,0',
+                'passport_number' => 'required_if:client_type,0',
+                'passport_issued' => 'required_if:client_type,0|string|max:255',
+                'physical_address' => 'required_if:client_type,0|string|max:255',
+            ]);
+        }
+
+        if ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY) {
+            $rules = array_merge($rules, [
+                'organization_name' => 'required_if:client_type,1|string|max:255',
+                'organization_short_name' => 'required_if:client_type,1|string|max:255',
+                'register_number_type' => 'required_if:client_type,1|integer|in:0,1',
+                'register_number' => 'required_if:client_type,1',
+                'legal_address' => 'required_if:client_type,1|string|max:255',
+                'inn' => 'required_if:client_type,1',
+                'current_account' => 'required_if:client_type,1',
+                'correspondent_account' => 'required_if:client_type,1',
+                'bank_name' => 'required_if:client_type,1|string|max:255',
+                'bank_bik' => 'required_if:client_type,1',
+                'act_payment_summ' => 'required_if:client_type,1|integer',
+                'act_payment_goal' => 'required_if:client_type,1|string|max:255',
+            ]);
+        }
 
         if ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY && $this->input('register_number_type') == Client::TAX_OGRN) {
             $rules['director_name'] = 'required|string|max:255';

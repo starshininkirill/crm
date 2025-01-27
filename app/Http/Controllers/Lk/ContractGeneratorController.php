@@ -40,22 +40,22 @@ class ContractGeneratorController extends Controller
                             'isReady' => $service->category->type == ServiceCategory::READY_SITE ? true : false,
                             'needSeoPages' => in_array($service->id, $needSeoPages),
                         ];
-                    })->toArray()
+                    }),
                 ];
-            })->toJson();
+            })->toArray();
         }
 
         $options = Option::whereIn('name', ['contract_generator_main_categories', 'contract_generator_secondary_categories', 'contract_generator_rk_text'])->get()->keyBy('name');
 
-        $mainCats = $options->get('contract_generator_main_categories')->value ?? [];
-        $secondaryCats = $options->get('contract_generator_secondary_categories')->value ?? [];
+        $mainCatsIds = $options->get('contract_generator_main_categories')->value ?? '[]';
+        $secondaryCatsIds = $options->get('contract_generator_secondary_categories')->value ?? '[]';
         $contractRkText = $options->get('contract_generator_rk_text')->value ?? [];
 
         return Inertia::render('Lk/Contract/Create', [
             'cats' => $catsWithServices ?? [],
-            'mainCats' => $mainCats,
-            'secondaryCats' => $secondaryCats,
-            'rkText' => $contractRkText,
+            'mainCatsIds' => json_decode($mainCatsIds),
+            'secondaryCatsIds' => json_decode($secondaryCatsIds),
+            'rkText' => json_decode($contractRkText),
         ]);
 
         return view('lk.contract.create', [
@@ -71,7 +71,6 @@ class ContractGeneratorController extends Controller
 
         if ($request->hasFile('ready_site_image')) {
             $file = $request->file('ready_site_image');
-
             $fileContent = $file->getContent();
             $base64String = base64_encode($fileContent);
             $mimeType = $file->getMimeType();

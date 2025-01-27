@@ -30,7 +30,7 @@ use App\Http\Controllers\Resources\WorkPlanController;
 use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use Inertia\Inertia; 
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');

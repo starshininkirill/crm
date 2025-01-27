@@ -163,8 +163,6 @@ export default {
             }
 
             return valid
-
-
         },
         updateService(index, event) {
             const selectedOption = event.target.options[event.target.selectedIndex];
