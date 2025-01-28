@@ -169,10 +169,7 @@ export default {
     },
     data() {
         let old = this.rowOld ? JSON.parse(this.rowOld) : {};
-        console.log(this.downloadLink);
-        console.log(this.pdfDownloadLink);
-        
-        
+
         return {
             old,
             clientType: old.hasOwnProperty('client_type') ? old['client_type'] : '0',

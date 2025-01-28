@@ -13,7 +13,7 @@ class PaymentController extends Controller
     public function index()
     {
         // $payments = Payment::query()->where('status', Payment::STATUS_CLOSE)->get();
-        // $payments = Payment::whereNot('status', Payment::STATUS_CONFIRMATION)->orderBy('created_at', 'asc')->get();
+        // $payments = Payment::whereNot('status', Payment::STATUS_WAIT_CONFIRMATION)->orderBy('created_at', 'asc')->get();
         $payments = Payment::with('contract')->get();
 
         $payments = $payments->map(function ($payment) {
@@ -45,6 +45,7 @@ class PaymentController extends Controller
                 'created_at' => $payment->created_at->format('H:i d.m.Y'),
                 'value' => TextFormaterHelper::getPrice($payment->value),
                 'inn' => $payment->inn,
+                'organization'=> $payment->organization
             ];
         });
 
@@ -52,8 +53,6 @@ class PaymentController extends Controller
             'payments' => $payments,
             'paymentStatuses' => Payment::vueStatuses(),
         ]);
-
-        return view('admin.payment.unsorted', ['payments' => $payments]);
     }
 
     public function show(Payment $payment)

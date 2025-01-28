@@ -58,12 +58,6 @@ class ContractGeneratorController extends Controller
             'rkText' => json_decode($contractRkText),
         ]);
 
-        return view('lk.contract.create', [
-            'cats' => $catsWithServices ?? [],
-            'mainCats' => $mainCats,
-            'secondaryCats' => $secondaryCats,
-            'rkText' => $contractRkText,
-        ]);
     }
     public function store(ContractRequest $request)
     {

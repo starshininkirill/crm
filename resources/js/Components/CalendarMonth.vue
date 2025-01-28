@@ -47,7 +47,6 @@ export default {
                 const response = await axios.post('/working-day', {
                     date: formatedDate,
                     is_working_day: day.is_workday,
-
                 },
                     { withCredentials: true });
                 day.is_workday = response.data.is_working_day;

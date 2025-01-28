@@ -13,10 +13,10 @@ class Payment extends Model
     use HasFactory;
 
 
-    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr'];
+    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr', 'organization_id'];
 
     const STATUS_WAIT = 0;
-    const STATUS_CONFIRMATION = 1;
+    const STATUS_WAIT_CONFIRMATION = 1;
     const STATUS_CLOSE = 2;
 
     const TYPE_NEW = 0;
@@ -25,6 +25,27 @@ class Payment extends Model
     protected $casts = [
         'confirmed_at' => 'datetime',
     ];
+
+    public function contract(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class);
+    }
+
+    public function responsible(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
+    }
+
+    public function method(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
 
     public function formatedType(): string
     {
@@ -43,7 +64,7 @@ class Payment extends Model
     {
         return [
             'wait' => self::STATUS_WAIT,
-            'confirmation' => self::STATUS_CONFIRMATION,
+            'confirmation' => self::STATUS_WAIT_CONFIRMATION,
             'close' => self::STATUS_CLOSE,
         ];
     }
@@ -52,19 +73,9 @@ class Payment extends Model
     {
         return [
             self::STATUS_WAIT => 'Ожидает оплату',
-            self::STATUS_CONFIRMATION => 'Ожидает подтверждения',
+            self::STATUS_WAIT_CONFIRMATION => 'Ожидает подтверждения',
             self::STATUS_CLOSE => 'Оплачен',
         ];
-    }
-
-    public function responsible(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'responsible_id');
-    }
-
-    public function method(): BelongsTo
-    {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     public function generetePaymentMethodHierarchy(): string
@@ -86,11 +97,6 @@ class Payment extends Model
         }
 
         return $res;
-    }
-
-    public function contract()
-    {
-        return $this->belongsTo(Contract::class);
     }
 
     public function getStatusNameAttribute()

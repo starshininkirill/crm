@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Lk;
 use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentGeneratorRequest;
+use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractUser;
 use App\Models\Organization;
 use App\Models\Payment;
+use Inertia\Inertia;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 
@@ -28,6 +30,10 @@ class PaymentGeneratorController extends Controller
 
         $organisations = Organization::where('active', 1)->get()->toArray();
 
+        return Inertia::render('Lk/Payment/Create', [
+            'organisations' => $organisations,
+        ]);
+
         return view('lk.payment.create', [
             'organisations' => $organisations
         ]);
@@ -37,28 +43,27 @@ class PaymentGeneratorController extends Controller
     {
         $data = $request->validated();
 
-
         $contract = Contract::create($request->contractData());
-        
+
         $contract->payments()->create($request->paymentData());
         $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
-        
+
         // TODO
         // Временное решение, потом поменять на интеграцию
-        Payment::create([
-            'value' => $request->paymentData()['value'],
-            'status' => Payment::STATUS_CONFIRMATION,
-            'order' => 1,
-            'inn' => $request->paymentData()['inn'],
-        ]);
-
+        $paymentData = $request->paymentData();
+        if ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) {
+            $payment = Payment::create([
+                'value' => $paymentData['value'],
+                'status' => Payment::STATUS_WAIT_CONFIRMATION,
+                'order' => 1,
+                'inn' => $paymentData['inn'],
+                'organization_id' => $paymentData['organization_id'],
+            ]);
+        }
 
         // $responseData = DocumentGenerator::generatePaymentDocument($data);
+        // $responseData = [];
 
-        $responseData = [];
-        return back()->with(
-            $responseData
-        );
-        
+        return back()->with('success', 'Оплата успешно создана');
     }
 }

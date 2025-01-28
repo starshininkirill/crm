@@ -41,7 +41,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
 
-Route::middleware('auth')->group(function () {
+// Route::middleware('auth')->group(function () {
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
         });
     });
-});
+// });
 
 
 Route::prefix('admin')->middleware('role:admin')->group(function () {
@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::resource('payment', ResourcesPaymentController::class)->only([
+        'index',
         'store',
     ]);
 
