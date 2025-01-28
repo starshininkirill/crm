@@ -66,12 +66,11 @@ class ContractController extends Controller
                         'value' =>  TextFormaterHelper::getPrice($payment->value),
                     ];
                 }),
+                'client' => $contract->client
             ],
         ]);
 
         // $performersData = $contract->getPerformers($contract);
-        
-        // return view('admin.contract.show', compact('contract', 'performersData'));
     }
 
     public function attachUser(Request $request, Contract $contract)

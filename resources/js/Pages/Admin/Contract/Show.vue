@@ -1,13 +1,17 @@
 <template>
+
     <Head :title="`Договор № ${contract.id}`" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Договор: №{{ contract.number }}</h1>
         <div class="flex gap-4">
             <div class="w-2/3 info">
-                <h4 class="text-2xl mb-5">Цена: {{ contract.price }}</h4>
-                <h4 class="text-2xl mb-2">
+                <div class="text-2xl mb-5">Цена: {{ contract.price }}</div>
+                <div class="text-2xl mb-5">
+                    ИНН: {{ contract.client?.inn ?? 'Нет данных' }}
+                </div>
+                <div class="text-2xl mb-2">
                     Услуги:
-                </h4>
+                </div>
                 <div class="flex flex-col gap-2 mb-5">
                     <template v-if="contract.services.length === 0">
                         Услуги пустые
@@ -15,7 +19,7 @@
                     <template v-else>
                         <div class="flex flex-col mb-4">
                             <span v-for="(service, index) in contract.services" :key="service.id">
-                                {{ service.name }} - {{  service.price  }}
+                                {{ service.name }} - {{ service.price }}
                             </span>
                         </div>
                     </template>

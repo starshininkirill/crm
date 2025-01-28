@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => CheckRole::class,
         ]);
+        //TODO
+        // Удалить
+        $middleware->validateCsrfTokens(except: [
+            '*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

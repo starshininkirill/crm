@@ -1,8 +1,16 @@
 <template>
 
     <Head title="Неразобранные платежи (РС)" />
-    <div class="contract-page-wrapper flex flex-col">
+    <div class="contract-page-wrapper flex flex-col relative">
         <h1 class="text-4xl font-semibold mb-6">Платежи</h1>
+        <div v-if="$page.props.errors && Object.keys($page.props.errors).length">
+            <ul class="flex flex-col gap-1 mb-4">
+                <li v-for="(messages, field) in $page.props.errors" :key="field">
+                    <span v-for="message in messages" :key="message" class="text-xl text-red-400">{{ message }}</span>
+                </li>
+            </ul>
+        </div>
+
         <div class="">
             <h2 v-if="!payments.length">Платежей не найдено</h2>
 
@@ -10,7 +18,7 @@
                 <thead>
                     <tr class="bg-gray-800">
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">ИП</th>
-                        <th class="border border-gray-300 px-4 py-2 text-left text-white">Номер</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-white">ID платежа</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Сумма</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">Обоснование</th>
                         <th class="border border-gray-300 px-4 py-2 text-left text-white">ИНН</th>
@@ -30,14 +38,14 @@
                             <td class="border border-gray-300 px-4 py-2">
                                 <Link :href="route('admin.payment.show', { payment: payment.id })"
                                     class="text-blue-700 underline">
-                                № {{ payment.id }}
+                                {{ payment.id }}
                                 </Link>
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 {{ payment.value }}
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
-                                Описание
+                                {{  payment.description  }}
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 {{ payment.inn }}
@@ -46,7 +54,7 @@
                                 {{ payment.created_at }}
                             </td>
                             <td @click="toggleAttachMenu(index, payment.id)"
-                                class="border border-gray-300 px-4 py-2 cursor-pointer">
+                                class="border border-gray-300 px-4 py-2 cursor-pointer text-blue-700">
                                 Прикрепить
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
@@ -55,35 +63,58 @@
                         </tr>
 
                         <tr v-if="isRowActive(index)">
-                            <td class="border border-gray-300 px-4 py-2" colspan="8">
-                                <div class="text-xl mb-3">Прикрепить платёж</div>
-                                <div class="text-xl mb-3">Шортлист</div>
-                                <table class="w-full max-w-2xl border border-gray-300">
-                                    <thead>
-                                        <tr class="bg-gray-800">
-                                            <th class="border border-gray-300 px-4 py-2 text-left text-white">Сделка
-                                            </th>
-                                            <th class="border border-gray-300 px-4 py-2 text-left text-white">Сумма</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-left text-white">ИНН</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-left text-white">Прикрепить
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(payment, idx) in getActivePayments(index)" :key="idx">
-                                            <td class="border border-gray-300 px-4 py-2">
-                                                <Link v-if="payment.contract"
-                                                    :href="route('admin.contract.show', { contract: payment.contract.id })"
-                                                    class="text-blue-700">
-                                                {{ payment.contract.number }}
-                                                </Link>
-                                            </td>
-                                            <td class="border border-gray-300 px-4 py-2">{{ payment.value }}</td>
-                                            <td class="border border-gray-300 px-4 py-2">{{ payment.inn }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 cursor-pointer">Прикрепить</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <td class="border border-gray-300 px-4 py-4" colspan="8">
+                                <div class="text-xl font-semibold mb-3">Прикрепить платёж</div>
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div>
+                                        Поиск
+                                    </div>
+                                    <div>
+                                        <div class="text-xl mb-3">Шортлист</div>
+                                        <table v-if="getActivePayments(index).length > 0"
+                                            class="w-full border border-gray-300">
+                                            <thead>
+                                                <tr class="bg-gray-800">
+                                                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                                                        Сделка
+                                                    </th>
+                                                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                                                        Сумма</th>
+                                                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                                                        ИНН</th>
+                                                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                                                        Номер платежа</th>
+                                                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                                                        Прикрепить
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(waitPayment, idx) in getActivePayments(index)" :key="idx">
+                                                    <td class="border border-gray-300 px-4 py-2">
+                                                        <Link v-if="waitPayment.contract"
+                                                            :href="route('admin.contract.show', { contract: waitPayment.contract.id })"
+                                                            class="text-blue-700">
+                                                        {{ waitPayment.contract.number }}
+                                                        </Link>
+                                                    </td>
+                                                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.value }}
+                                                    </td>
+                                                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.inn }}
+                                                    </td>
+                                                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.order }}
+                                                    </td>
+                                                    <td @click="attachPayment(waitPayment, payment)"
+                                                        class="border border-gray-300 px-4 py-2 cursor-pointer text-blue-700">
+                                                        Прикрепить</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div v-else>
+                                            Ожиданий не найдено
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
 
@@ -95,7 +126,7 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import PaymentLayout from '../Layouts/PaymentLayout.vue';
 import axios from 'axios';
 import { route } from 'ziggy-js';
@@ -119,6 +150,13 @@ export default {
         };
     },
     methods: {
+        attachPayment(oldPayment, newPayment) {
+            router.post(route('payment.shortlist.attach'), {
+                oldPayment: oldPayment.id,
+                newPayment: newPayment.id,
+            })
+
+        },
         async toggleAttachMenu(index, paymentId) {
             const existingRow = this.activeRows.find((row) => row.index === index);
 
@@ -126,19 +164,11 @@ export default {
                 this.activeRows = this.activeRows.filter((row) => row.index !== index);
             } else {
                 const payments = await this.getPaymentsForRow(paymentId);
-                console.log(payments);
-
                 this.activeRows.push({ index, payments });
             }
         },
         async getPaymentsForRow(paymentId) {
-            const response = await axios.get(route('payment.index'), {
-                params: {
-                    payment: paymentId
-                }
-            });
-            console.log(response.data);
-
+            const response = await axios.get(route('payment.shortlist', { payment: paymentId }));
             let rowPayments = response.data ?? [];
 
             rowPayments = rowPayments.map(function (payment) {
@@ -146,7 +176,8 @@ export default {
                     'id': payment.id,
                     'value': payment.value,
                     'inn': payment.inn,
-                    'contract': payment.contract
+                    'contract': payment.contract,
+                    'order': payment.order
                 }
             });
             return rowPayments;

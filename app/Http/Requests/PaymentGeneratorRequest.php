@@ -23,9 +23,17 @@ class PaymentGeneratorRequest extends FormRequest
      */
     public function rules(): array
     {
+
         if ($this->isMethod('GET')) {
-            return [];
-        } else if ($this->isMethod('POST')) {
+            $rules =  [
+                'payment' => 'required|numeric|exists:payments,id'
+            ];
+        } else if (($this->isMethod('POST') && $this->routeIs('payment.shortlist.attach'))) {
+            $rules = [
+                'oldPayment' => 'required|numeric|exists:payments,id',
+                'newPayment' => 'required|numeric|exists:payments,id'
+            ];
+        } else if ($this->isMethod('POST') && $this->routeIs('lk.payment.store')) {
             $rules = [
                 'client_type' => 'required|numeric|in:0,1',
                 'payment_direction' => 'required|numeric|in:0,1,2,3,',
@@ -52,8 +60,8 @@ class PaymentGeneratorRequest extends FormRequest
                     'act_payment_goal' => 'required|string|max:255',
                 ]);
             }
-            return $rules;
         }
+        return $rules;
     }
 
     public function contractData(): array
@@ -74,6 +82,7 @@ class PaymentGeneratorRequest extends FormRequest
             'value' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
             'inn' => $this->input('inn') ?? null,
             'organization_id' => $this->input('organization_id') ?? null,
+            'act_payment_goal' => $this->input('act_payment_goal') ?? null,
         ];
     }
 }

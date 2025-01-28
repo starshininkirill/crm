@@ -58,6 +58,7 @@ class PaymentGeneratorController extends Controller
                 'order' => 1,
                 'inn' => $paymentData['inn'],
                 'organization_id' => $paymentData['organization_id'],
+                'description' => $paymentData['act_payment_goal'],
             ]);
         }
 

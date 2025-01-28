@@ -3,34 +3,86 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Classes\Bitrix;
+use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentGeneratorRequest;
+use App\Models\Contract;
 use App\Models\Payment;
-use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function index(Request $request)
+    public function shortlistAttach(PaymentGeneratorRequest $request)
     {
-        $query = Payment::query();
-        if($request->get('payment')){
-            $payment = Payment::where('id', $request->get('payment'))->first();
-            $query->where('inn', '=', $payment->inn)
-                ->whereNotNull('contract_id');
+        $validated = $request->validated();
+        $oldPayment = Payment::where('id', $validated['oldPayment'])->first();
+        $newPayment = Payment::where('id', $validated['newPayment'])->first();
+
+
+        try {
+            DB::beginTransaction();
+
+            $oldPayment->value = $newPayment->value;
+            $oldPayment->inn = $newPayment->inn;
+            $oldPayment->status = Payment::STATUS_CLOSE;
+            $oldPayment->organization_id = $newPayment->organization_id;
+            $oldPayment->confirmed_at = Date::now();
+            $oldPayment->responsible_id = $request->user()->id;
+
+            $oldPayment->save();
+            $newPayment->delete();
+
+            DB::commit();
+        } catch (Exception $exeption) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Ошибка прикрепления платежа']);
         }
 
-        $query->where('status', Payment::STATUS_WAIT);
+        return redirect()->back()->with('success', 'Платёж успешно привязан');
+    }
 
-        $payments = $query->get();
-        $payments = $payments->map(function($payment){
-            return[
-                'id' => $payment->id,
-                'value' => $payment->value,
-                'inn' => $payment->inn,
-                'contract' => $payment->contract,
-            ];
-        });
-        return $payments;
+    public function shortlist(Payment $payment): array
+    {
+        $payments = collect();
+
+        $contract = Contract::query()
+            ->whereHas('client', function ($query) use ($payment) {
+                $query->where('inn', $payment->inn);
+            })
+            ->first();
+        if ($contract) {
+            $payments = $contract->payments()->where('status', Payment::STATUS_WAIT)->get();
+            if ($contract->childs) {
+                foreach ($contract->childs as $child) {
+                    $payments = $payments->merge($child->payments()->where('status', Payment::STATUS_WAIT)->get());
+                }
+            }
+        }
+
+
+        if (!$payments->isEmpty()) {
+            $payments = $payments->map(function ($payment) {
+                $data =  [
+                    'id' => $payment->id,
+                    'value' => TextFormaterHelper::getPrice($payment->value),
+                    'contract' => $payment->contract,
+                    'order' => $payment->order,
+                ];
+
+                if ($payment->contract->parent) {
+                    $data['inn'] = $payment->contract->parent->client->inn;
+                } else {
+                    $data['inn'] = $payment->contract->client->inn;
+                };
+
+                return $data;
+            });
+        }
+
+        return $payments->toArray();
     }
 
     public function store(PaymentGeneratorRequest $request)
@@ -38,6 +90,5 @@ class PaymentController extends Controller
         $data = $request->validated();
 
         Bitrix::generatePaymentDocument($data);
-        
     }
 }

@@ -125,7 +125,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 });
 
-Route::middleware('auth')->group(function () {
+// Route::middleware('auth')->group(function () {
     Route::resource('workPlan', WorkPlanController::class)->only([
         'store',
         'update',
@@ -146,6 +146,9 @@ Route::middleware('auth')->group(function () {
         'index',
         'store',
     ]);
+
+    Route::get('payment/shortlist/{payment}', [ResourcesPaymentController::class, 'shortlist'])->name('payment.shortlist');
+    Route::post('payment/shortlist/attach', [ResourcesPaymentController::class, 'shortlistAttach'])->name('payment.shortlist.attach');
 
     Route::resource('service-category', ResourcesServiceCategoryController::class)->only([
         'store',
@@ -180,4 +183,4 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/finance-week', [FinanceWeekController::class, 'setWeeks'])->name('finance-week.set-weeks');
     Route::put('/finance-week', [FinanceWeekController::class, 'updateWeeks'])->name('finance-week.set-weeks');
-})->middleware('role:admin');
+// })->middleware('role:admin');

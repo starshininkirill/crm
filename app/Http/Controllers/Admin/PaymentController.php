@@ -45,7 +45,8 @@ class PaymentController extends Controller
                 'created_at' => $payment->created_at->format('H:i d.m.Y'),
                 'value' => TextFormaterHelper::getPrice($payment->value),
                 'inn' => $payment->inn,
-                'organization'=> $payment->organization
+                'organization'=> $payment->organization,
+                'description' => $payment->description,
             ];
         });
 

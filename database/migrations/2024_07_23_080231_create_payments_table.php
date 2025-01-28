@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignId('responsible_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('organization_id')->nullable()->constrained('organizations')->onDelete('set null');
             $table->timestamp('confirmed_at')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
