@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Classes\DocumentGenerator;
-use App\Http\Requests\ContractRequest;
+use App\Http\Requests\ContractGeneratorRequest;
 use App\Models\Client;
 use App\Models\ContractUser;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +59,7 @@ class ContractGeneratorController extends Controller
         ]);
 
     }
-    public function store(ContractRequest $request)
+    public function store(ContractGeneratorRequest $request)
     {
         $data = $request->validated();
 

@@ -140,6 +140,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::resource('contract', ContractController::class)->only([
         'store',
+        'index'
     ]);
 
     Route::resource('payment', ResourcesPaymentController::class)->only([

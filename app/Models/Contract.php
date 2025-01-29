@@ -62,6 +62,33 @@ class Contract extends Model
         return $this->hasMany(ContractUser::class);
     }
 
+    public function getClientName()
+    {
+        if ($this->parent) {
+            if ($this->parent->client) {
+                return $this->parent->client->organization_short_name ?? $this->parent->client->fio;
+            }
+        }
+        if ($this->client) {
+            return $this->client->organization_name ?? $this->client->fio;
+        }
+
+        return '';
+    }
+
+    public function getInn()
+    {
+        if ($this->parent) {
+            if ($this->parent->client) {
+                return $this->parent->client->inn;
+            }
+        }
+        if ($this->client) {
+            return $this->client->inn;
+        }
+
+        return '';
+    }
 
     public function addPayments(array $payments): void
     {
@@ -125,5 +152,4 @@ class Contract extends Model
             }
         }
     }
-
 }

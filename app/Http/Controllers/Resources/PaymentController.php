@@ -20,7 +20,6 @@ class PaymentController extends Controller
         $oldPayment = Payment::where('id', $validated['oldPayment'])->first();
         $newPayment = Payment::where('id', $validated['newPayment'])->first();
 
-
         try {
             DB::beginTransaction();
 
