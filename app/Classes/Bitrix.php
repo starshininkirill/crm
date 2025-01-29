@@ -165,7 +165,7 @@ class Bitrix
 
         $paymentsBitrixFields = [
             'UF_CRM_1640601250',
-            'UF_CRM_1640601264',а
+            'UF_CRM_1640601264',
             'UF_CRM_1640601276'
         ];
 

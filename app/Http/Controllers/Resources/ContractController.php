@@ -18,6 +18,7 @@ class ContractController extends Controller
             if ($contract) {
                 return [
                     'contract' => [
+                        'id' => $contract->id,
                         'number' => $contract->number,
                         'created_at' => $contract->created_at->format('Y.m.d'),
                         'client_name' => $contract->getClientName(),

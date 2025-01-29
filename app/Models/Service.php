@@ -21,6 +21,12 @@ class Service extends Model
         return $this->belongsToMany(Contract::class);
     }
 
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'organization_service_document_template')
+                    ->withPivot('document_template_id', 'type');
+    }
+
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');

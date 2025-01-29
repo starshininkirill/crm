@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
+use App\Http\Controllers\Admin\DocumentTemplateController as AdminDocumentTemplateController;
 use App\Http\Controllers\Admin\OrganizationController as AdminOrganizationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
@@ -30,7 +31,6 @@ use App\Http\Controllers\Resources\WorkPlanController;
 use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia; 
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
@@ -41,7 +41,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
 
-// Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
@@ -59,7 +59,7 @@ Route::middleware('guest')->group(function () {
             Route::post('/store', [LkPaymentGeneratorController::class, 'store'])->name('lk.payment.store');
         });
     });
-// });
+});
 
 
 Route::prefix('admin')->middleware('role:admin')->group(function () {
@@ -83,6 +83,9 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
         Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
         Route::get('/{organization}/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
+        Route::prefix('document-templates')->group(function () {
+            Route::get('/', [AdminDocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
+        });
     });
 
     Route::prefix('servicies')->group(function () {
@@ -125,7 +128,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 });
 
-// Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::resource('workPlan', WorkPlanController::class)->only([
         'store',
         'update',
@@ -184,4 +187,4 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::post('/finance-week', [FinanceWeekController::class, 'setWeeks'])->name('finance-week.set-weeks');
     Route::put('/finance-week', [FinanceWeekController::class, 'updateWeeks'])->name('finance-week.set-weeks');
-// })->middleware('role:admin');
+})->middleware('role:admin');

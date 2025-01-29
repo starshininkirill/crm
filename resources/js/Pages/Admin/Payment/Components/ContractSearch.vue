@@ -10,9 +10,10 @@
             <div class="flex flex-col gap-2">
                 <div class=" border-b pb-1 grid grid-cols-2">
                     Номер договора:
-                    <span class="font-semibold">
-                        {{ contract.number }}
-                    </span>
+                    <Link :href="route('admin.contract.show', { contract: contract.id })"
+                        class="font-semibold text-blue-500">
+                    {{ contract.number }}
+                    </Link>
                 </div>
                 <div class=" border-b pb-1 grid grid-cols-2">
                     Дата договора:
@@ -97,7 +98,8 @@
                             </div>
                             <div v-for="subContractPayment in subContract.payments"
                                 class="flex justify-between items-center bg-gray-50 p-3 border-b-white">
-                                <Link :href="route('admin.payment.show', { payment: subContractPayment.id })" class=" text-blue-500">
+                                <Link :href="route('admin.payment.show', { payment: subContractPayment.id })"
+                                    class=" text-blue-500">
                                 {{ subContractPayment.value }} ( № {{ subContractPayment.order }} )
                                 </Link>
                                 <div>
@@ -139,10 +141,12 @@ export default {
     },
     methods: {
         attachPayment(oldPayment) {
-            router.post(route('payment.shortlist.attach'), {
-                oldPayment: oldPayment.id,
-                newPayment: this.payment.id,
-            })
+            if (confirm('Вы уверены, что хотите привязать этот платёж?')) {
+                router.post(route('payment.shortlist.attach'), {
+                    oldPayment: oldPayment.id,
+                    newPayment: this.payment.id,
+                });
+            }
         },
         onSearchInput() {
             if (this.searchTimer) {
