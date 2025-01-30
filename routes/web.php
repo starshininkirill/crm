@@ -21,6 +21,7 @@ use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\PaymentGeneratorController as LkPaymentGeneratorController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\DepartmentController as ResourcesDepartmentController;
+use App\Http\Controllers\Resources\DocumentTemplateController as ResourcesDocumentTemplateController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\OrganizationController as ResourcesOrganizationController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
@@ -85,6 +86,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/{organization}/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
         Route::prefix('document-templates')->group(function () {
             Route::get('/', [AdminDocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
+            Route::get('/attach', [AdminDocumentTemplateController::class, 'attach'])->name('admin.organization.document-template.attach');
+            Route::get('/{documentTemplate}/edit', [AdminDocumentTemplateController::class, 'edit'])->name('admin.organization.document-template.edit');
         });
     });
 
@@ -171,6 +174,14 @@ Route::middleware('auth')->group(function () {
         'update',
         'destroy'
     ]);
+
+    Route::resource('document-template', ResourcesDocumentTemplateController::class)->only([
+        'store',
+        'update',
+        'destroy'
+    ]);
+
+    Route::get('document-template/download/{documentTemplate}', [ResourcesDocumentTemplateController::class, 'download'])->name('document-template.download');
 
     Route::resource('user', ResourcesUserController::class)->only([
         'store',

@@ -1,0 +1,88 @@
+<template>
+
+    <Head title="Редактировать Шаблон документа" />
+    <div class="contract-page-wrapper flex flex-col">
+        <h1 class="text-4xl font-semibold mb-6">Редактировать Шаблон документа</h1>
+        <form @submit.prevent="submitForm" enctype="multipart/form-data" class="flex flex-col gap-3 max-w-md">
+            <div class="text-3xl font-semibold">
+                Создать Шаблон документа
+            </div>
+
+            <ul v-if="form.errors" class="flex flex-col gap-1">
+                <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
+            </ul>
+
+            <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
+                label="Название шаблона" autocomplete="name" required />
+
+            <div>
+                Документ: <span class=" font-semibold">{{ documentTemplate.file_name }}</span>
+            </div>
+
+            <label class="text-sm font-medium leading-6 text-gray-900 flex flex-col gap-1 cursor-pointer" for="file">
+                Прикрепить новый документ
+                <input type="file" id="file" name="file" class="form-input cursor-pointer" @change="handleFileChange" />
+            </label>
+
+            <button type="submit" class="btn w-full" data-ripple-light="true">
+                Обновить
+            </button>
+        </form>
+    </div>
+</template>
+
+<script>
+import { Head, useForm } from '@inertiajs/vue3';
+import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
+import FormInput from '../../../../Components/FormInput.vue';
+import { route } from 'ziggy-js';
+
+export default {
+    components: {
+        Head,
+        FormInput
+    },
+    props: {
+        documentTemplate: {
+        },
+    },
+    layout: OrganizationLayout,
+    setup(props) {
+
+        const form = useForm({
+            'name': props.documentTemplate.name,
+            'file': null,
+            '_method' : 'PUT'
+        });
+
+        const submitForm = () => {
+            console.log(form.file);
+            
+            form.post(route('document-template.update', { document_template: props.documentTemplate }), {
+                onSuccess: () => {
+                    const fileInput = document.querySelector('input[type="file"]');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+                },
+            });
+        };
+
+        return {
+            form,
+            submitForm
+        }
+    },
+    methods: {
+        handleFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.form.file = file;
+            } else {
+                this.form.file = null;
+            }
+        },
+    }
+}
+
+</script>

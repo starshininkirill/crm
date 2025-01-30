@@ -11,6 +11,9 @@
                 <AdminSubnavLink :href="route('admin.organization.document-template.index')" :route="'admin.organization.document-template.index'">
                     Шаблоны документов
                 </AdminSubnavLink>
+                <AdminSubnavLink :href="route('admin.organization.document-template.attach')" :route="'admin.organization.document-template.attach'">
+                    Привязать шаблон
+                </AdminSubnavLink>
             </div>
             <slot />
         </div>

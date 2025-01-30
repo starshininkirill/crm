@@ -12,8 +12,37 @@ class DocumentTemplateController extends Controller
     public function index()
     {
         $documetTemplates = DocumentTemplate::all();
-        return Inertia::render('Admin/Organization/DocumentTemplate/Index',[
+
+        $documetTemplates = $documetTemplates->map(function ($document) {
+            return [
+                'id' => $document->id,
+                'name' => $document->name,
+                'file_path' => $document->file,
+                'file_name' => basename($document->file),
+            ];
+        });
+
+        return Inertia::render('Admin/Organization/DocumentTemplate/Index', [
             'documetTemplates' => $documetTemplates,
         ]);
+    }
+
+    public function edit(DocumentTemplate $documentTemplate)
+    {
+        $documentTemplate = [
+            'id' => $documentTemplate->id,
+            'name' => $documentTemplate->name,
+            'file' => $documentTemplate->file,
+            'file_path' => $documentTemplate->file,
+            'file_name' => basename($documentTemplate->file),
+        ];
+        return Inertia::render('Admin/Organization/DocumentTemplate/Edit', [
+            'documentTemplate' => $documentTemplate,
+        ]);
+    }
+
+    public function attach()
+    {
+        return 'test';
     }
 }

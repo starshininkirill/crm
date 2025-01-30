@@ -13,8 +13,9 @@
                     <div class="flex items-center space-x-4">
                         <HeaderNavLink v-if="!$page.props.user" :href="route('login')" route="login">Вход
                         </HeaderNavLink>
-                        <HeaderNavLink v-if="!$page.props.user" :href="route('fastLogin')" route="fastLogin">Быстрый
-                            вход</HeaderNavLink>
+                        <HeaderNavLink v-if="!$page.props.user" :href="route('fastLogin')" route="fastLogin">
+                            Войти как админ
+                        </HeaderNavLink>
                         <span v-if="$page.props.user" class=" text-l text-white ">
                             {{ $page.props.user.first_name }}
                         </span>
