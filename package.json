@@ -20,7 +20,7 @@
         "@tinymce/tinymce-vue": "^6.1.0",
         "@vitejs/plugin-vue": "^5.1.4",
         "tinymce": "^7.6.1",
-        "vue-multiselect": "^3.2.0",
+        "vue-select": "^4.0.0-beta.1",
         "ziggy-js": "^2.4.2"
     }
 }

@@ -24,6 +24,7 @@ use App\Http\Controllers\Resources\DepartmentController as ResourcesDepartmentCo
 use App\Http\Controllers\Resources\DocumentTemplateController as ResourcesDocumentTemplateController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\OrganizationController as ResourcesOrganizationController;
+use App\Http\Controllers\Resources\OrganizationServiceDocumentTemplateController as ResourcesOrganizationServiceDocumentTemplateController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
 use App\Http\Controllers\Resources\PositionController as ResourcesPositionController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
@@ -182,6 +183,8 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::get('document-template/download/{documentTemplate}', [ResourcesDocumentTemplateController::class, 'download'])->name('document-template.download');
+
+    Route::post('osdt', [ResourcesOrganizationServiceDocumentTemplateController::class, 'store'])->name('osdt.store');
 
     Route::resource('user', ResourcesUserController::class)->only([
         'store',

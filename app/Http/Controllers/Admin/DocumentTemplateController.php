@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentTemplate;
+use App\Models\Organization;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -43,6 +45,14 @@ class DocumentTemplateController extends Controller
 
     public function attach()
     {
-        return 'test';
+        $documetTemplates = DocumentTemplate::all();
+        $services = Service::all();
+        $organizations = Organization::all();
+
+        return Inertia::render('Admin/Organization/DocumentTemplate/Attach',[
+            'documetTemplates' => $documetTemplates,
+            'services' => $services,
+            'organizations' => $organizations,
+        ]);
     }
 }
