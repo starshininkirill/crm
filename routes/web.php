@@ -32,7 +32,7 @@ use App\Http\Controllers\Resources\ServiceController as ResourcesServiceControll
 use App\Http\Controllers\Resources\WorkPlanController;
 use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 
 Route::get('/', [MainController::class, 'home'])->name('home');
@@ -184,10 +184,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('document-template/download/{documentTemplate}', [ResourcesDocumentTemplateController::class, 'download'])->name('document-template.download');
 
-    Route::post('osdt', [ResourcesOrganizationServiceDocumentTemplateController::class, 'store'])->name('osdt.store');
+    Route::resource('osdt', ResourcesOrganizationServiceDocumentTemplateController::class)->only([
+        'store',
+        'destroy'
+    ]);
 
     Route::resource('user', ResourcesUserController::class)->only([
         'store',
+        'destroy'
     ]);
 
     Route::resource('department', ResourcesDepartmentController::class)->only([

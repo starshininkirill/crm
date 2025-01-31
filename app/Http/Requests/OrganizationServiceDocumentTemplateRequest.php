@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class OrganizationServiceDocumentTemplateRequest extends FormRequest
 {
@@ -19,12 +21,21 @@ class OrganizationServiceDocumentTemplateRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
+        // TODO
+        // Настроить так, чтобы проверка на все услуги была отдельно
         return [
-            'organization_id' => 'required|exists:organizations,id',
-            'service_id' => 'required|exists:services,id',
+            'service_id' => 'exists:services,id',
             'document_template_id' => 'required|exists:document_templates,id',
+            'organization_id' => [
+                'required',
+                'exists:organizations,id',
+                Rule::unique('organization_service_document_template')->where(function ($query) use ($request) {
+                    return $query->where('service_id', $request->service_id)
+                        ->where('document_template_id', $request->document_template_id);
+                }),
+            ],
             'type' => 'required',
         ];
     }

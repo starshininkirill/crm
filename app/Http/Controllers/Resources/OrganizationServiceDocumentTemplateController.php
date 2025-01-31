@@ -15,6 +15,13 @@ class OrganizationServiceDocumentTemplateController extends Controller
 
         OrganizationServiceDocumentTemplate::create($validated);
 
-        return redirect()->back()->with('success', 'Успешно привязанно');
+        return redirect()->back()->with('success', 'Шаблон документа успешно привязан');
+    }
+
+    public function destroy(OrganizationServiceDocumentTemplate $osdt)
+    {
+        $osdt->delete();
+
+        return redirect()->back()->with('success', 'Шаблон документа успешно отвязан');
     }
 }
