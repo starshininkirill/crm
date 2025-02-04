@@ -125,6 +125,12 @@
 
     </form>
 
+    <a v-if="$page.props.session.link" 
+    class="p-4 border-2 border-black rounded cursor-pointer text-xl font-semibold mt-5 flex justify-center items-center"
+        :href="$page.props.session.link">
+        Скачать
+    </a>
+
 
 </template>
 <script>

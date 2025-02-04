@@ -99,6 +99,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <Link
+                                        v-if="attachedDocument.service"
                                         class=" text-blue-500 font-semibold"
                                         :href="route('admin.service.edit', { service: attachedDocument.service.id })">
                                         {{ attachedDocument.service.name }}

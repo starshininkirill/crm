@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             WorkPlanSeeder::class,
             OrganizationSeeder::class,
+            DocumentTemplateSeeder::class,
+            OSDTSeeder::class,
         ]);
     }
 }

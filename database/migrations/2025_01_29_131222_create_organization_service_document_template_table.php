@@ -14,6 +14,7 @@ class CreateOrganizationServiceDocumentTemplateTable extends Migration
                 ->onDelete('cascade');
 
             $table->foreignId('service_id')
+                ->nullable()
                 ->constrained('services')
                 ->onDelete('cascade');
 

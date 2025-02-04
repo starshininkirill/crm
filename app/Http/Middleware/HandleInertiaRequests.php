@@ -36,8 +36,15 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $sessionData = session()->all();
+
+        $filteredSessionData = array_filter($sessionData, function ($key) {
+            return !in_array($key, ['_token', '_previous', '_flash']);
+        }, ARRAY_FILTER_USE_KEY);
+
         return array_merge(parent::share($request), [
             'success' => session('success'),
+            'session' => $filteredSessionData,
             'errors' => function () {
                 return session()->get('errors') ? session()->get('errors')->getBag('default')->getMessages() : (object) [];
             },
