@@ -19,6 +19,7 @@ use App\Http\Controllers\FinanceWeekController;
 use App\Http\Controllers\Lk\ContractGeneratorController as LkContractGeneratorController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\ActGeneratorController as LkActGeneratorController;
+use App\Http\Controllers\Lk\SbpGeneratorController as LkSbpGeneratorController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\DepartmentController as ResourcesDepartmentController;
 use App\Http\Controllers\Resources\DocumentTemplateController as ResourcesDocumentTemplateController;
@@ -59,6 +60,11 @@ Route::middleware('auth')->group(function () {
         Route::prefix('/acts')->group(function () {
             Route::get('/create', [LkActGeneratorController::class, 'create'])->name('lk.act.create');
             Route::post('/store', [LkActGeneratorController::class, 'store'])->name('lk.act.store');
+        });
+
+        Route::prefix('/sbp')->group(function () {
+            Route::get('/create', [LkSbpGeneratorController::class, 'create'])->name('lk.sbp.create');
+            Route::post('/store', [LkSbpGeneratorController::class, 'store'])->name('lk.sbp.store');
         });
     });
 });

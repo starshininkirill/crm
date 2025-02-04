@@ -25,6 +25,16 @@
                         Счёт/Акт
                         </Link>
                     </li>
+                    <li class="me-2">
+                        <Link :href="route('lk.sbp.create')" :class="[
+                            'inline-block p-4 rounded-t-lg border-b-2',
+                            isActive('lk.sbp.create')
+                                ? 'text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500'
+                                : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
+                        ]">
+                        Платёж СБП
+                        </Link>
+                    </li>
 
                 </ul>
             </div>

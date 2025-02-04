@@ -86,8 +86,12 @@ class PaymentController extends Controller
 
     public function store(PaymentGeneratorRequest $request)
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
-        Bitrix::generatePaymentDocument($data);
+        $payment = Payment::created($validated);
+        
+        return redirect()->back()->with('success', 'Платёж успешно создан');
+        
+        // Bitrix::generatePaymentDocument($data);
     }
 }

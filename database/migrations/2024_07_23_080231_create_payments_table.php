@@ -24,8 +24,9 @@ return new class extends Migration
             $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->onDelete('set null');
             $table->foreignId('responsible_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('organization_id')->nullable()->constrained('organizations')->onDelete('set null');
-            $table->timestamp('confirmed_at')->nullable();
             $table->string('description')->nullable();
+            $table->string('receipt_url')->nullable();
+            $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });
     }

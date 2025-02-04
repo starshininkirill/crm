@@ -46,9 +46,9 @@ class ActGeneratorController extends Controller
                 'value' => $paymentData['value'],
                 'status' => Payment::STATUS_WAIT_CONFIRMATION,
                 'order' => 1,
-                'inn' => $paymentData['inn'],
-                'organization_id' => $paymentData['organization_id'],
-                'description' => $paymentData['act_payment_goal'],
+                'inn' => $validated['inn'],
+                'organization_id' => $validated['organization_id'],
+                'description' => $validated['act_payment_goal'],
             ]);
 
             $linkData = [

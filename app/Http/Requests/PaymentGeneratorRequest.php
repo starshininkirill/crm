@@ -81,8 +81,6 @@ class PaymentGeneratorRequest extends FormRequest
         return [
             'value' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
             'inn' => $this->input('inn') ?? null,
-            'organization_id' => $this->input('organization_id') ?? null,
-            'act_payment_goal' => $this->input('act_payment_goal') ?? null,
         ];
     }
 }

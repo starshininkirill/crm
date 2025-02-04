@@ -18,7 +18,8 @@
 
                 <label class="text-sm font-medium leading-6 text-gray-900 flex flex-col gap-1" for="file">
                     Файл
-                    <input type="file" id="file" name="file" class="form-input cursor-pointer" @change="handleFileChange"/>
+                    <input type="file" id="file" name="file" class="form-input cursor-pointer"
+                        @change="handleFileChange" />
                 </label>
 
                 <button type="submit" class="btn w-full" data-ripple-light="true">
@@ -70,7 +71,7 @@
                                     {{ documentTemplate.file_name }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <a target="_blank"
+                                    <a target="_blank" class="font-medium text-blue-600  hover:underline"
                                         :href="route('document-template.download', { documentTemplate: documentTemplate })">
                                         Скачать
                                     </a>
@@ -125,7 +126,7 @@ export default {
         const submitForm = () => {
 
             console.log(form.file);
-            
+
             form.post(route('document-template.store'), {
                 onSuccess: () => {
                     form.name = '';
@@ -133,7 +134,7 @@ export default {
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {
-                        fileInput.value = ''; 
+                        fileInput.value = '';
                     }
                 },
             });

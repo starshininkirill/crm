@@ -78,6 +78,8 @@ class DocumentGenerator
             $outputRelativePath = 'generatedDocuments/document.docx';
 
             $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
+            
+            dd($outputRelativePath);
 
             return Storage::url($outputRelativePath);
             }
