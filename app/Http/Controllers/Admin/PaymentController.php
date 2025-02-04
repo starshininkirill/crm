@@ -36,13 +36,14 @@ class PaymentController extends Controller
     public function unsorted()
     {
         $payments = Payment::query()->whereNull('contract_id')
-            ->whereNot('status', Payment::STATUS_CLOSE)
+            ->where('status', Payment::STATUS_WAIT_CONFIRMATION)
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $payments = $payments->map(function ($payment) {
             return [
                 'id' => $payment->id,
-                'created_at' => $payment->created_at->format('H:i d.m.Y'),
+                'created_at' => $payment->created_at->format('d.m.Y H:i '),
                 'value' => TextFormaterHelper::getPrice($payment->value),
                 'inn' => $payment->inn,
                 'organization'=> $payment->organization,

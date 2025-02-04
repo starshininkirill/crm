@@ -145,6 +145,14 @@ export default {
                 router.post(route('payment.shortlist.attach'), {
                     oldPayment: oldPayment.id,
                     newPayment: this.payment.id,
+                }, {
+                    onSuccess: () => {
+                        console.log('Платеж успешно прикреплен');
+                        this.$emit('close');
+                    },
+                    onError: (error) => {
+                        console.error('Ошибка прикрепления платежа:', error);
+                    }
                 });
             }
         },

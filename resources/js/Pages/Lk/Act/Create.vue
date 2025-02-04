@@ -1,9 +1,9 @@
 <template>
 
-    <Head title="Генератор Платежей" />
+    <Head title="Генератор Счёт/Акт" />
 
     <h1 class=" text-4xl font-bold mb-5">
-        Создание Платежа
+        Создание Счёт/Акт
     </h1>
 
     <ul v-if="form.errors" class="flex flex-col gap-1 mb-4">
@@ -67,6 +67,16 @@
                         </div>
                     </div>
 
+                    <!-- Выбор организации -->
+                    <div class="text-xl font-semibold">Организация</div>
+                    <div class="flex w-fit gap-7 mb-4">
+                        <label v-for="organisation in organisations" class="cursor-pointer">
+                            <input type="radio" :value="organisation.id" v-model="form.organization_id"
+                                name="organization_id" />
+                            {{ organisation.short_name }} {{ organisation.nds == 0 ? '(Без НДС)' : '(С НДС)' }}
+                        </label>
+                    </div>
+
                     <!-- Поля для физического лица -->
                     <fieldset v-show="form.client_type == '0'" :disabled="form.client_type != '0'"
                         class="flex flex-col gap-2">
@@ -85,15 +95,6 @@
                     <fieldset v-show="form.client_type == '1'" :disabled="form.client_type != '1'"
                         class="flex flex-col gap-2">
                         <div class="text-xl font-semibold">Данные для Юридического лица</div>
-
-                        <div class="text-xl font-semibold">Тип оплаты</div>
-                        <div class="flex w-fit gap-7 mb-4">
-                            <label v-for="organisation in organisations" class="cursor-pointer">
-                                <input checked type="radio" :value="organisation.id" v-model="form.organization_id"
-                                    name="organization_id" />
-                                {{ organisation.short_name }} {{ organisation.nds == 0 ? '(Без НДС)' : '(С НДС)' }}
-                            </label>
-                        </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <FormInput required v-model="form.organization_short_name" type="text"
@@ -125,11 +126,30 @@
 
     </form>
 
-    <a v-if="$page.props.session.link" 
-    class="p-4 border-2 border-black rounded cursor-pointer text-xl font-semibold mt-5 flex justify-center items-center"
-        :href="$page.props.session.link">
-        Скачать
-    </a>
+
+    <div class=" mt-5 ">
+        <a v-if="$page.props.session.linkData && $page.props.session.linkData.type == 'document'"
+            class="p-4 border-2 border-black rounded cursor-pointer text-xl font-semibold flex justify-center items-center"
+            :href="$page.props.session.linkData.link">
+            Скачать
+        </a>
+        <div v-if="$page.props.session.linkData && $page.props.session.linkData.type == 'sbp'"
+            class="px-5 py-3 border border-black rounded flex gap-4 items-center ">
+            <span>
+                Ссылка для оплаты:
+            </span>
+            <input type="text" readonly ref="linkInput" :value="$page.props.session.linkData.link"
+                class="input max-w-xs w-full">
+            <div @click="copyToClipboard" class=" w-14 h-14 bg-gray-800 rounded-md p-2 cursor-pointer">
+                <svg class="w-full h-full" width="64" height="64" viewBox="0 0 64 64" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M40 40H47.4667C50.4536 40 51.9466 39.9999 53.0874 39.4186C54.091 38.9073 54.9079 38.0916 55.4193 37.0881C56.0006 35.9472 56.0006 34.4537 56.0006 31.4668V16.5334C56.0006 13.5465 56.0006 12.053 55.4193 10.9121C54.9079 9.90858 54.091 9.09262 53.0874 8.5813C51.9466 8 50.4541 8 47.4672 8H32.5339C29.5469 8 28.0523 8 26.9115 8.5813C25.9079 9.09262 25.0926 9.90858 24.5813 10.9121C24 12.053 24 13.5466 24 16.5335V24.0002M8 47.4669V32.5335C8 29.5466 8 28.053 8.5813 26.9121C9.09262 25.9086 9.90793 25.0926 10.9115 24.5813C12.0523 24 13.5469 24 16.5339 24H31.4672C34.4541 24 35.9466 24 37.0874 24.5813C38.091 25.0926 38.9079 25.9086 39.4193 26.9121C40.0006 28.053 40.0006 29.5464 40.0006 32.5334V47.4668C40.0006 50.4537 40.0006 51.9472 39.4193 53.0881C38.9079 54.0916 38.091 54.9073 37.0874 55.4186C35.9466 55.9999 34.4541 56 31.4672 56H16.5339C13.5469 56 12.0523 55.9999 10.9115 55.4186C9.90793 54.9073 9.09262 54.0916 8.5813 53.0881C8 51.9472 8 50.4538 8 47.4669Z"
+                        stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
 
 
 </template>
@@ -181,20 +201,22 @@ export default {
     },
     methods: {
         copyToClipboard() {
-            const text = this.link;
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    alert('Скопировано!')
-                })
-                .catch((err) => {
-                    console.error("Ошибка при копировании текста: ", err);
-                });
+            const linkInput = this.$refs.linkInput;
+            if (linkInput) {
+                navigator.clipboard.writeText(linkInput.value)
+                    .then(() => {
+                        alert('Скопировано!');
+                    })
+                    .catch((err) => {
+                        console.error("Ошибка при копировании текста: ", err);
+                    });
+            }
         },
         handleSubmit(event) {
             event.preventDefault();
             this.isSubmitting = true;
             let th = this;
-            this.form.post(route('lk.payment.store'), {
+            this.form.post(route('lk.act.store'), {
                 onFinish() {
                     th.isSubmitting = false;
                 },

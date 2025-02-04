@@ -61,7 +61,6 @@ export default {
     async mounted() {
         const response = await axios.get(route('payment.shortlist', { payment: this.payment.id }));
         this.shortlist = response.data;
-
         this.$emit("update:load", true);
     },
     methods: {

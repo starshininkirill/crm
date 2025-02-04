@@ -15,48 +15,33 @@ use Inertia\Inertia;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 
-class PaymentGeneratorController extends Controller
+class ActGeneratorController extends Controller
 {
     public function create()
     {
-        // $templatePath = resource_path('templates/test.docx');
-        // $templateProcessor = new TemplateProcessor($templatePath);
-
-        // $templateProcessor->setValue('number', '999999');
-        // $templateProcessor->setValue('name', 'Иванов Иван');
-
-        // $outputPath = storage_path('\contract.docx');
-        // $templateProcessor->saveAs($outputPath);
-        // dd($outputPath);
-
-
         $organisations = Organization::where('active', 1)->get()->toArray();
 
-        return Inertia::render('Lk/Payment/Create', [
+        return Inertia::render('Lk/Act/Create', [
             'organisations' => $organisations,
-        ]);
-
-        return view('lk.payment.create', [
-            'organisations' => $organisations
         ]);
     }
 
     public function store(PaymentGeneratorRequest $request)
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
         $contract = Contract::create($request->contractData());
 
         $contract->payments()->create($request->paymentData());
         $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
 
-        $documentLink = DocumentGenerator::generatePaymentDocument($data);
+        $organisation = Organization::where('id', $validated['organization_id'])->first();
 
-        // TODO
-        // Временное решение, потом поменять на интеграцию
         $paymentData = $request->paymentData();
-        if ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) {
+        if ($validated['client_type'] == Client::TYPE_LEGAL_ENTITY) {
 
+            // TODO
+            // Временное решение, потом поменять на интеграцию
             $payment = Payment::create([
                 'value' => $paymentData['value'],
                 'status' => Payment::STATUS_WAIT_CONFIRMATION,
@@ -65,8 +50,18 @@ class PaymentGeneratorController extends Controller
                 'organization_id' => $paymentData['organization_id'],
                 'description' => $paymentData['act_payment_goal'],
             ]);
-        }
-        
-        return back()->with(['success' => 'Документ успешно сгенерирован', 'link' => $documentLink]);
+
+            $linkData = [
+                'type' => 'document',
+                'link' => DocumentGenerator::generatePaymentDocument($validated)
+            ];
+        } else if ($validated['client_type'] == Client::TYPE_INDIVIDUAL) {
+            $linkData = [
+                'type' => 'sbp',
+                'link' => DocumentGenerator::generatePaymentLink($validated['amount_summ'], $validated['client_fio'], $validated['number'], $validated['phone'], $organisation->terminal)
+            ];
+        };
+
+        return back()->with(['success' => 'Документ успешно сгенерирован', 'linkData' => $linkData]);
     }
 }

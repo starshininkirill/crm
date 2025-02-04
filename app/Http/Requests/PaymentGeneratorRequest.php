@@ -33,13 +33,14 @@ class PaymentGeneratorRequest extends FormRequest
                 'oldPayment' => 'required|numeric|exists:payments,id',
                 'newPayment' => 'required|numeric|exists:payments,id'
             ];
-        } else if ($this->isMethod('POST') && $this->routeIs('lk.payment.store')) {
+        } else if ($this->isMethod('POST') && $this->routeIs('lk.act.store')) {
             $rules = [
                 'client_type' => 'required|numeric|in:0,1',
                 'payment_direction' => 'required|numeric|in:0,1,2,3,',
                 'leed' => 'required|numeric|min:1',
                 'number' => 'required|numeric|exists:contracts,number',
-                'deal_id' => 'required|numeric|min:1'
+                'deal_id' => 'required|numeric|min:1',
+                'organization_id' => 'required|numeric|exists:contracts,number',
             ];
             if ($this->input('client_type') == Client::TYPE_INDIVIDUAL) {
                 $rules = array_merge($rules, [
@@ -50,7 +51,6 @@ class PaymentGeneratorRequest extends FormRequest
                 ]);
             } elseif ($this->input('client_type') == Client::TYPE_LEGAL_ENTITY) {
                 $rules = array_merge($rules, [
-                    'organization_id' => 'required|numeric|exists:contracts,number',
                     // 'payment_type' => 'required|numeric',
                     'organization_short_name' => 'required|string|max:255',
                     'legal_address' => 'required|string|max:255',

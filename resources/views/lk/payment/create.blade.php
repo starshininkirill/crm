@@ -19,7 +19,7 @@
                 @endforeach
             </ul>
         @endif
-        <vue-payment-create-form action="{{ route('lk.payment.store') }}" 
+        <vue-payment-create-form action="{{ route('lk.act.store') }}" 
         :organisations='@json($organisations)' 
         row-old='@json(old())'
          token="{{ csrf_token() }}"

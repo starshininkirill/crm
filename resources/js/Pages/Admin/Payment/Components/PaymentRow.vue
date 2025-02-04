@@ -15,7 +15,7 @@
         </td>
         <td class="border px-4 py-2">Разделить</td>
     </tr>
-    <AttachPayment v-if="isActive" :payment="payment" />
+    <AttachPayment v-if="isActive" @close="handleClose" :payment="payment" />
 </template>
 
 <script>
@@ -30,6 +30,11 @@ export default {
     methods: {
         toggleAttach() {
             this.isActive = !this.isActive;
+        },
+        handleClose() {
+            console.log('handle');
+            
+            this.isActive = false
         }
     }
 }

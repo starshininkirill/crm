@@ -16,13 +16,13 @@
                     </li>
 
                     <li class="me-2">
-                        <Link :href="route('lk.payment.create')" :class="[
+                        <Link :href="route('lk.act.create')" :class="[
                             'inline-block p-4 rounded-t-lg border-b-2',
-                            isActive('lk.payment.create')
+                            isActive('lk.act.create')
                                 ? 'text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500'
                                 : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'
                         ]">
-                        Платёж
+                        Счёт/Акт
                         </Link>
                     </li>
 
@@ -39,7 +39,7 @@ import { usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
 export default {
-    name: "Layout",
+    name: "LkLayout",
     components: { BaseLayout },
     methods: {
         isActive(routeName) {
