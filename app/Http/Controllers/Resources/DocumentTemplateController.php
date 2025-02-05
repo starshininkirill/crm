@@ -23,13 +23,14 @@ class DocumentTemplateController extends Controller
         $originalName = $file->getClientOriginalName();
 
         $i = 1;
-        while (Storage::exists('documents/' . $originalName)) {
+        while (Storage::disk('public')->exists('documents/' . $originalName)) {
             $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
                 . '_' . $i . '.' . $file->getClientOriginalExtension();
             $i++;
         }
 
-        $path = $file->storeAs('documents', $originalName);
+        $uploadedFile = $file->storeAs('documents', $originalName, 'public');
+        $path = Storage::url($uploadedFile);
 
         DocumentTemplate::create([
             'name' => $validated['name'],
@@ -46,8 +47,6 @@ class DocumentTemplateController extends Controller
         $documentTemplate->name = $validated['name'];
 
         if ($request->hasFile('file')) {
-            $oldFile = $documentTemplate->file;
-
             $file = $request->file('file');
 
             if ($documentTemplate->file && Storage::exists($documentTemplate->file)) {
@@ -56,16 +55,14 @@ class DocumentTemplateController extends Controller
 
             $originalName = $file->getClientOriginalName();
             $i = 1;
-            while (Storage::exists('documents/' . $originalName)) {
+            while (Storage::disk('public')->exists('documents/' . $originalName)) {
                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
                     . '_' . $i . '.' . $file->getClientOriginalExtension();
                 $i++;
             }
 
-            $path = $file->storeAs('documents', $originalName);
-            $documentTemplate->file = $path;
-
-            Storage::delete($oldFile);
+            $uploadedFile = $file->storeAs('documents', $originalName, 'public');
+            $documentTemplate->file = Storage::url($uploadedFile);
         }
 
         $documentTemplate->save();
@@ -75,7 +72,7 @@ class DocumentTemplateController extends Controller
 
     public function destroy(DocumentTemplate $documentTemplate)
     {
-        Storage::delete($documentTemplate->file);
+        Storage::disk('public')->delete($documentTemplate->filePath());
 
         $documentTemplate->delete();
 

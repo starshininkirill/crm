@@ -37,6 +37,7 @@ class PaymentController extends Controller
     {
         $payments = Payment::query()->whereNull('contract_id')
             ->where('status', Payment::STATUS_WAIT_CONFIRMATION)
+            ->whereNotNull('inn')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -52,6 +53,31 @@ class PaymentController extends Controller
         });
 
         return Inertia::render('Admin/Payment/Unsorted', [
+            'payments' => $payments,
+            'paymentStatuses' => Payment::vueStatuses(),
+        ]);
+    }
+
+    public function unsortedSbp()
+    {
+        $payments = Payment::query()->whereNull('contract_id')
+            ->where('status', Payment::STATUS_WAIT_CONFIRMATION)
+            ->whereNull('inn')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $payments = $payments->map(function ($payment) {
+            return [
+                'id' => $payment->id,
+                'created_at' => $payment->created_at->format('d.m.Y H:i '),
+                'value' => TextFormaterHelper::getPrice($payment->value),
+                'inn' => $payment->inn,
+                'organization'=> $payment->organization,
+                'description' => $payment->description,
+            ];
+        });
+
+        return Inertia::render('Admin/Payment/UnsortedSbp', [
             'payments' => $payments,
             'paymentStatuses' => Payment::vueStatuses(),
         ]);

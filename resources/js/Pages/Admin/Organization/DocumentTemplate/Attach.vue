@@ -27,17 +27,18 @@
                         </VueSelect>
                     </div>
                     <div class="flex flex-col gap-1">
-                        Услуга
-                        <VueSelect v-model="form.service_id" :reduce="services => services.id" label="name"
-                            :options="services">
-                        </VueSelect>
-                    </div>
-                    <div class="flex flex-col gap-1">
                         Тип
                         <VueSelect v-model="form.type" :reduce="osdtTypes => osdtTypes.value" label="name"
                             :options="osdtTypes">
                         </VueSelect>
                     </div>
+                    <div class="flex flex-col gap-1">
+                        Услуга
+                        <VueSelect v-model="form.service_id" :reduce="services => services.id" label="name"
+                            :options="services">
+                        </VueSelect>
+                    </div>
+
 
                     <button type="submit" class="btn !h-auto w-full" data-ripple-light="true">
                         Создать
@@ -84,25 +85,21 @@
                                     {{ attachedDocument.id }}
                                 </td>
                                 <td class="px-6 py-4 ">
-                                    <Link
-                                        class=" text-blue-500 font-semibold"
+                                    <Link class=" text-blue-500 font-semibold"
                                         :href="route('admin.organization.document-template.edit', { documentTemplate: attachedDocument.documentTemplate.id })">
                                     {{ attachedDocument.documentTemplate.name }}
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <Link
-                                        class=" text-blue-500 font-semibold"
+                                    <Link class=" text-blue-500 font-semibold"
                                         :href="route('admin.organization.edit', { organization: attachedDocument.organization.id })">
-                                        {{ attachedDocument.organization.short_name }}
+                                    {{ attachedDocument.organization.short_name }}
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <Link
-                                        v-if="attachedDocument.service"
-                                        class=" text-blue-500 font-semibold"
+                                    <Link v-if="attachedDocument.service" class=" text-blue-500 font-semibold"
                                         :href="route('admin.service.edit', { service: attachedDocument.service.id })">
-                                        {{ attachedDocument.service.name }}
+                                    {{ attachedDocument.service.name }}
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4">

@@ -83,7 +83,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('payments')->group(function () {
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
-        Route::get('/unsettled', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
+        Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
+        Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.payment.unsortedSbp');
         Route::get('/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
     });
 

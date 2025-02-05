@@ -22,6 +22,8 @@ export default defineConfig({
     server: {
         host: '192.168.1.146',
         port: 3000,
+        cors: true, // Включает поддержку CORS
+        middlewareMode: true,
         hmr: {
             host: '192.168.1.146',
         }

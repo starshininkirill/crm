@@ -23,4 +23,9 @@ class DocumentTemplate extends Model
         return $this->belongsToMany(Service::class, 'organization_service_document_template')
             ->withPivot('organization_id', 'type');
     }
+
+    public function filePath()
+    {
+        return str_replace('/storage/', '', $this->file);
+    }
 }

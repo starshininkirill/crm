@@ -11,6 +11,7 @@ use App\Models\ContractUser;
 use App\Models\Organization;
 use App\Models\OrganizationServiceDocumentTemplate;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -18,7 +19,7 @@ use PhpOffice\PhpWord\TemplateProcessor;
 class ActGeneratorController extends Controller
 {
     public function create()
-    {
+    {   
         $organisations = Organization::where('active', 1)->get()->toArray();
 
         return Inertia::render('Lk/Act/Create', [
@@ -34,7 +35,7 @@ class ActGeneratorController extends Controller
 
         $contract->payments()->create($request->paymentData());
         $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
-
+ 
         $organisation = Organization::where('id', $validated['organization_id'])->first();
 
         $paymentData = $request->paymentData();

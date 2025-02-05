@@ -60,8 +60,9 @@ class DocumentGenerator
         $organisation = Organization::where('id', $data['organization_id'])->first();
         if ($organisation) {
             $documentTemplate = $organisation->documentTemplates()->first();
-            if ($documentTemplate) {
-                $filePath = storage_path('app/' . $documentTemplate->file);
+            if ($documentTemplate) {        
+                $filePath = Storage::path('public/' . $documentTemplate->filePath());
+                
                 $templateProcessor = new TemplateProcessor($filePath);
 
                 $templateProcessor->setValue('DocumentNumber', $data['number']);
@@ -79,7 +80,6 @@ class DocumentGenerator
 
             $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
             
-            dd($outputRelativePath);
 
             return Storage::url($outputRelativePath);
             }

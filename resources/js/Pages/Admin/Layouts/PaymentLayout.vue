@@ -8,6 +8,9 @@
                 <AdminSubnavLink :href="route('admin.payment.unsorted')" :route="'admin.payment.unsorted'">
                     Неразобранные платежи (РС)
                 </AdminSubnavLink>
+                <AdminSubnavLink :href="route('admin.payment.unsortedSbp')" :route="'admin.payment.unsortedSbp'">
+                    Неразобранные платежи (СБП)
+                </AdminSubnavLink>
             </div>
             <slot />
 

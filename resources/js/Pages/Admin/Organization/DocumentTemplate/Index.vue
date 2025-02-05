@@ -71,8 +71,12 @@
                                     {{ documentTemplate.file_name }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <a target="_blank" class="font-medium text-blue-600  hover:underline"
+                                    <!-- <a target="_blank" class="font-medium text-blue-600  hover:underline"
                                         :href="route('document-template.download', { documentTemplate: documentTemplate })">
+                                        Скачать
+                                    </a> -->
+                                    <a target="_blank" class="font-medium text-blue-600  hover:underline"
+                                        :href="documentTemplate.file_path">
                                         Скачать
                                     </a>
                                 </td>

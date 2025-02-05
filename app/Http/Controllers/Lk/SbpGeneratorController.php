@@ -34,6 +34,7 @@ class SbpGeneratorController extends Controller
         $fileUrl = Storage::url($uploadedFile);
 
         $validated['receipt_url'] = $fileUrl;
+        $validated['status'] = Payment::STATUS_WAIT_CONFIRMATION;
 
         Payment::create($validated);
 
