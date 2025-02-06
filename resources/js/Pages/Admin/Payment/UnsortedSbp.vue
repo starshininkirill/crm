@@ -19,9 +19,9 @@
                             {{ header }}
                         </th>
                     </tr>
-                </thead>
+                </thead> 
                 <tbody>
-
+                    <SbpPaymentRow v-for="(payment, index) in payments" :key="index" :payment="payment" />
                 </tbody>
             </table>
             <h2 v-else>Платежей не найдено</h2>
@@ -33,11 +33,15 @@
 import { Head, router } from '@inertiajs/vue3';
 import PaymentLayout from '../Layouts/PaymentLayout.vue';
 import FormInput from '../../../Components/FormInput.vue';
+import SbpPaymentRow from './Components/SbpPaymentRow.vue';
+import { Fancybox } from '@fancyapps/ui';
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 export default {
     components: {
         Head,
         FormInput,
+        SbpPaymentRow
     },
     props: {
         payments: {
@@ -52,7 +56,10 @@ export default {
         return {
             headers: ['ИП', 'Сумма', 'Описание', 'Дата', 'Чек', 'Прикрепить', 'Разделить']
         };
-    }
+    },
+    mounted() {
+        Fancybox.bind("[data-fancybox]", {});
+    },
 }
 
 </script>

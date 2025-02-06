@@ -18,7 +18,7 @@
                         <th v-for="header in headers" :key="header" class="border border-gray-300 px-4 py-2 text-left">
                             {{ header }}
                         </th>
-                    </tr>
+                    </tr> 
                 </thead>
                 <tbody>
                     <PaymentRow v-for="(payment, index) in payments" :key="index" :payment="payment" />

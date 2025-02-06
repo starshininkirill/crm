@@ -20,6 +20,10 @@ export default {
         route: {
             type: String,
             required: true
+        },
+        strictMode:{
+            type: Boolean,
+            default: false,
         }
     },
     methods: {
@@ -30,7 +34,13 @@ export default {
             const currentRoute = page.props.ziggy.location;
             const targetRoute = ziggyRoute(route);
 
-            return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');
+            if(this.strictMode){
+                return currentRoute === targetRoute;
+            }else{
+                return currentRoute === targetRoute || currentRoute.startsWith(targetRoute + '/');
+            }
+
+
         }
     },
 }

@@ -69,7 +69,12 @@ export default {
                 router.post(route('payment.shortlist.attach'), {
                     oldPayment: oldPayment.id,
                     newPayment: this.payment.id,
-                })
+                }, {
+                    onSuccess: () => {
+                        this.$emit('close');
+                    },
+                }
+                )
             }
         },
     }

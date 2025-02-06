@@ -4,7 +4,7 @@
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center justify-between w-full">
                     <div class=" flex items-baseline space-x-4">
-                        <HeaderNavLink :href="route('home')" route="home">Главная</HeaderNavLink>
+                        <HeaderNavLink :strictMode="true" :href="route('home')" route="home">Главная</HeaderNavLink>
                         <HeaderNavLink :href="route('lk')" route="lk">Личный кабинет</HeaderNavLink>
                         <HeaderNavLink v-if="$page.props.user" :href="route('admin')" route="admin">Админка
                         </HeaderNavLink>

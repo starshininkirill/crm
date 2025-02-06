@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -74,6 +75,7 @@ class PaymentController extends Controller
                 'inn' => $payment->inn,
                 'organization'=> $payment->organization,
                 'description' => $payment->description,
+                'receipt_url' => $payment->receipt_url,
             ];
         });
 

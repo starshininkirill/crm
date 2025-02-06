@@ -21,15 +21,16 @@ class DocumentTemplateController extends Controller
         $file = $request->file('file');
 
         $originalName = $file->getClientOriginalName();
+        $safeName = preg_replace('/[\/\\\?%#&<>+|":*]/', '_', $originalName);
 
         $i = 1;
-        while (Storage::disk('public')->exists('documents/' . $originalName)) {
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+        while (Storage::disk('public')->exists('documents/' . $safeName)) {
+            $safeName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
                 . '_' . $i . '.' . $file->getClientOriginalExtension();
             $i++;
         }
 
-        $uploadedFile = $file->storeAs('documents', $originalName, 'public');
+        $uploadedFile = $file->storeAs('documents', $safeName, 'public');
         $path = Storage::url($uploadedFile);
 
         DocumentTemplate::create([
@@ -54,14 +55,15 @@ class DocumentTemplateController extends Controller
             }
 
             $originalName = $file->getClientOriginalName();
+            $safeName = preg_replace('/[\/\\\?%#&<>+|":*]/', '_', $originalName);
             $i = 1;
-            while (Storage::disk('public')->exists('documents/' . $originalName)) {
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+            while (Storage::disk('public')->exists('documents/' . $safeName)) {
+                $safeName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
                     . '_' . $i . '.' . $file->getClientOriginalExtension();
                 $i++;
             }
 
-            $uploadedFile = $file->storeAs('documents', $originalName, 'public');
+            $uploadedFile = $file->storeAs('documents', $safeName, 'public');
             $documentTemplate->file = Storage::url($uploadedFile);
         }
 

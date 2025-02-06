@@ -1,21 +1,19 @@
 <template>
     <tr>
         <td class="border px-4 py-2">{{ payment.organization?.short_name }}</td>
-        <td class="border px-4 py-2">
-            <Link :href="route('admin.payment.show', { payment: payment.id })" class="text-blue-700 underline">
-            {{ payment.id }}
-            </Link>
-        </td>
         <td class="border px-4 py-2">{{ payment.value }}</td>
         <td class="border px-4 py-2">{{ payment.description }}</td>
-        <td class="border px-4 py-2">{{ payment.inn }}</td>
         <td class="border px-4 py-2">{{ payment.created_at }}</td>
+        <td class="border px-4 py-2">
+            <img :data-fancybox="`receipt-${payment.id}`" class=" cursor-pointer w-24 h-20 object-cover"
+                v-if="payment?.receipt_url" :src="payment.receipt_url" alt="">
+        </td>
         <td class="border px-4 py-2 text-blue-700 cursor-pointer" @click="toggleAttach">
             Прикрепить
         </td>
         <td class="border px-4 py-2">Разделить</td>
     </tr>
-    <AttachPayment v-if="isActive" @close="handleClose" :payment="payment" />
+    <AttachPayment :withShortList="false" v-if="isActive" @close="handleClose" :payment="payment" />
 </template>
 
 <script>
@@ -32,6 +30,8 @@ export default {
             this.isActive = !this.isActive;
         },
         handleClose() {
+            console.log('handle');
+            
             this.isActive = false
         }
     }

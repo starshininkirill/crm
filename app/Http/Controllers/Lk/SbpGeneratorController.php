@@ -28,13 +28,13 @@ class SbpGeneratorController extends Controller
             return redirect()->back()->withErrors('Не удалось загрузить файл');
         }
 
-
         $file = $request->file('file');
         $uploadedFile = $file->store('paymentChecks', 'public');
         $fileUrl = Storage::url($uploadedFile);
 
         $validated['receipt_url'] = $fileUrl;
-        $validated['status'] = Payment::STATUS_WAIT_CONFIRMATION;
+        $validated['status'] = Payment::STATUS_WAIT_CONFIRMATION; 
+        $validated['description'] = 'Договор: ' . $validated['number'] . '. ' . $validated['description'];
 
         Payment::create($validated);
 
