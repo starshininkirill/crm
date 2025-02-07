@@ -21,9 +21,18 @@ class OptionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required|string|max:255', 
-            'value' => 'required' 
-        ];
+        if(($this->isMethod('POST') || $this->isMethod('PUT') || $this->isMethod('PACH')) && ($this->routeIs('option.store') || $this->routeIs('option.update'))){
+            $rules = [
+                'name' => 'required|string|max:255', 
+                'value' => 'required' 
+            ];
+        }else if ($this->isMethod('POST') && $this->routeIs('option.mass-update')){
+            $rules = [
+                'options' => 'required|array', 
+                'options.*.name' => 'required|string|unique:options,name,{id},id,value,{value}',
+                'options.*.value' => 'sometimes',
+            ];
+        }
+        return $rules;
     }
 }

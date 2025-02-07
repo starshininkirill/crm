@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Departments;
 
+use App\Classes\T2Api;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
@@ -21,10 +23,12 @@ use Inertia\Inertia;
 class SaleDepartmentController extends Controller
 {
     protected $plansService;
+    protected $t2Api;
 
-    public function __construct(PlansService $plansService)
+    public function __construct(PlansService $plansService, T2Api $t2Api)
     {
         $this->plansService = $plansService;
+        $this->t2Api = $t2Api;
     }
 
     public function index()
@@ -50,13 +54,17 @@ class SaleDepartmentController extends Controller
         // $body = $response->body();
 
         // dd($body);
+        
+
+        // $data =  T2Api::getDataFromT2Api($dateNow, $dateNow);
+        // T2Api::importDataFromApi($dateNow, $dateNow);
+        
 
         $department = Department::getMainSaleDepartment();
 
         return Inertia::render('Admin/SaleDapartment/Index', [
             'department' => $department,
         ]);
-        return view('admin.departments.sale.index', ['department' => $department]);
     }
 
     public function userReport(Request $request)
@@ -157,6 +165,17 @@ class SaleDepartmentController extends Controller
             'date' => $date,
             'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect(),
             'isCurrentMonth' => $isCurrentMonth
+        ]);
+    }
+
+    public function t2Settings()
+    {
+        $accessToken = Option::where('name', 't2_access_token')->first();
+        $refreshToken = Option::where('name', 't2_refresh_token')->first();
+
+        return Inertia::render('Admin/SaleDapartment/T2Settings', [
+            'accessToken' => $accessToken->value ?? '',
+            'refreshToken' => $refreshToken->value ?? '',
         ]);
     }
 }

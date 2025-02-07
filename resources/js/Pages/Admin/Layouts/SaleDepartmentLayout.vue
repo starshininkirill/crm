@@ -11,6 +11,9 @@
                 <AdminSubnavLink :href="route('admin.sale-department.report-settings')" :route="'admin.sale-department.report-settings'">
                     Настройка планов
                 </AdminSubnavLink>
+                <AdminSubnavLink :href="route('admin.sale-department.t2-settings')" :route="'admin.sale-department.t2-settings'">
+                    Т2 API
+                </AdminSubnavLink>
             </div>
             <slot />
         </div>
