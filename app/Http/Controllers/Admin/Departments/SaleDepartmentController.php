@@ -6,6 +6,7 @@ use App\Classes\T2Api;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\NumberStat;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
@@ -25,16 +26,15 @@ class SaleDepartmentController extends Controller
     protected $plansService;
     protected $t2Api;
 
-    public function __construct(PlansService $plansService, T2Api $t2Api)
+    public function __construct(PlansService $plansService)
     {
         $this->plansService = $plansService;
-        $this->t2Api = $t2Api;
     }
 
     public function index()
     {
-        
-		$dateNow = Carbon::yesterday()->format('Y-m-d');
+
+        $dateNow = Carbon::yesterday()->format('Y-m-d');
 
         // $date_start = urlencode("{$dateNow}T00:00:01+03:00");
         // $date_end = urlencode("{$dateNow}T23:59:59+03:00");
@@ -42,23 +42,23 @@ class SaleDepartmentController extends Controller
         // $type = 'caller';
         // $client_number = '79922851746';
         // $access_token = 'eyJhbGciOiJIUzUxMiJ9.eyJVc2VyRGV0YWlsc0ltcGwiOnsiY29tcGFueUlkIjo0NjkyLCJ1c2VySWQiOjEyMTU2LCJsb2dpbiI6Ijc5MDA1MDEyMzUwIn0sInN1YiI6IkFDQ0VTU19PUEVOQVBJX1RPS0VOIiwiZXhwIjoxNzM4OTEwNTMyfQ.wao60mKA-_MzNbvzNtTxoU0s_5lauErP-44MWau3D0M7Jlr7NgNcOOKL8Po0TkkokwuOtcerRkps_F0zJKzKrQ';
-        
+
         // $target_url = "https://ats2.t2.ru/crm/openapi/call-records/info?start={$date_start}&end={$date_end}&size={$size}";
-        
+
         // $response = Http::withoutVerifying()->withHeaders([
         //     'Authorization' => $access_token,
         //     'Content-Type' => 'application/json',
         // ])->get($target_url);
-        
+
         // $info = $response->headers();
         // $body = $response->body();
 
         // dd($body);
-        
+
 
         // $data =  T2Api::getDataFromT2Api($dateNow, $dateNow);
         // T2Api::importDataFromApi($dateNow, $dateNow);
-        
+
 
         $department = Department::getMainSaleDepartment();
 
@@ -77,7 +77,7 @@ class SaleDepartmentController extends Controller
         } else {
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
- 
+
         $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
@@ -114,7 +114,7 @@ class SaleDepartmentController extends Controller
             }
         }
 
-        return Inertia::render('Admin/SaleDapartment/UserReport',[
+        return Inertia::render('Admin/SaleDapartment/UserReport', [
             'departments' => $departments,
             'users' => $selectUsers,
             'user' => $user ?? null,
@@ -157,7 +157,7 @@ class SaleDepartmentController extends Controller
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
 
         return Inertia::render('Admin/SaleDapartment/ReportSettings');
-        
+
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
             'workPlanClass' => WorkPlan::class,
@@ -173,9 +173,38 @@ class SaleDepartmentController extends Controller
         $accessToken = Option::where('name', 't2_access_token')->first();
         $refreshToken = Option::where('name', 't2_refresh_token')->first();
 
+        $lastNumberStat = NumberStat::latest()->first();
+
+
+        // $dateNow = Carbon::yesterday()->format('Y-m-d');
+        // $errors = '';
+
+        // try {
+        //     $t2Api = new T2Api;
+        //     $t2Api->importDataFromApi($dateNow, $dateNow);
+        // } catch (Exception $e) {
+        //     $errors = $e->getMessage();
+        // }
+
         return Inertia::render('Admin/SaleDapartment/T2Settings', [
             'accessToken' => $accessToken->value ?? '',
             'refreshToken' => $refreshToken->value ?? '',
+            'lastUpdate' => $lastNumberStat?->updated_at->format('Y-m-d H:i') ?? '',
         ]);
+    }
+
+    public function t2LoadData()
+    {
+        $dateNow = Carbon::yesterday()->format('Y-m-d');
+
+        try {
+            $t2Api = new T2Api;
+            $t2Api->importDataFromApi($dateNow, $dateNow);
+        } catch (Exception $e) {
+            $errors = $e->getMessage();
+            return redirect()->back()->withErrors($errors);
+        }
+
+        return redirect()->back()->with('success', 'Данные успешно загружены');
     }
 }

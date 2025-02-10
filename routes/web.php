@@ -131,6 +131,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
         Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.sale-department.report-settings');
         Route::get('/t2-settings', [SaleDepartmentController::class, 't2Settings'])->name('admin.sale-department.t2-settings');
+        Route::get('/t2-load-data', [SaleDepartmentController::class, 't2LoadData'])->name('admin.sale-department.t2-load-data');
     });
 
     Route::prefix('settings')->group(function () {

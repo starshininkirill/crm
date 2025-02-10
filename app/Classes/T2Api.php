@@ -2,9 +2,13 @@
 
 namespace App\Classes;
 
+use App\Exceptions\T2ApiException;
+use App\Models\NumberStat;
 use App\Models\Option;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Http;
+use Symfony\Component\HttpFoundation\Response;
 
 class T2Api
 {
@@ -17,33 +21,36 @@ class T2Api
         $this->refreshToken = Option::where('name', 't2_refresh_token')->first() ?? null;
         $access_token = Option::where('name', 't2_access_token')->first() ?? null;
 
-        if(!$access_token){
-            $token = $this->getNewToken();
+        if (!$access_token) {
+            $this->getNewTokens();
+            return;
         }
-    }    
 
-    protected function getNewToken()
+        $this->accessToken = $access_token->value;
+    }
+
+    protected function getNewTokens()
     {
-        if(!$this->refreshToken || $this->refreshToken == '') {
-            $this->sendError('Не удалось получить REFRESH TOKEN из настроек, пожалуйста, обратитесь к разработчику!');		
-		}
-        
+        if (!$this->refreshToken || $this->refreshToken == '') {
+            $this->sendError('Не удалось получить REFRESH TOKEN из настроек, пожалуйста, обратитесь к разработчику!');
+        }
+
         $targetUrl = "https://ats2.t2.ru/crm/openapi/authorization/refresh/token";
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => $this->refreshToken->value,
             'Content-Type' => 'application/json',
         ])->put($targetUrl);
 
-        $responseData = $response->json();   
+        $responseData = $response->json();
 
-        if($response->status() == 200){
+        if ($response->status() == 200) {
             $this->saveAccessToken($responseData['accessToken']);
             $this->saveRefreshToken($responseData['refreshToken']);
 
             return;
         }
 
-        if(array_key_exists('details', $responseData) && $responseData['details'] == 'The token has already been updated'){
+        if (array_key_exists('details', $responseData) && $responseData['details'] == 'The token has already been updated') {
             $this->sendError('Слишком устаревшие токены API! Обновите токены API вручную из кабинета T2 и сохраните в настройках!');
         }
 
@@ -52,11 +59,11 @@ class T2Api
 
     protected function sendError(string $error)
     {
-        return redirect()->back()->withErrors($error);
+        throw new Exception($error);
     }
 
     protected function saveAccessToken(string $token)
-    {   
+    {
         Option::updateOrCreate(
             ['name' => 't2_access_token'],
             ['value' => $token]
@@ -65,7 +72,7 @@ class T2Api
     }
 
     protected function saveRefreshToken(string $token)
-    {   
+    {
         Option::updateOrCreate(
             ['name' => 't2_refresh_token'],
             ['value' => $token]
@@ -96,51 +103,81 @@ class T2Api
         79922851746,
     ];
 
-    public static function  getDataFromT2Api($dateStart, $dateEnd)
+    public function getDataFromT2Api($dateStart, $dateEnd)
     {
+        if (!$this->accessToken) {
+            $this->getNewTokens();
+        }
 
         $date_start = urlencode("{$dateStart}T00:00:01+03:00");
         $date_end = urlencode("{$dateEnd}T23:59:59+03:00");
 
         $size = 3000;
 
-        $access_token = 'eyJhbGciOiJIUzUxMiJ9.eyJVc2VyRGV0YWlsc0ltcGwiOnsiY29tcGFueUlkIjo0NjkyLCJ1c2VySWQiOjEyMTU2LCJsb2dpbiI6Ijc5MDA1MDEyMzUwIn0sInN1YiI6IkFDQ0VTU19PUEVOQVBJX1RPS0VOIiwiZXhwIjoxNzM4OTEwNTMyfQ.wao60mKA-_MzNbvzNtTxoU0s_5lauErP-44MWau3D0M7Jlr7NgNcOOKL8Po0TkkokwuOtcerRkps_F0zJKzKrQ';
-
         $target_url = "https://ats2.t2.ru/crm/openapi/call-records/info?start={$date_start}&end={$date_end}&size={$size}";
 
         $response = Http::withoutVerifying()->withHeaders([
-            'Authorization' => $access_token,
+            'Authorization' => $this->accessToken,
             'Content-Type' => 'application/json',
         ])->get($target_url);
 
         $info = $response->headers();
-        $response = $response->json();
+        $responseData = $response->json();
 
-        return $response;
+        if ($response->status() == Response::HTTP_OK) {
+            return $responseData;
+        }
+
+        if ($response->status() == Response::HTTP_FORBIDDEN) {
+            if ($responseData['details'] == 'The token is expired') {
+                $this->getNewTokens();
+            }
+            if ($responseData['details'] == 'The token has already been updated') {
+                $this->sendError('Слишком устаревшие токены API! Обновите токены API вручную из кабинета T2 и сохраните в настройках!');
+            }
+        }
+
+        $this->sendError('Не удалось получить данные. Неверный токен.');
+
+        return [];
     }
 
-    public static function importDataFromApi($dateStart, $dateEnd)
+    public function importDataFromApi($dateStart, $dateEnd)
     {
-        $data = self::getDataFromT2Api($dateStart, $dateEnd);
-        dd($data);
+        $data = $this->getDataFromT2Api($dateStart, $dateEnd);
 
-        $calculatedData = self::calculateManagerCallsData($data);
-
-        dd($calculatedData);
+        $calculatedData = $this->calculateManagerCallsData($data);
 
         $savingCount = 0;
 
-        // foreach ($calculated_data as $key => $number_data) {
-        //     $save_result = self::save_number_stat($number_data);
-        //     if ($save_result) {
-        //         $saving_count++;
-        //     }
-        // }
+        foreach ($calculatedData as $key => $number_data) {
+            $save_result = $this->saveNumberStat($number_data);
+            if ($save_result) {
+                $savingCount++;
+            }
+        }
 
-        // return $saving_count;
+        return $savingCount;
     }
 
-    public static function calculateManagerCallsData($data)
+    public static function saveNumberStat(array $numberData): bool
+    {
+        if (empty($numberData)) {
+            return false;
+        }
+    
+        $record = NumberStat::updateOrCreate(
+            [
+                'number' => $numberData['number'],
+                'date' => $numberData['date'],
+            ],
+            $numberData
+        );
+    
+        return $record !== null;
+    }
+
+    public function calculateManagerCallsData($data)
     {
         $resultArray = [];
         $tempArray = [];
