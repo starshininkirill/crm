@@ -66,6 +66,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Contract::class);
     }
+    
+    public function CallStats(): HasMany
+    {
+        return $this->hasMany(CallStat::class, 'number', 'number');
+    }
 
     public function getFirstWorkingDay(): Carbon
     {
@@ -83,9 +88,9 @@ class User extends Authenticatable
     public function getMonthWorked(Carbon $date = null): int
     {
         $date = $date ?? Carbon::now();
-        
+
         $employmentDate = $this->getFirstWorkingDay();
-        if($date->format('Y-m') == $employmentDate->format('Y-m')){
+        if ($date->format('Y-m') == $employmentDate->format('Y-m')) {
             return 1;
         }
 
@@ -117,15 +122,15 @@ class User extends Authenticatable
         $endOfMonth = $date->copy()->endOfMonth();
 
         return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-        ->where('status', Payment::STATUS_CLOSE)
-        ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
-            $query->whereIn('user_id', $userIds)
-                  ->where('role', $role);
-        })
-        ->with([
-            'contract.services.category',
-            'contract.users'
-        ])
-        ->get();
+            ->where('status', Payment::STATUS_CLOSE)
+            ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
+                $query->whereIn('user_id', $userIds)
+                    ->where('role', $role);
+            })
+            ->with([
+                'contract.services.category',
+                'contract.users'
+            ])
+            ->get();
     }
 }

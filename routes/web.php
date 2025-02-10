@@ -128,6 +128,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('sale-department')->group(function () {
         Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
+        Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
         Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
         Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.sale-department.report-settings');
         Route::get('/t2-settings', [SaleDepartmentController::class, 't2Settings'])->name('admin.sale-department.t2-settings');

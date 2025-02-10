@@ -6,11 +6,12 @@ use App\Classes\T2Api;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
-use App\Models\NumberStat;
+use App\Models\CallStat;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
+use App\Services\CallStatisticsService;
 use App\Services\SaleDepartmentServices\PlansService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
@@ -24,7 +25,6 @@ use Inertia\Inertia;
 class SaleDepartmentController extends Controller
 {
     protected $plansService;
-    protected $t2Api;
 
     public function __construct(PlansService $plansService)
     {
@@ -64,6 +64,26 @@ class SaleDepartmentController extends Controller
 
         return Inertia::render('Admin/SaleDapartment/Index', [
             'department' => $department,
+        ]);
+    }
+
+    public function callsReport(Request $request , CallStatisticsService $callStatisticsService)
+    {
+
+        $date = Carbon::now()->format('Y-m-d');
+
+        if ($request->get('date')) {
+            $date = $request->get('date');
+        }
+
+        $stats = CallStat::whereDate('date', $date)->get();
+        $stats = $stats->map(function($stat){
+            return array_merge($stat->toArray(), $stat->user->only('first_name', 'last_name'));
+        });
+
+        return Inertia::render('Admin/SaleDapartment/Calls', [
+            'date' => $date,
+            'stats' => $stats,
         ]);
     }
 
@@ -173,8 +193,6 @@ class SaleDepartmentController extends Controller
         $accessToken = Option::where('name', 't2_access_token')->first();
         $refreshToken = Option::where('name', 't2_refresh_token')->first();
 
-        $lastNumberStat = NumberStat::latest()->first();
-
 
         // $dateNow = Carbon::yesterday()->format('Y-m-d');
         // $errors = '';
@@ -189,17 +207,27 @@ class SaleDepartmentController extends Controller
         return Inertia::render('Admin/SaleDapartment/T2Settings', [
             'accessToken' => $accessToken->value ?? '',
             'refreshToken' => $refreshToken->value ?? '',
-            'lastUpdate' => $lastNumberStat?->updated_at->format('Y-m-d H:i') ?? '',
         ]);
     }
 
-    public function t2LoadData()
+    public function t2LoadData(Request $request, CallStatisticsService $callStatisticsService)
     {
-        $dateNow = Carbon::yesterday()->format('Y-m-d');
+        if ($request->get('date')) {
+            $dateNow = $request->get('date');
+        } else {
+            $dateNow = Carbon::now()->format('Y-m-d');
+        }
 
         try {
             $t2Api = new T2Api;
-            $t2Api->importDataFromApi($dateNow, $dateNow);
+            $data = $t2Api->getDataFromT2Api($dateNow, $dateNow);
+            
+            if(empty($data)){
+                return redirect()->back()->withErrors('Нет данных за данный период');
+            }
+
+            $callStatisticsService->importData($data);
+
         } catch (Exception $e) {
             $errors = $e->getMessage();
             return redirect()->back()->withErrors($errors);

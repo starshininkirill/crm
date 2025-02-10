@@ -5,6 +5,9 @@
                 <AdminSubnavLink :href="route('admin.sale-department.index')" :route="'admin.sale-department.index'">
                     Главная
                 </AdminSubnavLink>
+                <AdminSubnavLink :href="route('admin.sale-department.calls')" :route="'admin.sale-department.calls'">
+                    Отчёт по разговорам
+                </AdminSubnavLink>
                 <AdminSubnavLink :href="route('admin.sale-department.user-report')" :route="'admin.sale-department.user-report'">
                     Отчёт по менеджерам
                 </AdminSubnavLink>

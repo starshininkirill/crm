@@ -37,7 +37,6 @@ class Department extends Model
         }
     }
 
-
     public function users(): SimpleCollection
     {
         $users = collect();

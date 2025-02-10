@@ -27,9 +27,7 @@
                 <h1 class="text-2xl font-semibold">
                     Импорт статистики по номерам из T2
                 </h1>
-                <div v-if="lastUpdate">
-                    Последнее обновление {{ lastUpdate }}
-                </div>
+                <FormInput v-model="date" type="date" class="!w-fit" name="date" label="Дата" />
                 <div @click="t2LoadData" class="btn !w-fit">
                     Загрузить данные
                 </div>
@@ -57,11 +55,13 @@ export default {
         refreshToken: {
             type: String,
         },
-        lastUpdate: {
-            type: String,
-        }
     },
     layout: SaleDepartmentLayout,
+    data(){
+        return{
+            date: '',
+        };
+    },
     setup(props) {
         const form = useForm({
             'options': [
@@ -101,8 +101,7 @@ export default {
     methods: {
         t2LoadData() {
             router.get(route('admin.sale-department.t2-load-data'), {
-                dateStart: 'test',
-                dateEnd: 'test',
+                date: this.date,
             });
 
         }

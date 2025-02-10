@@ -5,8 +5,8 @@
         <h1 class="text-4xl font-semibold mb-6">Услуги</h1>
         <h2 v-if="!services.length" class="text-xl">Услуг не найдено</h2>
 
-        <div v-if="services.length" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <div v-if="services.length" class="relative overflow-x-auto ">
+            <table class="overflow-hidden shadow-md rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-6 py-3">

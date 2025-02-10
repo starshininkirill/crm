@@ -13,6 +13,31 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $realManagersNumbers = [
+            79922896554,
+            79535174387,
+            79922802826,
+            79005325832,
+            79922857462,
+            79951460603,
+            79922893028,
+            79922889975,
+            79922833926,
+            79954943528,
+            79922871233,
+            79535175470,
+            79922865076,
+            79922802313,
+            79535174769,
+            79922883450,
+            79922806049,
+            79535175529,
+            79005479481,
+            79922851746,
+        ];
+
+
+
         $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'User',
@@ -47,6 +72,17 @@ class UserSeeder extends Seeder
             'department_id' => 3,
         ]);
 
-        // $users = User::factory()->count(5)->create();
+        foreach ($realManagersNumbers as $number) {
+            User::create([
+                'first_name' => fake()->firstName(),
+                'last_name' => fake()->lastName(),
+                'email' => fake()->unique()->safeEmail(),
+                'password' => Hash::make('password'), // Установите временный пароль
+                'role' => 'user', // Роль по умолчанию
+                'position_id' => null, // Можно установить позже
+                'department_id' => 3, // Можно установить позже
+                'phone' => $number, // Задаем номер телефона
+            ]);
+        }
     }
 }

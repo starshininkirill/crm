@@ -4,8 +4,8 @@
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Организации</h1>
         <h2 v-if="!organizations.length" class="text-xl">Организаций не найдено</h2>
-        <div v-if="organizations.length" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+        <div v-if="organizations.length" class="">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 relative overflow-x-auto shadow-md sm:rounded-lg">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3">

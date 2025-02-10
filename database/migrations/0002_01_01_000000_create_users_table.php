@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->unique();
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->foreignId('position_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
