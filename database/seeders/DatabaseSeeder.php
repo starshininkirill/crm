@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             OrganizationSeeder::class,
             DocumentTemplateSeeder::class,
             OSDTSeeder::class,
+            CallStatsSeeder::class,
         ]);
     }
 }

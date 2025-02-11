@@ -8,7 +8,16 @@
             <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
         </ul>
 
-        <div>
+        <div class=" flex gap-3 mb-4">
+            <FormInput v-model="date" name="date" type="month" />
+            <div @click="changeDate" class="btn !w-fit">
+                Выбрать
+            </div>
+        </div>
+        <div v-if="error && error != ''" class=" text-2xl font-semibold">
+            {{ error }}
+        </div>
+        <div v-else>
             <table
                 class="relative overflow-hidden border-collapse shadow-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead class="text-gray-700 bg-gray-50">
@@ -22,26 +31,32 @@
                         <th scope="col" class="px-1 border-r py-2 text-gray-900 font-medium text-xs w-24 text-center">
                             Ср. зв. день
                         </th>
-                        <th v-for="(value, date) in callsDataByDate" scope="col" class="px-1 border-r text-center py-2 text-gray-900 font-medium text-xs w-14">
+                        <th v-for="(value, date) in callsDataByDate" scope="col"
+                            class="px-1 border-r text-center py-2 text-gray-900 font-medium text-xs w-14">
                             {{ date }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(numberData, number) in totalNumberValues " class="bg-white border-b hover:bg-gray-50">
-                        <th scope="row" class="px-1 pl-2 py-2 text-gray-900 font-medium border-r text-xs whitespace-nowrap">
+                        <th scope="row"
+                            class="px-1 pl-2 py-2 text-gray-900 font-medium border-r text-xs whitespace-nowrap">
                             <template v-if="numberData.user">
-                                {{ numberData.user.last_name }} {{ numberData.user.first_name }} 
+                                {{ numberData.user.last_name }} {{ numberData.user.first_name }}
                             </template>
                         </th>
-                        <td class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center" :class="numberData.middle_value >= callDurationPlan ? 'bg-green-500' : ' bg-red-300'">
+                        <td class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center"
+                            :class="numberData.middle_value >= callDurationPlan ? 'bg-green-500' : ' bg-red-300'">
                             {{ numberData.middle_value }}
                         </td>
-                        <td class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center" :class="numberData.middle_calls >= callCountPlan ? '' : ' bg-red-300'">
+                        <td class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center"
+                            :class="numberData.middle_calls >= callCountPlan ? '' : ' bg-red-300'">
                             {{ numberData.middle_calls }}
                         </td>
-                        <td v-for="(dayData, day) in callsDataByDate" class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center whitespace-nowrap">
-                            <template v-if="dayData[number] && dayData[number].duration && dayData[number].duration > 0">
+                        <td v-for="(dayData, day) in callsDataByDate"
+                            class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center whitespace-nowrap">
+                            <template
+                                v-if="dayData[number] && dayData[number].duration && dayData[number].duration > 0">
                                 {{ dayData[number].duration }} ({{ dayData[number].calls }})
                             </template>
                             <template v-else>
@@ -59,12 +74,15 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
 import FormInput from '../../../Components/FormInput.vue';
+import { route } from 'ziggy-js';
+import { router } from '@inertiajs/vue3';
 
 export default {
     components: {
         Head,
         FormInput
     },
+    layout: SaleDepartmentLayout,
     props: {
         callsDataByDate: {
             type: Object
@@ -72,14 +90,32 @@ export default {
         totalNumberValues: {
             type: Object,
         },
-        callDurationPlan:{
+        callDurationPlan: {
             type: Number
         },
         callCountPlan: {
             type: Number
+        },
+        dateProp: {
+            type: String
+        },
+        error: {
+            type: String,
+            default: '',
         }
     },
-    layout: SaleDepartmentLayout,
+    data() {
+        return {
+            date: this.dateProp
+        }
+    },
+    methods: {
+        changeDate() {
+            router.get(route('admin.sale-department.calls'), {
+                date: this.date,
+            })
+        }
+    }
 }
 
 
