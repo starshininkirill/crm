@@ -69,21 +69,22 @@ class SaleDepartmentController extends Controller
 
     public function callsReport(Request $request , CallStatisticsService $callStatisticsService)
     {
-
         $date = Carbon::now()->format('Y-m-d');
 
         if ($request->get('date')) {
             $date = $request->get('date');
         }
-
-        $stats = CallStat::whereDate('date', $date)->get();
-        $stats = $stats->map(function($stat){
-            return array_merge($stat->toArray(), $stat->user->only('first_name', 'last_name'));
-        });
+        
+        $calculatedData = $callStatisticsService->calculateTotalCallsData($date);
+        $callDurationPlan = 130;
+        $callCountPlan = 30;
 
         return Inertia::render('Admin/SaleDapartment/Calls', [
             'date' => $date,
-            'stats' => $stats,
+            'callsDataByDate' => $calculatedData['callsDataByDate'],
+            'totalNumberValues' => $calculatedData['totalNumberValues'],
+            'callDurationPlan' => $callDurationPlan,
+            'callCountPlan' => $callCountPlan,
         ]);
     }
 
