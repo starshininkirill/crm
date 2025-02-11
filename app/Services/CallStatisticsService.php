@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\CallStat;
 use App\Models\Department;
-use App\Models\User;
 use Carbon\Carbon;
 
 class CallStatisticsService

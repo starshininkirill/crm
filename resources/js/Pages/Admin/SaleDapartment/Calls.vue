@@ -9,10 +9,7 @@
         </ul>
 
         <div class=" flex gap-3 mb-4">
-            <FormInput v-model="date" name="date" type="month" />
-            <div @click="changeDate" class="btn !w-fit">
-                Выбрать
-            </div>
+            <FormInput @change="changeDate" v-model="date" name="date" type="month" />
         </div>
         <div v-if="error && error != ''" class=" text-2xl font-semibold">
             {{ error }}

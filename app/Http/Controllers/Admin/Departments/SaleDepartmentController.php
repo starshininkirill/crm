@@ -6,7 +6,6 @@ use App\Classes\T2Api;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
-use App\Models\CallStat;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Models\User;
@@ -18,9 +17,7 @@ use App\Services\SaleDepartmentServices\ReportService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -41,7 +38,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function callsReport(Request $request , CallStatisticsService $callStatisticsService)
+    public function callsReport(Request $request, CallStatisticsService $callStatisticsService)
     {
         $date = Carbon::now()->format('Y-m');
 
@@ -49,7 +46,11 @@ class SaleDepartmentController extends Controller
             $date = $request->get('date');
         }
 
-        $calculatedData = $callStatisticsService->calculateTotalCallsData($date);
+        $calculatedData = Cache::remember('callsStatisticData_' . $date, 60 * 60, function () use ($callStatisticsService, $date) {
+            return $callStatisticsService->calculateTotalCallsData($date);
+        });
+
+
         $callDurationPlan = 130;
         $callCountPlan = 30;
 
@@ -167,19 +168,8 @@ class SaleDepartmentController extends Controller
 
     public function t2Settings()
     {
-        $accessToken = Option::where('name', 't2_access_token')->first();
-        $refreshToken = Option::where('name', 't2_refresh_token')->first();
-
-
-        // $dateNow = Carbon::yesterday()->format('Y-m-d');
-        // $errors = '';
-
-        // try {
-        //     $t2Api = new T2Api;
-        //     $t2Api->importDataFromApi($dateNow, $dateNow);
-        // } catch (Exception $e) {
-        //     $errors = $e->getMessage();
-        // }
+        $accessToken = Option::whereName('t2_access_token')->first();
+        $refreshToken = Option::whereName('t2_refresh_token')->first();
 
         return Inertia::render('Admin/SaleDapartment/T2Settings', [
             'accessToken' => $accessToken->value ?? '',
@@ -198,17 +188,18 @@ class SaleDepartmentController extends Controller
         try {
             $t2Api = new T2Api;
             $data = $t2Api->getDataFromT2Api($dateNow, $dateNow);
-            
-            if(empty($data)){
+
+            if (empty($data)) {
                 return redirect()->back()->withErrors('Нет данных за данный период');
             }
 
             $callStatisticsService->importData($data);
-
         } catch (Exception $e) {
             $errors = $e->getMessage();
             return redirect()->back()->withErrors($errors);
         }
+
+        Cache::forget('callsStatisticData_' . Carbon::create($dateNow)->format('Y-m'));
 
         return redirect()->back()->with('success', 'Данные успешно загружены');
     }
