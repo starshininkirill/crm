@@ -14,8 +14,8 @@ class T2Api
     
     public function __construct()
     {
-        $this->refreshToken = Option::where('name', 't2_refresh_token')->first() ?? null;
-        $accessToken = Option::where('name', 't2_access_token')->first() ?? null;
+        $this->refreshToken = Option::whereName('t2_refresh_token')->first() ?? null;
+        $accessToken = Option::whereName('t2_access_token')->first() ?? null;
 
         if (!$accessToken) {
             $this->getNewTokens();

@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
+use Ramsey\Uuid\Type\Integer;
 
 class Payment extends Model
 {
     use HasFactory;
 
 
-    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'descr', 'organization_id', 'description', 'receipt_url'];
+    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
 
     const STATUS_WAIT = 0;
     const STATUS_WAIT_CONFIRMATION = 1;
@@ -44,6 +45,24 @@ class Payment extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    public function determineType(Payment $newPayment): int
+    {
+        if ($this->order == 1) {
+            return self::TYPE_NEW;
+        }
+
+        $firstPayment = $this->contract->firstPayment();
+        if (!$firstPayment) {
+            return self::TYPE_OLD;
+        }
+
+        if ($firstPayment->created_at->format('Y-m') == $newPayment->created_at->format('Y-m')) {
+            return self::TYPE_NEW;
+        }
+
+        return self::TYPE_OLD;
     }
 
 

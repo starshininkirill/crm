@@ -62,7 +62,7 @@ class ContractSeeder extends Seeder
 
         // TODO
         // Тестовые данные
-        $firstContract = Contract::where('id', 1)->first();
+        $firstContract = Contract::find(1);
         $firstContract->client->inn = '9999';
         $firstContract->client->save();
     }

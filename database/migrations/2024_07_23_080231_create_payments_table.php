@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('status')->default(Payment::STATUS_WAIT);
             $table->integer('type')->nullable();
             $table->integer('order')->nullable()->default(1);
+            $table->string('operation_id')->nullable()->unique();
             $table->boolean('is_technical')->nullable()->default(false);
             $table->foreignId('contract_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->onDelete('set null');

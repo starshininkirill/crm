@@ -17,8 +17,8 @@ class PaymentController extends Controller
     public function shortlistAttach(PaymentGeneratorRequest $request)
     {
         $validated = $request->validated();
-        $oldPayment = Payment::where('id', $validated['oldPayment'])->first();
-        $newPayment = Payment::where('id', $validated['newPayment'])->first();
+        $oldPayment = Payment::find($validated['oldPayment']);
+        $newPayment = Payment::find($validated['newPayment']);
 
         try {
             DB::beginTransaction();
@@ -29,9 +29,11 @@ class PaymentController extends Controller
             $oldPayment->organization_id = $newPayment->organization_id;
             $oldPayment->confirmed_at = Date::now();
             $oldPayment->responsible_id = $request->user()->id;
+            $oldPayment->operation_id = $newPayment->operation_id ?? null;
+            $oldPayment->type = $oldPayment->determineType($newPayment);
 
-            $oldPayment->save();
             $newPayment->delete();
+            $oldPayment->save();
 
             DB::commit();
         } catch (Exception $exeption) {

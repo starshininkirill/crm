@@ -19,7 +19,7 @@ use PhpOffice\PhpWord\TemplateProcessor;
 class ActGeneratorController extends Controller
 {
     public function create()
-    {   
+    {
         $organisations = Organization::where('active', 1)->get()->toArray();
 
         return Inertia::render('Lk/Act/Create', [
@@ -35,8 +35,8 @@ class ActGeneratorController extends Controller
 
         $contract->payments()->create($request->paymentData());
         $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
- 
-        $organisation = Organization::where('id', $validated['organization_id'])->first();
+
+        $organisation = Organization::find($validated['organization_id']);
 
         $paymentData = $request->paymentData();
         if ($validated['client_type'] == Client::TYPE_LEGAL_ENTITY) {
@@ -50,11 +50,18 @@ class ActGeneratorController extends Controller
                 'inn' => $validated['inn'],
                 'organization_id' => $validated['organization_id'],
                 'description' => $validated['act_payment_goal'],
+                'operation_id' =>  mt_rand(100000, 1000000),
             ]);
 
+            $generatedDocumentData = DocumentGenerator::generatePaymentDocument($validated);
+
+            if (!$generatedDocumentData) {
+                return back()->withErrors('Не удалось сгенерировать документ');
+            }
+            
             $linkData = [
                 'type' => 'document',
-                'link' => DocumentGenerator::generatePaymentDocument($validated)
+                'link' => $generatedDocumentData
             ];
         } else if ($validated['client_type'] == Client::TYPE_INDIVIDUAL) {
             $linkData = [

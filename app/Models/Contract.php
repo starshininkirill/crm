@@ -48,6 +48,11 @@ class Contract extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function firstPayment()
+    {
+        return $this->payments()->whereOrder(1)->first();
+    }
+
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class);

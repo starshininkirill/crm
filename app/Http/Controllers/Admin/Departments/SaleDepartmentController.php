@@ -71,7 +71,7 @@ class SaleDepartmentController extends Controller
         $departments = Department::getSaleDepartments();
 
         if ($request->filled(['department'])) {
-            $selectDepartment = $departments->where('id', $request->department)->first();
+            $selectDepartment = $departments->find($request->department);
         } else {
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
