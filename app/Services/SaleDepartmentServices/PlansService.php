@@ -6,9 +6,7 @@ use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class PlansService
 {
@@ -74,7 +72,6 @@ class PlansService
             ]
         );
 
-
         $planInstance = $this->getPlan(WorkPlan::BONUS_PLAN);
 
         if ($planInstance) {
@@ -88,7 +85,6 @@ class PlansService
                 $this->reportInfo->bonuses += $planInstance->bonus;
             }
         }
-
 
         return $res;
     }
@@ -137,7 +133,8 @@ class PlansService
             ]);
 
             $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
-            $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
+            // $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
+            $weekResult['services'] = $serviceCounts;
             if ($newFilteredPaymentsSum >= $weekPlan) {
                 $weekResult['completed'] = true;
                 $weekPlanInstance = $this->getPlan(WorkPlan::WEEK_PLAN);
@@ -191,7 +188,8 @@ class PlansService
             ]);
 
             $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
-            $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
+            // $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
+            $weekResult['services'] = $serviceCounts;
             $res[] = $weekResult;
         };
         return $res;
@@ -202,11 +200,13 @@ class PlansService
         $res = collect([
             'newMoney' => $this->reportInfo->newMoney,
             'oldMoney' => $this->reportInfo->oldMoney,
-            ServiceCategory::INDIVIDUAL_SITE => $this->reportInfo->services[ServiceCategory::INDIVIDUAL_SITE],
-            ServiceCategory::READY_SITE => $this->reportInfo->services[ServiceCategory::READY_SITE],
-            ServiceCategory::RK => $this->reportInfo->services[ServiceCategory::RK],
-            ServiceCategory::SEO => $this->reportInfo->services[ServiceCategory::SEO],
-            ServiceCategory::OTHER => $this->reportInfo->services[ServiceCategory::OTHER],
+            'services' => [
+                ServiceCategory::INDIVIDUAL_SITE => $this->reportInfo->services[ServiceCategory::INDIVIDUAL_SITE],
+                ServiceCategory::READY_SITE => $this->reportInfo->services[ServiceCategory::READY_SITE],
+                ServiceCategory::RK => $this->reportInfo->services[ServiceCategory::RK],
+                ServiceCategory::SEO => $this->reportInfo->services[ServiceCategory::SEO],
+                ServiceCategory::OTHER => $this->reportInfo->services[ServiceCategory::OTHER],
+            ]
         ]);
 
         return $res;
@@ -218,7 +218,6 @@ class PlansService
             'completed' => false,
             'bonus' => 0,
         ]);
-        // dd($this->reportInfo);
         $mainDepartmentId = $this->reportInfo->mainDepartmentId;
         $isCompletedPlan = true;
         foreach ($this->reportInfo->services as $key => $service) {
@@ -253,7 +252,6 @@ class PlansService
         if ($bPlan->type != WorkPlan::B1_PLAN) {
             $res['bonus'] =  $bPlan->bonus;
         }
-
 
         return $res;
     }

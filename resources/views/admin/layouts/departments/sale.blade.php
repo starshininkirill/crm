@@ -3,13 +3,13 @@
 @section('main')
     <div class="grow w-full py-8 px-2" id="departments-sale-page">
         <div class="flex gap-3 mb-4 border-b">
-            <x-admin-subnav-link route="admin.department.sale.index">
+            <x-admin-subnav-link route="admin.sale-department.index">
                 Главная
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.department.sale.user-report">
+            <x-admin-subnav-link route="admin.sale-department.user-report">
                 Отчёт по менеджерам
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.department.sale.report-settings">
+            <x-admin-subnav-link route="admin.sale-department.report-settings">
                 Настройка планов
             </x-admin-subnav-link>
         </div>

@@ -4,14 +4,37 @@
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Отчёт Менеджеров продаж</h1>
 
-        <UserSaleReportSelect :action="route('admin.sale-department.user-report')"
-            :departments="departments" :users="users"
-            :initial-department="selectedDepartment" :initial-user="user"
-            :initial-date="date">
-        </UserSaleReportSelect>
+        <SelectForm :departments="departments" :users="users" :initial-department="selectedDepartment"
+            :initial-user="selectUser" :initial-date="date">
+        </SelectForm>
 
-        <div class="text-2xl font-semibold">
-            Тут будет отчёт
+        <ul v-if="$page.props.errors && $page.props.errors.length" class="flex flex-col gap-1 mb-4">
+            <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
+        </ul>
+
+        <template v-if="motivationReport.length == 0 && motivationReport.length == 0">
+            <div class="text-2xl font-semibold">
+                Данные для отчёта не найдены
+            </div>
+        </template>
+        <div class="flex gap-4">
+            <table class="reports w-1/2">
+                <DailyReport v-if="daylyReport.length" :report="daylyReport" />
+                <WeeksReport v-if="motivationReport && motivationReport.weeksPlan"
+                    :totalValues="motivationReport.totalValues" :weeks="motivationReport.weeksPlan" />
+                <MotivationReport v-if="motivationReport && motivationReport.weeksPlan"
+                    :motivationReport="motivationReport" />
+            </table>
+            <table class="pivot-reports w-1/2 h-fit">
+                <DailyReport v-if="pivotDaily.length" :report="pivotDaily" />
+                <WeeksReport v-if="pivotWeeks && pivotWeeks.weeksPlan" :weeks="pivotWeeks.weeksPlan"
+                    :totalValues="pivotWeeks.totalValues" />
+                <GeneralReport v-if="generalPlan && Object.keys(generalPlan).length > 0" :generalPlan="generalPlan" />
+            </table>
+        </div>
+
+        <div class="w-100 mt-6">
+            <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" />
         </div>
     </div>
 </template>
@@ -19,12 +42,22 @@
 <script>
 import { Head } from '@inertiajs/vue3';
 import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
-import UserSaleReportSelect from '../../../Components/UserSaleReportSelect.vue';
+import SelectForm from './Components/SelectForm.vue';
+import DailyReport from './Components/DailyReport.vue';
+import WeeksReport from './Components/WeeksReport.vue';
+import MotivationReport from './Components/MotivationReport.vue';
+import GeneralReport from './Components/GeneralReport.vue';
+import PivotUsersReport from './Components/PivotUsersReport.vue';
 
 export default {
     components: {
         Head,
-        UserSaleReportSelect
+        SelectForm,
+        DailyReport,
+        WeeksReport,
+        MotivationReport,
+        GeneralReport,
+        PivotUsersReport
     },
     props: {
         departments: {
@@ -33,7 +66,7 @@ export default {
         users: {
             type: Array,
         },
-        user: {
+        selectUser: {
             type: Object,
         },
         selectedDepartment: {
@@ -41,6 +74,24 @@ export default {
         },
         date: {
             type: String
+        },
+        daylyReport: {
+            type: Object
+        },
+        motivationReport: {
+            type: Object,
+        },
+        pivotDaily: {
+            type: Object,
+        },
+        pivotWeeks: {
+            typy: Object
+        },
+        generalPlan: {
+            type: Object,
+        },
+        pivotUsers: {
+            type: Object,
         }
     },
     layout: SaleDepartmentLayout,

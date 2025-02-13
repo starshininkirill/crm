@@ -9,11 +9,9 @@ use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractUser;
 use App\Models\Organization;
-use App\Models\OrganizationServiceDocumentTemplate;
 use App\Models\Payment;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use PhpOffice\PhpWord\TemplateProcessor;
 
 
 class ActGeneratorController extends Controller
@@ -30,6 +28,7 @@ class ActGeneratorController extends Controller
     public function store(PaymentGeneratorRequest $request)
     {
         $validated = $request->validated();
+        DB::beginTransaction();
 
         $contract = Contract::create($request->contractData());
 
@@ -56,6 +55,7 @@ class ActGeneratorController extends Controller
             $generatedDocumentData = DocumentGenerator::generatePaymentDocument($validated);
 
             if (!$generatedDocumentData) {
+                DB::rollBack();
                 return back()->withErrors('Не удалось сгенерировать документ');
             }
             
@@ -70,6 +70,7 @@ class ActGeneratorController extends Controller
             ];
         };
 
+        DB::commit();
         return back()->with(['success' => 'Документ успешно сгенерирован', 'linkData' => $linkData]);
     }
 }

@@ -141,7 +141,7 @@ class ReportService
         $serviceCounts = ServiceCountHelper::calculateServiceCountsByPayments($uniqueDayNewPayments);
 
         return [
-            'date' => $day,
+            'date' => Carbon::parse($day)->format('d.m.y'),
             'newMoney' => $newPaymentsSum,
             'oldMoney' => $oldPaymentsSum,
             'individualSites' => $serviceCounts[ServiceCategory::INDIVIDUAL_SITE],

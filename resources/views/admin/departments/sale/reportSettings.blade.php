@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">Настройка планов</h1>
-    <form action="{{ route('admin.department.sale.report-settings') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
+    <form action="{{ route('admin.sale-department.report-settings') }}" method="GET" class="flex w-1/2 gap-3 mb-6">
         <input type="month" name="date" class="border px-3 py-1"
             value="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}">
         <button type="submit" class="btn">

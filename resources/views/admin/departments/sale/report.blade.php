@@ -3,15 +3,15 @@
 @section('content')
     <h1 class="text-4xl font-semibold mb-6">
         Отчёт по Сотрудникам
-    </h1>
-    <vue-user-sale-report-form
-        action="{{ route('admin.department.sale.user-report') }}"
+    </h1> 
+    {{-- <vue-user-sale-report-form
+        action="{{ route('admin.sale-department.user-report') }}"
         :departments="{{ json_encode($departments) }}"
         :users="{{ json_encode($selectUsers) }}"
         :initial-department="{{ json_encode($selectedDepartment) }}"
         :initial-user="{{ json_encode($user) }}"
         initial-date="{{ $date != null ? $date->format('Y-m') : now()->format('Y-m') }}"
-    ></vue-user-sale-report-form>
+    ></vue-user-sale-report-form> --}}
     @if ($daylyReport->isEmpty() && $motivationReport->isEmpty())
         @if (!$error)
             <h2>Данные для отчёта не найдены</h2>

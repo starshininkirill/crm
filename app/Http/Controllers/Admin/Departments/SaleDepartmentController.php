@@ -67,7 +67,6 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request)
     {
-
         $departments = Department::getSaleDepartments();
 
         if ($request->filled(['department'])) {
@@ -76,7 +75,7 @@ class SaleDepartmentController extends Controller
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
 
-        $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
+        $allUsers = $departments->whereNull('parent_id')->first()->activeUsers();
 
         $requestData = $request->only(['user', 'date']);
 
@@ -85,6 +84,7 @@ class SaleDepartmentController extends Controller
             try {
                 $date = DateHelper::getValidatedDateOrNow($requestData['date']);
                 $user = User::find($requestData['user']);
+                $users = $selectDepartment->activeUsers($date);
 
                 if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
                     $error = 'Сотрудник ещё не работал в этот месяц.';
@@ -99,7 +99,6 @@ class SaleDepartmentController extends Controller
                 $pivotWeeks = $reportService->pivotWeek();
                 $pivotDaily = $reportService->monthByDayReport();
 
-                $users = $selectDepartment->activeUsers($date);
                 $pivotUsers = $reportService->pivotUsers($users);
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
@@ -112,13 +111,98 @@ class SaleDepartmentController extends Controller
             }
         }
 
+
         return Inertia::render('Admin/SaleDapartment/UserReport', [
-            'departments' => $departments,
-            'users' => $selectUsers,
-            'user' => $user ?? null,
-            'selectedDepartment' => $selectDepartment ?? null,
             'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
+            'users' => $allUsers,
+            'selectUser' => $user ?? null,
+            'departments' => $departments,
+            'selectedDepartment' => $selectDepartment ?? null,
+            'daylyReport' => $daylyReport ?? collect(),
+            'motivationReport' => $motivationReport ?? collect(),
+            'pivotDaily' => $pivotDaily ?? collect(),
+            'pivotWeeks' => $pivotWeeks ?? collect(),
+            'generalPlan' => $generalPlan ?? collect(),
+            'pivotUsers' => $pivotUsers ?? collect(),
         ]);
+
+        return view(
+            'admin.departments.sale.report',
+            [
+                'departments' => $departments ?? collect(),
+                'selectedDepartment' => $selectDepartment ?? null,
+                'selectUsers' => $selectUsers,
+                'users' => $users ?? collect(),
+                'user' => $user ?? null,
+                'date' => $date ?? null,
+                'daylyReport' => $daylyReport ?? collect(),
+                'motivationReport' => $motivationReport ?? collect(),
+                'pivotWeeks' => $pivotWeeks ?? collect(),
+                'pivotDaily' => $pivotDaily ?? collect(),
+                'pivotUsers' => $pivotUsers ?? collect(),
+                'generalPlan' => $generalPlan ?? collect(),
+                'serviceCategoryModel' => ServiceCategory::class,
+                'error' => $error ?? ''
+            ]
+        );
+    }
+
+    public function oldUserReport(Request $request)
+    {
+
+        $departments = Department::getSaleDepartments();
+
+        if ($request->filled(['department'])) {
+            $selectDepartment = $departments->find($request->department);
+        } else {
+            $selectDepartment = $departments->whereNull('parent_id')->first();
+        }
+
+        $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
+
+        $requestData = $request->only(['user', 'date']);
+
+        $requestData['user'] = 2;
+        $requestData['date'] = '2025-02';
+
+        // if ($request->filled(['user', 'date'])) {
+        try {
+            $date = DateHelper::getValidatedDateOrNow($requestData['date']);
+            $user = User::find($requestData['user']);
+
+            if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+                $error = 'Сотрудник ещё не работал в этот месяц.';
+            }
+
+            $reportInfo = new ReportInfo($date, null, $selectDepartment);
+            $reportService = new ReportService($this->plansService, $reportInfo);
+
+            $daylyReport = $reportService->monthByDayReport($user);
+
+            $motivationReport = $reportService->motivationReport($user);
+            $pivotWeeks = $reportService->pivotWeek();
+            $pivotDaily = $reportService->monthByDayReport();
+
+            $users = $selectDepartment->activeUsers($date);
+            $pivotUsers = $reportService->pivotUsers($users);
+
+            $generalPlan = $reportService->generalPlan($pivotUsers);
+        } catch (Exception $e) {
+            if (isset($error)) {
+                $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            } else {
+                $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            }
+        }
+        // }
+
+        // return Inertia::render('Admin/SaleDapartment/UserReport', [
+        //     'departments' => $departments,
+        //     'users' => $selectUsers,
+        //     'user' => $user ?? null,
+        //     'selectedDepartment' => $selectDepartment ?? null,
+        //     'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
+        // ]);
 
         return view(
             'admin.departments.sale.report',

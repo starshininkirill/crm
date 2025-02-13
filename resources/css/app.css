@@ -16,6 +16,9 @@
     .styled-content ul {
         @apply list-disc pl-5;
     }
+    .full-vue-select .vs__dropdown-toggle {
+        @apply h-full;
+    }
     .styled-content li {
         @apply text-gray-700 mb-1;
     }

@@ -5,27 +5,8 @@ import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { ZiggyVue } from 'ziggy-js';
 import Layout from './Layouts/Layout.vue';
 import AdminLayout from './Layouts/AdminLayout.vue';
-
-import 'tinymce/tinymce';
-import 'tinymce/skins/ui/oxide/skin.min.css';
-import 'tinymce/icons/default/icons';
-import 'tinymce/themes/silver/theme';
-import 'tinymce/models/dom/model';
-import 'tinymce/plugins/lists';
-
-
-tinymce.init({
-  selector: '#tinyredactor',
-  skin: false,
-  content_css: false,
-  plugins: ['lists'],
-  license_key: 'gpl',
-  toolbar: 'undo redo | blocks | ' +
-    'bold italic backcolor | alignleft aligncenter ' +
-    'alignright alignjustify | bullist numlist outdent indent | ' +
-    'removeformat | help',
-});
-
+import { initTinyMCE } from './utils/tinyMCEInit';
+import * as helpers from './utils/helpers';
 
 createInertiaApp({
   resolve: name => {
@@ -41,10 +22,17 @@ createInertiaApp({
     return pages[`./Pages/${name}.vue`]
   },
   setup({ el, App, props, plugin }) {
-    const vueApp = createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .use(ZiggyVue)
-      .component('Link', Link)
-      .mount(el)
+    const vueApp = createApp({ render: () => h(App, props) });
+    vueApp.use(plugin)
+          .use(ZiggyVue)
+          .component('Link', Link);
+
+    for (const [key, value] of Object.entries(helpers)) {
+      vueApp.config.globalProperties[`${key}`] = value;
+    }
+
+    vueApp.mount(el);
+
+    initTinyMCE();
   },
 })
