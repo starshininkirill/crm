@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\TextFormaterHelper;
 use App\Models\Department;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,7 +41,11 @@ class WorkPlan extends Model
         self::NO_PERCENTAGE_MONTH,
     ];
 
-    protected $fillable = ['type', 'goal', 'month', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
+    protected $fillable = ['type', 'data', 'goal', 'month', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
+
+    protected $casts = [
+        'data' => 'array',
+    ];
 
     public function position(): HasOne
     {
@@ -63,15 +68,15 @@ class WorkPlan extends Model
         $plans = WorkPlan::where('department_id', $departmentId)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month)
-            ->orderBy('month')
-            ->orderBy('goal')
-            ->orderBy('bonus')
+            ->orderBy('data->month')
+            ->orderBy('data->goal')
+            ->orderBy('data->bonus')
             ->get()
             ->groupBy('type');
 
         if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
             $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->filter(function ($plan) {
-                return $plan->month != null;
+                return array_key_exists('month', $plan->data) && $plan->data['month'] != null;
             });
         }
 

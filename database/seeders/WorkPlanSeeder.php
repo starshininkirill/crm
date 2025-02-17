@@ -19,55 +19,73 @@ class WorkPlanSeeder extends Seeder
         // Создание месячных планов продажников
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  150000,
-            'month' => 1,
+            'data' => [
+                'goal' =>  150000,
+                'month' => 1,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  220000,
-            'month' => 2,
+            'data' => [
+                'goal' =>  220000,
+                'month' => 2,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  290000,
-            'month' => 3,
+            'data' => [
+                'goal' =>  290000,
+                'month' => 3,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  300000,
-            'month' => 4,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 4,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  300000,
-            'month' => 5,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 5,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  300000,
-            'month' => 6,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 6,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  350000,
-            'month' => 7,
+            'data' => [
+                'goal' =>  350000,
+                'month' => 7,
+            ],
             'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  390000,
-            'department_id' => 1,
+            'data' => [
+                'goal' =>  390000,
+            ],
             'position_id' => 2,
+            'department_id' => 1,
         ]);
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' =>  430000,
+            'data' => [
+                'goal' =>  430000,
+            ],
             'department_id' => 1,
             'position_id' => 3,
         ]);
@@ -77,59 +95,52 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::DOUBLE_PLAN,
             'department_id' => 1,
-            'bonus' => 5000
+            'data' => [
+                'bonus' => 5000
+            ],
         ]);
 
         // Бонус план продажников
         WorkPlan::create([
             'type' => WorkPlan::BONUS_PLAN,
             'department_id' => 1,
-            'goal' => 150000,
-            'bonus' => 2000
+            'data' => [
+                'goal' => 150000,
+                'bonus' => 2000
+            ],
         ]);
 
         // Недельный план продажников
         WorkPlan::create([
             'type' => WorkPlan::WEEK_PLAN,
             'department_id' => 1,
-            'bonus' => 1000
+            'data' => [
+                'bonus' => 1000
+            ],
         ]);
 
         // Супер план продажников
         WorkPlan::create([
             'type' => WorkPlan::SUPER_PLAN,
             'department_id' => 1,
-            'goal' => 430000,
-            'bonus' => 2000
+            'data' => [
+                'goal' => 430000,
+                'bonus' => 2000
+            ],
         ]);
 
         // Б1 план продажников
         WorkPlan::create([
             'type' => WorkPlan::B1_PLAN,
             'department_id' => 1,
+            'data' => [
+                'avgCountCalls' => 30,
+                'avgDurationCalls' => 130,
+                'goal' => 550000,
+                'bonus' => 10,
+
+            ],
             'goal' => 2,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
-            'bonus' => 10
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 4,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
-            'bonus' => 10
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 5,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
-            'bonus' => 10
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 2,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
             'bonus' => 10
         ]);
 
@@ -211,78 +222,96 @@ class WorkPlanSeeder extends Seeder
             'bonus' => 9.5
         ]);
 
-        
+        WorkPlan::create([
+            'type' => WorkPlan::NO_PERCENTAGE_MONTH,
+            'department_id' => 1,
+            'data' => [
+                'month' => 3,
+            ]
+        ]);
+
+
         $lastMonth = Carbon::now()->startOfMonth()->subMonth()->format('Y-m-d');
-        
+
 
         // Создание месячных планов продажников
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 140000,
-            'month' => 1,
+            'data' => [
+                'goal' =>  150000,
+                'month' => 1,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 220000,
-            'month' => 2,
+            'data' => [
+                'goal' =>  220000,
+                'month' => 2,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 290000,
-            'month' => 3,
+            'data' => [
+                'goal' =>  290000,
+                'month' => 3,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 300000,
-            'month' => 4,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 4,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 300000,
-            'month' => 5,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 5,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 300000,
-            'month' => 6,
+            'data' => [
+                'goal' =>  300000,
+                'month' => 6,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 350000,
-            'month' => 7,
+            'data' => [
+                'goal' =>  350000,
+                'month' => 7,
+            ],
             'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 390000,
-            'department_id' => 1,
+            'data' => [
+                'goal' =>  390000,
+            ],
             'position_id' => 2,
+            'department_id' => 1,
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
-            'goal' => 430000,
+            'data' => [
+                'goal' =>  430000,
+            ],
             'department_id' => 1,
             'position_id' => 3,
             'created_at' => $lastMonth,
@@ -292,7 +321,9 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::DOUBLE_PLAN,
             'department_id' => 1,
-            'bonus' => 5000,
+            'data' => [
+                'bonus' => 5000,
+            ],
             'created_at' => $lastMonth,
         ]);
 
@@ -300,8 +331,10 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::BONUS_PLAN,
             'department_id' => 1,
-            'goal' => 150000,
-            'bonus' => 2000,
+            'data' => [
+                'goal' => 150000,
+                'bonus' => 2000,
+            ],
             'created_at' => $lastMonth,
         ]);
 
@@ -309,7 +342,9 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::WEEK_PLAN,
             'department_id' => 1,
-            'bonus' => 1000,
+            'data' => [
+                'bonus' => 1000,
+            ],
             'created_at' => $lastMonth,
         ]);
 
@@ -317,44 +352,24 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::SUPER_PLAN,
             'department_id' => 1,
-            'goal' => 430000,
-            'bonus' => 2000,
+            'data' => [
+                'goal' => 430000,
+                'bonus' => 2000,
+            ],
             'created_at' => $lastMonth,
         ]);
 
-        // Б1 план продажников
         WorkPlan::create([
             'type' => WorkPlan::B1_PLAN,
             'department_id' => 1,
+            'data' => [
+                'avgCountCalls' => 30,
+                'avgDurationCalls' => 130,
+                'goal' => 550000,
+                'bonus' => 10,
+
+            ],
             'goal' => 2,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
-            'bonus' => 10,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 4,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
-            'bonus' => 10,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 5,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
-            'bonus' => 10,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B1_PLAN,
-            'department_id' => 1,
-            'goal' => 2,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
             'bonus' => 10,
             'created_at' => $lastMonth,
         ]);
@@ -451,6 +466,15 @@ class WorkPlanSeeder extends Seeder
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
             'bonus' => 9.5,
+            'created_at' => $lastMonth,
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::NO_PERCENTAGE_MONTH,
+            'department_id' => 1,
+            'data' => [
+                'month' => 3,
+            ],
             'created_at' => $lastMonth,
         ]);
     }

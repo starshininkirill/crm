@@ -12,6 +12,15 @@ class TextFormaterHelper
         return number_format($value, 0, '.', ' ') . ' ₽';
     }
 
+    public static function toCamelCase($string)
+    {
+        return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $string))));
+    }
+
+    public static function toSnakeCase($string)
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
+    }
 
     public static function visualFormatNumber($number, $with_rubles = false, $stringify = false)
     {
@@ -134,7 +143,6 @@ class TextFormaterHelper
 
         return implode(' ', $words);
     }
-
 
     public static function deadlineWorkWordTermination($num)
     {

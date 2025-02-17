@@ -11,12 +11,13 @@
                 <form class="flex gap-4">
                     <label class="flex gap-2 items-center" for="month">
                         Месяц
-                        <input v-model="plan.month" :disabled="!isCurrentMonth" class="input" name="month"
+                        <input v-model="plan.data.month" :disabled="!isCurrentMonth" class="input" name="month"
                             type="number">
                     </label>
                     <label class="flex gap-2 items-center" for="goal">
                         Цель
-                        <input v-model="plan.goal" :disabled="!isCurrentMonth" class="input" name="goal" type="number">
+                        <input v-model="plan.data.goal" :disabled="!isCurrentMonth" class="input" name="goal"
+                            type="number">
                     </label>
                     <button v-if="isCurrentMonth" class="text-blue-400 hover:text-blue-500"
                         @click.prevent="updatePlan(plan)">
@@ -33,11 +34,11 @@
             <form @submit.prevent="createPlan" class="grid grid-cols-2 gap-3">
                 <label class="flex gap-2 items-center">
                     Месяц
-                    <input v-model="newPlan.month" class="input" name="month" type="number" required />
+                    <input v-model="newPlan.data.month" class="input" name="month" type="number" required />
                 </label>
                 <label class="flex gap-2 items-center">
                     Цель
-                    <input v-model="newPlan.goal" class="input" name="goal" type="number" required />
+                    <input v-model="newPlan.data.goal" class="input" name="goal" type="number" required />
                 </label>
                 <button class="btn bg-blue-500 text-white px-4 py-2 mt-2 col-span-2">Создать</button>
             </form>
@@ -65,8 +66,10 @@ export default {
     data() {
         return {
             newPlan: {
-                month: null,
-                goal: null,
+                data: {
+                    month: null,
+                    goal: null,
+                },
                 department_id: this.departmentId,
                 type: 'monthPlan',
             },
@@ -74,24 +77,29 @@ export default {
     },
     methods: {
         updatePlan(plan) {
-            router.put(route('workPlan.update', { workPlan: plan }), {
-                'month': plan.month,
-                'goal': plan.goal
+            router.put(route('admin.sale-department.work-plan.update', { workPlan: plan }), {
+                'data': {
+                    'month': plan.data.month,
+                    'goal': plan.data.goal
+                },
+                'type': plan.type,
             })
         },
         deletePlan(plan) {
-            router.delete(route('workPlan.destroy', { workPlan: plan }))
+            router.delete(route('admin.sale-department.work-plan.destroy', { workPlan: plan }))
         },
         createPlan() {
-            router.post(route('workPlan.store'), {
-                'month': this.newPlan.month,
-                'goal': this.newPlan.goal,
+            router.post(route('admin.sale-department.work-plan.store'), {
+                'data': {
+                    'month': this.newPlan.data.month,
+                    'goal': this.newPlan.data.goal,
+                },
                 'department_id': this.newPlan.department_id,
                 'type': this.newPlan.type,
             }, {
                 onSuccess: () => {
-                    this.newPlan.month = '';
-                    this.newPlan.goal = '';
+                    this.newPlan.data.month = '';
+                    this.newPlan.data.goal = '';
                 },
             })
         },

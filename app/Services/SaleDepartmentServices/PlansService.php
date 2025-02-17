@@ -17,14 +17,13 @@ class PlansService
         $this->reportInfo = $reportInfo;
     }
 
-    private function getPlan(int $planType): ?WorkPlan
+    private function getPlan(string|int $planType): ?WorkPlan
     {
         return $this->reportInfo->workPlans->firstWhere('type', $planType);
     }
 
     public function monthPlan(): Collection
     {
-
         return  collect(
             [
                 'goal' => $this->reportInfo->monthWorkPlanGoal,
@@ -212,7 +211,7 @@ class PlansService
         return $res;
     }
 
-    public function bServicesPlan(int $planType): Collection
+    public function bServicesPlan(int|string $planType): Collection
     {
         $res = collect([
             'completed' => false,
@@ -258,6 +257,17 @@ class PlansService
 
     public function b1Plan()
     {
+        $result = collect([
+            'completed' => false,
+            'bonus' => 0,
+        ]);
+
+        $plan =  $this->reportInfo->workPlans->where('type', WorkPlan::B1_PLAN)->first();
+
+        if (!$plan) {
+            return $result;
+        }
+
         $averageDuration = $this->reportInfo->callsStat->map(function ($call) {
             return $call->duration / 60;
         })->avg();
@@ -266,47 +276,17 @@ class PlansService
             return $call->income + $call->outcome;
         })->avg();
 
-        
-        // dd($averageCalls);
-
-    }
-
-
-    public function superPlan(Collection $weeks): Collection
-    {
-        $res = collect([
-            'completed' => false,
-            'bonus' => 0,
-            'value' => $this->reportInfo->newMoney,
-        ]);
-
-        $plan = $this->getPlan(WorkPlan::SUPER_PLAN);
-
-        if (is_null($plan)) {
-            return $res;
+        if ($averageDuration >= $plan->data['avgDurationCalls'] && $averageCalls >= $plan->data['avgCountCalls']) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan->data['bonus'];
         }
 
-        $res['goal'] = $plan->goal;
-
-        if ($this->reportInfo->newMoney >= $plan->goal) {
-            $res['completed'] = true;
-            $res['bonus'] = $plan->bonus;
-            $this->reportInfo->bonuses += $plan->bonus;
-            return $res;
+        if ($this->reportInfo->newMoney >= $plan->data['goal']) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan->data['bonus'];
         }
 
-        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->reportInfo->monthWorkPlan);
-
-        if (!$weeksCompleted->every(fn($weekStat) => $weekStat['completed'])) {
-            return $res;
-        }
-
-
-        $res['completed'] = true;
-        $res['bonus'] = $plan->bonus;
-        $this->reportInfo->bonuses += $plan->bonus;
-
-        return $res;
+        return $result;
     }
 
     public function b3Plan(): Collection
@@ -410,6 +390,44 @@ class PlansService
         return $res;
     }
 
+    public function superPlan(Collection $weeks): Collection
+    {
+        $result = collect([
+            'completed' => false,
+            'bonus' => 0,
+            'value' => $this->reportInfo->newMoney,
+        ]);
+
+        $plan = $this->getPlan(WorkPlan::SUPER_PLAN);
+
+        if (is_null($plan)) {
+            return $result;
+        }
+
+        $result['goal'] = $plan->goal;
+
+        if ($this->reportInfo->newMoney >= $plan->goal) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan->bonus;
+            $this->reportInfo->bonuses += $plan->bonus;
+            return $result;
+        }
+
+        $weeksCompleted = $this->calculateWeeksCompleted($weeks, $this->reportInfo->monthWorkPlan);
+
+        if (!$weeksCompleted->every(fn($weekStat) => $weekStat['completed'])) {
+            return $result;
+        }
+
+
+        $result['completed'] = true;
+        $result['bonus'] = $plan->bonus;
+        $this->reportInfo->bonuses += $plan->bonus;
+
+        return $result;
+    }
+
+
     private function calculateWeeksCompleted(Collection $weeks, WorkPlan $plan): Collection
     {
         $weeksCompleted = collect();
@@ -425,7 +443,7 @@ class PlansService
             }
 
             if ($key > 0) {
-                $this->checkPreviousWeek($weeksCompleted, $key, $week['newMoney'], $plan->goal);
+                $this->checkPreviousWeek($weeksCompleted, $key, $week['newMoney'], $plan->data['goal']);
             }
 
             $weeksCompleted->push($weekStat);
@@ -448,12 +466,11 @@ class PlansService
 
         $noPercentageMonth = $this->reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
 
-
-        if ($noPercentageMonth != null && $monthWorked > $noPercentageMonth->month) {
-            $minimalWorkPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
+        if ($noPercentageMonth != null && $monthWorked > $noPercentageMonth->data['month']) {
+            $minimalWorkPlan = $this->reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->whereNotNull('goal')
-                ->orderBy('goal', 'asc')
+                ->sortBy('goal')
                 ->skip(1)
                 ->first();
             if ($this->reportInfo->newMoney < $minimalWorkPlan->goal) {
@@ -461,16 +478,16 @@ class PlansService
             }
         }
 
-        $workPlan = WorkPlan::where('goal', '>', $this->reportInfo->newMoney)
+        $workPlan = $this->reportInfo->workPlans->where('goal', '>', $this->reportInfo->newMoney)
             ->where('type', WorkPlan::PERCENT_LADDER)
             ->where('department_id', $this->reportInfo->mainDepartmentId)
-            ->orderBy('goal')
+            ->sortBy('goal')
             ->first();
 
         if ($workPlan == null) {
-            $workPlan = WorkPlan::where('type', WorkPlan::PERCENT_LADDER)
+            $workPlan = $this->reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
                 ->where('department_id', $this->reportInfo->mainDepartmentId)
-                ->orderBy('bonus', 'desc')
+                ->sortBy('bonus', 'desc')
                 ->first();
         }
 
@@ -488,12 +505,12 @@ class PlansService
 
 
         if (!$report['b1']['completed']) {
-            $b1Plan = WorkPlan::where('type', WorkPlan::B1_PLAN)
+            $b1Plan = $this->reportInfo->workPlans->where('type', WorkPlan::B1_PLAN)
                 ->where('department_id', $this->reportInfo->mainDepartmentId)
                 ->first();
-            $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->bonus / 100));
-            $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->bonus / 100));
-            $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->bonus / 100));
+            $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->data['bonus'] / 100));
+            $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->data['bonus'] / 100));
+            $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->data['bonus'] / 100));
         };
 
         $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];

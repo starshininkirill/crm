@@ -11,12 +11,14 @@
             <form class="flex gap-4" @submit.prevent="updatePlan(plan)">
                 <label v-if="hasGoalField" class="flex gap-2 items-center whitespace-nowrap" for="goal">
                     Цель
-                    <input v-model="plan.goal" class="input" name="goal" type="number" :disabled="!isCurrentMonth" />
+                    <input v-model="plan.data.goal" class="input" name="goal" type="number"
+                        :disabled="!isCurrentMonth" />
                 </label>
 
                 <label class="flex gap-2 items-center" for="bonus">
                     Бонус
-                    <input v-model="plan.bonus" class="input" name="bonus" type="number" :disabled="!isCurrentMonth" />
+                    <input v-model="plan.data.bonus" class="input" name="bonus" type="number"
+                        :disabled="!isCurrentMonth" />
                 </label>
 
                 <button v-if="isCurrentMonth" class="text-blue-400 hover:text-blue-500" type="submit">
@@ -35,12 +37,12 @@
 
             <label v-if="hasGoalField" class="flex gap-2 items-center whitespace-nowrap" for="goal">
                 Цель
-                <input v-model="newPlan.goal" class="input" name="goal" type="number" />
+                <input v-model="newPlan.data.goal" class="input" name="goal" type="number" />
             </label>
 
             <label class="flex gap-2 items-center" for="bonus">
                 Бонус
-                <input v-model="newPlan.bonus" class="input" name="bonus" type="number" />
+                <input v-model="newPlan.data.bonus" class="input" name="bonus" type="number" />
             </label>
             <button class="text-blue-400 hover:text-blue-500" type="submit">
                 Создать
@@ -81,8 +83,10 @@ export default {
     data() {
         return {
             newPlan: {
-                goal: null,
-                bonus: null,
+                data: {
+                    goal: null,
+                    bonus: null,
+                },
                 department_id: this.departmentId,
                 type: this.planType,
             },
@@ -98,24 +102,29 @@ export default {
     },
     methods: {
         updatePlan(plan) {
-            router.put(route('workPlan.update', { workPlan: plan }), {
-                'goal': plan.goal,
-                'bonus': plan.bonus,
+            router.put(route('admin.sale-department.work-plan.update', { workPlan: plan }), {
+                'data': {
+                    'goal': plan.data.goal,
+                    'bonus': plan.data.bonus,
+                },
+                'type': plan.type
             })
         },
         deletePlan(plan) {
-            router.delete(route('workPlan.destroy', { workPlan: plan }))
+            router.delete(route('admin.sale-department.work-plan.destroy', { workPlan: plan }))
         },
         createPlan() {
-            router.post(route('workPlan.store'), {
-                'bonus': this.newPlan.bonus,
-                'goal': this.newPlan.goal,
+            router.post(route('admin.sale-department.work-plan.store'), {
+                'data': {
+                    'bonus': this.newPlan.data.bonus,
+                    'goal': this.newPlan.data.goal,
+                },
                 'department_id': this.newPlan.department_id,
                 'type': this.newPlan.type,
             }, {
                 onSuccess: () => {
-                    this.newPlan.month = '';
-                    this.newPlan.goal = '';
+                    this.newPlan.data.month = '';
+                    this.newPlan.data.goal = '';
                 },
             })
         },

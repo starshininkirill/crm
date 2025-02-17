@@ -16,7 +16,7 @@
             <div class="text-2xl font-semibold">
                 Данные для отчёта не найдены
             </div>
-        </template>
+        </template> 
         <div class="flex gap-4">
             <table class="reports w-1/2">
                 <DailyReport v-if="daylyReport.length" :report="daylyReport" />
@@ -25,16 +25,16 @@
                 <MotivationReport v-if="motivationReport && motivationReport.weeksPlan"
                     :motivationReport="motivationReport" />
             </table>
-            <!-- <table class="pivot-reports w-1/2 h-fit">
+            <table class="pivot-reports w-1/2 h-fit">
                 <DailyReport v-if="pivotDaily.length" :report="pivotDaily" />
                 <WeeksReport v-if="pivotWeeks && pivotWeeks.weeksPlan" :weeks="pivotWeeks.weeksPlan"
                     :totalValues="pivotWeeks.totalValues" />
                 <GeneralReport v-if="generalPlan && Object.keys(generalPlan).length > 0" :generalPlan="generalPlan" />
-            </table> -->
+            </table>
         </div>
 
         <div class="w-100 mt-6">
-            <!-- <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" /> -->
+            <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" />
         </div>
     </div>
 </template>

@@ -107,7 +107,7 @@ class ReportInfo
 
         $subdataInstance->workingDays = $this->workingDays;
         $subdataInstance->monthWorkPlan = $this->getMonthPlan($user);
-        $subdataInstance->monthWorkPlanGoal = $subdataInstance->monthWorkPlan->goal;
+        $subdataInstance->monthWorkPlanGoal = $subdataInstance->monthWorkPlan->data['goal'];
 
         $subdataInstance->payments = $this->payments->filter(function ($payment) use ($user) {
             return $payment->contract && $payment->contract->users->contains('id', $user->id);
@@ -153,7 +153,7 @@ class ReportInfo
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
 
         $this->monthWorkPlan = $this->getMonthPlan();
-        $this->monthWorkPlanGoal = $this->monthWorkPlan->goal;
+        $this->monthWorkPlanGoal = $this->monthWorkPlan->data['goal'];
 
         $this->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SALLER);
 

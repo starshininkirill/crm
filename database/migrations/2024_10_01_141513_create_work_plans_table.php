@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('work_plans', function (Blueprint $table) {
             $table->id();
-
+            $table->string('type');
             $table->json('data')->nullable();
             $table->float('goal')->nullable();
             $table->integer('month')->nullable();

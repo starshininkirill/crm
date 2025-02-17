@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Departments;
 use App\Classes\T2Api;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaleWorkPlanRequest;
 use App\Models\Department;
 use App\Models\Option;
 use App\Models\ServiceCategory;
@@ -14,10 +15,10 @@ use App\Services\CallStatisticsService;
 use App\Services\SaleDepartmentServices\PlansService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
+use App\Services\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -146,84 +147,6 @@ class SaleDepartmentController extends Controller
         );
     }
 
-    public function oldUserReport(Request $request)
-    {
-
-        $departments = Department::getSaleDepartments();
-
-        if ($request->filled(['department'])) {
-            $selectDepartment = $departments->find($request->department);
-        } else {
-            $selectDepartment = $departments->whereNull('parent_id')->first();
-        }
-
-        $selectUsers = $departments->whereNull('parent_id')->first()->activeUsers();
-
-        $requestData = $request->only(['user', 'date']);
-
-        $requestData['user'] = 2;
-        $requestData['date'] = '2025-02';
-
-        // if ($request->filled(['user', 'date'])) {
-        try {
-            $date = DateHelper::getValidatedDateOrNow($requestData['date']);
-            $user = User::find($requestData['user']);
-
-            if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
-                $error = 'Сотрудник ещё не работал в этот месяц.';
-            }
-
-            $reportInfo = new ReportInfo($date, null, $selectDepartment);
-            $reportService = new ReportService($this->plansService, $reportInfo);
-
-            $daylyReport = $reportService->monthByDayReport($user);
-
-            $motivationReport = $reportService->motivationReport($user);
-            $pivotWeeks = $reportService->pivotWeek();
-            $pivotDaily = $reportService->monthByDayReport();
-
-            $users = $selectDepartment->activeUsers($date);
-            $pivotUsers = $reportService->pivotUsers($users);
-
-            $generalPlan = $reportService->generalPlan($pivotUsers);
-        } catch (Exception $e) {
-            if (isset($error)) {
-                $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            } else {
-                $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            }
-        }
-        // }
-
-        // return Inertia::render('Admin/SaleDapartment/UserReport', [
-        //     'departments' => $departments,
-        //     'users' => $selectUsers,
-        //     'user' => $user ?? null,
-        //     'selectedDepartment' => $selectDepartment ?? null,
-        //     'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
-        // ]);
-
-        return view(
-            'admin.departments.sale.report',
-            [
-                'departments' => $departments ?? collect(),
-                'selectedDepartment' => $selectDepartment ?? null,
-                'selectUsers' => $selectUsers,
-                'users' => $users ?? collect(),
-                'user' => $user ?? null,
-                'date' => $date ?? null,
-                'daylyReport' => $daylyReport ?? collect(),
-                'motivationReport' => $motivationReport ?? collect(),
-                'pivotWeeks' => $pivotWeeks ?? collect(),
-                'pivotDaily' => $pivotDaily ?? collect(),
-                'pivotUsers' => $pivotUsers ?? collect(),
-                'generalPlan' => $generalPlan ?? collect(),
-                'serviceCategoryModel' => ServiceCategory::class,
-                'error' => $error ?? ''
-            ]
-        );
-    }
-
     public function plansSettings(Request $request)
     {
         $requestDate = $request->query('date');
@@ -236,8 +159,7 @@ class SaleDepartmentController extends Controller
         $plans = WorkPlan::plansForSaleSettings($date);
 
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
-
-        return Inertia::render('Admin/SaleDapartment/PlansSettings',[
+        return Inertia::render('Admin/SaleDapartment/PlansSettings', [
             'dateProp' => $date->format('Y-m'),
             'plans' => $plans,
             'isCurrentMonth' => $isCurrentMonth,
@@ -288,5 +210,34 @@ class SaleDepartmentController extends Controller
         }
 
         return redirect()->back()->with('success', 'Данные успешно загружены');
+    }
+
+    public function storeWorkPlan(SaleWorkPlanRequest $request, WorkPlanService $workPlanService)
+    {
+        $validated = $request->validated();
+
+        $workPlan = $workPlanService->store($validated);
+
+        if (!$workPlan) {
+            return redirect()->back()->withErrors('Не удалось создать план');
+        }
+
+        return redirect()->back()->with('success', 'План успешно создан');
+    }
+
+    public function updateWorkPlan(SaleWorkPlanRequest $request, WorkPlan $workPlan, WorkPlanService $workPlanService)
+    {
+        $validated = $request->validated();
+
+        $workPlanService->update($workPlan, $validated);
+
+        return redirect()->back()->with('success', 'План успешно изменён');
+    }
+
+    public function destroyWorkPlan(WorkPlan $workPlan, WorkPlanService $workPlanService)
+    {
+        $workPlanService->destroy($workPlan);
+
+        return redirect()->back()->with('success', 'План успешно удалён');
     }
 }

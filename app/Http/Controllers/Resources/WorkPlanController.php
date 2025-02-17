@@ -21,7 +21,6 @@ class WorkPlanController extends Controller
 
     public function update(WorkPlanRequest $request, WorkPlan $workPlan)
     {
-
         $validated = $request->updateData();
 
         if ($workPlan->type == WorkPlan::B1_PLAN || $workPlan->type == WorkPlan::B2_PLAN) {

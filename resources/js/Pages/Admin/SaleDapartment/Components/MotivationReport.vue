@@ -53,7 +53,7 @@
                 {{ motivationReport.superPlan.completed ? 'Да' : 'Нет' }}
             </td>
             <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                <!-- {{ motivationReport.b1.completed ? 'Да' : 'Нет' }} -->
+                {{ motivationReport.b1.completed ? 'Да' : 'Нет' }}
             </td>
             <td class="border text-xs border-gray-300 text-md px-1 py-1">
                 {{ motivationReport.b2.completed ? 'Да' : 'Нет' }}
