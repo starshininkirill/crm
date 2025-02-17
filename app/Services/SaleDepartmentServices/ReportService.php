@@ -102,6 +102,8 @@ class ReportService
         $report['b4'] = $this->planService->b4Plan();
         $report['salary'] = $this->planService->calculateSalary($report);
 
+        $report['b1'] = $this->planService->b1Plan();
+
         return $report;
     }
 

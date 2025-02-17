@@ -4,6 +4,7 @@ namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
+use App\Models\CallStat;
 use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Payment;
@@ -34,6 +35,7 @@ class ReportInfo
     public float|int $bonuses = 0;
     public Collection $workPlans;
     public $isUserData = false;
+    public $callsStat;
 
     public function __construct(Carbon $date = null, User $user = null, Department $department = null)
     {
@@ -49,6 +51,10 @@ class ReportInfo
 
     private function prepareFullData(Carbon $date, Department $department = null): void
     {
+        $startDate = $date->copy()->startOfMonth();
+        $endDate = $date->copy()->endOfMonth();
+        $this->callsStat = CallStat::query()->whereBetween('date', [$startDate, $endDate])->get()->groupBy('phone');
+
         $this->date = $date;
         $mainDepartment = Department::getMainSaleDepartment();
         $this->mainDepartmentId = $mainDepartment->id;
@@ -92,6 +98,7 @@ class ReportInfo
 
         $subdataInstance = new ReportInfo();
 
+        $subdataInstance->callsStat = $this->callsStat->get($user->phone) ?? collect();
         $subdataInstance->date = $this->date;
         $subdataInstance->user = $user;
         $subdataInstance->mainDepartmentId = $this->mainDepartmentId;
@@ -101,7 +108,6 @@ class ReportInfo
         $subdataInstance->workingDays = $this->workingDays;
         $subdataInstance->monthWorkPlan = $this->getMonthPlan($user);
         $subdataInstance->monthWorkPlanGoal = $subdataInstance->monthWorkPlan->goal;
-
 
         $subdataInstance->payments = $this->payments->filter(function ($payment) use ($user) {
             return $payment->contract && $payment->contract->users->contains('id', $user->id);

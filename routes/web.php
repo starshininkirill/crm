@@ -33,8 +33,8 @@ use App\Http\Controllers\Resources\ServiceController as ResourcesServiceControll
 use App\Http\Controllers\Resources\WorkPlanController;
 use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
-use Illuminate\Support\Facades\Route; 
- 
+use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', [MainController::class, 'home'])->name('home');
 Route::get('/fast-login', [MainController::class, 'loginHome'])->name('fastLogin');
@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [LkContractGeneratorController::class, 'create'])->name('lk.contract.create');
             Route::post('/store', [LkContractGeneratorController::class, 'store'])->name('lk.contract.store');
         });
-        
+
         Route::prefix('/acts')->group(function () {
             Route::get('/create', [LkActGeneratorController::class, 'create'])->name('lk.act.create');
             Route::post('/store', [LkActGeneratorController::class, 'store'])->name('lk.act.store');
@@ -130,7 +130,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
         Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
         Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
-        Route::get('/report-settings', [SaleDepartmentController::class, 'reportSettings'])->name('admin.sale-department.report-settings');
+        Route::get('/plans-settings', [SaleDepartmentController::class, 'plansSettings'])->name('admin.sale-department.plans-settings');
         Route::get('/t2-settings', [SaleDepartmentController::class, 't2Settings'])->name('admin.sale-department.t2-settings');
         Route::get('/t2-load-data', [SaleDepartmentController::class, 't2LoadData'])->name('admin.sale-department.t2-load-data');
     });

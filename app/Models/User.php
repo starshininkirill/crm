@@ -67,7 +67,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Contract::class);
     }
     
-    public function CallStats(): HasMany
+    public function callStats(): HasMany
     {
         return $this->hasMany(CallStat::class, 'number', 'number');
     }

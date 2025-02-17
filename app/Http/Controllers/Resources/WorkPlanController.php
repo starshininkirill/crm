@@ -22,19 +22,17 @@ class WorkPlanController extends Controller
     public function update(WorkPlanRequest $request, WorkPlan $workPlan)
     {
 
+        $validated = $request->updateData();
+
         if ($workPlan->type == WorkPlan::B1_PLAN || $workPlan->type == WorkPlan::B2_PLAN) {
-            $data = $request->updateData();
-            if(array_key_exists('bonus', $data)){
+            if(array_key_exists('bonus', $validated)){
                 WorkPlan::where('department_id', $workPlan->department->id)
                 ->where('type', $workPlan->type)
                 ->whereYear('created_at', $workPlan->created_at->year)
                 ->whereMonth('created_at', $workPlan->created_at->month) 
-                ->update(['bonus' => $data['bonus']]);
+                ->update(['bonus' => $validated['bonus']]);
             }
         }
-
-
-        $validated = $request->updateData();
         
         $workPlan->update($validated);
 

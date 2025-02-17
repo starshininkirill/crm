@@ -9,7 +9,7 @@
             <x-admin-subnav-link route="admin.sale-department.user-report">
                 Отчёт по менеджерам
             </x-admin-subnav-link>
-            <x-admin-subnav-link route="admin.sale-department.report-settings">
+            <x-admin-subnav-link route="admin.sale-department.plans-settings">
                 Настройка планов
             </x-admin-subnav-link>
         </div>

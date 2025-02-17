@@ -30,7 +30,7 @@ class WorkPlanRequest extends FormRequest
 
         if($this->isMethod('POST')){
             $rules = array_merge($rules, [
-                'type' => ['required', 'integer', 'in:' . implode(',', WorkPlan::ALL_PLANS)],
+                'type' => ['required', 'string', 'in:' . implode(',', WorkPlan::ALL_PLANS)],
                 'service_category_id' => ['nullable', 'exists:service_categories,id'],
                 'department_id' => ['required', 'exists:departments,id'],
                 'position_id' => ['nullable', 'exists:positions,id'],

@@ -46,9 +46,7 @@ class SaleDepartmentController extends Controller
             $date = $request->get('date');
         }
 
-        $calculatedData = Cache::remember('callsStatisticData_' . $date, 60 * 60, function () use ($callStatisticsService, $date) {
-            return $callStatisticsService->calculateTotalCallsData($date);
-        });
+        $calculatedData = $callStatisticsService->calculateTotalCallsData($date);
 
 
         $callDurationPlan = 130;
@@ -103,6 +101,7 @@ class SaleDepartmentController extends Controller
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
             } catch (Exception $e) {
+                dd($e);
                 if (isset($error)) {
                     $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
                 } else {
@@ -225,7 +224,7 @@ class SaleDepartmentController extends Controller
         );
     }
 
-    public function reportSettings(Request $request)
+    public function plansSettings(Request $request)
     {
         $requestDate = $request->query('date');
 
@@ -238,7 +237,12 @@ class SaleDepartmentController extends Controller
 
         $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
 
-        return Inertia::render('Admin/SaleDapartment/ReportSettings');
+        return Inertia::render('Admin/SaleDapartment/PlansSettings',[
+            'dateProp' => $date->format('Y-m'),
+            'plans' => $plans,
+            'isCurrentMonth' => $isCurrentMonth,
+            'departmentId' => $departmentId,
+        ]);
 
         return view('admin.departments.sale.reportSettings', [
             'departmentId' => $departmentId,
@@ -282,8 +286,6 @@ class SaleDepartmentController extends Controller
             $errors = $e->getMessage();
             return redirect()->back()->withErrors($errors);
         }
-
-        Cache::forget('callsStatisticData_' . Carbon::create($dateNow)->format('Y-m'));
 
         return redirect()->back()->with('success', 'Данные успешно загружены');
     }

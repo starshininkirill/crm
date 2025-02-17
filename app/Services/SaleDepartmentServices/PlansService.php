@@ -256,6 +256,21 @@ class PlansService
         return $res;
     }
 
+    public function b1Plan()
+    {
+        $averageDuration = $this->reportInfo->callsStat->map(function ($call) {
+            return $call->duration / 60;
+        })->avg();
+
+        $averageCalls = $this->reportInfo->callsStat->map(function ($call) {
+            return $call->income + $call->outcome;
+        })->avg();
+
+        
+        // dd($averageCalls);
+
+    }
+
 
     public function superPlan(Collection $weeks): Collection
     {

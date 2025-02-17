@@ -11,7 +11,7 @@
                 <AdminSubnavLink :href="route('admin.sale-department.user-report')" :route="'admin.sale-department.user-report'">
                     Отчёт по менеджерам
                 </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.sale-department.report-settings')" :route="'admin.sale-department.report-settings'">
+                <AdminSubnavLink :href="route('admin.sale-department.plans-settings')" :route="'admin.sale-department.plans-settings'">
                     Настройка планов
                 </AdminSubnavLink>
                 <AdminSubnavLink :href="route('admin.sale-department.t2-settings')" :route="'admin.sale-department.t2-settings'">
