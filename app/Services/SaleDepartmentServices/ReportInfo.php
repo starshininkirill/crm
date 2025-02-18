@@ -31,7 +31,7 @@ class ReportInfo
     public Department $department;
     public Carbon $date;
     public User $user;
-    public Collection $services;
+    public Collection $servicesByCatsCount;
     public float|int $bonuses = 0;
     public Collection $workPlans;
     public $isUserData = false;
@@ -87,7 +87,7 @@ class ReportInfo
         $this->newMoney = $this->newPayments->sum('value');
         $this->oldMoney = $this->oldPayments->sum('value');
 
-        $this->services = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
+        $this->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
     }
 
     public function getUserSubdata(User $user): ?ReportInfo
@@ -123,7 +123,7 @@ class ReportInfo
         $subdataInstance->newMoney = $subdataInstance->newPayments->sum('value');
         $subdataInstance->oldMoney = $subdataInstance->oldPayments->sum('value');
 
-        $subdataInstance->services = ServiceCountHelper::calculateServiceCountsByContracts($subdataInstance->contracts);
+        $subdataInstance->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($subdataInstance->contracts);
         $subdataInstance->isUserData = true;
 
         return $subdataInstance;
@@ -165,14 +165,13 @@ class ReportInfo
         $this->newMoney = $this->newPayments->sum('value');
         $this->oldMoney = $this->oldPayments->sum('value');
 
-        $this->services = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
+        $this->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($this->contracts);
         $this->isUserData = true;
     }
 
 
     private function getMonthPlan(?User $user = null): ?WorkPlan
     {
-
         if ($user == null) {
             $user = $this->user;
         }

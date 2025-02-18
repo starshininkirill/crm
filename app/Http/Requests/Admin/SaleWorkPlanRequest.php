@@ -38,6 +38,17 @@ class SaleWorkPlanRequest extends FormRequest
                 return $rules;
             };
 
+            if ($this->input('type') == WorkPlan::B4_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
             if ($this->input('type') == WorkPlan::MOUNTH_PLAN) {
                 $rules = array_merge($rules, [
                     'data.goal' => 'required|integer',
@@ -55,9 +66,17 @@ class SaleWorkPlanRequest extends FormRequest
                 return $rules;
             }
 
-            if ($this->input('type') == WorkPlan::BONUS_PLAN || $this->input('type') == WorkPlan::SUPER_PLAN) {
+            if ($this->input('type') == WorkPlan::BONUS_PLAN || $this->input('type') == WorkPlan::SUPER_PLAN || $this->input('type') == WorkPlan::PERCENT_LADDER) {
                 $rules = array_merge($rules, [
-                    'data.bonus' => 'required|integer',
+                    'data.goal' => 'nullable|integer',
+                    'data.bonus' => 'required|numeric',
+                ]);
+
+                return $rules;
+            }
+
+            if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
+                $rules = array_merge($rules, [
                     'data.goal' => 'required|integer',
                 ]);
 
@@ -75,6 +94,17 @@ class SaleWorkPlanRequest extends FormRequest
                 $rules = array_merge($rules, [
                     'data.avgDurationCalls' => 'required|integer',
                     'data.avgCountCalls' => 'required|integer',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
+            if ($this->input('type') == WorkPlan::B4_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
                     'data.goal' => 'required|integer',
                     'data.bonus' => 'required|integer',
                 ]);
@@ -102,6 +132,23 @@ class SaleWorkPlanRequest extends FormRequest
             if ($this->input('type') == WorkPlan::BONUS_PLAN || $this->input('type') == WorkPlan::SUPER_PLAN) {
                 $rules = array_merge($rules, [
                     'data.bonus' => 'required|integer',
+                    'data.goal' => 'required|integer',
+                ]);
+
+                return $rules;
+            }
+
+            if ($this->input('type') == WorkPlan::PERCENT_LADDER) {
+                $rules = array_merge($rules, [
+                    'data.goal' => 'nullable|integer',
+                    'data.bonus' => 'required|numeric',
+                ]);
+
+                return $rules;
+            }
+
+            if ($this->input('type') == WorkPlan::NO_PERCENTAGE_MONTH) {
+                $rules = array_merge($rules, [
                     'data.goal' => 'required|integer',
                 ]);
 

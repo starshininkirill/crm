@@ -22,6 +22,11 @@ class PlansService
         return $this->reportInfo->workPlans->firstWhere('type', $planType);
     }
 
+    private function updateBonus(int|float $bonus): void
+    {
+        $this->reportInfo->bonuses += $bonus;
+    }
+
     public function monthPlan(): Collection
     {
         return  collect(
@@ -53,8 +58,8 @@ class PlansService
             $planInstance = $this->getPlan(WorkPlan::DOUBLE_PLAN);
 
             if ($planInstance) {
-                $res['bonus'] = $planInstance->bonus;
-                $this->reportInfo->bonuses += $planInstance->bonus;
+                $res['bonus'] = $planInstance->data['bonus'];
+                $this->updateBonus($planInstance->data['bonus']);
             }
         }
 
@@ -74,14 +79,14 @@ class PlansService
         $planInstance = $this->getPlan(WorkPlan::BONUS_PLAN);
 
         if ($planInstance) {
-            $plan = $planInstance->goal;
+            $planGoal = $planInstance->data['goal'];
 
-            $res['goal'] = $plan;
+            $res['goal'] = $planGoal;
 
-            if ($this->reportInfo->newMoney >= $plan && $plan != null) {
+            if ($this->reportInfo->newMoney >= $planGoal && $planGoal != null) {
                 $res['completed'] = true;
-                $res['bonus'] = $planInstance->bonus;
-                $this->reportInfo->bonuses += $planInstance->bonus;
+                $res['bonus'] = $planInstance->data['bonus'];
+                $this->updateBonus($planInstance->data['bonus']);
             }
         }
 
@@ -131,15 +136,14 @@ class PlansService
                 'bonus' => 0
             ]);
 
-            $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
-            // $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
-            $weekResult['services'] = $serviceCounts;
+            $servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
+            $weekResult['servicesByCatsCount'] = $servicesByCatsCount;
             if ($newFilteredPaymentsSum >= $weekPlan) {
                 $weekResult['completed'] = true;
                 $weekPlanInstance = $this->getPlan(WorkPlan::WEEK_PLAN);
                 if ($weekPlanInstance != null) {
-                    $weekResult['bonus'] = $weekPlanInstance->bonus;
-                    $this->reportInfo->bonuses += $weekPlanInstance->bonus;
+                    $weekResult['bonus'] = $weekPlanInstance->data['bonus'];
+                    $this->updateBonus($weekPlanInstance->data['bonus']);
                 }
             }
             $res[] = $weekResult;
@@ -186,9 +190,8 @@ class PlansService
                 'oldMoney' => $oldFilteredPaymentsSum,
             ]);
 
-            $serviceCounts = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
-            // $weekResult = collect($weekResult)->merge($serviceCounts)->toArray();
-            $weekResult['services'] = $serviceCounts;
+            $servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($newUniqueContracts);
+            $weekResult['servicesByCatsCount'] = $servicesByCatsCount;
             $res[] = $weekResult;
         };
         return $res;
@@ -199,58 +202,14 @@ class PlansService
         $res = collect([
             'newMoney' => $this->reportInfo->newMoney,
             'oldMoney' => $this->reportInfo->oldMoney,
-            'services' => [
-                ServiceCategory::INDIVIDUAL_SITE => $this->reportInfo->services[ServiceCategory::INDIVIDUAL_SITE],
-                ServiceCategory::READY_SITE => $this->reportInfo->services[ServiceCategory::READY_SITE],
-                ServiceCategory::RK => $this->reportInfo->services[ServiceCategory::RK],
-                ServiceCategory::SEO => $this->reportInfo->services[ServiceCategory::SEO],
-                ServiceCategory::OTHER => $this->reportInfo->services[ServiceCategory::OTHER],
+            'servicesByCatsCount' => [
+                ServiceCategory::INDIVIDUAL_SITE => $this->reportInfo->servicesByCatsCount[ServiceCategory::INDIVIDUAL_SITE],
+                ServiceCategory::READY_SITE => $this->reportInfo->servicesByCatsCount[ServiceCategory::READY_SITE],
+                ServiceCategory::RK => $this->reportInfo->servicesByCatsCount[ServiceCategory::RK],
+                ServiceCategory::SEO => $this->reportInfo->servicesByCatsCount[ServiceCategory::SEO],
+                ServiceCategory::OTHER => $this->reportInfo->servicesByCatsCount[ServiceCategory::OTHER],
             ]
         ]);
-
-        return $res;
-    }
-
-    public function bServicesPlan(int|string $planType): Collection
-    {
-        $res = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-        $mainDepartmentId = $this->reportInfo->mainDepartmentId;
-        $isCompletedPlan = true;
-        foreach ($this->reportInfo->services as $key => $service) {
-            $servicePlan = $this->reportInfo->workPlans
-                ->filter(function ($workPlan) use ($planType, $mainDepartmentId, $key) {
-                    return $workPlan->type === $planType
-                        && $workPlan->department_id === $mainDepartmentId
-                        && isset($workPlan->serviceCategory)
-                        && $workPlan->serviceCategory->type === $key;
-                })
-                ->first();
-            if ($servicePlan) {
-                if ($service < $servicePlan->goal) {
-                    $isCompletedPlan = false;
-                    break;
-                }
-            }
-        }
-
-        $bPlan = $this->getPlan($planType);
-
-        if ($bPlan) {
-            $bPlan->type == WorkPlan::B1_PLAN ? $res['bonus'] = '-' . $bPlan->bonus : '';
-        }
-
-        if (!$isCompletedPlan) {
-            return $res;
-        }
-
-        $res['completed'] = true;
-
-        if ($bPlan->type != WorkPlan::B1_PLAN) {
-            $res['bonus'] =  $bPlan->bonus;
-        }
 
         return $res;
     }
@@ -262,7 +221,7 @@ class PlansService
             'bonus' => 0,
         ]);
 
-        $plan =  $this->reportInfo->workPlans->where('type', WorkPlan::B1_PLAN)->first();
+        $plan = $this->getPlan(WorkPlan::B1_PLAN);
 
         if (!$plan) {
             return $result;
@@ -288,6 +247,7 @@ class PlansService
 
         return $result;
     }
+
 
     public function b3Plan(): Collection
     {
@@ -360,7 +320,46 @@ class PlansService
         return $result;
     }
 
-    public function b4Plan(): Collection
+
+    public function b4Plan()
+    {
+        $result = collect([
+            'completed' => false,
+            'bonus' => 0,
+        ]);
+
+        $plan = $this->getPlan(WorkPlan::B4_PLAN);
+
+        if (!$plan || empty($plan->data)) {
+            return $result;
+        }
+
+        $includeIds = $plan->data['includeIds'] ?? [];
+        $planGoal = $plan->data['goal'] ?? '';
+
+        if (!$includeIds || empty($includeIds) || $planGoal == '') {
+            return $result;
+        }
+
+        $matchingCount = 0;
+
+        $this->reportInfo->contracts->each((function ($contract) use ($includeIds, &$matchingCount) {
+            $serviceIds = $contract->services->pluck('id');
+
+            if ($serviceIds->intersect($includeIds)->isNotEmpty()) {
+                $matchingCount += 1;
+            }
+        }));
+
+        if ($matchingCount >= $planGoal) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan['bonus'] ?? 0;
+        }
+
+        return $result;
+    }
+
+    public function oldb4Plan(): Collection
     {
         $res = collect([
             'completed' => false,
@@ -375,13 +374,13 @@ class PlansService
 
         $res['goal'] = $b4Plan->goal;
 
-        if (! collect($this->reportInfo->services)->has(ServiceCategory::RK)) {
+        if (! collect($this->reportInfo->servicesByCatsCount)->has(ServiceCategory::RK)) {
             return $res;
         }
 
-        $res['value'] = $this->reportInfo->services[ServiceCategory::RK];
+        $res['value'] = $this->reportInfo->servicesByCatsCount[ServiceCategory::RK];
 
-        if ($this->reportInfo->services[ServiceCategory::RK] >= $b4Plan->goal) {
+        if ($this->reportInfo->servicesByCatsCount[ServiceCategory::RK] >= $b4Plan->goal) {
             $res['completed'] = true;
             $res['bonus'] = $b4Plan->bonus;
             $this->reportInfo->bonuses += $b4Plan->bonus;
@@ -404,12 +403,12 @@ class PlansService
             return $result;
         }
 
-        $result['goal'] = $plan->goal;
+        $result['goal'] = $plan->data['goal'];
 
-        if ($this->reportInfo->newMoney >= $plan->goal) {
+        if ($this->reportInfo->newMoney >= $plan->data['goal']) {
             $result['completed'] = true;
-            $result['bonus'] = $plan->bonus;
-            $this->reportInfo->bonuses += $plan->bonus;
+            $result['bonus'] = $plan->data['bonus'];
+            $this->updateBonus($plan->data['bonus']);
             return $result;
         }
 
@@ -421,8 +420,8 @@ class PlansService
 
 
         $result['completed'] = true;
-        $result['bonus'] = $plan->bonus;
-        $this->reportInfo->bonuses += $plan->bonus;
+        $result['bonus'] = $plan->data['bonus'];
+        $this->updateBonus($plan->data['bonus']);
 
         return $result;
     }
@@ -438,7 +437,7 @@ class PlansService
                 'order' => $key,
             ]);
 
-            if ($week['newMoney'] >= $plan->goal / 4) {
+            if ($week['newMoney'] >= $plan->data['goal'] / 4) {
                 $weekStat['completed'] = true;
             }
 
@@ -466,28 +465,26 @@ class PlansService
 
         $noPercentageMonth = $this->reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
 
-        if ($noPercentageMonth != null && $monthWorked > $noPercentageMonth->data['month']) {
+        if ($noPercentageMonth && array_key_exists('goal', $noPercentageMonth->data) && $monthWorked > $noPercentageMonth->data['goal']) {
             $minimalWorkPlan = $this->reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
-                ->where('department_id', $this->reportInfo->mainDepartmentId)
-                ->whereNotNull('goal')
-                ->sortBy('goal')
+                ->whereNotNull('data.goal')
+                ->sortBy('data.goal')
                 ->skip(1)
                 ->first();
-            if ($this->reportInfo->newMoney < $minimalWorkPlan->goal) {
+            if ($this->reportInfo->newMoney < $minimalWorkPlan->data['goal']) {
                 $bonus = 0;
             }
         }
 
-        $workPlan = $this->reportInfo->workPlans->where('goal', '>', $this->reportInfo->newMoney)
+        $workPlan = $this->reportInfo->workPlans->where('data.goal', '>', $this->reportInfo->newMoney)
             ->where('type', WorkPlan::PERCENT_LADDER)
             ->where('department_id', $this->reportInfo->mainDepartmentId)
-            ->sortBy('goal')
+            ->sortBy('data.goal')
             ->first();
 
         if ($workPlan == null) {
             $workPlan = $this->reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
-                ->where('department_id', $this->reportInfo->mainDepartmentId)
-                ->sortBy('bonus', 'desc')
+                ->sortByDesc('data.bonus')
                 ->first();
         }
 
@@ -495,7 +492,7 @@ class PlansService
             return $res;
         }
 
-        $bonus !== 0 ? $bonus = $workPlan->bonus : '';
+        $bonus !== 0 ? $bonus = $workPlan->data['bonus'] : '';
 
         $res['percentage'] = $bonus;
         $res['newMoney'] = ($this->reportInfo->newMoney * $bonus) / 100;
@@ -505,9 +502,7 @@ class PlansService
 
 
         if (!$report['b1']['completed']) {
-            $b1Plan = $this->reportInfo->workPlans->where('type', WorkPlan::B1_PLAN)
-                ->where('department_id', $this->reportInfo->mainDepartmentId)
-                ->first();
+            $b1Plan = $this->getPlan(WorkPlan::B1_PLAN);
             $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->data['bonus'] / 100));
             $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->data['bonus'] / 100));
             $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->data['bonus'] / 100));

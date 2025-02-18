@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\CallStat;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +31,9 @@ class CallStatsSeeder extends Seeder
 
         // Заполняем таблицу данными
         foreach ($callStatsData as $data) {
-            CallStat::create($data);
+            if (User::query()->firstWhere('phone', $data['phone'])) {
+                CallStat::create($data);
+            }
         }
 
         $this->command->info('Данные успешно импортированы из файла JSON.');

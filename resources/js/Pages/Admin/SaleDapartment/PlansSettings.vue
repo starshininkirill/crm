@@ -14,7 +14,7 @@
     </ul>
 
 
-    <div class="grid grid-cols-3 gap-8">
+    <div class="grid grid-cols-3 gap-8 mb-4">
         <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
         <div class="flex flex-col gap-4">
             <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
@@ -26,11 +26,16 @@
             <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Супер план'"
                 :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true" />
         </div>
-        <div class="flex flex-col gap-4">
-            <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
-        </div>
-    </div>
 
+        <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+
+        <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
+            :departmentId="departmentId" />
+
+
+        <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
+            :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
+    </div>
 
 </template>
 
@@ -43,6 +48,8 @@ import FormInput from '../../../Components/FormInput.vue';
 import MonthPlan from './Settings/MonthPlan.vue';
 import UniversalPlan from './Settings/UniversalPlan.vue';
 import B1Plan from './Settings/B1Plan.vue';
+import B4Plan from './Settings/B4Plan.vue';
+import PercentLadder from './Settings/PercentLadder.vue';
 
 export default {
     components: {
@@ -50,21 +57,31 @@ export default {
         FormInput,
         MonthPlan,
         UniversalPlan,
-        B1Plan
-    }, 
+        B1Plan,
+        B4Plan,
+        PercentLadder
+    },
     layout: SaleDepartmentLayout,
     props: {
         dateProp: {
             type: String,
+            required: true,
         },
         plans: {
             type: Object,
+            required: true,
         },
         isCurrentMonth: {
-            type: Boolean
+            type: Boolean,
+            required: true,
         },
         departmentId: {
-            type: Number
+            type: Number,
+            required: true,
+        },
+        rkServices: {
+            type: Array,
+            required: true,
         }
     },
     data() {

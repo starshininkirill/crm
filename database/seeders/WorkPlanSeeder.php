@@ -138,10 +138,7 @@ class WorkPlanSeeder extends Seeder
                 'avgDurationCalls' => 130,
                 'goal' => 550000,
                 'bonus' => 10,
-
             ],
-            'goal' => 2,
-            'bonus' => 10
         ]);
 
         // Б2 план продажников
@@ -186,47 +183,59 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B4_PLAN,
             'department_id' => 1,
-            'goal' => 10,
-            'bonus' => 10000
+            'data' => [
+                'includeIds' => [6],
+                'goal' => 8,
+                'bonus' => 10000,
+            ],
         ]);
 
         // Процентная лестница продажников
-
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 60000,
-            'bonus' => 3
+            'data' => [
+                'goal' => 60000,
+                'bonus' => 3
+            ],
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 150000,
-            'bonus' => 5
+            'data' => [
+                'goal' => 150000,
+                'bonus' => 5
+            ],
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 290000,
-            'bonus' => 7
+            'data' => [
+                'goal' => 290000,
+                'bonus' => 7
+            ],
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 430000,
-            'bonus' => 9
+            'data' => [
+                'goal' => 430000,
+                'bonus' => 9
+            ],
         ]);
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'bonus' => 9.5
+            'data' => [
+                'bonus' => 9.5
+            ],
         ]);
 
         WorkPlan::create([
             'type' => WorkPlan::NO_PERCENTAGE_MONTH,
             'department_id' => 1,
             'data' => [
-                'month' => 3,
+                'goal' => 3,
             ]
         ]);
 
@@ -369,8 +378,6 @@ class WorkPlanSeeder extends Seeder
                 'bonus' => 10,
 
             ],
-            'goal' => 2,
-            'bonus' => 10,
             'created_at' => $lastMonth,
         ]);
 
@@ -424,8 +431,11 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B4_PLAN,
             'department_id' => 1,
-            'goal' => 10,
-            'bonus' => 10000,
+            'data' => [
+                'includeIds' => [6],
+                'bonus' => 10000,
+                'goal' => 8,
+            ],
             'created_at' => $lastMonth,
         ]);
 
@@ -433,39 +443,45 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 60000,
-            'bonus' => 3,
+            'data' => [
+                'goal' => 60000,
+                'bonus' => 3
+            ],
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 150000,
-            'bonus' => 5,
+            'data' => [
+                'goal' => 150000,
+                'bonus' => 5
+            ],
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 290000,
-            'bonus' => 7,
+            'data' => [
+                'goal' => 290000,
+                'bonus' => 7
+            ],
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'goal' => 430000,
-            'bonus' => 9,
+            'data' => [
+                'goal' => 430000,
+                'bonus' => 9
+            ],
             'created_at' => $lastMonth,
         ]);
-
         WorkPlan::create([
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => 1,
-            'bonus' => 9.5,
+            'data' => [
+                'bonus' => 9.5
+            ],
             'created_at' => $lastMonth,
         ]);
 
@@ -473,7 +489,7 @@ class WorkPlanSeeder extends Seeder
             'type' => WorkPlan::NO_PERCENTAGE_MONTH,
             'department_id' => 1,
             'data' => [
-                'month' => 3,
+                'goal' => 3,
             ],
             'created_at' => $lastMonth,
         ]);

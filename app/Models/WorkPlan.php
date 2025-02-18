@@ -68,9 +68,6 @@ class WorkPlan extends Model
         $plans = WorkPlan::where('department_id', $departmentId)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month)
-            ->orderBy('data->month')
-            ->orderBy('data->goal')
-            ->orderBy('data->bonus')
             ->get()
             ->groupBy('type');
 
@@ -78,6 +75,14 @@ class WorkPlan extends Model
             $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->filter(function ($plan) {
                 return array_key_exists('month', $plan->data) && $plan->data['month'] != null;
             });
+        }
+
+
+        if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
+            $plans[WorkPlan::MOUNTH_PLAN]->sortBy('data.month');
+        }
+        if ($plans->has(WorkPlan::PERCENT_LADDER)) {
+            $plans[WorkPlan::PERCENT_LADDER]->sortBy('data.goal');
         }
 
         return $plans;

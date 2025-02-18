@@ -83,7 +83,7 @@
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ formatPrice(user.totalValues.oldMoney) }}
                 </td>
-                <td v-for="service in user.totalValues.services" class="border text-xs border-gray-300 text-md px-1 py-1">
+                <td v-for="service in user.totalValues.servicesByCatsCount" class="border text-xs border-gray-300 text-md px-1 py-1">
                       {{ service }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">

@@ -80,35 +80,55 @@ class SaleDepartmentController extends Controller
 
 
         if ($request->filled(['user', 'date'])) {
-            try {
-                $date = DateHelper::getValidatedDateOrNow($requestData['date']);
-                $user = User::find($requestData['user']);
-                $users = $selectDepartment->activeUsers($date);
+            $date = DateHelper::getValidatedDateOrNow($requestData['date']);
+            $user = User::find($requestData['user']);
+            $users = $selectDepartment->activeUsers($date);
 
-                if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
-                    $error = 'Сотрудник ещё не работал в этот месяц.';
-                }
-
-                $reportInfo = new ReportInfo($date, null, $selectDepartment);
-                $reportService = new ReportService($this->plansService, $reportInfo);
-
-                $daylyReport = $reportService->monthByDayReport($user);
-
-                $motivationReport = $reportService->motivationReport($user);
-                $pivotWeeks = $reportService->pivotWeek();
-                $pivotDaily = $reportService->monthByDayReport();
-
-                $pivotUsers = $reportService->pivotUsers($users);
-
-                $generalPlan = $reportService->generalPlan($pivotUsers);
-            } catch (Exception $e) {
-                dd($e);
-                if (isset($error)) {
-                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                } else {
-                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                }
+            if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+                $error = 'Сотрудник ещё не работал в этот месяц.';
             }
+
+            $reportInfo = new ReportInfo($date, null, $selectDepartment);
+            $reportService = new ReportService($this->plansService, $reportInfo);
+
+            $daylyReport = $reportService->monthByDayReport($user);
+
+            $motivationReport = $reportService->motivationReport($user);
+            $pivotWeeks = $reportService->pivotWeek();
+            $pivotDaily = $reportService->monthByDayReport();
+
+            $pivotUsers = $reportService->pivotUsers($users);
+
+            $generalPlan = $reportService->generalPlan($pivotUsers);
+            // try {
+            //     $date = DateHelper::getValidatedDateOrNow($requestData['date']);
+            //     $user = User::find($requestData['user']);
+            //     $users = $selectDepartment->activeUsers($date);
+
+            //     if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+            //         $error = 'Сотрудник ещё не работал в этот месяц.';
+            //     }
+
+            //     $reportInfo = new ReportInfo($date, null, $selectDepartment);
+            //     $reportService = new ReportService($this->plansService, $reportInfo);
+
+            //     $daylyReport = $reportService->monthByDayReport($user);
+
+            //     $motivationReport = $reportService->motivationReport($user);
+            //     $pivotWeeks = $reportService->pivotWeek();
+            //     $pivotDaily = $reportService->monthByDayReport();
+
+            //     $pivotUsers = $reportService->pivotUsers($users);
+
+            //     $generalPlan = $reportService->generalPlan($pivotUsers);
+            // } catch (Exception $e) {
+            //     dd($e);
+            //     if (isset($error)) {
+            //         $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            //     } else {
+            //         $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            //     }
+            // }
         }
 
 
@@ -146,33 +166,24 @@ class SaleDepartmentController extends Controller
             ]
         );
     }
-
     public function plansSettings(Request $request)
     {
         $requestDate = $request->query('date');
 
         $date = DateHelper::getValidatedDateOrNow($requestDate);
-
-        $date->format('Y-m') == Carbon::now()->format('Y-m') ? $isCurrentMonth = true : $isCurrentMonth = false;
+        $isCurrentMonth = DateHelper::isCurrentMonth($date);
 
         $departmentId = Department::getMainSaleDepartment()->id;
         $plans = WorkPlan::plansForSaleSettings($date);
 
-        $categoriesForCalculations = ServiceCategory::where('needed_for_calculations', true)->get();
+        $rkServices = ServiceCategory::firstWhere('type', ServiceCategory::RK)?->services;
+
         return Inertia::render('Admin/SaleDapartment/PlansSettings', [
             'dateProp' => $date->format('Y-m'),
             'plans' => $plans,
             'isCurrentMonth' => $isCurrentMonth,
             'departmentId' => $departmentId,
-        ]);
-
-        return view('admin.departments.sale.reportSettings', [
-            'departmentId' => $departmentId,
-            'workPlanClass' => WorkPlan::class,
-            'plans' => $plans,
-            'date' => $date,
-            'categoriesForCalculations' => !$categoriesForCalculations->isEmpty() ? $categoriesForCalculations : collect(),
-            'isCurrentMonth' => $isCurrentMonth
+            'rkServices' => $rkServices,
         ]);
     }
 

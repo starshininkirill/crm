@@ -4,7 +4,7 @@
             План на месяц
         </div>
         <div class="flex flex-col gap-2 mb-4">
-            <div v-if="!monthPlan && !Object.keys(monthPlan).length > 0" class=" text-xl mb-4">
+            <div v-if="!monthPlan || !Object.keys(monthPlan).length > 0" class=" text-xl mb-4">
                 Нет планов
             </div>
             <div v-else v-for="plan in monthPlan" class="plan flex gap-4 border-b-2 py-1 pb-3 w-full items-center">
@@ -24,12 +24,12 @@
                         Изменить
                     </button>
                 </form>
-                <button class="text-red-400 hover:text-red-500" @click.prevent="deletePlan(plan)">
+                <button v-if="isCurrentMonth" class="text-red-400 hover:text-red-500" @click.prevent="deletePlan(plan)">
                     Удалить
                 </button>
             </div>
         </div>
-        <div v-if="isCurrentMonth" class="mt-4">
+        <div v-if="isCurrentMonth">
             <div class="text-xl mb-2">Новый план</div>
             <form @submit.prevent="createPlan" class="grid grid-cols-2 gap-3">
                 <label class="flex gap-2 items-center">
@@ -55,6 +55,7 @@ export default {
         monthPlan: {
             type: Object,
             required: true,
+            default: () => ({})
         },
         isCurrentMonth: {
             type: Boolean

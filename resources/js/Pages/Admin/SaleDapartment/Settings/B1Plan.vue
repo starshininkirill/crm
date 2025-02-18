@@ -60,8 +60,7 @@ export default {
             plan = this.propPlan[0];
             create = false
         }
-        console.log(create);
-        
+
         return {
             plan,
             create
@@ -69,8 +68,6 @@ export default {
     },
     methods: {
         submitForm() {
-            console.log(this.create);
-            
             if (this.create) {
                 this.createPlan()
             } else {
@@ -87,8 +84,8 @@ export default {
                 },
                 'type': 'b1Plan',
                 'department_id': this.departmentId,
-            },{
-                onSuccess(){
+            }, {
+                onSuccess() {
                     this.create = false
                 },
             })

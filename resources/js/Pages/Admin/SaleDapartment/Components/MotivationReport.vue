@@ -43,25 +43,25 @@
             <td class="border text-xs border-gray-300 text-md px-1 py-1">
                 {{ formatPrice(motivationReport.monthPlan.goal) }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.doublePlan.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.doublePlan.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.bonusPlan.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.bonusPlan.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.superPlan.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.superPlan.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.b1.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.b1.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.b2.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.b2.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.b3.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.b3.completed ? 'Да' : 'Нет' }}
             </td>
-            <td class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td class="border text-xs border-gray-300 text-md px-1 py-1" :class="motivationReport.b4.completed ? ' bg-green-400' : 'bg-red-400'">
                 {{ motivationReport.b4.completed ? 'Да' : 'Нет' }}
             </td>
         </tr>

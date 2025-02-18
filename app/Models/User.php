@@ -14,8 +14,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Helpers\DateHelper;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Collection;
-use PhpParser\ErrorHandler\Collecting;
 
 class User extends Authenticatable
 {
@@ -39,12 +39,21 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = ['full_name'];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->first_name . ' ' . $this->last_name,
+        );
     }
 
     public function payments(): HasMany
@@ -66,7 +75,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Contract::class);
     }
-    
+
     public function callStats(): HasMany
     {
         return $this->hasMany(CallStat::class, 'number', 'number');

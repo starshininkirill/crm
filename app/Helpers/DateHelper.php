@@ -185,4 +185,9 @@ class DateHelper
 
         return $date->format('Y-m-d');
     }
+
+    public static function isCurrentMonth(Carbon $date)
+    {
+        return $date->format('Y-m') == Carbon::now()->format('Y-m');
+    }
 }

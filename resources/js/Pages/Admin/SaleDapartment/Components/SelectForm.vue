@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submitForm" class="grid grid-cols-4 max-w-5xl gap-3 mb-6">
+    <form @submit.prevent="submitForm" class="grid grid-cols-4 max-w-6xl gap-3 mb-6">
         <!-- Select Date -->
         <input type="month" name="date" class="input" v-model="form.date">
         <!-- Select Department -->
@@ -8,7 +8,7 @@
         </VueSelect>
         <!-- Select User -->
         <VueSelect class="full-vue-select" v-model="form.user" :reduce="user => user"
-            label="first_name" :options="filtredUsers">
+            label="full_name" :options="filtredUsers">
         </VueSelect>
         <button type="submit" class="btn">Выбрать</button>
     </form>

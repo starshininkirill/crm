@@ -23,7 +23,7 @@
             <td class="border text-xs border-gray-300 text-md px-1 py-1">
                 {{ formatPrice(week.oldMoney) }}
             </td>
-            <td v-for="service in week.services" class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td v-for="service in week.servicesByCatsCount" class="border text-xs border-gray-300 text-md px-1 py-1">
                 {{ service }}
             </td>
         </tr>
@@ -37,7 +37,7 @@
             <td class="border text-xs border-gray-300 text-md px-1 py-1">
                   {{ formatPrice(totalValues.oldMoney) }}
             </td>
-            <td v-for="service in totalValues.services" class="border text-xs border-gray-300 text-md px-1 py-1">
+            <td v-for="service in totalValues.servicesByCatsCount" class="border text-xs border-gray-300 text-md px-1 py-1">
                 {{ service }}
             </td>
         </tr>

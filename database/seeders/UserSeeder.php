@@ -53,6 +53,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 4,
             'department_id' => 2,
+            'phone' => 79535175470
         ]);
         $sale2 = User::create([
             'first_name' => 'Илья',
@@ -61,6 +62,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 2,
             'department_id' => 2,
+            'phone' => 79922851746
         ]);
 
         $sale2 = User::create([
@@ -70,19 +72,20 @@ class UserSeeder extends Seeder
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 2,
             'department_id' => 3,
+            'phone' => 79922857462
         ]);
 
-        foreach ($realManagersNumbers as $number) {
-            User::create([
-                'first_name' => fake()->firstName(),
-                'last_name' => fake()->lastName(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => Hash::make('password'), // Установите временный пароль
-                'role' => 'user', // Роль по умолчанию
-                'position_id' => null, // Можно установить позже
-                'department_id' => 3, // Можно установить позже
-                'phone' => $number, // Задаем номер телефона
-            ]);
-        }
+        // foreach ($realManagersNumbers as $number) {
+        //     User::create([
+        //         'first_name' => fake()->firstName(),
+        //         'last_name' => fake()->lastName(),
+        //         'email' => fake()->unique()->safeEmail(),
+        //         'password' => Hash::make('password'), // Установите временный пароль
+        //         'role' => 'user', // Роль по умолчанию
+        //         'position_id' => null, // Можно установить позже
+        //         'department_id' => 3, // Можно установить позже
+        //         'phone' => $number, // Задаем номер телефона
+        //     ]);
+        // }
     }
 }

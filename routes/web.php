@@ -128,9 +128,10 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('sale-department')->group(function () {
         Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
+     
         Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
-        Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report')
-        ;
+        Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
+     
         Route::get('/plans-settings', [SaleDepartmentController::class, 'plansSettings'])->name('admin.sale-department.plans-settings');
         Route::put('/{workPlan}', [SaleDepartmentController::class, 'updateWorkPlan'])->name('admin.sale-department.work-plan.update');
         Route::delete('/{workPlan}', [SaleDepartmentController::class, 'destroyWorkPlan'])->name('admin.sale-department.work-plan.destroy');
@@ -148,11 +149,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // Route::resource('workPlan', WorkPlanController::class)->only([
-    //     'store',
-    //     'update',
-    //     'destroy'
-    // ]);
 
     Route::resource('option', OptionController::class)->only([
         'store',

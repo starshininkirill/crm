@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('service_category_id')->constrained('service_categories')->onDelete('cascade');
+            $table->foreignId('service_category_id')->nullable()->constrained('service_categories')->onDelete('set null ');
             $table->string('name')->unique();
             $table->longText('description')->nullable();
             $table->string('work_days_duration')->nullable();

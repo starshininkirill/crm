@@ -125,6 +125,7 @@ class ServiceSeeder extends Seeder
                 'physic_complex' => 38
             ]),
         ]);
+
         Service::create([
             'name' => 'Базовая SEO-оптимизация',
             'service_category_id' => 4,
