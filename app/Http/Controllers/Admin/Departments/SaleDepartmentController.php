@@ -20,6 +20,7 @@ use App\Services\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -76,67 +77,44 @@ class SaleDepartmentController extends Controller
 
         $allUsers = $departments->whereNull('parent_id')->first()->activeUsers();
 
-        $requestData = $request->only(['user', 'date']);
-
-
         if ($request->filled(['user', 'date'])) {
-            $date = DateHelper::getValidatedDateOrNow($requestData['date']);
-            $user = User::find($requestData['user']);
-            $users = $selectDepartment->activeUsers($date);
+            try {
+                $date = DateHelper::getValidatedDateOrNow($request->get('date'));
+                $user = User::find($request->get('user'));
+                $users = $selectDepartment->activeUsers($date);
 
-            if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
-                $error = 'Сотрудник ещё не работал в этот месяц.';
+                if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+                    $error = 'Сотрудник ещё не работал в этот месяц.';
+                }
+
+                $reportInfo = new ReportInfo($date, null, $selectDepartment);
+                $reportService = new ReportService($plansService, $reportInfo);
+
+                $daylyReport = $reportService->monthByDayReport($user);
+
+                $motivationReport = $reportService->motivationReport($user);
+
+                $pivotWeeks = $reportService->pivotWeek();
+                $pivotDaily = $reportService->monthByDayReport();
+
+                $pivotUsers = $reportService->pivotUsers($users);
+
+                $generalPlan = $reportService->generalPlan($pivotUsers);
+            } catch (Exception $e) {
+                dd($e);
+                if (isset($error)) {
+                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                } else {
+                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                }
             }
-
-            $reportInfo = new ReportInfo($date, null, $selectDepartment);
-            $reportService = new ReportService($plansService, $reportInfo);
-
-            $daylyReport = $reportService->monthByDayReport($user);
-
-            $motivationReport = $reportService->motivationReport($user);
-            $pivotWeeks = $reportService->pivotWeek();
-            $pivotDaily = $reportService->monthByDayReport();
-
-            $pivotUsers = $reportService->pivotUsers($users);
-
-            $generalPlan = $reportService->generalPlan($pivotUsers);
-            // try {
-            //     $date = DateHelper::getValidatedDateOrNow($requestData['date']);
-            //     $user = User::find($requestData['user']);
-            //     $users = $selectDepartment->activeUsers($date);
-
-            //     if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
-            //         $error = 'Сотрудник ещё не работал в этот месяц.';
-            //     }
-
-            //     $reportInfo = new ReportInfo($date, null, $selectDepartment);
-            //     $reportService = new ReportService($this->plansService, $reportInfo);
-
-            //     $daylyReport = $reportService->monthByDayReport($user);
-
-            //     $motivationReport = $reportService->motivationReport($user);
-            //     $pivotWeeks = $reportService->pivotWeek();
-            //     $pivotDaily = $reportService->monthByDayReport();
-
-            //     $pivotUsers = $reportService->pivotUsers($users);
-
-            //     $generalPlan = $reportService->generalPlan($pivotUsers);
-            // } catch (Exception $e) {
-            //     dd($e);
-            //     if (isset($error)) {
-            //         $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            //     } else {
-            //         $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            //     }
-            // }
         }
-
 
         return Inertia::render('Admin/SaleDapartment/UserReport', [
             'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
             'users' => $allUsers,
             'selectUser' => $user ?? null,
-            'departments' => $departments,
+            'departments' => $departments ?? collect(),
             'selectedDepartment' => $selectDepartment ?? null,
             'daylyReport' => $daylyReport ?? collect(),
             'motivationReport' => $motivationReport ?? collect(),
@@ -145,26 +123,6 @@ class SaleDepartmentController extends Controller
             'generalPlan' => $generalPlan ?? collect(),
             'pivotUsers' => $pivotUsers ?? collect(),
         ]);
-
-        return view(
-            'admin.departments.sale.report',
-            [
-                'departments' => $departments ?? collect(),
-                'selectedDepartment' => $selectDepartment ?? null,
-                'selectUsers' => $selectUsers,
-                'users' => $users ?? collect(),
-                'user' => $user ?? null,
-                'date' => $date ?? null,
-                'daylyReport' => $daylyReport ?? collect(),
-                'motivationReport' => $motivationReport ?? collect(),
-                'pivotWeeks' => $pivotWeeks ?? collect(),
-                'pivotDaily' => $pivotDaily ?? collect(),
-                'pivotUsers' => $pivotUsers ?? collect(),
-                'generalPlan' => $generalPlan ?? collect(),
-                'serviceCategoryModel' => ServiceCategory::class,
-                'error' => $error ?? ''
-            ]
-        );
     }
     public function plansSettings(Request $request)
     {
@@ -180,6 +138,8 @@ class SaleDepartmentController extends Controller
         $rkServices = $services->where('category.type', ServiceCategory::RK)->values();
         $seoServices = $services->where('category.type', ServiceCategory::SEO)->values();
 
+        $serviceCats = ServiceCategory::all();
+
         return Inertia::render('Admin/SaleDapartment/PlansSettings', [
             'dateProp' => $date->format('Y-m'),
             'plans' => $plans,
@@ -188,6 +148,7 @@ class SaleDepartmentController extends Controller
             'rkServices' => $rkServices,
             'seoServices' => $seoServices,
             'services' => $services,
+            'serviceCats' => $serviceCats,
         ]);
     }
 

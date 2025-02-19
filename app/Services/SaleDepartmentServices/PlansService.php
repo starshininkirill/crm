@@ -4,6 +4,8 @@ namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
+use App\Models\Contract;
+use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
 use Illuminate\Support\Collection;
@@ -273,11 +275,11 @@ class PlansService
         $matchingContractCount = $this->reportInfo->contracts
             ->filter(function ($contract) use ($includedServiceIds, $excludedServiceIds) {
                 $serviceIds = $contract->services->pluck('id');
-                if($serviceIds->intersect($includedServiceIds)->isEmpty()){
+                if ($serviceIds->intersect($includedServiceIds)->isEmpty()) {
                     return false;
                 }
 
-                if(!$serviceIds->intersect($excludedServiceIds)->isEmpty()){
+                if (!$serviceIds->intersect($excludedServiceIds)->isEmpty()) {
                     return false;
                 }
 
@@ -288,82 +290,72 @@ class PlansService
         if ($matchingContractCount >= $goal) {
             $result['completed'] = true;
             $result['bonus'] = $bonus;
+            $this->updateBonus($bonus);
         }
 
         return $result;
     }
 
-    public function b3Plan(): Collection
+    public function b3Plan()
     {
         $result = collect([
             'completed' => false,
             'bonus' => 0,
         ]);
 
-        if ($this->reportInfo->newPayments->isEmpty()) {
+        $plan = $this->getPlan(WorkPlan::B3_PLAN);
+
+        if (!$plan || empty($plan->data)) {
             return $result;
         }
 
-        $b3Plan = $this->getPlan(WorkPlan::B3_PLAN);
-        if (!$b3Plan) {
+        $includedServiceIds = $plan->data['includeIds'] ?? [];
+        $includedServiceCategoriesIds = $plan->data['includedCategoryIds'] ?? [];
+        $excludeServicePairs = $plan->data['excludeServicePairs'] ?? [];
+        $goal = $plan->data['goal'] ?? '';
+        $bonus = $plan->data['bonus'] ?? 0;
+
+        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
             return $result;
         }
 
-        $result['goal'] = $b3Plan->goal;
+        $matchingContractCount = $this->reportInfo->contracts
+            ->filter(function ($contract) use ($includedServiceIds, $includedServiceCategoriesIds, $excludeServicePairs) {
+                $serviceIds = $contract->services->pluck('id');
+                
+                if($serviceIds->count() < 2){
+                    return false;
+                }
+                $servicesFromCategories = $contract->services->whereIn('service_category_id', $includedServiceCategoriesIds)->pluck('id');
 
-        $contractIds = $this->reportInfo->newPayments->pluck('contract_id');
+                $hasIncludedService = $serviceIds->intersect($includedServiceIds)->isNotEmpty();
+                
+                $hasIncludedCategory = $servicesFromCategories->intersect($includedServiceCategoriesIds)->isNotEmpty();
 
-        $contracts = $this->reportInfo->contracts->whereIn('id', $contractIds);
+                $hasValidServices = $hasIncludedService && $hasIncludedCategory;
 
-        if ($contracts->isEmpty()) {
-            return $result;
-        }
-
-        $complexSales = 0;
-        $totalContracts = $contracts->count();
-
-        foreach ($contracts as $contract) {
-            $hasSite = false;
-            $hasAdditional = false;
-
-            foreach ($contract->services as $service) {
-                $category = $service->category;
-
-                if (!$category) {
-                    continue;
+                if (!$hasValidServices) {
+                    return false;
                 }
 
-                if (in_array($category->id, [ServiceCategory::INDIVIDUAL_SITE, ServiceCategory::READY_SITE])) {
-                    $hasSite = true;
+                foreach ($excludeServicePairs as $pair) {
+                    if ($serviceIds->contains($pair[0]) && $serviceIds->contains($pair[1])) {
+                        return false;
+                    }
                 }
 
-                if (in_array($category->id, [ServiceCategory::RK, ServiceCategory::SEO])) {
-                    $hasAdditional = true;
-                }
+                return true;
+            })
+            ->count();
 
-                if ($hasSite && $hasAdditional) {
-                    $complexSales++;
-                    break;
-                }
-            }
-        }
-
-        if ($complexSales === 0) {
-            return $result;
-        }
-
-        $percentage = ($complexSales / $totalContracts) * 100;
-
-        if ($percentage > $b3Plan->goal) {
-            $result['value'] = $percentage;
+        if ($matchingContractCount >= $goal) {
             $result['completed'] = true;
-            $result['bonus'] = $b3Plan->bonus;
-            $this->reportInfo->bonuses += $b3Plan->bonus;
+            $result['bonus'] = $bonus;
+            $this->updateBonus($bonus);
         }
 
         return $result;
     }
-
 
 
     public function b4Plan()
@@ -397,6 +389,7 @@ class PlansService
         if ($matchingContractCount >= $goal) {
             $result['completed'] = true;
             $result['bonus'] = $bonus;
+            $this->updateBonus($bonus);
         }
 
         return $result;
@@ -523,9 +516,6 @@ class PlansService
 
         $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
 
-        if ($report['b2']['completed']) {
-            $res['amount'] = $res['amount'] * (1 + $report['b2']['bonus'] / 100);
-        }
 
         return $res;
     }

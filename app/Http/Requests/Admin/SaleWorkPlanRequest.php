@@ -51,6 +51,23 @@ class SaleWorkPlanRequest extends FormRequest
                 return $rules;
             };
 
+            if ($this->input('type') == WorkPlan::B3_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
+                    'data.includedCategoryIds' => 'required|array',
+                    'data.includedCategoryIds.*' => 'integer|exists:services,id',
+                    'data.excludeServicePairs' => 'nullable|array',
+                    'data.excludeServicePairs.*' => 'array|size:2',
+                    'data.excludeServicePairs.*.0' => 'integer|exists:services,id',
+                    'data.excludeServicePairs.*.1' => 'integer|exists:services,id',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
             if ($this->input('type') == WorkPlan::B4_PLAN) {
                 $rules = array_merge($rules, [
                     'data.includeIds' => 'required|array',
@@ -120,6 +137,23 @@ class SaleWorkPlanRequest extends FormRequest
                     'data.includeIds.*' => 'integer|exists:services,id',
                     'data.excludeIds' => 'nullable|array',
                     'data.excludeIds.*' => 'integer|exists:services,id',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
+            if ($this->input('type') == WorkPlan::B3_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
+                    'data.includedCategoryIds' => 'required|array',
+                    'data.includedCategoryIds.*' => 'integer|exists:services,id',
+                    'data.excludeServicePairs' => 'nullable|array',
+                    'data.excludeServicePairs.*' => 'array|size:2',
+                    'data.excludeServicePairs.*.0' => 'integer|exists:services,id',
+                    'data.excludeServicePairs.*.1' => 'integer|exists:services,id',
                     'data.goal' => 'required|integer',
                     'data.bonus' => 'required|integer',
                 ]);

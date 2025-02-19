@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->json('data')->nullable();
-            $table->float('goal')->nullable();
-            $table->integer('month')->nullable();
-            $table->float('bonus')->nullable();
-            $table->foreignId('service_category_id')->nullable()->constrained('service_categories')->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             $table->foreignId('position_id')->nullable()->constrained('positions')->onDelete('set null');
             $table->timestamps();

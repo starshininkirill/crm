@@ -157,8 +157,20 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B3_PLAN,
             'department_id' => 1,
-            'goal' => 60,
-            'bonus' => 7000
+            'data' => [
+                "goal" => "8",
+                "bonus" => "10000",
+                "includeIds" => [7, 8, 9, 6],
+                "excludeServicePairs" => [
+                    [1, 7],
+                    [1, 9],
+                    [1, 8],
+                    [4, 7],
+                    [4, 9],
+                    [4, 8]
+                ],
+                "includedCategoryIds" => [1, 2]
+            ]
         ]);
 
         // Б4 план продажников
@@ -380,10 +392,24 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B3_PLAN,
             'department_id' => 1,
-            'goal' => 60,
-            'bonus' => 7000,
+            'data' => [
+                "goal" => "8",
+                "bonus" => "10000",
+                "includeIds" => [7, 8, 9, 6],
+                "excludeServicePairs" => [
+                    [1, 7],
+                    [1, 9],
+                    [1, 8],
+                    [4, 7],
+                    [4, 9],
+                    [4, 8]
+                ],
+                "includedCategoryIds" => [1, 2]
+            ],
             'created_at' => $lastMonth,
         ]);
+
+
 
         // Б4 план продажников
         WorkPlan::create([

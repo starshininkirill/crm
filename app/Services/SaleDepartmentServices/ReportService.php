@@ -98,7 +98,7 @@ class ReportService
         $report['totalValues'] = $this->planService->totalValues();
         $report['b1'] = $this->planService->b1Plan();
         $report['b2'] = $this->planService->b2Plan();
-        $report['b3'] = $this->planService->b1Plan();
+        $report['b3'] = $this->planService->b3Plan();
         $report['b4'] = $this->planService->b4Plan();
         $report['salary'] = $this->planService->calculateSalary($report);
 

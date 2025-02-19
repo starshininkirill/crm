@@ -15,6 +15,9 @@
 
     <div class="grid grid-cols-3 gap-8 mb-4">
         <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
+        <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
+            :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
+
         <div class="flex flex-col gap-4">
             <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
                 :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true" />
@@ -28,15 +31,21 @@
 
         <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
 
-        <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices" :isCurrentMonth="isCurrentMonth"
-            :departmentId="departmentId" />
-
         <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId" />
+        <div>
+
+        </div>
+
+        <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices"
+            :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
 
 
-        <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
-            :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
+        <div class=" col-span-2">
+            <B3Plan :serviceCats="serviceCats" :services="services" :propPlan="plans.b3Plan"
+                :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+        </div>
+
     </div>
 
 </template>
@@ -51,6 +60,7 @@ import MonthPlan from './Settings/MonthPlan.vue';
 import UniversalPlan from './Settings/UniversalPlan.vue';
 import B1Plan from './Settings/B1Plan.vue';
 import B2Plan from './Settings/B2Plan.vue';
+import B3Plan from './Settings/B3Plan.vue';
 import B4Plan from './Settings/B4Plan.vue';
 import PercentLadder from './Settings/PercentLadder.vue';
 
@@ -61,9 +71,10 @@ export default {
         MonthPlan,
         UniversalPlan,
         B1Plan,
+        B2Plan,
+        B3Plan,
         B4Plan,
         PercentLadder,
-        B2Plan
     },
     layout: SaleDepartmentLayout,
     props: {
@@ -92,6 +103,10 @@ export default {
             required: true,
         },
         services: {
+            type: Array,
+            required: true,
+        },
+        serviceCats: {
             type: Array,
             required: true,
         },
