@@ -38,6 +38,19 @@ class SaleWorkPlanRequest extends FormRequest
                 return $rules;
             };
 
+            if ($this->input('type') == WorkPlan::B2_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
+                    'data.excludeIds' => 'nullable|array',
+                    'data.excludeIds.*' => 'integer|exists:services,id',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
             if ($this->input('type') == WorkPlan::B4_PLAN) {
                 $rules = array_merge($rules, [
                     'data.includeIds' => 'required|array',
@@ -94,6 +107,19 @@ class SaleWorkPlanRequest extends FormRequest
                 $rules = array_merge($rules, [
                     'data.avgDurationCalls' => 'required|integer',
                     'data.avgCountCalls' => 'required|integer',
+                    'data.goal' => 'required|integer',
+                    'data.bonus' => 'required|integer',
+                ]);
+
+                return $rules;
+            };
+
+            if ($this->input('type') == WorkPlan::B2_PLAN) {
+                $rules = array_merge($rules, [
+                    'data.includeIds' => 'required|array',
+                    'data.includeIds.*' => 'integer|exists:services,id',
+                    'data.excludeIds' => 'nullable|array',
+                    'data.excludeIds.*' => 'integer|exists:services,id',
                     'data.goal' => 'required|integer',
                     'data.bonus' => 'required|integer',
                 ]);

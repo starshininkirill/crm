@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;
 use App\Models\Department;
 use App\Models\Option;
+use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
@@ -23,13 +24,6 @@ use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
 {
-    protected $plansService;
-
-    public function __construct(PlansService $plansService)
-    {
-        $this->plansService = $plansService;
-    }
-
     public function index()
     {
         $department = Department::getMainSaleDepartment();
@@ -49,9 +43,15 @@ class SaleDepartmentController extends Controller
 
         $calculatedData = $callStatisticsService->calculateTotalCallsData($date);
 
+        $mainDepartment = Department::getMainSaleDepartment();
+        $callsPlan = WorkPlan::where('department_id', $mainDepartment->id)
+            ->whereYear('created_at', Carbon::parse($date)->format('Y'))
+            ->whereMonth('created_at', Carbon::parse($date)->format('m'))
+            ->where('type', WorkPlan::B1_PLAN)
+            ->first();
 
-        $callDurationPlan = 130;
-        $callCountPlan = 30;
+        $callDurationPlan = $callsPlan ? $callsPlan->data['avgDurationCalls'] : 0;
+        $callCountPlan = $callsPlan ? $callsPlan->data['avgCountCalls'] : 0;
 
         return Inertia::render('Admin/SaleDapartment/Calls', [
             'date' => $date,
@@ -64,7 +64,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request)
+    public function userReport(Request $request, PlansService $plansService)
     {
         $departments = Department::getSaleDepartments();
 
@@ -89,7 +89,7 @@ class SaleDepartmentController extends Controller
             }
 
             $reportInfo = new ReportInfo($date, null, $selectDepartment);
-            $reportService = new ReportService($this->plansService, $reportInfo);
+            $reportService = new ReportService($plansService, $reportInfo);
 
             $daylyReport = $reportService->monthByDayReport($user);
 
@@ -176,7 +176,9 @@ class SaleDepartmentController extends Controller
         $departmentId = Department::getMainSaleDepartment()->id;
         $plans = WorkPlan::plansForSaleSettings($date);
 
-        $rkServices = ServiceCategory::firstWhere('type', ServiceCategory::RK)?->services;
+        $services = Service::with('category')->get();
+        $rkServices = $services->where('category.type', ServiceCategory::RK)->values();
+        $seoServices = $services->where('category.type', ServiceCategory::SEO)->values();
 
         return Inertia::render('Admin/SaleDapartment/PlansSettings', [
             'dateProp' => $date->format('Y-m'),
@@ -184,6 +186,8 @@ class SaleDepartmentController extends Controller
             'isCurrentMonth' => $isCurrentMonth,
             'departmentId' => $departmentId,
             'rkServices' => $rkServices,
+            'seoServices' => $seoServices,
+            'services' => $services,
         ]);
     }
 

@@ -13,7 +13,6 @@
         <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
     </ul>
 
-
     <div class="grid grid-cols-3 gap-8 mb-4">
         <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
         <div class="flex flex-col gap-4">
@@ -28,6 +27,9 @@
         </div>
 
         <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+
+        <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices" :isCurrentMonth="isCurrentMonth"
+            :departmentId="departmentId" />
 
         <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId" />
@@ -48,6 +50,7 @@ import FormInput from '../../../Components/FormInput.vue';
 import MonthPlan from './Settings/MonthPlan.vue';
 import UniversalPlan from './Settings/UniversalPlan.vue';
 import B1Plan from './Settings/B1Plan.vue';
+import B2Plan from './Settings/B2Plan.vue';
 import B4Plan from './Settings/B4Plan.vue';
 import PercentLadder from './Settings/PercentLadder.vue';
 
@@ -59,7 +62,8 @@ export default {
         UniversalPlan,
         B1Plan,
         B4Plan,
-        PercentLadder
+        PercentLadder,
+        B2Plan
     },
     layout: SaleDepartmentLayout,
     props: {
@@ -82,7 +86,15 @@ export default {
         rkServices: {
             type: Array,
             required: true,
-        }
+        },
+        seoServices: {
+            type: Array,
+            required: true,
+        },
+        services: {
+            type: Array,
+            required: true,
+        },
     },
     data() {
         return {

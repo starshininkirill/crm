@@ -145,30 +145,12 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,
-            'goal' => 5,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
-            'bonus' => 7
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 6,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
-            'bonus' => 7
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 7,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
-            'bonus' => 7
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 3,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
-            'bonus' => 7
+            'data' => [
+                "goal" => 5,
+                "bonus" => "10000",
+                "excludeIds" => [1, 4],
+                "includeIds" => [7, 8, 9]
+            ],
         ]);
 
         // Б3 план продажников
@@ -385,36 +367,12 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,
-            'goal' => 5,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::INDIVIDUAL_SITE)->first()->id,
-            'bonus' => 7,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 6,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::READY_SITE)->first()->id,
-            'bonus' => 7,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 7,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::RK)->first()->id,
-            'bonus' => 7,
-            'created_at' => $lastMonth,
-        ]);
-
-        WorkPlan::create([
-            'type' => WorkPlan::B2_PLAN,
-            'department_id' => 1,
-            'goal' => 3,
-            'service_category_id' => ServiceCategory::where('type', ServiceCategory::SEO)->first()->id,
-            'bonus' => 7,
+            'data' => [
+                "goal" => 5,
+                "bonus" => "10000",
+                "excludeIds" => [1, 4],
+                "includeIds" => [7, 8, 9]
+            ],
             'created_at' => $lastMonth,
         ]);
 

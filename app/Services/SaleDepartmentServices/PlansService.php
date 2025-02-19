@@ -248,6 +248,50 @@ class PlansService
         return $result;
     }
 
+    public function b2Plan()
+    {
+        $result = collect([
+            'completed' => false,
+            'bonus' => 0,
+        ]);
+
+        $plan = $this->getPlan(WorkPlan::B2_PLAN);
+
+        if (!$plan || empty($plan->data)) {
+            return $result;
+        }
+
+        $includedServiceIds = $plan->data['includeIds'] ?? [];
+        $excludedServiceIds = $plan->data['excludeIds'] ?? [];
+        $goal = $plan->data['goal'] ?? '';
+        $bonus = $plan->data['bonus'] ?? 0;
+
+        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
+            return $result;
+        }
+
+        $matchingContractCount = $this->reportInfo->contracts
+            ->filter(function ($contract) use ($includedServiceIds, $excludedServiceIds) {
+                $serviceIds = $contract->services->pluck('id');
+                if($serviceIds->intersect($includedServiceIds)->isEmpty()){
+                    return false;
+                }
+
+                if(!$serviceIds->intersect($excludedServiceIds)->isEmpty()){
+                    return false;
+                }
+
+                return true;
+            })
+            ->count();
+
+        if ($matchingContractCount >= $goal) {
+            $result['completed'] = true;
+            $result['bonus'] = $bonus;
+        }
+
+        return $result;
+    }
 
     public function b3Plan(): Collection
     {
@@ -321,6 +365,7 @@ class PlansService
     }
 
 
+
     public function b4Plan()
     {
         $result = collect([
@@ -334,59 +379,27 @@ class PlansService
             return $result;
         }
 
-        $includeIds = $plan->data['includeIds'] ?? [];
-        $planGoal = $plan->data['goal'] ?? '';
+        $includedServiceIds = $plan->data['includeIds'] ?? [];
+        $goal = $plan->data['goal'] ?? '';
+        $bonus = $plan->data['bonus'] ?? 0;
 
-        if (!$includeIds || empty($includeIds) || $planGoal == '') {
+        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
             return $result;
         }
 
-        $matchingCount = 0;
+        $matchingContractCount = $this->reportInfo->contracts
+            ->filter(function ($contract) use ($includedServiceIds) {
+                $serviceIds = $contract->services->pluck('id');
+                return !$serviceIds->intersect($includedServiceIds)->isEmpty();
+            })
+            ->count();
 
-        $this->reportInfo->contracts->each((function ($contract) use ($includeIds, &$matchingCount) {
-            $serviceIds = $contract->services->pluck('id');
-
-            if ($serviceIds->intersect($includeIds)->isNotEmpty()) {
-                $matchingCount += 1;
-            }
-        }));
-
-        if ($matchingCount >= $planGoal) {
+        if ($matchingContractCount >= $goal) {
             $result['completed'] = true;
-            $result['bonus'] = $plan['bonus'] ?? 0;
+            $result['bonus'] = $bonus;
         }
 
         return $result;
-    }
-
-    public function oldb4Plan(): Collection
-    {
-        $res = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-
-        $b4Plan = $this->getPlan(WorkPlan::B4_PLAN);
-
-        if ($b4Plan == null) {
-            return $res;
-        }
-
-        $res['goal'] = $b4Plan->goal;
-
-        if (! collect($this->reportInfo->servicesByCatsCount)->has(ServiceCategory::RK)) {
-            return $res;
-        }
-
-        $res['value'] = $this->reportInfo->servicesByCatsCount[ServiceCategory::RK];
-
-        if ($this->reportInfo->servicesByCatsCount[ServiceCategory::RK] >= $b4Plan->goal) {
-            $res['completed'] = true;
-            $res['bonus'] = $b4Plan->bonus;
-            $this->reportInfo->bonuses += $b4Plan->bonus;
-        };
-
-        return $res;
     }
 
     public function superPlan(Collection $weeks): Collection
