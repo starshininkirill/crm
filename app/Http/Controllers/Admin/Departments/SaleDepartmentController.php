@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Classes\T2Api;
+use App\Exceptions\Buisness\BuisnessException;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;
@@ -13,7 +14,6 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use App\Services\CallStatisticsService;
-use App\Services\SaleDepartmentServices\PlansService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
 use App\Services\WorkPlanService;
@@ -65,7 +65,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request, PlansService $plansService)
+    public function userReport(Request $request)
     {
         $departments = Department::getSaleDepartments();
 
@@ -88,7 +88,7 @@ class SaleDepartmentController extends Controller
                 }
 
                 $reportInfo = new ReportInfo($date, null, $selectDepartment);
-                $reportService = new ReportService($plansService, $reportInfo);
+                $reportService = new ReportService($reportInfo);
 
                 $daylyReport = $reportService->monthByDayReport($user);
 
@@ -205,14 +205,18 @@ class SaleDepartmentController extends Controller
     {
         $validated = $request->validated();
 
-        $workPlanService->update($workPlan, $validated);
+        if (!$workPlanService->update($workPlan, $validated)) {
+            return redirect()->back()->withErrors('Не удалось обновить план');
+        }
 
         return redirect()->back()->with('success', 'План успешно изменён');
     }
 
     public function destroyWorkPlan(WorkPlan $workPlan, WorkPlanService $workPlanService)
     {
-        $workPlanService->destroy($workPlan);
+        if (!$workPlanService->destroy($workPlan)) {
+            return redirect()->back()->withErrors('Не удалось Удалить план');
+        }
 
         return redirect()->back()->with('success', 'План успешно удалён');
     }

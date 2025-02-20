@@ -52,7 +52,7 @@ export default {
                 day.is_workday = response.data.is_working_day;
                 this.$forceUpdate();
             } catch (error) {
-                console.error("Ошибка при обновлении рабочего дня:", error);
+                alert("Ошибка при обновлении рабочего дня: " + error.response.data.error);
             }
         },
         formatDate(dateString) {

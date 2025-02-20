@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\WorkPlan;
 use Illuminate\Support\Collection;
+use PhpParser\Node\Expr\Cast\Bool_;
 
 class WorkPlanService
 {
@@ -15,15 +16,13 @@ class WorkPlanService
         return $workPlan;
     }
 
-    public function update(WorkPlan $workPlan, array|Collection $data): ?WorkPlan
+    public function update(WorkPlan $workPlan, array|Collection $data): bool
     {
-        $workPlan->update($data);
-
-        return $workPlan;
+        return $workPlan->update($data);
     }
 
-    public function destroy(WorkPlan $workPlan)
+    public function destroy(WorkPlan $workPlan): bool
     {
-        $workPlan->delete();
+        return $workPlan->delete();
     }
 }

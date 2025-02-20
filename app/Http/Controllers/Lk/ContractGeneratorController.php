@@ -74,7 +74,7 @@ class ContractGeneratorController extends Controller
             $data['ready_site_image'] = $fullBase64String;
         }
 
-        $fileLink = DocumentGenerator::generateDealDocument($data);
+        // $fileLink = DocumentGenerator::generateDealDocument($data);
         $terminal = 1;
 
         $link = '';
@@ -88,9 +88,9 @@ class ContractGeneratorController extends Controller
             );
         };
 
-        if (empty($fileLink) || $fileLink == '') {
-            return back()->withErrors('Ошибка Создания договора в Bitrix')->withInput();
-        };
+        // if (empty($fileLink) || $fileLink == '') {
+        //     return back()->withErrors('Ошибка Создания договора в Bitrix')->withInput();
+        // };
 
         try {
             DB::beginTransaction();
@@ -127,8 +127,8 @@ class ContractGeneratorController extends Controller
         }
 
         return back()->with([
-            'file' => $fileLink,
-            'link' => $link
+            // 'file' => $fileLink,
+            // 'link' => $link
         ]);
     }
 }

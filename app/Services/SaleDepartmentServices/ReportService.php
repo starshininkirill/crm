@@ -17,9 +17,9 @@ class ReportService
     protected $planService;
     protected $fullData;
 
-    public function __construct(PlansService $planService, ReportInfo $reportInfo)
+    public function __construct(ReportInfo $reportInfo)
     {
-        $this->planService = $planService;
+        $this->planService = new PlansService;
         $this->fullData = $reportInfo;
     }
 

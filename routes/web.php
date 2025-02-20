@@ -30,7 +30,6 @@ use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentControll
 use App\Http\Controllers\Resources\PositionController as ResourcesPositionController;
 use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
 use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
-use App\Http\Controllers\Resources\WorkPlanController;
 use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
 use Illuminate\Support\Facades\Route;
