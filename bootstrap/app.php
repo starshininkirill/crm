@@ -1,7 +1,6 @@
 <?php
 
-use App\Exceptions\Buisness\BuisnessExceptionJson;
-use App\Exceptions\Buisness\BuisnessException;
+use App\Exceptions\Buisness\BusinessException;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -28,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (BuisnessException $e, Request $request) {
+        $exceptions->render(function (BusinessException $e, Request $request) {
             if ($request->wantsJson()) {
                 $json = [
                     'success' => false,

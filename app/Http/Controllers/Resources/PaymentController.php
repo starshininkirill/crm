@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Resources;
 use App\Classes\Bitrix;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentGeneratorRequest;
+use App\Http\Requests\Admin\PaymentRequest;
 use App\Models\Contract;
 use App\Models\Payment;
 use Exception;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function shortlistAttach(PaymentGeneratorRequest $request)
+    public function shortlistAttach(PaymentRequest $request)
     {
         $validated = $request->validated();
         $oldPayment = Payment::find($validated['oldPayment']);
@@ -86,7 +86,7 @@ class PaymentController extends Controller
         return $payments->toArray();
     }
 
-    public function store(PaymentGeneratorRequest $request)
+    public function store(PaymentRequest $request)
     {
         $validated = $request->validated();
 

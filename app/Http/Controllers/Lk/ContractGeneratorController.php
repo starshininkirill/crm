@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Classes\DocumentGenerator;
-use App\Http\Requests\ContractGeneratorRequest;
+use App\Http\Lk\Requests\ContractGeneratorRequest;
 use App\Models\Client;
 use App\Models\ContractUser;
 use Illuminate\Support\Facades\DB;
@@ -63,16 +63,16 @@ class ContractGeneratorController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('ready_site_image')) {
-            $file = $request->file('ready_site_image');
-            $fileContent = $file->getContent();
-            $base64String = base64_encode($fileContent);
-            $mimeType = $file->getMimeType();
+        // if ($request->hasFile('ready_site_image')) {
+        //     $file = $request->file('ready_site_image');
+        //     $fileContent = $file->getContent();
+        //     $base64String = base64_encode($fileContent);
+        //     $mimeType = $file->getMimeType();
 
-            $fullBase64String = 'data:' . $mimeType . ';base64,' . $base64String;
+        //     $fullBase64String = 'data:' . $mimeType . ';base64,' . $base64String;
 
-            $data['ready_site_image'] = $fullBase64String;
-        }
+        //     $data['ready_site_image'] = $fullBase64String;
+        // }
 
         // $fileLink = DocumentGenerator::generateDealDocument($data);
         $terminal = 1;

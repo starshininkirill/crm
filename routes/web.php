@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\WorkingDayController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Resources\ContractController;
@@ -143,6 +142,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('admin.settings.index');
         Route::get('/calendar', [SettingsController::class, 'calendar'])->name('admin.settings.calendar');
+        Route::post('/calendar/change-day', [SettingsController::class, 'toggleWorkingDayType'])->name('admin.settings.calendar.change-day');
         Route::get('/finance-week', [SettingsController::class, 'financeWeek'])->name('admin.settings.finance-week');
     });
 });
@@ -204,7 +204,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('user', ResourcesUserController::class)->only([
         'store',
         'destroy'
-    ]);
+    ]); 
 
     Route::resource('department', ResourcesDepartmentController::class)->only([
         'store',
@@ -212,8 +212,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('department', ResourcesPositionController::class)->only([
         'store',
     ]);
-
-    Route::post('/working-day', [WorkingDayController::class, 'toggleType']);
 
     Route::post('/finance-week', [FinanceWeekController::class, 'setWeeks'])->name('finance-week.set-weeks');
     Route::put('/finance-week', [FinanceWeekController::class, 'updateWeeks'])->name('finance-week.set-weeks');

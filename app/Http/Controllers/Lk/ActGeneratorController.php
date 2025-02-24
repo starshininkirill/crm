@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Lk;
 
 use App\Classes\DocumentGenerator;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentGeneratorRequest;
+use App\Http\Requests\Lk\PaymentGeneratorRequest;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractUser;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 
-class ActGeneratorController extends Controller
+class ActGeneratorController extends Controller  
 {
     public function create()
     {

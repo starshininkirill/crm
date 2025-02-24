@@ -4,11 +4,13 @@ namespace App\Http\Controllers\admin;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\WorkingDayRequest;
 use App\Models\FinanceWeek;
 use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
-use Illuminate\Http\Request;
+use App\Models\WorkingDay;
+use Illuminate\Http\Request; 
 use Inertia\Inertia;
 
 class SettingsController extends Controller
@@ -36,17 +38,6 @@ class SettingsController extends Controller
             'contractRkText' => $contractRkText ?? [],
 
         ]);
-        return view('admin.settings.index', [
-            'serviceCategories' => $serviceCats ?? [],
-            'services' => $services ?? [],
-            'mainCategoriesOption' => $mainCategoriesOption ?? [],
-            'secondaryCategoriesOption' => $secondaryCategoriesOption ?? [],
-            'contractRkText' => $contractRkText,
-            'contractTemplateIds' => $contractTemplateIdsText,
-            'taxNds' => $taxNds,
-            'needSeoPages' => $needSeoPages,
-            'paymentDefaultLawTemplate' => $paymentDefaultLawTemplate,
-        ]);
     }
 
     public function calendar(Request $request)
@@ -62,6 +53,18 @@ class SettingsController extends Controller
             'months' => $months,
             'date' => $formattedDate,
         ]);
+    }
+
+    public function toggleWorkingDayType(WorkingDayRequest $request)
+    {
+        $date = $request->validated();
+
+        $updatedDay = WorkingDay::updateOrCreate(
+            ['date' => $date['date']],
+            ['is_working_day' => !$date['is_working_day']]
+        );
+
+        return response()->json($updatedDay);
     }
 
     public function financeWeek(Request $request)

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Classes\T2Api;
-use App\Exceptions\Buisness\BuisnessException;
+
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;

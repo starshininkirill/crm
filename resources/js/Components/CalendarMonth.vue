@@ -34,6 +34,7 @@
 
 <script>
 import axios from 'axios';
+import { route } from 'ziggy-js';
 
 export default {
     props: {
@@ -44,7 +45,7 @@ export default {
         async toggleType(day) {
             let formatedDate = new Date(day.date).toISOString().slice(0, 10);
             try {
-                const response = await axios.post('/working-day', {
+                const response = await axios.post( route('admin.settings.calendar.change-day'), {
                     date: formatedDate,
                     is_working_day: day.is_workday,
                 },

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Lk;
 
 use App\Models\Client;
 use App\Models\Contract;
