@@ -6,9 +6,7 @@
         Создание Платёж СБП
     </h1>
 
-    <ul v-if="form.errors" class="flex flex-col gap-1 mb-4">
-        <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-    </ul>
+    <Error />
 
     <form @submit.prevent="submitForm" enctype="multipart/form-data" class=" max-w-xl flex flex-col gap-3">
 

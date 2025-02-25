@@ -9,9 +9,7 @@
                     Создать Шаблон документа
                 </div>
 
-                <ul v-if="form.errors" class="flex flex-col gap-1">
-                    <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-                </ul>
+                <Error />
 
                 <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
                     label="Название шаблона" autocomplete="name" required />
@@ -32,14 +30,7 @@
                     <div class="mb-2 font-semibold">
                         Тут будет фильтр
                     </div>
-                    <div v-if="$page.props.errors && Object.keys($page.props.errors).length">
-                        <ul class="flex flex-col gap-1 mb-4">
-                            <li v-for="(messages, field) in $page.props.errors" :key="field">
-                                <span v-for="message in messages" :key="message" class="text-xl text-red-400">{{ message
-                                    }}</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <Error />
                     <table
                         class="w-full text-sm text-left rtl:text-right text-gray-500 overflow-x-auto shadow-md sm:rounded-lg">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50">

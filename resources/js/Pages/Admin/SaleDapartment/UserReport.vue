@@ -8,9 +8,7 @@
             :initial-user="selectUser" :initial-date="date">
         </SelectForm>
 
-        <ul v-if="$page.props.errors && $page.props.errors.length" class="flex flex-col gap-1 mb-4">
-            <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
-        </ul>
+        <Error />
 
         <template v-if="motivationReport.length == 0 && motivationReport.length == 0">
             <div class="text-2xl font-semibold">

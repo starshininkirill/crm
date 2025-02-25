@@ -7,9 +7,7 @@
             <div class="text-3xl font-semibold">
                 Создать категорию
             </div>
-            <ul v-if="form.errors" class="flex flex-col gap-1">
-                <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-            </ul>
+            <Error />
             <FormInput v-model="form.name" type="text" name="name" placeholder="Название категории"
                 label="Название категории" autocomplete="name" required />
             <KeyValueSelectInput v-if="Object.keys(types).length" :options="types" label="Выберите тип категории услуг"

@@ -4,9 +4,7 @@
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-medium mb-6">Отчёт по разгороворам</h1>
 
-        <ul v-if="$page.props.errors && $page.props.errors.length" class="flex flex-col gap-1 mb-4">
-            <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
-        </ul>
+        <Error />
 
         <div class=" flex gap-3 mb-4">
             <FormInput @change="changeDate" v-model="date" name="date" type="month" />

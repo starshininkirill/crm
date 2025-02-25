@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\ContractController as AdminContractController;
+use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
 use App\Http\Controllers\Admin\DocumentTemplateController as AdminDocumentTemplateController;
@@ -64,19 +64,22 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     Route::prefix('contracts')->group(function () {
-        Route::get('', [AdminContractController::class, 'index'])->name('admin.contract.index');
+        Route::get('', [ContractController::class, 'index'])->name('admin.contract.index');
 
         // Нужно будет перенести в ресурс
-        // Route::post('/{contract}/attach-user', [AdminContractController::class, 'attachUser'])->name('admin.contract.attachUser');
-        Route::get('/{contract}', [AdminContractController::class, 'show'])->name('admin.contract.show');
+        // Route::post('/{contract}/attach-user', [ContractController::class, 'attachUser'])->name('admin.contract.attachUser');
+        Route::get('/{contract}', [ContractController::class, 'show'])->name('admin.contract.show');
     });
 
     Route::prefix('payments')->group(function () {
-        Route::get('search-contract', [PaymentController::class, 'searchContract'])->name('admin.payment.search-contract');
+        Route::get('/search-contract', [PaymentController::class, 'searchContract'])->name('admin.payment.search-contract');
 
         Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
         Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.payment.unsortedSbp');
-        Route::get('/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
+        
+        Route::get('/{payment}/show', [PaymentController::class, 'show'])->name('admin.payment.show');
+        Route::get('/{payment}/edit', [PaymentController::class, 'edit'])->name('admin.payment.edit');
+        Route::patch('/{payment}', [PaymentController::class, 'update'])->name('admin.payment.update');
 
         Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
     });
@@ -85,6 +88,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('', [OrganizationController::class, 'index'])->name('admin.organization.index');
         Route::get('/create', [OrganizationController::class, 'create'])->name('admin.organization.create');
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('admin.organization.edit');
+        Route::get('/{organization}/show', [OrganizationController::class, 'edit'])->name('admin.organization.show');
 
         Route::post('/', [OrganizationController::class, 'store'])->name('admin.organization.store');
         Route::patch('/{organization}', [OrganizationController::class, 'update'])->name('admin.organization.update');

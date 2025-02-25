@@ -4,9 +4,7 @@
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Ключи Т2 API</h1>
 
-        <ul v-if="$page.props.errors && $page.props.errors.length" class="flex flex-col gap-1 mb-4">
-            <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
-        </ul>
+        <Error />
 
         <div class="flex gap-4 flex-col">
             <form @submit.prevent="submitForm" class="max-w-md ">

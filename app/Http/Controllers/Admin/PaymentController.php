@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Exceptions\Business\BusinessException;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PaymentRequest;
 use App\Models\Contract;
+use App\Models\Organization;
 use App\Models\Payment;
+use App\Models\User;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -33,6 +37,58 @@ class PaymentController extends Controller
             'payments' => $payments,
             'paymentStatuses' => Payment::vueStatuses(),
         ]);
+    }
+
+    public function show(Payment $payment)
+    {
+        return Inertia::render('Admin/Payment/Show', [
+            'payment' => [
+                'id' => $payment->id,
+                'contract' => $payment->contract,
+                'value' => TextFormaterHelper::getPrice($payment->value),
+                'status' => $payment->status,
+                'formatStatus' => $payment->getStatusNameAttribute(),
+                'inn' => $payment->inn ?? 'Не определён',
+                'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
+                // 'method' => $payment->generetePaymentMethodHierarchy() != '' ? $payment->generetePaymentMethodHierarchy() : 'Не определён',
+                'is_technical' => $payment->is_technical,
+                'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён',
+                'created_at' => $payment->created_at->format('d.m.Y H:i'),
+                'responsible' => $payment->responsible,
+                'organization' => $payment->organization,
+            ],
+            'paymentStatuses' => Payment::vueStatuses(),
+        ]);
+    }
+
+    public function edit(Payment $payment)
+    {
+        $payment->load('contract');
+
+        $paymentArray = $payment->toArray();
+        $paymentArray['confirmed_at'] = $payment->confirmed_at?->format('Y-m-d\TH:i');
+        $paymentArray['created_at'] = $payment->created_at?->format('Y-m-d\TH:i');
+
+        return Inertia::render('Admin/Payment/Edit', [
+            'payment' => $paymentArray,
+            'paymentStatuses' => Payment::ASOC_STATUSES,
+            'paymentTypes' => Payment::ASOC_TYPES,
+            'organizations' => Organization::all(),
+            'users' => User::active(),
+        ]);
+    }
+
+    public function update(PaymentRequest $request, Payment $payment, PaymentService $service)
+    {
+        $validated = $request->validated();
+
+        $isUpdated = $service->update($payment, $validated);
+
+        if (!$isUpdated) {
+            throw new BusinessException('Не удалось обновить платёж');
+        }
+
+        return redirect()->back()->with('success', 'Платёж успешно обновлён');
     }
 
     public function unsorted()
@@ -133,28 +189,5 @@ class PaymentController extends Controller
                 })
             ],
         ];
-    }
-
-    public function show(Payment $payment)
-    {
-        $payment->load('contract');
-        $payment->load('responsible');
-
-        return Inertia::render('Admin/Payment/Show', [
-            'payment' => [
-                'id' => $payment->id,
-                'contract' => $payment->contract,
-                'value' => TextFormaterHelper::getPrice($payment->value),
-                'status' => $payment->status,
-                'formatStatus' => $payment->getStatusNameAttribute(),
-                'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
-                'method' => $payment->generetePaymentMethodHierarchy() != '' ? $payment->generetePaymentMethodHierarchy() : 'Не определён',
-                'is_technical' => $payment->is_technical,
-                'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён',
-                'created_at' => $payment->created_at->format('d.m.Y H:i'),
-                'responsible' => $payment->responsible,
-            ],
-            'paymentStatuses' => Payment::vueStatuses(),
-        ]);
     }
 }

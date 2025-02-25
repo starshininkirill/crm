@@ -6,9 +6,7 @@
 
         <form @submit.prevent="submitForm" method="POST" class="max-w-md shrink-0 ">
 
-            <ul v-if="form.errors" class="flex flex-col gap-1 mb-4">
-                <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-            </ul>
+            <Error />
 
             <div class="flex flex-col gap-2">
                 <FormInput v-model="form.short_name" type="text" name="short_name" placeholder="ИП 1"
@@ -22,9 +20,7 @@
                     label="Номер терминала" required />
                 <YesNoSelector v-model="form.nds" name="nds" label="НДС" />
 
-                <button type="submit"
-                    class="btn"
-                    data-ripple-light="true">
+                <button type="submit" class="btn" data-ripple-light="true">
                     Создать
                 </button>
             </div>

@@ -23,6 +23,28 @@ class Payment extends Model
     const TYPE_NEW = 0;
     const TYPE_OLD = 1;
 
+    const STATUSES = [
+        self::STATUS_WAIT,
+        self::STATUS_WAIT_CONFIRMATION,
+        self::STATUS_CLOSE,
+    ];
+
+    const ASOC_STATUSES = [
+        self::STATUS_WAIT => 'Ожидает оплаты',
+        self::STATUS_WAIT_CONFIRMATION => 'Ожидает распределения',
+        self::STATUS_CLOSE => 'Оплачен'
+    ];
+
+    const TYPES = [
+        self::TYPE_NEW,
+        self::TYPE_OLD
+    ];
+
+    const ASOC_TYPES = [
+        self::TYPE_NEW => 'Новые деньги',
+        self::TYPE_OLD => 'Старые деньги',
+    ];
+
     protected $casts = [
         'confirmed_at' => 'datetime',
     ];
@@ -54,8 +76,9 @@ class Payment extends Model
         }
 
         $firstPayment = $this->contract->firstPayment();
+
         if (!$firstPayment) {
-            return self::TYPE_OLD;
+            return self::TYPE_NEW;
         }
 
         if ($firstPayment->created_at->format('Y-m') == $newPayment->created_at->format('Y-m')) {

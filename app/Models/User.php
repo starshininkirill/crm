@@ -49,11 +49,17 @@ class User extends Authenticatable
         ];
     }
 
+
     protected function fullName(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->first_name . ' ' . $this->last_name,
         );
+    }
+
+    public static function active(): Collection
+    {
+        return User::all();
     }
 
     public function payments(): HasMany

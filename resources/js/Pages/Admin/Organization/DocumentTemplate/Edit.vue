@@ -8,9 +8,7 @@
                 Создать Шаблон документа
             </div>
 
-            <ul v-if="form.errors" class="flex flex-col gap-1">
-                <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-            </ul>
+            <Error />
 
             <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
                 label="Название шаблона" autocomplete="name" required />

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaymentRequest extends FormRequest
@@ -30,6 +31,18 @@ class PaymentRequest extends FormRequest
             $rules = [
                 'oldPayment' => 'required|numeric|exists:payments,id',
                 'newPayment' => 'required|numeric|exists:payments,id'
+            ];
+        } else if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            $rules = [
+                'value' => 'required|numeric',
+                'inn' => 'nullable|numeric',
+                'status' => 'required|numeric|in:' . implode(',', Payment::STATUSES),
+                'type' => 'required|numeric|in:' . implode(',', Payment::TYPES),
+                'is_technical' => 'required|numeric|in:0,1',
+                'confirmed_at' => 'nullable|date',
+                'created_at' => 'required|date',
+                'organization_id' => 'nullable|exists:organizations,id',
+                'responsible_id' => 'nullable|exists:users,id',
             ];
         }
         return $rules;

@@ -9,9 +9,7 @@
                     Связать
                 </div>
 
-                <ul v-if="form.errors" class="flex flex-col gap-1">
-                    <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-                </ul>
+                <Error />
 
                 <div class=" flex flex-col gap-2">
                     <div class="flex flex-col gap-1">

@@ -9,9 +9,7 @@
         <FormInput @change="changeDate" v-model="date" name="date" type="month" />
     </div>
 
-    <ul v-if="$page.props.errors" class="flex flex-col gap-1 mb-4">
-        <li v-for="(error, index) in $page.props.errors" :key="index" class="text-red-400">{{ error }}</li>
-    </ul>
+    <Error />
 
     <div class="grid grid-cols-3 gap-8 mb-4">
         <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
@@ -111,7 +109,7 @@ export default {
             required: true,
         },
     },
-    data() {
+    data() {        
         return {
             date: this.dateProp
         }

@@ -8,9 +8,7 @@
             Вход
         </h2>
 
-        <ul v-if="form.errors" class="flex flex-col gap-1 mb-4">
-            <li v-for="(error, index) in form.errors" :key="index" class="text-red-400">{{ error }}</li>
-        </ul>
+        <Error />
 
         <div class="flex flex-col gap-2">
             <FormInput v-model="form.email" type="email" name="email" placeholder="Почта" label="Почта"
