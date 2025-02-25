@@ -43,8 +43,9 @@ class ServiceSeeder extends Seeder
             'name' => 'Допы',
             'type' => ServiceCategory::OTHER,
         ]);
+
         ServiceCategory::create([
-            'name' => 'Курсы',
+            'name' => 'Технические услуги',
         ]);
 
         Service::create([
@@ -178,6 +179,27 @@ class ServiceSeeder extends Seeder
             'price' => 15000,
             'work_days_duration' => '3 (пять) рабочих дней',
             'description' => 'описание Калькулятор'
+        ]);
+
+        Service::create([
+            'name' => 'Пополнение бюджета',
+            'service_category_id' => 6,
+            'description' => 'Пополнение бюджета'
+        ]);
+        Service::create([
+            'name' => 'Ведение РК',
+            'service_category_id' => 6,
+            'description' => 'Ведение РК'
+        ]);
+        Service::create([
+            'name' => 'Допродажа',
+            'service_category_id' => 6,
+            'description' => 'Допродажа'
+        ]);
+        Service::create([
+            'name' => '2й и далее платёж за настройку',
+            'service_category_id' => 6,
+            'description' => '2й и далее платёж за настройку'
         ]);
     }
 }

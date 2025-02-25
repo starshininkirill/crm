@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UserRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\Position;
 use App\Models\User;
@@ -42,5 +43,14 @@ class UserController
         return Inertia::render('Admin/User/Show', [
             'user' => $user,
         ]);
+    }
+
+    public function store(UserRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        User::create($validatedData);
+
+        return redirect()->back()->with('success', 'Сотрудник успешно создан');
     }
 }

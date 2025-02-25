@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ServiceRequest;
 use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
@@ -39,7 +40,6 @@ class ServiceController extends Controller
         return Inertia::render('Admin/Service/Create', [
             'categories' => $categories,
         ]);
-
     }
 
     public function edit(Service $service)
@@ -50,5 +50,30 @@ class ServiceController extends Controller
             'service' => $service,
             'categories' => $categories,
         ]);
+    }
+
+    public function store(ServiceRequest $request)
+    {
+        $validated = $request->validated();
+
+        Service::create($validated);
+
+        return redirect()->back()->with('success', 'Услуга успешно создана');
+    }
+
+    public function update(ServiceRequest $request, Service $service)
+    {
+        $validated = $request->validated();
+
+        $service->update($validated);
+
+        return redirect()->back()->with('success', 'Услуга успешно обновлена');
+    }
+
+    public function destroy(Service $service)
+    {
+        $service->delete();
+
+        return redirect()->back()->with('success', 'Услуга успешно Удалена');
     }
 }

@@ -73,7 +73,7 @@ export default {
     methods: {
         deleteService(id) {
             if (confirm('Вы уверены, что хотите удалить эту Услугу?')) {
-                router.delete(route('service.destroy', id));
+                router.delete(route('admin.service.destroy', id));
             }
         },
     },

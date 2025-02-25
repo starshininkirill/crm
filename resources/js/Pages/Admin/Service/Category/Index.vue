@@ -105,7 +105,7 @@ export default {
     methods: {
         deleteServiceCategory(id) {
             if (confirm('Вы уверены, что хотите удалить эту Категорию?')) {
-                router.delete(route('service-category.destroy', id));
+                router.delete(route('admin.service-category.destroy', id));
             }
         },
     },
@@ -118,7 +118,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.post(route('service-category.store'), {
+            form.post(route('admin.service-category.store'), {
                 onFinish: () => {
                     form.name = null;
                     form.type = firstKey;

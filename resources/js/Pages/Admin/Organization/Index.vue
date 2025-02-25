@@ -81,7 +81,7 @@ export default {
     methods : {
         deleteOrganization(id) {
             if (confirm('Вы уверены, что хотите удалить эту организацию?')) {
-                router.delete(route('organization.destroy', id));
+                router.delete(route('admin.organization.destroy', id));
             }
         },
     },

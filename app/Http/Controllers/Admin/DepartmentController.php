@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DepartmentRequest;
+use App\Http\Requests\Admin\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,7 +38,7 @@ class DepartmentController extends Controller
     public function show(Department $department)
     {
 
-        $users = $department->users()->map(function($user){
+        $users = $department->users()->map(function ($user) {
             return [
                 'id' => $user->id,
                 'first_name' => $user->first_name,
@@ -54,5 +54,13 @@ class DepartmentController extends Controller
             'childDepartments' => $department->childDepartments,
             'users' => $users,
         ]);
+    }
+    public function store(DepartmentRequest $request)
+    {
+        $validated = $request->validated();
+
+        Department::create($validated);
+
+        return redirect()->back()->with('success', 'Отдел успешно создан');
     }
 }

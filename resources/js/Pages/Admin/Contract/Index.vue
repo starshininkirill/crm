@@ -34,8 +34,7 @@
                             </span>
                         </td>
                         <td class="border border-gray-300 px-2 py-1">
-                            <span v-if="contract.parent.length">
-                                Дочерний договор:
+                            <span v-if="contract.parent.id">
                                 <Link class="text-blue-700"
                                     :href="route('admin.contract.show', { contract: contract.id })">
                                 {{ contract.number }}
@@ -44,13 +43,13 @@
                                 Родитель:
                                 <Link class="text-blue-700"
                                     :href="route('admin.contract.show', { contract: contract.parent.id })">
-                                {{ contract.parent.number }}
+                                № {{ contract.parent.number }}
                                 </Link>
                             </span>
                             <span v-else>
                                 <Link class="text-blue-700"
                                     :href="route('admin.contract.show', { contract: contract.id })">
-                                Договор: {{ contract.number }}
+                                Договор: № {{ contract.number }}
                                 </Link>
                             </span>
                         </td>

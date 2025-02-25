@@ -56,7 +56,7 @@ class ContractController extends Controller
                     return [
                         'id' => $service->id,
                         'name' => $service->name,
-                        'price' => TextFormaterHelper::getPrice($service->price),
+                        'price' => TextFormaterHelper::getPrice($service->pivot->price),
                     ];
                 }),
                 'payments' => $contract->payments->map(function($payment){

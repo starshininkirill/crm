@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Lk\Requests;
+namespace App\Http\Requests\Lk;
 
 use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection;
 
 class ContractGeneratorRequest extends FormRequest
 {
@@ -26,9 +27,15 @@ class ContractGeneratorRequest extends FormRequest
         ];
     }
 
-    public function services(): array
+    public function services(): Collection
     {
-        return $this->input('services');
+        $services = collect($this->input('services'))->map(function($service){
+            return [
+                'service_id' => $service['service_id'],
+                'price' => $service['price']
+            ];
+        });
+        return $services;
     }
 
     public function payments(): array

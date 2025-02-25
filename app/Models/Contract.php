@@ -55,13 +55,14 @@ class Contract extends Model
 
     public function services(): BelongsToMany
     {
-        return $this->belongsToMany(Service::class);
+        return $this->belongsToMany(Service::class)->withPivot('price');
     }
 
     public function saller()
     {
         return $this->users()->wherePivot('role', ContractUser::SALLER)->first();
     }
+    
     public function contractUsers()
     {
         return $this->hasMany(ContractUser::class);
@@ -145,16 +146,5 @@ class Contract extends Model
             return true;
         }
         return false;
-    }
-
-    public function attachServices(array $services): void
-    {
-        if (!empty($services)) {
-            foreach ($services as $service) {
-                $this->services()->attach($service['service_id'], [
-                    'price' => $service['price']
-                ]);
-            }
-        }
     }
 }

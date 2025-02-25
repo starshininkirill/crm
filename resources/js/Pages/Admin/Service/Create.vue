@@ -67,7 +67,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.post(route('service.store'), {
+            form.post(route('admin.service.store'), {
                 onFinish: () => {
                     form.name = null
                     form.description = null

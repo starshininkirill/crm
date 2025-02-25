@@ -70,9 +70,9 @@ export default {
         submitForm() {
             
             if (!this.financeWeeks && !this.financeWeeks.length) {
-                this.form.post(route('finance-week.set-weeks'));
+                this.form.post(route('admin.settings.finance-week.set-weeks'));
             } else {
-                this.form.put(route('finance-week.set-weeks'));
+                this.form.post(route('admin.settings.finance-week.set-weeks'));
             }
         },
     }

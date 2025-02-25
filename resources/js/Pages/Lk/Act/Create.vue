@@ -42,27 +42,10 @@
                     <!-- Выбор сценария оплаты -->
                     <div class="flex flex-col gap-2">
                         <div class="text-xl font-semibold">Сценарий оплаты</div>
-
                         <div class="flex w-fit gap-7">
-                            <label class="cursor-pointer">
-                                <input type="radio" value="0" v-model="form.payment_direction" name="payment_direction"
-                                    :disabled="form.payment_direction.indexOf('1') != -1 || form.payment_direction.indexOf('2') != -1 || form.payment_direction.indexOf('3') != -1" />
-                                Бюджет
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" value="1" v-model="form.payment_direction" name="payment_direction"
-                                    :disabled="form.payment_direction.indexOf('0') != -1" />
-                                Ведение
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" value="2" v-model="form.payment_direction" name="payment_direction"
-                                    :disabled="form.payment_direction.indexOf('0') != -1" />
-                                Допродажа
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" value="3" v-model="form.payment_direction" name="payment_direction"
-                                    :disabled="form.payment_direction.indexOf('0') != -1" />
-                                2-й платёж за настройку
+                            <label v-for="service in services" :key="service.id" class="cursor-pointer">
+                                <input type="radio" :value="service.id" v-model="form.service_id" name="service_id" />
+                                {{ service.name }}
                             </label>
                         </div>
                     </div>
@@ -171,6 +154,10 @@ export default {
             required: true,
             type: Array,
         },
+        services: {
+            required: true,
+            type: Array,
+        },
     },
     data() {
         return {
@@ -183,7 +170,7 @@ export default {
             'number': null,
             'deal_id': null,
             'client_type': 0,
-            'payment_direction': [],
+            'service_id': [],
             'amount_summ': null,
             'client_fio': '',
             'phone': '',
@@ -225,7 +212,7 @@ export default {
                     th.form.number = null;
                     th.form.deal_id = null;
                     th.form.client_type = 0;
-                    th.form.payment_direction = [];
+                    th.form.service_id = [];
                     th.form.amount_summ = null;
                     th.form.client_fio = '';
                     th.form.phone = '';

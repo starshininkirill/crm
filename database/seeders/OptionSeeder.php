@@ -46,9 +46,8 @@ class OptionSeeder extends Seeder
 
 
         Option::create([
-            'name' => 'payment_generator_default_law_template',
-            'value' => '198'
+            'name' => 'payment_generator_services',
+            'value' => '[12, 13, 14, 15]'
         ]);
-
     }
 }

@@ -17,7 +17,7 @@ class ContractSeeder extends Seeder
      */
     public function run(): void
     {
-        $services = Service::all();
+        $services = Service::query()->WhereNotNull('price')->get();
 
         $clients = Client::all();
 

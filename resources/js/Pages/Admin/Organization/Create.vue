@@ -56,7 +56,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.post(route('organization.store'), {
+            form.post(route('admin.organization.store'), {
                 onFinish: () => {
                     form.name = null
                     form.short_name = null

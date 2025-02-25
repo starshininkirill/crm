@@ -60,7 +60,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.patch(route('organization.update', { organization: props.organization.id }));
+            form.patch(route('admin.organization.update', { organization: props.organization.id }));
         };
 
         return {

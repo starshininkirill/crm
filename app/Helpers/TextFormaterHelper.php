@@ -7,7 +7,7 @@ namespace App\Helpers;
 class TextFormaterHelper
 {
 
-    public static function getPrice(int|float $value): string
+    public static function getPrice($value): string
     {
         return number_format($value, 0, '.', ' ') . ' ₽';
     }

@@ -25,7 +25,7 @@
         </ul>
     @endif
 
-    <form class="flex max-w-md flex-col gap-4" method="POST" action="{{ route('finance-week.set-weeks') }}">
+    <form class="flex max-w-md flex-col gap-4" method="POST" action="{{ route('admin.settings.finance-week.set-weeks') }}">
         @csrf
         @if (!$financeWeeks->isEmpty())
             @method('PUT')

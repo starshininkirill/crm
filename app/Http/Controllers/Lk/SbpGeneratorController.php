@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Lk;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SbpGeneratorRequest;
+use App\Http\Requests\Lk\SbpGeneratorRequest;
 use App\Models\Organization;
 use App\Models\Payment;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 

@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
 use App\Http\Controllers\Admin\DocumentTemplateController as AdminDocumentTemplateController;
-use App\Http\Controllers\Admin\OrganizationController as AdminOrganizationController;
+use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -13,23 +13,15 @@ use App\Http\Controllers\admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Resources\ContractController;
-use App\Http\Controllers\FinanceWeekController;
 use App\Http\Controllers\Lk\ContractGeneratorController as LkContractGeneratorController;
 use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\ActGeneratorController as LkActGeneratorController;
 use App\Http\Controllers\Lk\SbpGeneratorController as LkSbpGeneratorController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\Resources\DepartmentController as ResourcesDepartmentController;
 use App\Http\Controllers\Resources\DocumentTemplateController as ResourcesDocumentTemplateController;
 use App\Http\Controllers\Resources\OptionController;
-use App\Http\Controllers\Resources\OrganizationController as ResourcesOrganizationController;
 use App\Http\Controllers\Resources\OrganizationServiceDocumentTemplateController as ResourcesOrganizationServiceDocumentTemplateController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
-use App\Http\Controllers\Resources\PositionController as ResourcesPositionController;
-use App\Http\Controllers\Resources\ServiceCategoryController as ResourcesServiceCategoryController;
-use App\Http\Controllers\Resources\ServiceController as ResourcesServiceController;
-use App\Http\Controllers\Resources\UserController as ResourcesUserController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -80,16 +72,24 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 
     Route::prefix('payments')->group(function () {
-        Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
+        Route::get('search-contract', [PaymentController::class, 'searchContract'])->name('admin.payment.search-contract');
+
         Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
         Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.payment.unsortedSbp');
         Route::get('/{payment}', [PaymentController::class, 'show'])->name('admin.payment.show');
+
+        Route::get('', [PaymentController::class, 'index'])->name('admin.payment.index');
     });
 
     Route::prefix('organizations')->group(function () {
-        Route::get('', [AdminOrganizationController::class, 'index'])->name('admin.organization.index');
-        Route::get('/create', [AdminOrganizationController::class, 'create'])->name('admin.organization.create');
-        Route::get('/{organization}/edit', [AdminOrganizationController::class, 'edit'])->name('admin.organization.edit');
+        Route::get('', [OrganizationController::class, 'index'])->name('admin.organization.index');
+        Route::get('/create', [OrganizationController::class, 'create'])->name('admin.organization.create');
+        Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('admin.organization.edit');
+
+        Route::post('/', [OrganizationController::class, 'store'])->name('admin.organization.store');
+        Route::patch('/{organization}', [OrganizationController::class, 'update'])->name('admin.organization.update');
+        Route::delete('/{organization}', [OrganizationController::class, 'destroy'])->name('admin.organization.destroy');
+
         Route::prefix('document-templates')->group(function () {
             Route::get('/', [AdminDocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
             Route::get('/attach', [AdminDocumentTemplateController::class, 'attach'])->name('admin.organization.document-template.attach');
@@ -101,17 +101,26 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::prefix('categories')->group(function () {
             Route::get('/', [ServiceCategoryController::class, 'index'])->name('admin.service.category.index');
             Route::get('/{serviceCategory}/edit', [ServiceCategoryController::class, 'edit'])->name('admin.service.category.edit');
+
+            Route::post('/', [ServiceCategoryController::class, 'store'])->name('admin.service-category.store');
+            Route::patch('/{serviceCategory}', [ServiceCategoryController::class, 'update'])->name('admin.service-category.update');
+            Route::delete('/{serviceCategory}', [ServiceCategoryController::class, 'destroy'])->name('admin.service-category.destroy');
         });
 
         Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
         Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
         Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
+
+        Route::post('/', [ServiceController::class, 'store'])->name('admin.service.store');
+        Route::patch('/{service}', [ServiceController::class, 'update'])->name('admin.service.update');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('admin.service.destroy');
     });
 
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');
+        Route::post('/', [UserController::class, 'store'])->name('admin.user.store');
     });
 
     Route::prefix('departments')->group(function () {
@@ -126,10 +135,10 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('sale-department')->group(function () {
         Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
-     
+
         Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
         Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
-     
+
         Route::get('/plans-settings', [SaleDepartmentController::class, 'plansSettings'])->name('admin.sale-department.plans-settings');
         Route::put('/{workPlan}', [SaleDepartmentController::class, 'updateWorkPlan'])->name('admin.sale-department.work-plan.update');
         Route::delete('/{workPlan}', [SaleDepartmentController::class, 'destroyWorkPlan'])->name('admin.sale-department.work-plan.destroy');
@@ -144,6 +153,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/calendar', [SettingsController::class, 'calendar'])->name('admin.settings.calendar');
         Route::post('/calendar/change-day', [SettingsController::class, 'toggleWorkingDayType'])->name('admin.settings.calendar.change-day');
         Route::get('/finance-week', [SettingsController::class, 'financeWeek'])->name('admin.settings.finance-week');
+        Route::post('/finance-week', [SettingsController::class, 'setWeeks'])->name('admin.settings.finance-week.set-weeks');
     });
 });
 
@@ -157,11 +167,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('mass-update', [OptionController::class, 'massUpdate'])->name('option.mass-update');
 
-    Route::resource('contract', ContractController::class)->only([
-        'store',
-        'index'
-    ]);
-
     Route::resource('payment', ResourcesPaymentController::class)->only([
         'index',
         'store',
@@ -169,24 +174,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('payment/shortlist/{payment}', [ResourcesPaymentController::class, 'shortlist'])->name('payment.shortlist');
     Route::post('payment/shortlist/attach', [ResourcesPaymentController::class, 'shortlistAttach'])->name('payment.shortlist.attach');
-
-    Route::resource('service-category', ResourcesServiceCategoryController::class)->only([
-        'store',
-        'update',
-        'destroy'
-    ]);
-
-    Route::resource('service', ResourcesServiceController::class)->only([
-        'store',
-        'update',
-        'destroy'
-    ]);
-
-    Route::resource('organization', ResourcesOrganizationController::class)->only([
-        'store',
-        'update',
-        'destroy'
-    ]);
 
     Route::resource('document-template', ResourcesDocumentTemplateController::class)->only([
         'store',
@@ -200,19 +187,4 @@ Route::middleware('auth')->group(function () {
         'store',
         'destroy'
     ]);
-
-    Route::resource('user', ResourcesUserController::class)->only([
-        'store',
-        'destroy'
-    ]); 
-
-    Route::resource('department', ResourcesDepartmentController::class)->only([
-        'store',
-    ]);
-    Route::resource('department', ResourcesPositionController::class)->only([
-        'store',
-    ]);
-
-    Route::post('/finance-week', [FinanceWeekController::class, 'setWeeks'])->name('finance-week.set-weeks');
-    Route::put('/finance-week', [FinanceWeekController::class, 'updateWeeks'])->name('finance-week.set-weeks');
 })->middleware('role:admin');

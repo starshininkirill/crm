@@ -4,7 +4,7 @@ namespace App\Http\Requests\Lk;
 
 use App\Models\Client;
 use App\Models\Contract;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest; 
 
 class PaymentGeneratorRequest extends FormRequest
 {
@@ -36,7 +36,7 @@ class PaymentGeneratorRequest extends FormRequest
         } else if ($this->isMethod('POST') && $this->routeIs('lk.act.store')) {
             $rules = [
                 'client_type' => 'required|numeric|in:0,1',
-                'payment_direction' => 'required|numeric|in:0,1,2,3,',
+                'service_id' => 'required|numeric|exists:services,id',
                 'leed' => 'required|numeric|min:1',
                 'number' => 'required|numeric|exists:contracts,number',
                 'deal_id' => 'required|numeric|min:1',
@@ -66,11 +66,9 @@ class PaymentGeneratorRequest extends FormRequest
 
     public function contractData(): array
     {
-        $parentContract = Contract::where('number', $this->input('number'))->first();
-        $childsCount = $parentContract->childs->count() + 1;
         return [
-            'parent_id' => $parentContract->id,
-            'number' => $this->input('number') . '.' . $childsCount,
+            'service_id' => $this->input('service_id'),
+            'number' => $this->input('number'),
             'amount_price' => $this->input('amount_summ') ?? $this->input('act_payment_summ'),
             'organization_id' => $this->input('organization_id') ?? null,
         ];

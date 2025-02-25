@@ -1,6 +1,6 @@
 <?php
 
-use App\Exceptions\Buisness\BusinessException;
+use App\Exceptions\Business\BusinessException;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;

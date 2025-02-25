@@ -177,7 +177,7 @@ export default {
             }
 
             try {
-                const response = await axios.get(route('contract.index'), {
+                const response = await axios.get(route('admin.payment.search-contract'), {
                     params: { s: this.search }
                 });
 

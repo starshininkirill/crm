@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\ServiceCategory;
 use App\Classes\DocumentGenerator;
-use App\Http\Lk\Requests\ContractGeneratorRequest;
+use App\Http\Requests\Lk\ContractGeneratorRequest;
 use App\Models\Client;
 use App\Models\ContractUser;
 use Illuminate\Support\Facades\DB;
@@ -100,10 +100,11 @@ class ContractGeneratorController extends Controller
 
             $contract->addPayments($request->payments());
             $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
-            $contract->attachServices($request->services());
+            $contract->services()->attach($request->services());
 
             DB::commit();
         } catch (ValidationException $exeption) {
+            dd($exeption);
             DB::rollBack();
 
             Log::channel('errors')->error('Validation error when creating a contract', [

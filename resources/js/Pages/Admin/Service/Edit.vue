@@ -65,7 +65,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.patch(route('service.update', { service: props.service.id }))
+            form.patch(route('admin.service.update', { service: props.service.id }))
         };
 
         return {

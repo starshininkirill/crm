@@ -4,13 +4,15 @@ namespace App\Http\Controllers\admin;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\FinanceWeekRequest;
 use App\Http\Requests\Admin\WorkingDayRequest;
 use App\Models\FinanceWeek;
 use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\WorkingDay;
-use Illuminate\Http\Request; 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SettingsController extends Controller
@@ -27,7 +29,7 @@ class SettingsController extends Controller
         $needSeoPages = Option::where('name', 'contract_generator_need_seo_pages')->first();
         $paymentDefaultLawTemplate = Option::where('name', 'payment_generator_default_law_template')->first();
 
-        return Inertia::render('Admin/Settings/Index',[
+        return Inertia::render('Admin/Settings/Index', [
             'serviceCategories' => $serviceCats ?? [],
             'services' => $services ?? [],
             'mainCategoriesOption' => $mainCategoriesOption ?? [],
@@ -84,11 +86,42 @@ class SettingsController extends Controller
             ->where('date_end', '<=', $endOfMonth)
             ->get();
 
-        return Inertia::render('Admin/Settings/FinanceWeek',[
+        return Inertia::render('Admin/Settings/FinanceWeek', [
             'date' => $date->format('Y-m'),
             'startOfMonth' => $formattedStartOfMonth,
             'endOfMonth' => $formattedEndOfMonth,
             'financeWeeks' => $financeWeeks ?? collect()
         ]);
+    }
+
+    public function setWeeks(FinanceWeekRequest $request)
+    {
+        $data = $request->validated();
+
+        if (empty($data)) {
+            return back()->withErrors('Ошибка при обновление финансовых недель')->withInput();
+        }
+
+        foreach ($data['week'] as $week) {
+            $existingWeek = FinanceWeek::where('weeknum', $week['weeknum'])
+                ->whereYear('date_start', Carbon::parse($week['date_start'])->format('Y'))
+                ->whereMonth('date_start', Carbon::parse($week['date_start'])->format('m'))
+                ->first();
+
+            if ($existingWeek) {
+                $existingWeek->update([
+                    'date_start' => $week['date_start'],
+                    'date_end' => $week['date_end'],
+                ]);
+            } else {
+                FinanceWeek::create([
+                    'date_start' => $week['date_start'],
+                    'date_end' => $week['date_end'],
+                    'weeknum' => $week['weeknum'],
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Финансовые недели успешно изменены');
     }
 }

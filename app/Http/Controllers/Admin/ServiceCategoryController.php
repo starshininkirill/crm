@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ServiceCategoryRequest;
+use App\Http\Requests\Admin\ServiceCategoryRequest;
 use App\Models\ServiceCategory;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ServiceCategoryController extends Controller
@@ -36,9 +35,35 @@ class ServiceCategoryController extends Controller
     {
         $types = ServiceCategory::getTypes();
 
-        return Inertia::render('Admin/Service/Category/Edit',[
+        return Inertia::render('Admin/Service/Category/Edit', [
             'category' => $serviceCategory,
             'types' => $types,
         ]);
+    }
+
+    public function store(ServiceCategoryRequest $request)
+    {
+
+        $validated = $request->validated();
+
+        ServiceCategory::create($validated);
+
+        return redirect()->back()->with('success', 'Категория успешно создана');
+    }
+
+    public function update(ServiceCategoryRequest $request, ServiceCategory $serviceCategory)
+    {
+        $validated = $request->validated();
+
+        $serviceCategory->update($validated);
+
+        return redirect()->back()->with('success', 'Категория успешно обновлена');
+    }
+
+    public function destroy(ServiceCategory $serviceCategory)
+    {
+        $serviceCategory->delete();
+
+        return redirect()->back()->with('success', 'Категория услуг успешно удалена');
     }
 }

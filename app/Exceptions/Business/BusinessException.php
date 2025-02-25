@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Buisness;
+namespace App\Exceptions\Business;
 use Exception;
 
 class BusinessException extends Exception
