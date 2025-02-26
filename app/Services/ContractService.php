@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\Business\BusinessException;
 use App\Models\Contract;
 use App\Models\Service;
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -35,5 +34,25 @@ class ContractService
 
             return $contract;
         });
+    }
+
+    public function attachPerformers(Contract $contract, array $data)
+    {
+        $allPivotData = [];
+
+        $contractUsers = $contract->users;
+        foreach ($data as $role) {
+            if (empty($role['performers'])) {
+                continue;
+            }
+
+            foreach ($role['performers'] as $userId) {
+                $allPivotData[$userId] = ['role' => $role['id']];
+            }
+        }
+
+        $contract->users()->sync($allPivotData);
+
+        return true;
     }
 }

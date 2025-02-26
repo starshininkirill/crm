@@ -22,6 +22,7 @@
                 :initial-services="excludeIds.map(id => filtredServices.find(s => s.id === id))"
                 :all-options="filtredServices" :is-editable="isCurrentMonth"
                 @update:selected-services="updateExcludeIds" />
+                
             <button v-if="isCurrentMonth" class="btn" :class="isSaveButtonDisabled ? 'opacity-60 !cursor-default' : ''">
                 Сохранить
             </button>

@@ -67,7 +67,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('', [ContractController::class, 'index'])->name('admin.contract.index');
 
         // Нужно будет перенести в ресурс
-        // Route::post('/{contract}/attach-user', [ContractController::class, 'attachUser'])->name('admin.contract.attachUser');
+        Route::post('/{contract}/attach-performers', [ContractController::class, 'attachPerformers'])->name('admin.contract.attach-performer');
         Route::get('/{contract}', [ContractController::class, 'show'])->name('admin.contract.show');
     });
 

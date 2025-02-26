@@ -15,7 +15,6 @@ class ContractUser extends Pivot
         'role'
     ];
 
-
     public const SALLER = 0;
     public const PROJECT = 1;
     public const DESIGNER = 2;

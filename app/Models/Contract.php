@@ -35,7 +35,8 @@ class Contract extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+        ->withPivot('role');
     }
 
     public function client(): BelongsTo
@@ -62,7 +63,7 @@ class Contract extends Model
     {
         return $this->users()->wherePivot('role', ContractUser::SALLER)->first();
     }
-    
+
     public function contractUsers()
     {
         return $this->hasMany(ContractUser::class);
@@ -113,21 +114,17 @@ class Contract extends Model
     {
         $roles = ContractUser::getRoles();
 
-        $performers = $this->belongsToMany(User::class, 'contract_user')
-            ->get()
-            ->groupBy(function ($performer) {
-                return $performer->pivot->role;
-            });
+        $usersWithRoles = $this->users()->withPivot('role')->get();
 
-        $result = $roles->map(function ($role) use ($performers) {
+        $groupedUsers = $usersWithRoles->groupBy('pivot.role');
+
+        return $roles->map(function ($role) use ($groupedUsers) {
             return [
-                'role' => $role,
-                'role_name' => ContractUser::roleName($role),
-                'performers' => $performers->get($role, collect())
+                'id' => $role,
+                'name' => ContractUser::roleName($role),
+                'performers' => $groupedUsers->get($role, collect()),
             ];
         });
-
-        return $result;
     }
 
     public function attachPerformer(int $userId, int $roleId): bool
@@ -140,8 +137,6 @@ class Contract extends Model
         if (!$exists) {
             $this->users()->attach($userId, [
                 'role' => $roleId,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]);
             return true;
         }
