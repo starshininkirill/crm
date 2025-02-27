@@ -22,7 +22,7 @@ class Department extends Model
 
     protected $fillable = ['name', 'parent_id', 'type'];
 
-    public static function getMainDepartments(): Collection
+    public static function mainDepartments(): Collection
     {
         return Department::whereNull('parent_id')->get();
     }

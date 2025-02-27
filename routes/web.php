@@ -10,7 +10,8 @@ use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\admin\SettingsController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\User\EmploymentTypeController;
+use App\Http\Controllers\Admin\User\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Lk\ContractGeneratorController as LkContractGeneratorController;
@@ -124,6 +125,13 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     });
 
     Route::prefix('users')->group(function () {
+
+        Route::prefix('employment-types')->group(function () {
+            Route::get('/', [EmploymentTypeController::class, 'index'])->name('admin.employment-type.index');
+            Route::post('/', [EmploymentTypeController::class, 'store'])->name('admin.employment-type.store');
+            Route::delete('/{employmentType}', [EmploymentTypeController::class, 'destroy'])->name('admin.employment-type.destroy');
+        });
+
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');

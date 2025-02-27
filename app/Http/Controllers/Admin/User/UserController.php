@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\User;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserRequest;
-use App\Http\Requests\UserRegisterRequest;
+use App\Models\Department;
+use App\Models\EmploymentType;
 use App\Models\Position;
 use App\Models\User;
 use Inertia\Inertia;
@@ -31,11 +31,15 @@ class UserController
 
     public function create()
     {
+        $departments = Department::mainDepartments()->load('positions');
         $positions = Position::all();
+        $employmentTypes = EmploymentType::all();
 
-        return Inertia::render('Admin/User/Create');
-
-        return view('admin.user.create', ['positions' => $positions]);
+        return Inertia::render('Admin/User/Create', [
+            'positions' => $positions,
+            'departments' => $departments,
+            'employmentTypes' => $employmentTypes,
+        ]);
     }
 
     public function show(User $user)

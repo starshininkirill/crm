@@ -22,6 +22,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        dd($this->all());
         return [
             'first_name' => 'required|max:255|min:3',
             'last_name' => 'required|max:255|min:3',

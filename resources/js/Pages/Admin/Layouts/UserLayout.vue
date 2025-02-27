@@ -8,6 +8,9 @@
                 <AdminSubnavLink :href="route('admin.user.create')" :route="'admin.user.create'">
                     Создать Сотрудника
                 </AdminSubnavLink>
+                <AdminSubnavLink :href="route('admin.employment-type.index')" :route="'admin.employment-type.index'">
+                    Типы устройства
+                </AdminSubnavLink>
             </div>
             <slot />
         </div>

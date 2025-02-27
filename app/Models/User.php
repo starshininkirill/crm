@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Helpers\DateHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class User extends Authenticatable
@@ -65,6 +66,11 @@ class User extends Authenticatable
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'responsible_id');
+    }
+
+    public function employmentDetail(): HasOne 
+    {
+        return $this->hasOne(EmploymentDetail::class);
     }
 
     public function position(): BelongsTo

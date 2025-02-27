@@ -2,13 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\CallStat;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\EmploymentType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
-class CallStatsSeeder extends Seeder
+class EmploymentTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,7 +14,7 @@ class CallStatsSeeder extends Seeder
     public function run()
     {
         // Получаем путь к файлу JSON
-        $file_path = 'exports/call_stats.json';
+        $file_path = 'exports/employmentType.json';
 
         // Проверяем, существует ли файл
         if (!Storage::exists($file_path)) {
@@ -27,13 +25,11 @@ class CallStatsSeeder extends Seeder
         $jsonData = Storage::get($file_path);
 
         // Преобразуем JSON-строку в массив
-        $callStatsData = json_decode($jsonData, true);
+        $employmentTypeData = json_decode($jsonData, true);
 
         // Заполняем таблицу данными
-        foreach ($callStatsData as $data) {
-            if (User::query()->firstWhere('phone', $data['phone'])) {
-                CallStat::create($data);
-            }
+        foreach ($employmentTypeData as $data) {
+            EmploymentType::create($data);
         }
 
         $this->command->info('Данные успешно импортированы из файла JSON.');

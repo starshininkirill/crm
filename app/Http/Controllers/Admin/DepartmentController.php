@@ -13,7 +13,7 @@ class DepartmentController extends Controller
     public function index()
     {
 
-        $departments = Department::getMainDepartments();
+        $departments = Department::mainDepartments();
 
         $departments = $departments->map(function ($department) {
             return [
