@@ -14,7 +14,7 @@ class Payment extends Model
     use HasFactory;
 
 
-    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'type', 'payment_method', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
+    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'payment_method', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
 
     const STATUS_WAIT = 0;
     const STATUS_WAIT_CONFIRMATION = 1;

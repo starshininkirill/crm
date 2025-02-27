@@ -34,11 +34,13 @@ import { Head, useForm } from '@inertiajs/vue3';
 import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
+import Error from '../../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
-        FormInput
+        FormInput,
+        Error
     },
     props: {
         documentTemplate: {
@@ -50,13 +52,11 @@ export default {
         const form = useForm({
             'name': props.documentTemplate.name,
             'file': null,
-            '_method' : 'PUT'
+            '_method' : 'PATCH'
         });
 
-        const submitForm = () => {
-            console.log(form.file);
-            
-            form.post(route('document-template.update', { document_template: props.documentTemplate }), {
+        const submitForm = () => {            
+            form.post(route('admin.organization.document-template.update', { documentTemplate: props.documentTemplate }), {
                 onSuccess: () => {
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {

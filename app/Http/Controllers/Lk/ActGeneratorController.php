@@ -18,26 +18,26 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 
-class ActGeneratorController extends Controller  
+class ActGeneratorController extends Controller
 {
     public function create()
     {
         $organisations = Organization::where('active', 1)->get()->toArray();
         $serviceIdsOption = Option::whereName('payment_generator_services')->first();
-        
-        if(!$serviceIdsOption){
+
+        if (!$serviceIdsOption) {
             throw new BusinessException('Не выбраны Технические услуги для генератора');
         }
 
         $serviceIds = json_decode($serviceIdsOption->value);
-        
-        if(empty($serviceIds)){
+
+        if (empty($serviceIds)) {
             throw new BusinessException('Не выбраны Технические услуги для генератора');
         }
 
         $services = Service::whereIn('id', $serviceIds)->get();
 
-        if($services->isEmpty()){
+        if ($services->isEmpty()) {
             throw new BusinessException('Не выбраны Технические услуги для генератора');
         }
 
@@ -47,7 +47,7 @@ class ActGeneratorController extends Controller
         ]);
     }
 
-    public function store(PaymentGeneratorRequest $request, ContractService $service)
+    public function store(PaymentGeneratorRequest $request, ContractService $service, DocumentGenerator $documentGenerator)
     {
         $validated = $request->validated();
 
@@ -56,7 +56,10 @@ class ActGeneratorController extends Controller
         $contract = $service->storeSubContract($request->contractData());
 
         $contract->payments()->create($request->paymentData());
-        $contract->attachPerformer(auth()->user()->id, ContractUser::SALLER);
+
+        $contract->users()->attach(auth()->user()->id, [
+            'role' => ContractUser::SALLER,
+        ]);
 
         $organisation = Organization::find($validated['organization_id']);
 
@@ -75,13 +78,13 @@ class ActGeneratorController extends Controller
                 'operation_id' =>  mt_rand(100000, 1000000),
             ]);
 
-            $generatedDocumentData = DocumentGenerator::generatePaymentDocument($validated);
+            $generatedDocumentData = $documentGenerator->generatePaymentDocument($validated);
 
             if (!$generatedDocumentData) {
                 DB::rollBack();
                 return back()->withErrors('Не удалось сгенерировать документ');
             }
-            
+
             $linkData = [
                 'type' => 'document',
                 'link' => $generatedDocumentData
@@ -89,7 +92,7 @@ class ActGeneratorController extends Controller
         } else if ($validated['client_type'] == Client::TYPE_INDIVIDUAL) {
             $linkData = [
                 'type' => 'sbp',
-                'link' => DocumentGenerator::generatePaymentLink($validated['amount_summ'], $validated['client_fio'], $validated['number'], $validated['phone'], $organisation->terminal)
+                'link' => $documentGenerator->generatePaymentLink($validated['amount_summ'], $validated['client_fio'], $validated['number'], $validated['phone'], $organisation->terminal)
             ];
         };
 

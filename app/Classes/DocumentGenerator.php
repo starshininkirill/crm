@@ -15,6 +15,10 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class DocumentGenerator
 {
+
+    public function __construct(
+        protected FileManager $fileManager
+    ) {}
     // public static function generatePaymentDocument(array $data)
     // {
     //     $result = [
@@ -55,7 +59,7 @@ class DocumentGenerator
     //     return $result;
     // }
 
-    public static function generatePaymentDocument(array $data): string
+    public function generatePaymentDocument(array $data): string
     {
         $organisation = Organization::find($data['organization_id']);
         if (!$organisation) {
@@ -63,11 +67,11 @@ class DocumentGenerator
         }
 
         $documentTemplate = $organisation->documentTemplates()->first();
-        if (!$documentTemplate || !Storage::disk('public')->exists($documentTemplate->filePath())) {
+        if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
             return '';
         }
 
-        $filePath = Storage::path('public/' . $documentTemplate->filePath());
+        $filePath = Storage::path('public/' . $documentTemplate->file);
 
         $templateProcessor = new TemplateProcessor($filePath);
 
@@ -86,7 +90,6 @@ class DocumentGenerator
 
         $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
 
-
         return Storage::url($outputRelativePath);
     }
 
@@ -97,7 +100,7 @@ class DocumentGenerator
         return $result;
     }
 
-    public static function generatePaymentLink(int $amount, string $name, string $desc, string $phone, int $terminal): string
+    public function generatePaymentLink(int $amount, string $name, string $desc, string $phone, int $terminal): string
     {
         $target_payment_link = 'https://grampus-studio.ru/oplata-uslug/';
 

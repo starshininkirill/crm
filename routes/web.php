@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
-use App\Http\Controllers\Admin\DocumentTemplateController as AdminDocumentTemplateController;
+use App\Http\Controllers\Admin\DocumentTemplateController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PositionController;
@@ -18,7 +18,6 @@ use App\Http\Controllers\Lk\MainController as LkMainController;
 use App\Http\Controllers\Lk\ActGeneratorController as LkActGeneratorController;
 use App\Http\Controllers\Lk\SbpGeneratorController as LkSbpGeneratorController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\Resources\DocumentTemplateController as ResourcesDocumentTemplateController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\OrganizationServiceDocumentTemplateController as ResourcesOrganizationServiceDocumentTemplateController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
@@ -76,7 +75,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
         Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
         Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.payment.unsortedSbp');
-        
+
         Route::get('/{payment}/show', [PaymentController::class, 'show'])->name('admin.payment.show');
         Route::get('/{payment}/edit', [PaymentController::class, 'edit'])->name('admin.payment.edit');
         Route::patch('/{payment}', [PaymentController::class, 'update'])->name('admin.payment.update');
@@ -95,9 +94,13 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::delete('/{organization}', [OrganizationController::class, 'destroy'])->name('admin.organization.destroy');
 
         Route::prefix('document-templates')->group(function () {
-            Route::get('/', [AdminDocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
-            Route::get('/attach', [AdminDocumentTemplateController::class, 'attach'])->name('admin.organization.document-template.attach');
-            Route::get('/{documentTemplate}/edit', [AdminDocumentTemplateController::class, 'edit'])->name('admin.organization.document-template.edit');
+            Route::get('/', [DocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
+            Route::get('/attach', [DocumentTemplateController::class, 'attach'])->name('admin.organization.document-template.attach');
+            Route::get('/{documentTemplate}/edit', [DocumentTemplateController::class, 'edit'])->name('admin.organization.document-template.edit');
+
+            Route::post('/', [DocumentTemplateController::class, 'store'])->name('admin.organization.document-template.store');
+            Route::patch('/{documentTemplate}', [DocumentTemplateController::class, 'update'])->name('admin.organization.document-template.update');
+            Route::delete('/{documentTemplate}', [DocumentTemplateController::class, 'destroy'])->name('admin.organization.document-template.destroy');
         });
     });
 
@@ -178,14 +181,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('payment/shortlist/{payment}', [ResourcesPaymentController::class, 'shortlist'])->name('payment.shortlist');
     Route::post('payment/shortlist/attach', [ResourcesPaymentController::class, 'shortlistAttach'])->name('payment.shortlist.attach');
-
-    Route::resource('document-template', ResourcesDocumentTemplateController::class)->only([
-        'store',
-        'update',
-        'destroy'
-    ]);
-
-    Route::get('document-template/download/{documentTemplate}', [ResourcesDocumentTemplateController::class, 'download'])->name('document-template.download');
 
     Route::resource('osdt', ResourcesOrganizationServiceDocumentTemplateController::class)->only([
         'store',

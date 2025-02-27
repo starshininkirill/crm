@@ -95,11 +95,13 @@ import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Error from '../../../../Components/Error.vue'
 
 export default {
     components: {
         Head,
-        FormInput
+        FormInput,
+        Error
     },
     props: {
         documetTemplates: {
@@ -118,7 +120,7 @@ export default {
 
             console.log(form.file);
 
-            form.post(route('document-template.store'), {
+            form.post(route('admin.organization.document-template.store'), {
                 onSuccess: () => {
                     form.name = '';
                     form.file = '';
@@ -147,7 +149,7 @@ export default {
         },
         deleteDocumentTemplate(id) {
             if (confirm('Вы уверены, что хотите удалить этот Шаблон документа?')) {
-                router.delete(route('document-template.destroy', id));
+                router.delete(route('admin.organization.document-template.destroy', id));
             }
         },
     }

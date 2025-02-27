@@ -15,15 +15,15 @@ class DocumentTemplateSeeder extends Seeder
     {
         DocumentTemplate::create([
             'name' => 'ИП 1 Счёт + Акт',
-            'file' => '/storage/documents/СчетАктИП1Версия2.docx',
+            'file' => 'documents/СчетАктИП1Версия2.docx',
         ]);
         DocumentTemplate::create([
             'name' => 'ИП 2 Счёт + Акт',
-            'file' => '/storage/documents/Счет Акт ИП2.docx'
+            'file' => 'documents/Счет Акт ИП2.docx'
         ]);
         DocumentTemplate::create([
             'name' => 'ООО Счёт + Акт',
-            'file' => '/storage/documents/Счет ООО ЭДДИ ГРУПП.docx'
+            'file' => 'documents/Счет ООО ЭДДИ ГРУПП.docx'
         ]);
     }
 }

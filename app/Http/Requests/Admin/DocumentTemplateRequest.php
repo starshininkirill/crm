@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,7 +30,7 @@ class DocumentTemplateRequest extends FormRequest
             ]);
         }
         if($this->isMethod('PUT') || $this->isMethod('PATCH')){
-            $documentTemplate = $this->route('document_template');
+            $documentTemplate = $this->route('documentTemplate');
 
 
             $rules = array_merge($rules, [

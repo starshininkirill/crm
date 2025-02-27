@@ -126,20 +126,4 @@ class Contract extends Model
             ];
         });
     }
-
-    public function attachPerformer(int $userId, int $roleId): bool
-    {
-        $exists = $this->users()
-            ->wherePivot('user_id', $userId)
-            ->wherePivot('role', $roleId)
-            ->exists();
-
-        if (!$exists) {
-            $this->users()->attach($userId, [
-                'role' => $roleId,
-            ]);
-            return true;
-        }
-        return false;
-    }
 }
