@@ -38,21 +38,68 @@ class ContractService
 
     public function attachPerformers(Contract $contract, array $data)
     {
-        $allPivotData = [];
+        $contractUsers = $this->groupUsersByRole($contract);
 
-        $contractUsers = $contract->users;
         foreach ($data as $role) {
-            if (empty($role['performers'])) {
+            $newPerformers = collect($role['performers'])->unique();
+
+            if ($newPerformers->isEmpty()) {
+                $this->detachAllForRole($contract, $contractUsers, $role['id']);
                 continue;
             }
 
-            foreach ($role['performers'] as $userId) {
-                $allPivotData[$userId] = ['role' => $role['id']];
+
+            if ($contractUsers->has($role['id'])) {
+                $this->detachMissingUsers($contract, $contractUsers, $newPerformers, $role['id']);
             }
+
+            $this->attachNewUsers($contract, $contractUsers, $role['id'], $role['performers']);
         }
 
-        $contract->users()->sync($allPivotData);
-
         return true;
+    }
+
+    private function groupUsersByRole(Contract $contract)
+    {
+        return $contract->users->groupBy(function ($user) {
+            return $user->pivot->role;
+        });
+    }
+
+    private function detachAllForRole(Contract $contract, $contractUsers, $roleId)
+    {
+        if ($contractUsers->has($roleId)) {
+            $contractUsers[$roleId]->each(function ($user) use ($contract, $roleId) {
+                $contract->users()->newPivotStatementForId($user->id)->where('role', $roleId)->delete();
+            });
+        }
+    }
+
+    private function detachMissingUsers(Contract $contract, $contractUsers, $newPerformers, $roleId)
+    {
+        $currentUsers = $contractUsers[$roleId];
+        $usersToDetach = $currentUsers->reject(function ($user) use ($newPerformers) {
+            return $newPerformers->contains($user->id);
+        })->pluck('id');
+
+        if ($usersToDetach->isNotEmpty()) {
+            $usersToDetach->each(function ($userId) use ($contract, $roleId) {
+                $contract->users()->newPivotStatementForId($userId)->where('role', $roleId)->delete();
+            });
+        }
+    }
+
+    private function attachNewUsers(Contract $contract, $contractUsers, $roleId, $performers)
+    {
+        foreach ($performers as $userId) {
+            if (!$this->isUserAttachedToRole($contractUsers, $roleId, $userId)) {
+                $contract->users()->attach($userId, ['role' => $roleId]);
+            }
+        }
+    }
+
+    private function isUserAttachedToRole($contractUsers, $roleId, $userId)
+    {
+        return $contractUsers->has($roleId) && $contractUsers[$roleId]->pluck('id')->contains($userId);
     }
 }
