@@ -7,35 +7,35 @@ use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;
 use App\Models\User;
+use App\Services\UserService;
 use Inertia\Inertia;
 
 class UserController
 {
 
-    public function index()
+    public function index(UserRequest $request)
     {
 
-        $users = User::with('position')->get();
+        $departmentId = $request->get('department'); // Получаем значение department из запроса
 
-        $users = $users->map(function ($user) {
-            return array_merge(
-                $user->toArray(),
-                ['position' => $user->position ? $user->position->name : null]
-            );
-        });
+        $users = User::with('position', 'department')
+            ->when($departmentId, function ($query, $departmentId) {
+                // Если departmentId передан, добавляем условие фильтрации
+                return $query->where('department_id', $departmentId);
+            })
+            ->get()
+            ->map(function ($user) {
+                $user->formatted_created_at = $user->created_at->format('d.m.Y');
+                return $user;
+            });
 
-        return Inertia::render('Admin/User/Index', [
-            'users' => $users,
-        ]);
-    }
 
-    public function create()
-    {
         $departments = Department::mainDepartments()->load('positions');
         $positions = Position::all();
         $employmentTypes = EmploymentType::all();
 
-        return Inertia::render('Admin/User/Create', [
+        return Inertia::render('Admin/User/Index', [
+            'users' => $users,
             'positions' => $positions,
             'departments' => $departments,
             'employmentTypes' => $employmentTypes,
@@ -49,11 +49,11 @@ class UserController
         ]);
     }
 
-    public function store(UserRequest $request)
+    public function store(UserRequest $request, UserService $service)
     {
-        $validatedData = $request->validated();
+        $validated = $request->validated();
 
-        User::create($validatedData);
+        $user = $service->createEmployment($validated);
 
         return redirect()->back()->with('success', 'Сотрудник успешно создан');
     }

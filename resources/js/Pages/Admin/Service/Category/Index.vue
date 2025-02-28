@@ -11,8 +11,8 @@
                 <Error />
                 <FormInput v-model="form.name" type="text" name="name" placeholder="Название категории"
                     label="Название категории" autocomplete="name" required />
-                <KeyValueSelectInput v-if="Object.keys(types).length" :options="types" label="Выберите тип категории услуг" name="type" id="type"
-                    v-model="form.type" />
+                <KeyValueSelectInput v-if="Object.keys(types).length" :options="types"
+                    label="Выберите тип категории услуг" name="type" id="type" v-model="form.type" />
                 <button type="submit" class="btn w-full" data-ripple-light="true">
                     Создать
                 </button>
@@ -109,7 +109,7 @@ export default {
     },
     setup(props) {
         const firstKey = Object.keys(props.types)[0];
-        
+
         const form = useForm({
             'name': null,
             'type': firstKey,

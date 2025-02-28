@@ -22,34 +22,31 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd($this->all());
-        return [
-            'first_name' => 'required|max:255|min:3',
-            'last_name' => 'required|max:255|min:3',
-            'email' => 'required|email|unique:users,email',
-            // 'position_id' => 'required|exists:positions,id',
-            'position_id' => 'exists:positions,id',
-            'password' => 'required|min:4',
-            'password2' => 'required|same:password',
-        ];
+        $rules = [];
+
+        if ($this->isMethod('POST') && $this->routeIs('admin.user.store')) {
+            $rules = [
+                'first_name' => 'required|max:255|min:3',
+                'last_name' => 'required|max:255|min:3',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:4',
+                'salary' => 'nullable|numeric',
+                'probation' => 'nullable|numeric|in:0,1',
+                'position_id' => 'required|exists:positions,id',
+                'department_id' => 'required|exists:departments,id',
+                'employment_type_id' => 'required|exists:employment_types,id',
+                'details' => 'required|array',
+                'details.*.name' => 'string|required',
+                'details.*.readName' => 'string|required',
+                'details.*.value' => 'required',
+            ];
+        }
+
+        return $rules;
     }
 
     public function messages(): array
     {
-        return [
-            'first_name.required' => 'Поле имя пользователя обязательно для заполнения.',
-            'first_name.max' => 'Имя пользователя не должно превышать 255 символов.',
-            'first_name.min' => 'Имя пользователя должно содержать минимум 3 символа.',
-            'last_name.required' => 'Поле фамилия пользователя обязательно для заполнения.',
-            'last_name.max' => 'Фамилия пользователя не должно превышать 255 символов.',
-            'last_name.min' => 'Фамилия пользователя должно содержать минимум 3 символа.',
-            'email.required' => 'Поле email обязательно для заполнения.',
-            'email.email' => 'Введите корректный email.',
-            'email.unique' => 'Этот email уже используется.',
-            'password.required' => 'Поле пароль обязательно для заполнения.',
-            'password.min' => 'Пароль должен содержать минимум 8 символов.',
-            'password2.required' => 'Поле подтверждение пароля обязательно для заполнения.',
-            'password2.same' => 'Пароли не совпадают.',
-        ];
+        return [];
     }
 }

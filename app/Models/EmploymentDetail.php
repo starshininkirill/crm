@@ -11,6 +11,14 @@ class EmploymentDetail extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'employment_type_id',
+        'details'
+    ];
+
+    protected $casts = [
+        'details' => 'array',
+    ];
 
     public function employmentType(): BelongsTo
     {

@@ -133,7 +133,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         });
 
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
-        Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
         Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');
         Route::post('/', [UserController::class, 'store'])->name('admin.user.store');
     });

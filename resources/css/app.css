@@ -19,7 +19,7 @@
 }
 
 .label {
-    @apply block text-sm font-medium leading-6 text-gray-900 mb-1;
+    @apply block text-sm font-medium leading-6 text-gray-900 mb-1 flex items-center gap-1;
 }
 
 @layer components {

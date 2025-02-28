@@ -3,10 +3,7 @@
         <div class="grow w-full py-8 px-2">
             <div class="flex gap-3 mb-4 border-b">
                 <AdminSubnavLink :href="route('admin.user.index')" :route="'admin.user.index'">
-                    Все Сотрудники
-                </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.user.create')" :route="'admin.user.create'">
-                    Создать Сотрудника
+                    Сотрудники
                 </AdminSubnavLink>
                 <AdminSubnavLink :href="route('admin.employment-type.index')" :route="'admin.employment-type.index'">
                     Типы устройства
