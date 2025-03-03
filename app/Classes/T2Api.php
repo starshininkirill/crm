@@ -1,5 +1,5 @@
 <?php
-
+ 
 namespace App\Classes;
 
 use App\Models\Option;
@@ -34,7 +34,7 @@ class T2Api
         $date_start = urlencode("{$dateStart}T00:00:01+03:00");
         $date_end = urlencode("{$dateEnd}T23:59:59+03:00");
 
-        $size = 3000;
+        $size = 2000;
 
         $target_url = "https://ats2.t2.ru/crm/openapi/call-records/info?start={$date_start}&end={$date_end}&size={$size}";
 
@@ -43,7 +43,6 @@ class T2Api
             'Content-Type' => 'application/json',
         ])->get($target_url);
 
-        $info = $response->headers();
         $responseData = $response->json();
 
         if ($response->status() == Response::HTTP_OK) {

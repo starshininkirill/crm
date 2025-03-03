@@ -4,7 +4,7 @@ namespace App\Services\SaleDepartmentServices;
 
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
-use App\Models\CallStat;
+use App\Models\CallHistory;
 use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Payment;
@@ -53,7 +53,7 @@ class ReportInfo
     {
         $startDate = $date->copy()->startOfMonth();
         $endDate = $date->copy()->endOfMonth();
-        $this->callsStat = CallStat::query()->whereBetween('date', [$startDate, $endDate])->get()->groupBy('phone');
+        $this->callsStat = CallHistory::query()->whereBetween('date', [$startDate, $endDate])->get()->groupBy('phone');
 
         $this->date = $date;
         $mainDepartment = Department::getMainSaleDepartment();

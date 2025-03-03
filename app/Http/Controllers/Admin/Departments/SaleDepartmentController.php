@@ -13,14 +13,13 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
-use App\Services\CallStatisticsService;
+use App\Services\CallHistoryService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
 use App\Services\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -34,7 +33,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function callsReport(Request $request, CallStatisticsService $callStatisticsService)
+    public function callsReport(Request $request, CallHistoryService $CallHistoryService)
     {
         $date = Carbon::now()->format('Y-m');
 
@@ -42,7 +41,7 @@ class SaleDepartmentController extends Controller
             $date = $request->get('date');
         }
 
-        $calculatedData = $callStatisticsService->calculateTotalCallsData($date);
+        $calculatedData = $CallHistoryService->calculateTotalCallsData($date);
 
         $mainDepartment = Department::getMainSaleDepartment();
         $callsPlan = WorkPlan::where('department_id', $mainDepartment->id)
@@ -162,7 +161,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function t2LoadData(Request $request, CallStatisticsService $callStatisticsService)
+    public function t2LoadData(Request $request, CallHistoryService $CallHistoryService)
     {
         if ($request->get('date')) {
             $dateNow = $request->get('date');
@@ -178,7 +177,7 @@ class SaleDepartmentController extends Controller
                 return redirect()->back()->withErrors('Нет данных за данный период');
             }
 
-            $callStatisticsService->importData($data);
+            $CallHistoryService->importData($data);
         } catch (Exception $e) {
             $errors = $e->getMessage();
             return redirect()->back()->withErrors($errors);

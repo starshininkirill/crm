@@ -33,7 +33,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(numberData, number) in totalNumberValues " class="bg-white border-b hover:bg-gray-50">
+                    <tr v-for="(numberData, number) in totalNumberValues" class="bg-white border-b hover:bg-gray-50">
                         <th scope="row"
                             class="px-1 pl-2 py-2 text-gray-900 font-medium border-r text-xs whitespace-nowrap">
                             <template v-if="numberData.user">
@@ -52,7 +52,7 @@
                             class="px-1 py-2 text-gray-900 font-medium border-r text-xs text-center whitespace-nowrap">
                             <template
                                 v-if="dayData[number] && dayData[number].duration && dayData[number].duration > 0">
-                                {{ dayData[number].duration }} ({{ dayData[number].calls }})
+                                {{ Math.round(dayData[number].duration) }} ({{ dayData[number].calls }})
                             </template>
                             <template v-else>
                                 0 (0)

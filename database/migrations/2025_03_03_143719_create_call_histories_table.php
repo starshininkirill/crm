@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('call_stats', function (Blueprint $table) {
+        Schema::create('call_histories', function (Blueprint $table) {
             $table->id();
-            $table->string('phone');
             $table->date('date');
-            $table->integer('income')->default(0);
-            $table->integer('outcome')->default(0);
-            $table->integer('duration')->default(0);
-            $table->timestamps();
+            $table->string('phone');
+            $table->string('client_phone');
+            $table->integer('conversation_duration');
+            $table->enum('type', ['income', 'outcome']);
             $table->foreign('phone')->references('phone')->on('users')->onDelete('cascade')->onUpdate('cascade');
-
-            $table->unique(['phone', 'date']);
         });
     }
 
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('call_stats');
+        Schema::dropIfExists('calls_histories');
     }
 };

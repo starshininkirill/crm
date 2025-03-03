@@ -90,9 +90,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Contract::class);
     }
 
-    public function callStats(): HasMany
+    public function CallHistorys(): HasMany
     {
-        return $this->hasMany(CallStat::class, 'number', 'number');
+        return $this->hasMany(CallHistory::class, 'number', 'number');
     }
 
     public function getFirstWorkingDay(): Carbon

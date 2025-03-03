@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\CallStat;
+use App\Models\CallHistory;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
-class CallStatsSeeder extends Seeder
+class CallHistorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -27,12 +27,12 @@ class CallStatsSeeder extends Seeder
         $jsonData = Storage::get($file_path);
 
         // Преобразуем JSON-строку в массив
-        $callStatsData = json_decode($jsonData, true);
+        $CallHistorysData = json_decode($jsonData, true);
 
         // Заполняем таблицу данными
-        foreach ($callStatsData as $data) {
+        foreach ($CallHistorysData as $data) {
             if (User::query()->firstWhere('phone', $data['phone'])) {
-                CallStat::create($data);
+                CallHistory::create($data);
             }
         }
 

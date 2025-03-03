@@ -41,7 +41,6 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');
 
-
         Route::prefix('/contracts')->group(function () {
             Route::get('/create', [LkContractGeneratorController::class, 'create'])->name('lk.contract.create');
             Route::post('/store', [LkContractGeneratorController::class, 'store'])->name('lk.contract.store');

@@ -40,11 +40,13 @@ import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
 import FormInput from '../../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Error from '../../../Components/Error.vue'
 
 export default {
     components: {
         Head,
-        FormInput
+        FormInput,
+        Error
     },
     props: {
         accessToken: {
