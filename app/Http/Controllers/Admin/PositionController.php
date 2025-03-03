@@ -4,14 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PositionRequest;
+use App\Models\Department;
 use App\Models\Position;
 use Inertia\Inertia;
 
 class PositionController extends Controller
 {
-    public function create()
+    public function index()
     {
-        return Inertia::render('Admin/Department/Position/Create');
+        $departments = Department::mainDepartments();
+        $positions = Position::with('department')->get();
+
+        return Inertia::render('Admin/User/Position/Index', [
+            'departments' => $departments,
+            'positions' => $positions,
+        ]);
     }
 
     public function store(PositionRequest $request)
@@ -20,6 +27,6 @@ class PositionController extends Controller
 
         Position::create($validatedData);
 
-        return redirect()->route('admin.department.position.create')->with('success', 'Должность успешно создана.');
+        return redirect()->back()->with('success', 'Должность успешно создана.');
     }
 }

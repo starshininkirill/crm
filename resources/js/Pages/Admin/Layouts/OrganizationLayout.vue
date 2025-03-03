@@ -5,9 +5,6 @@
                 <AdminSubnavLink :href="route('admin.organization.index')" :route="'admin.organization.index'">
                     Все организации
                 </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.organization.create')" :route="'admin.organization.create'">
-                    Создать организацию
-                </AdminSubnavLink>
                 <AdminSubnavLink :href="route('admin.organization.document-template.index')" :route="'admin.organization.document-template.index'">
                     Шаблоны документов
                 </AdminSubnavLink>

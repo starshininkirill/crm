@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceRequest;
-use App\Models\Option;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Inertia\Inertia;
@@ -27,21 +26,13 @@ class ServiceController extends Controller
                 'category' => $service->category->only('id', 'name')
             ];
         });
+        $categories = ServiceCategory::all(['id', 'name'])->toArray();
 
         return Inertia::render('Admin/Service/Index', [
             'services' => $services->sortBy('name')->values()->toArray(),
-        ]);
-    }
-
-    public function create()
-    {
-        $categories = ServiceCategory::all(['id', 'name'])->toArray();
-
-        return Inertia::render('Admin/Service/Create', [
             'categories' => $categories,
         ]);
     }
-
     public function edit(Service $service)
     {
         $categories = ServiceCategory::all();

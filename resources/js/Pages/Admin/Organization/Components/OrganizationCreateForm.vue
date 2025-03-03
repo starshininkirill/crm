@@ -1,10 +1,6 @@
 <template>
-
-    <Head title="Создать организацию" />
     <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Создать организацию</h1>
-
-        <form @submit.prevent="submitForm" method="POST" class="max-w-md shrink-0 ">
+        <form @submit.prevent="submitForm" method="POST" class="shrink-0 ">
 
             <Error />
 
@@ -29,15 +25,14 @@
 </template>
 
 <script>
-import { Head, useForm } from '@inertiajs/vue3';
-import OrganizationLayout from '../Layouts/OrganizationLayout.vue';
-import FormInput from '../../../Components/FormInput.vue';
-import YesNoSelector from '../../../Components/YesNoSelector.vue';
+import { useForm } from '@inertiajs/vue3';
+import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
+import FormInput from '../../../../Components/FormInput.vue';
+import YesNoSelector from '../../../../Components/YesNoSelector.vue';
 import { route } from 'ziggy-js';
 
 export default {
     components: {
-        Head,
         FormInput,
         YesNoSelector
     },

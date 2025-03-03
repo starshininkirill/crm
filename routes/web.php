@@ -86,7 +86,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
 
     Route::prefix('organizations')->group(function () {
         Route::get('', [OrganizationController::class, 'index'])->name('admin.organization.index');
-        Route::get('/create', [OrganizationController::class, 'create'])->name('admin.organization.create');
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('admin.organization.edit');
         Route::get('/{organization}/show', [OrganizationController::class, 'edit'])->name('admin.organization.show');
 
@@ -115,7 +114,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
             Route::delete('/{serviceCategory}', [ServiceCategoryController::class, 'destroy'])->name('admin.service-category.destroy');
         });
 
-        Route::get('/create', [ServiceController::class, 'create'])->name('admin.service.create');
         Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
         Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
 
@@ -132,6 +130,11 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
             Route::delete('/{employmentType}', [EmploymentTypeController::class, 'destroy'])->name('admin.employment-type.destroy');
         });
 
+        Route::prefix('positions')->group(function () {
+            Route::get('/', [PositionController::class, 'index'])->name('admin.position.index');
+            Route::post('/', [PositionController::class, 'store'])->name('admin.position.store');
+        });
+
         Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');
         Route::post('/', [UserController::class, 'store'])->name('admin.user.store');
@@ -141,10 +144,6 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('', [DepartmentController::class, 'index'])->name('admin.department.index');
         Route::get('/create', [DepartmentController::class, 'create'])->name('admin.department.create');
         Route::get('/{department}', [DepartmentController::class, 'show'])->name('admin.department.show');
-
-        Route::prefix('positions')->group(function () {
-            Route::get('/create', [PositionController::class, 'create'])->name('admin.department.position.create');
-        });
     });
 
     Route::prefix('sale-department')->group(function () {

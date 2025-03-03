@@ -6,14 +6,14 @@
         <div class="grid grid-cols-3 gap-8">
             <CreateForm :positions="positions" :departments="departments" :employmentTypes="employmentTypes" />
             <div class=" col-span-2">
-                <div class="max-w-xs mb-4">
+                <!-- <div class="max-w-xs mb-4">
                     <div class="label">
                         Отдел
                     </div>
                     <VueSelect :options="departments" :reduce="department => department.id" label="name"
                         @update:model-value="updateUsers" />
-                </div>
-                <h2 v-if="!users.length" class="text-xl">Сотрудников услуг не найдено</h2>
+                </div> -->
+                <h2 v-if="!users.length" class="text-xl">Сотрудников не найдено</h2>
                 <div v-else class="flex flex-col gap-5">
                     <table
                         class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

@@ -134,7 +134,6 @@ export default {
     methods: {
         submitForm() {
             let th = this;
-            console.log(th);
 
             this.form.post(route('admin.user.store'), {
                 onSuccess() {

@@ -1,10 +1,6 @@
 <template>
-
-    <Head title="Создать услугу" />
     <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Создать услугу</h1>
-        <form @submit.prevent="submitForm" method="POST" class="max-w-md shrink-0 ">
-
+        <form @submit.prevent="submitForm" method="POST" class=" shrink-0 ">
             <Error />
 
             <div class="flex flex-col gap-2">
@@ -33,28 +29,28 @@
 
 <script>
 import { Head, useForm } from '@inertiajs/vue3';
-import ServiceLayout from '../Layouts/ServiceLayout.vue';
 import { route } from 'ziggy-js';
-import FormInput from '../../../Components/FormInput.vue';
-import IdSelectInput from '../../../Components/IdSelectInput.vue';
+import FormInput from '../../../../Components/FormInput.vue';
+import IdSelectInput from '../../../../Components/IdSelectInput.vue';
+import Error from '../../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
         FormInput,
-        IdSelectInput
+        IdSelectInput,
+        Error
     },
     props: {
         categories: {
             type: Array,
         },
     },
-    layout: ServiceLayout,
     setup(props) {
         let firstKey = null
-        if(props.categories.length){
+        if (props.categories.length) {
             firstKey = props.categories[0].id
-        }        
+        }
 
         const form = useForm({
             'name': null,

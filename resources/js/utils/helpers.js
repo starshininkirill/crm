@@ -1,4 +1,5 @@
 export function formatPrice(value) {
+    value = parseInt(value);
     if (!value || typeof value !== 'number') {
         return '0 ₽';
     }

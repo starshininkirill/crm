@@ -8,9 +8,6 @@
                 <AdminSubnavLink :href="route('admin.department.create')" :route="'admin.department.create'">
                     Создать Отдел
                 </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.department.position.create')" :route="'admin.department.position.create'">
-                    Создать Должность
-                </AdminSubnavLink>
             </div>
             <slot />
         </div>

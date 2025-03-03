@@ -8,9 +8,6 @@
                 <AdminSubnavLink :href="route('admin.service.index')" :route="'admin.service.index'">
                     Все Услуги
                 </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.service.create')" :route="'admin.service.create'">
-                    Создать Услугу
-                </AdminSubnavLink>
             </div>
             <slot />
         </div>

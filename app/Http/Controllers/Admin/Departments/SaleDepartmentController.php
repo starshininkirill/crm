@@ -101,7 +101,6 @@ class SaleDepartmentController extends Controller
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
             } catch (Exception $e) {
-                dd($e);
                 if (isset($error)) {
                     $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
                 } else {

@@ -5,9 +5,6 @@
         <h1 class="text-4xl font-semibold mb-6">Категории Услуг</h1>
         <div class="grid grid-cols-3 gap-8">
             <form @submit.prevent="submitForm" method="POST" class="flex flex-col gap-3">
-                <div class="text-3xl font-semibold">
-                    Создать категорию
-                </div>
                 <Error />
                 <FormInput v-model="form.name" type="text" name="name" placeholder="Название категории"
                     label="Название категории" autocomplete="name" required />

@@ -18,10 +18,6 @@ class OrganizationController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        return Inertia::render('Admin/Organization/Create');
-    }
 
     public function edit(Organization $organization)
     {
