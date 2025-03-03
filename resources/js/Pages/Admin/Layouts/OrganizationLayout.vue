@@ -1,20 +1,20 @@
 <template>
-    <AdminLayout>
-        <div class="grow w-full py-8 px-2">
-            <div class="flex gap-3 mb-4 border-b">
-                <AdminSubnavLink :href="route('admin.organization.index')" :route="'admin.organization.index'">
-                    Все организации
-                </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.organization.document-template.index')" :route="'admin.organization.document-template.index'">
-                    Шаблоны документов
-                </AdminSubnavLink>
-                <AdminSubnavLink :href="route('admin.organization.document-template.attach')" :route="'admin.organization.document-template.attach'">
-                    Привязать шаблон
-                </AdminSubnavLink>
-            </div>
-            <slot />
+    <div class="grow w-full py-8 px-2">
+        <div class="flex gap-3 mb-4 border-b">
+            <AdminSubnavLink :href="route('admin.organization.index')" :route="'admin.organization.index'">
+                Все организации
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.organization.document-template.index')"
+                :route="'admin.organization.document-template.index'">
+                Шаблоны документов
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.organization.document-template.attach')"
+                :route="'admin.organization.document-template.attach'">
+                Привязать шаблон
+            </AdminSubnavLink>
         </div>
-    </AdminLayout>
+        <slot />
+    </div>
 </template>
 
 <script>
@@ -23,6 +23,7 @@ import AdminSubnavLink from '../../../Components/AdminSubnavLink.vue';
 
 export default {
     name: "ContractLayout",
-    components: { AdminLayout, AdminSubnavLink },
+    components: { AdminSubnavLink },
+    layout: AdminLayout,
 };
 </script>

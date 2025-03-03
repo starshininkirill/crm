@@ -1,25 +1,27 @@
 <template>
+    <ContractLayout>
 
-    <Head :title="`Договор № ${contract.id}`" />
+        <Head :title="`Договор № ${contract.id}`" />
 
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">
-            <template v-if="contract.parent">
-                Дочерний платеж {{ contract.number }} <br>
-            </template>
-            <template v-else>
-                Договор: №{{ contract.number }}
-            </template>
-        </h1>
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">
+                <template v-if="contract.parent">
+                    Дочерний платеж {{ contract.number }} <br>
+                </template>
+                <template v-else>
+                    Договор: №{{ contract.number }}
+                </template>
+            </h1>
 
-        <div class="grid grid-cols-3 pr-4">
+            <div class="grid grid-cols-3 pr-4">
 
-            <ContractInfo :contract="contract" />
+                <ContractInfo :contract="contract" />
 
-            <Performers :users="users" :contract="contract" />
+                <Performers :users="users" :contract="contract" />
 
+            </div>
         </div>
-    </div>
+    </ContractLayout>
 </template>
 
 <script>
@@ -34,7 +36,8 @@ export default {
         Head,
         VueSelect,
         Performers,
-        ContractInfo
+        ContractInfo,
+        ContractLayout
     },
     props: {
         contract: {

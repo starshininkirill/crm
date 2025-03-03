@@ -1,77 +1,79 @@
 <template>
+    <ServiceLayout>
 
-    <Head title="Категории Услуг" />
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Категории Услуг</h1>
-        <div class="grid grid-cols-3 gap-8">
-            <form @submit.prevent="submitForm" method="POST" class="flex flex-col gap-3">
-                <Error />
-                <FormInput v-model="form.name" type="text" name="name" placeholder="Название категории"
-                    label="Название категории" autocomplete="name" required />
-                <KeyValueSelectInput v-if="Object.keys(types).length" :options="types"
-                    label="Выберите тип категории услуг" name="type" id="type" v-model="form.type" />
-                <button type="submit" class="btn w-full" data-ripple-light="true">
-                    Создать
-                </button>
-            </form>
-            <div class="flex flex-col gap-3 col-span-2">
-                <h2 v-if="!categories.length" class="text-xl">Категорий услуг не найдено</h2>
-                <table v-if="categories.length"
-                    class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Категория
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Тип Категории
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right w-12">
-                                Услуги
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right w-12">
-                                Редактировать
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right w-12">
-                                Удалить
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr v-for="category in categories" :key="category.id"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ category.name }}
-                            </th>
-                            <td class="px-6 py-4">
-                                {{ category.type }}
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <Link :href="route('admin.service.index', { serviceCategory: category.id })"
-                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                {{ category.services_count }}
-                                </Link>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <Link :href="route('admin.service.category.edit', { serviceCategory: category.id })"
-                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                Редактировать
-                                </Link>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button @click="deleteServiceCategory(category.id)"
-                                    class="font-medium text-red-600 dark:text-red-500 hover:underline">
+        <Head title="Категории Услуг" />
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">Категории Услуг</h1>
+            <div class="grid grid-cols-3 gap-8">
+                <form @submit.prevent="submitForm" method="POST" class="flex flex-col gap-3">
+                    <Error />
+                    <FormInput v-model="form.name" type="text" name="name" placeholder="Название категории"
+                        label="Название категории" autocomplete="name" required />
+                    <KeyValueSelectInput v-if="Object.keys(types).length" :options="types"
+                        label="Выберите тип категории услуг" name="type" id="type" v-model="form.type" />
+                    <button type="submit" class="btn w-full" data-ripple-light="true">
+                        Создать
+                    </button>
+                </form>
+                <div class="flex flex-col gap-3 col-span-2">
+                    <h2 v-if="!categories.length" class="text-xl">Категорий услуг не найдено</h2>
+                    <table v-if="categories.length"
+                        class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Категория
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Тип Категории
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right w-12">
+                                    Услуги
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right w-12">
+                                    Редактировать
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right w-12">
                                     Удалить
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr v-for="category in categories" :key="category.id"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <th scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ category.name }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ category.type }}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <Link :href="route('admin.service.index', { serviceCategory: category.id })"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                    {{ category.services_count }}
+                                    </Link>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <Link :href="route('admin.service.category.edit', { serviceCategory: category.id })"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                    Редактировать
+                                    </Link>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button @click="deleteServiceCategory(category.id)"
+                                        class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                        Удалить
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </ServiceLayout>
 </template>
 
 <script>
@@ -81,12 +83,15 @@ import { router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js';
 import FormInput from '../../../../Components/FormInput.vue';
 import KeyValueSelectInput from '../../../../Components/KeyValueSelectInput.vue';
+import Error from '../../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
         FormInput,
-        KeyValueSelectInput
+        KeyValueSelectInput,
+        Error,
+        ServiceLayout
     },
     props: {
         categories: {
@@ -96,7 +101,6 @@ export default {
             type: Object,
         }
     },
-    layout: ServiceLayout,
     methods: {
         deleteServiceCategory(id) {
             if (confirm('Вы уверены, что хотите удалить эту Категорию?')) {

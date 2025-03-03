@@ -1,5 +1,5 @@
 <template>
-
+    <SaleDepartmentLayout>
     <Head title="Настройка планов отдела продаж" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Настройка планов отдела продаж</h1>
@@ -45,7 +45,7 @@
         </div>
 
     </div>
-
+    </SaleDepartmentLayout>
 </template>
 
 <script>
@@ -61,6 +61,7 @@ import B2Plan from './Settings/B2Plan.vue';
 import B3Plan from './Settings/B3Plan.vue';
 import B4Plan from './Settings/B4Plan.vue';
 import PercentLadder from './Settings/PercentLadder.vue';
+import Error from '../../../Components/Error.vue';
 
 export default {
     components: {
@@ -73,8 +74,9 @@ export default {
         B3Plan,
         B4Plan,
         PercentLadder,
+        Error,
+        SaleDepartmentLayout
     },
-    layout: SaleDepartmentLayout,
     props: {
         dateProp: {
             type: String,

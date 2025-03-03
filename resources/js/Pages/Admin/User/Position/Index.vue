@@ -1,5 +1,5 @@
 <template>
-
+    <UserLayout>
     <Head title="Должности" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Должности</h1>
@@ -63,6 +63,7 @@
             </div>
         </div>
     </div>
+    </UserLayout>
 </template>
 
 <script>
@@ -79,9 +80,9 @@ export default {
         Head,
         FormInput,
         Error,
-        VueSelect
+        VueSelect,
+        UserLayout
     },
-    layout: UserLayout,
     props: {
         departments: {
             type: Array,

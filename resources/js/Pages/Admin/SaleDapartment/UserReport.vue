@@ -1,40 +1,43 @@
 <template>
+    <SaleDepartmentLayout>
 
-    <Head title="Отчёт Менеджеров продаж" />
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Отчёт Менеджеров продаж</h1>
+        <Head title="Отчёт Менеджеров продаж" />
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">Отчёт Менеджеров продаж</h1>
 
-        <SelectForm :departments="departments" :users="users" :initial-department="selectedDepartment"
-            :initial-user="selectUser" :initial-date="date">
-        </SelectForm>
+            <SelectForm :departments="departments" :users="users" :initial-department="selectedDepartment"
+                :initial-user="selectUser" :initial-date="date">
+            </SelectForm>
 
-        <Error />
+            <Error />
 
-        <template v-if="motivationReport.length == 0 && motivationReport.length == 0">
-            <div class="text-2xl font-semibold">
-                Данные для отчёта не найдены
+            <template v-if="motivationReport.length == 0 && motivationReport.length == 0">
+                <div class="text-2xl font-semibold">
+                    Данные для отчёта не найдены
+                </div>
+            </template>
+            <div class="flex gap-4">
+                <table class="reports w-1/2">
+                    <DailyReport v-if="daylyReport.length" :report="daylyReport" />
+                    <WeeksReport v-if="motivationReport && motivationReport.weeksPlan"
+                        :totalValues="motivationReport.totalValues" :weeks="motivationReport.weeksPlan" />
+                    <MotivationReport v-if="motivationReport && motivationReport.weeksPlan"
+                        :motivationReport="motivationReport" />
+                </table>
+                <table class="pivot-reports w-1/2 h-fit">
+                    <DailyReport v-if="pivotDaily.length" :report="pivotDaily" />
+                    <WeeksReport v-if="pivotWeeks && pivotWeeks.weeksPlan" :weeks="pivotWeeks.weeksPlan"
+                        :totalValues="pivotWeeks.totalValues" />
+                    <GeneralReport v-if="generalPlan && Object.keys(generalPlan).length > 0"
+                        :generalPlan="generalPlan" />
+                </table>
             </div>
-        </template> 
-        <div class="flex gap-4">
-            <table class="reports w-1/2">
-                <DailyReport v-if="daylyReport.length" :report="daylyReport" />
-                <WeeksReport v-if="motivationReport && motivationReport.weeksPlan"
-                    :totalValues="motivationReport.totalValues" :weeks="motivationReport.weeksPlan" />
-                <MotivationReport v-if="motivationReport && motivationReport.weeksPlan"
-                    :motivationReport="motivationReport" />
-            </table>
-            <table class="pivot-reports w-1/2 h-fit">
-                <DailyReport v-if="pivotDaily.length" :report="pivotDaily" />
-                <WeeksReport v-if="pivotWeeks && pivotWeeks.weeksPlan" :weeks="pivotWeeks.weeksPlan"
-                    :totalValues="pivotWeeks.totalValues" />
-                <GeneralReport v-if="generalPlan && Object.keys(generalPlan).length > 0" :generalPlan="generalPlan" />
-            </table>
-        </div>
 
-        <div class="w-100 mt-6">
-            <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" />
+            <div class="w-100 mt-6">
+                <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" />
+            </div>
         </div>
-    </div>
+    </SaleDepartmentLayout>
 </template>
 
 <script>
@@ -46,6 +49,7 @@ import WeeksReport from './Components/WeeksReport.vue';
 import MotivationReport from './Components/MotivationReport.vue';
 import GeneralReport from './Components/GeneralReport.vue';
 import PivotUsersReport from './Components/PivotUsersReport.vue';
+import Error from '../../../Components/Error.vue';
 
 export default {
     components: {
@@ -55,9 +59,10 @@ export default {
         WeeksReport,
         MotivationReport,
         GeneralReport,
-        PivotUsersReport
+        PivotUsersReport,
+        Error,
+        SaleDepartmentLayout
     },
-    layout: SaleDepartmentLayout,
     props: {
         departments: {
             type: Array,

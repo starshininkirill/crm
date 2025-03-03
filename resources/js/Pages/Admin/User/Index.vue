@@ -1,5 +1,5 @@
 <template>
-
+    <UserLayout>
     <Head title="Сотрудники" />
     <div class="flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Сотрудники</h1>
@@ -64,6 +64,7 @@
             </div>
         </div>
     </div>
+    </UserLayout>
 </template>
 
 <script>
@@ -78,7 +79,8 @@ export default {
     components: {
         Head,
         CreateForm,
-        VueSelect
+        VueSelect,
+        UserLayout
     },
     props: {
         users: {
@@ -97,7 +99,6 @@ export default {
             required: true,
         },
     },
-    layout: UserLayout,
     methods: {
         updateUsers(selectedDepartmentId) {
             router.get(route('admin.user.index'), {

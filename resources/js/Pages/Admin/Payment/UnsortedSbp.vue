@@ -1,27 +1,30 @@
 <template>
+    <PaymentLayout>
 
-    <Head title="Неразобранные платежи (СБП)" />
-    <div class="contract-page-wrapper flex flex-col relative">
-        <h1 class="text-4xl font-semibold mb-6">Платежи</h1>
-        
-        <Error />
+        <Head title="Неразобранные платежи (СБП)" />
+        <div class="contract-page-wrapper flex flex-col relative">
+            <h1 class="text-4xl font-semibold mb-6">Платежи</h1>
 
-        <div class="">
-            <table v-if="payments.length" class="min-w-full border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-800 text-white">
-                        <th v-for="header in headers" :key="header" class="border border-gray-300 px-4 py-2 text-left">
-                            {{ header }}
-                        </th>
-                    </tr>
-                </thead> 
-                <tbody>
-                    <SbpPaymentRow v-for="(payment, index) in payments" :key="index" :payment="payment" />
-                </tbody>
-            </table>
-            <h2 v-else>Платежей не найдено</h2>
+            <Error />
+
+            <div class="">
+                <table v-if="payments.length" class="min-w-full border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-800 text-white">
+                            <th v-for="header in headers" :key="header"
+                                class="border border-gray-300 px-4 py-2 text-left">
+                                {{ header }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <SbpPaymentRow v-for="(payment, index) in payments" :key="index" :payment="payment" />
+                    </tbody>
+                </table>
+                <h2 v-else>Платежей не найдено</h2>
+            </div>
         </div>
-    </div>
+    </PaymentLayout>
 </template>
 
 <script>
@@ -31,12 +34,15 @@ import FormInput from '../../../Components/FormInput.vue';
 import SbpPaymentRow from './Components/SbpPaymentRow.vue';
 import { Fancybox } from '@fancyapps/ui';
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import Error from '../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
         FormInput,
-        SbpPaymentRow
+        SbpPaymentRow,
+        Error,
+        PaymentLayout
     },
     props: {
         payments: {
@@ -46,7 +52,6 @@ export default {
             type: Object
         },
     },
-    layout: PaymentLayout,
     data() {
         return {
             headers: ['ИП', 'Сумма', 'Описание', 'Дата', 'Чек', 'Прикрепить', 'Разделить']

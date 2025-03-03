@@ -1,5 +1,5 @@
 <template>
-
+    <ServiceLayout>
     <Head title="Редактировать Категорию Услуг" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Редактировать Категорию Услуг</h1>
@@ -17,6 +17,7 @@
             </button>
         </form>
     </div>
+    </ServiceLayout>
 </template>
 
 <script>
@@ -29,7 +30,8 @@ export default {
     components: {
         Head,
         FormInput,
-        KeyValueSelectInput
+        KeyValueSelectInput,
+        ServiceLayout
     },
     props: {
         category: {
@@ -39,7 +41,6 @@ export default {
             type: Object
         }
     },
-    layout: ServiceLayout,
     methods: {
         deleteServiceCategory(id) {
             if (confirm('Вы уверены, что хотите удалить эту Категорию?')) {

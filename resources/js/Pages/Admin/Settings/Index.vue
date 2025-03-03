@@ -1,63 +1,65 @@
 <template>
+    <SettingsLayout>
 
-    <Head title="Основные настройки" />
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Основные настройки</h1>
+        <Head title="Основные настройки" />
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">Основные настройки</h1>
 
-        <div class="grid grid-cols-2 gap-4 gap-y-7">
-            <CategoryForm :title="'Основные категории услуг (Первая услуга в генераторе документов)'"
-                :categories="serviceCategories" :optionObject="mainCategoriesOption"
-                name="contract_generator_main_categories" />
+            <div class="grid grid-cols-2 gap-4 gap-y-7">
+                <CategoryForm :title="'Основные категории услуг (Первая услуга в генераторе документов)'"
+                    :categories="serviceCategories" :optionObject="mainCategoriesOption"
+                    name="contract_generator_main_categories" />
 
-            <CategoryForm :title="'Дополнительные категории услуг ( 2 и далее услуги в генераторе документов )'"
-                :categories="serviceCategories" :optionObject="secondaryCategoriesOption"
-                name="contract_generator_secondary_categories" />
+                <CategoryForm :title="'Дополнительные категории услуг ( 2 и далее услуги в генераторе документов )'"
+                    :categories="serviceCategories" :optionObject="secondaryCategoriesOption"
+                    name="contract_generator_secondary_categories" />
 
-            <CategoryForm :title="'Услуги, которым нужно кол-во страниц'" :categories="services"
-                :optionObject="needSeoPages" name="contract_generator_need_seo_pages" />
+                <CategoryForm :title="'Услуги, которым нужно кол-во страниц'" :categories="services"
+                    :optionObject="needSeoPages" name="contract_generator_need_seo_pages" />
 
-            <div>
-                <div class="text-xl font-semibold mb-3">
-                    НДС
+                <div>
+                    <div class="text-xl font-semibold mb-3">
+                        НДС
+                    </div>
+                    <form @submit.prevent="submitForm(ndsForm, 'nds')">
+                        <FormInput v-model="ndsForm.value" type="number" name="value" placeholder="20%"
+                            label="Ставка НДС (%)" required />
+                        <button class="btn mt-3">Изменить</button>
+                    </form>
                 </div>
-                <form @submit.prevent="submitForm(ndsForm, 'nds')">
-                    <FormInput v-model="ndsForm.value" type="number" name="value" placeholder="20%"
-                        label="Ставка НДС (%)" required />
-                    <button class="btn mt-3">Изменить</button>
-                </form>
-            </div>
 
-            <div>
-                <div class="text-xl font-semibold mb-3">
-                    Шаблон для Юр лица генератора Платежей по умолчанию
+                <div>
+                    <div class="text-xl font-semibold mb-3">
+                        Шаблон для Юр лица генератора Платежей по умолчанию
+                    </div>
+                    <form @submit.prevent="submitForm(defaultLawTemplateForm, 'lawTemplate')">
+                        <FormInput v-model="defaultLawTemplateForm.value" type="number" name="value" placeholder="198"
+                            label="Шаблон по умолчанию" required />
+                        <button class="btn mt-3">Изменить</button>
+                    </form>
                 </div>
-                <form @submit.prevent="submitForm(defaultLawTemplateForm, 'lawTemplate')">
-                    <FormInput v-model="defaultLawTemplateForm.value" type="number" name="value" placeholder="198"
-                        label="Шаблон по умолчанию" required />
-                    <button class="btn mt-3">Изменить</button>
-                </form>
-            </div>
 
-            <div>
-            </div>
-
-            <div>
-                <div class="text-xl font-semibold mb-3">
-                    Описание условий для сделки с РК
+                <div>
                 </div>
-                <form @submit.prevent="submitForm(contractRkTextForm, 'contractRkText')">
-                    <Editor v-model="contractRkTextForm.value" :init="editorConfig" />
-                    <button class="btn mt-3">Изменить</button>
-                </form>
-            </div>
-            <div>
-                <div class="text-xl font-semibold mb-3">
-                    ID Шаблонов для генератора договора
-                </div>
-            </div>
 
+                <div>
+                    <div class="text-xl font-semibold mb-3">
+                        Описание условий для сделки с РК
+                    </div>
+                    <form @submit.prevent="submitForm(contractRkTextForm, 'contractRkText')">
+                        <Editor v-model="contractRkTextForm.value" :init="editorConfig" />
+                        <button class="btn mt-3">Изменить</button>
+                    </form>
+                </div>
+                <div>
+                    <div class="text-xl font-semibold mb-3">
+                        ID Шаблонов для генератора договора
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </div>
+    </SettingsLayout>
 </template>
 
 <script>
@@ -73,9 +75,9 @@ export default {
         Head,
         CategoryForm,
         FormInput,
-        Editor
+        Editor,
+        SettingsLayout
     },
-    layout: SettingsLayout,
     props: {
         serviceCategories: Array,
         services: Array,

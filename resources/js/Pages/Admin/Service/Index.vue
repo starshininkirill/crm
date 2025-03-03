@@ -1,5 +1,5 @@
 <template>
-
+    <ServiceLayout>
     <Head title="Услуги" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Услуги</h1>
@@ -60,6 +60,7 @@
             </div>
         </div>
     </div>
+    </ServiceLayout>
 </template>
 
 <script>
@@ -72,7 +73,8 @@ import ServiceCreateForm from './Components/ServiceCreateForm.vue';
 export default {
     components: {
         Head,
-        ServiceCreateForm
+        ServiceCreateForm,
+        ServiceLayout
     },
     props: {
         services: {
@@ -84,7 +86,6 @@ export default {
             required: true,
         },
     },
-    layout: ServiceLayout,
     methods: {
         deleteService(id) {
             if (confirm('Вы уверены, что хотите удалить эту Услугу?')) {

@@ -1,109 +1,111 @@
 <template>
+    <UserLayout>
 
-    <Head title="Типы устройства" />
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Типы устройства</h1>
+        <Head title="Типы устройства" />
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">Типы устройства</h1>
 
-        <div class="grid grid-cols-3 gap-8">
-            <form @submit.prevent="sumbitForm" class="flex flex-col gap-2">
-                <Error />
+            <div class="grid grid-cols-3 gap-8">
+                <form @submit.prevent="sumbitForm" class="flex flex-col gap-2">
+                    <Error />
 
-                <span class="text-lg font-semibold">
-                    Основная информация
-                </span>
-
-                <FormInput v-model="form.name" name="name" label="Название" placeholder="Название" type="text" />
-
-                <FormInput v-model="form.compensation" name="compensation" label="Компенсация (%)"
-                    placeholder="Компенсация" type="number" />
-
-                <div class="flex flex-col gap-1">
-                    <span class="text-lg font-semibold mb-2">
-                        Дополнительные поля
+                    <span class="text-lg font-semibold">
+                        Основная информация
                     </span>
-                    <div v-for="(field, idx) in form.fields" class="grid grid-cols-3 gap-2">
-                        <FormInput v-model="form.fields[idx].name" name="name" label="Название (Английское)"
-                            placeholder="Например: inn" type="text" />
-                        <FormInput v-model="form.fields[idx].readName" name="readName" label="Название (Русское)"
-                            placeholder="Например: ИНН" type="text" />
-                        <div>
-                            <div class="label">
-                                Тип поля
-                            </div>
-                            <VueSelect v-model="form.fields[idx].type" :options="inputTypes"
-                                :reduce="type => type.value" label="name" class="full-vue-select" />
-                        </div>
-                    </div>
-                    <div class="flex w-full items-center justify-between gap-2">
-                        <div class="text-sm text-green-500 font-semibold cursor-pointer" @click="addField()">
-                            Добавить поле
-                        </div>
-                        <div v-if="form.fields.length > 1" class="text-sm text-red-500 font-semibold cursor-pointer"
-                            @click="removeField()">
-                            Удалить поле
-                        </div>
-                    </div>
-                </div>
 
-                <button class="btn">
-                    Создать
-                </button>
-            </form>
-            <div class="flex flex-col gap-3 col-span-2">
-                <h2 class="text-xl font-semibold">{{ employmentTypes == [] ? 'Нет созданных типов' : 'Типы' }}</h2>
+                    <FormInput v-model="form.name" name="name" label="Название" placeholder="Название" type="text" />
 
-                <table v-if="employmentTypes.length"
-                    class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Название
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Компенсация
-                            </th>
-                            <th scope="col" class="px-6 py-3 ">
-                                Поля
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right w-12">
-                                Редактировать
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right w-12">
-                                Удалить
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <FormInput v-model="form.compensation" name="compensation" label="Компенсация (%)"
+                        placeholder="Компенсация" type="number" />
 
-                        <tr v-for="type in employmentTypes" :key="type.id"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ type.name }}
-                            </th>
-                            <td class="px-6 py-4">
-                                {{ type.compensation }} %
-                            </td>
-                            <td class="px-6 py-4 ">
-                                {{type.fields.map(field => field.readName).join(', ')}}
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <Link href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                Редактировать
-                                </Link>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div @click="deleteType(type.id)"
-                                    class="font-medium cursor-pointer text-red-600 dark:text-red-500 hover:underline">
-                                    Удалить
+                    <div class="flex flex-col gap-1">
+                        <span class="text-lg font-semibold mb-2">
+                            Дополнительные поля
+                        </span>
+                        <div v-for="(field, idx) in form.fields" class="grid grid-cols-3 gap-2">
+                            <FormInput v-model="form.fields[idx].name" name="name" label="Название (Английское)"
+                                placeholder="Например: inn" type="text" />
+                            <FormInput v-model="form.fields[idx].readName" name="readName" label="Название (Русское)"
+                                placeholder="Например: ИНН" type="text" />
+                            <div>
+                                <div class="label">
+                                    Тип поля
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <VueSelect v-model="form.fields[idx].type" :options="inputTypes"
+                                    :reduce="type => type.value" label="name" class="full-vue-select" />
+                            </div>
+                        </div>
+                        <div class="flex w-full items-center justify-between gap-2">
+                            <div class="text-sm text-green-500 font-semibold cursor-pointer" @click="addField()">
+                                Добавить поле
+                            </div>
+                            <div v-if="form.fields.length > 1" class="text-sm text-red-500 font-semibold cursor-pointer"
+                                @click="removeField()">
+                                Удалить поле
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn">
+                        Создать
+                    </button>
+                </form>
+                <div class="flex flex-col gap-3 col-span-2">
+                    <h2 class="text-xl font-semibold">{{ employmentTypes == [] ? 'Нет созданных типов' : 'Типы' }}</h2>
+
+                    <table v-if="employmentTypes.length"
+                        class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Название
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Компенсация
+                                </th>
+                                <th scope="col" class="px-6 py-3 ">
+                                    Поля
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right w-12">
+                                    Редактировать
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right w-12">
+                                    Удалить
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr v-for="type in employmentTypes" :key="type.id"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <th scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ type.name }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ type.compensation }} %
+                                </td>
+                                <td class="px-6 py-4 ">
+                                    {{type.fields.map(field => field.readName).join(', ')}}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <Link href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                    Редактировать
+                                    </Link>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div @click="deleteType(type.id)"
+                                        class="font-medium cursor-pointer text-red-600 dark:text-red-500 hover:underline">
+                                        Удалить
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </UserLayout>
 </template>
 
 <script>
@@ -120,9 +122,9 @@ export default {
         Head,
         FormInput,
         Error,
-        VueSelect
+        VueSelect,
+        UserLayout
     },
-    layout: UserLayout,
     props: {
         employmentTypes: {
             type: Array,

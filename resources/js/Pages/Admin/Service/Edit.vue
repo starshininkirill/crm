@@ -1,5 +1,5 @@
 <template>
-
+    <ServiceLayout>
     <Head title="Редактировать услугу" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">Редактировать услугу</h1>
@@ -29,6 +29,7 @@
             </div>
         </form>
     </div>
+    </ServiceLayout>
 </template>
 
 <script>
@@ -42,7 +43,8 @@ export default {
     components: {
         Head,
         FormInput,
-        IdSelectInput
+        IdSelectInput,
+        ServiceLayout
     },
     props: {
         service: {
@@ -52,7 +54,6 @@ export default {
             type: Array
         }
     },
-    layout: ServiceLayout,
     setup(props) {
         const form = useForm({
             'name': props.service.name,

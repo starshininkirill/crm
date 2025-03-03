@@ -4,7 +4,7 @@
       <div class=" w-48 bg-gray-800 text-white flex flex-col">
         <nav class="">
           <ul class="space-y-1 p-4">
-            
+
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
@@ -28,7 +28,7 @@
               Организации
               </Link>
             </li>
-            
+
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.service.index') }"
@@ -36,7 +36,7 @@
               Услуги
               </Link>
             </li>
-            
+
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }" :href="route('admin.user.index')">
@@ -66,7 +66,7 @@
               Настройки
               </Link>
             </li>
-            
+
           </ul>
         </nav>
 

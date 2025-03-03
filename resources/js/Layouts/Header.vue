@@ -1,14 +1,17 @@
 <template>
-    <header class="bg-gray-800 border-b border-white">
+    <header class="bg-gray-800 border-b border-white"> 
         <div class="mx-auto container px-2">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center justify-between w-full">
                     <div class=" flex items-baseline space-x-4">
                         <HeaderNavLink :strictMode="true" :href="route('home')" route="home">Главная</HeaderNavLink>
-                        <HeaderNavLink :href="route('lk')" route="lk">Личный кабинет</HeaderNavLink>
+                        <HeaderNavLink v-if="$page.props.user" :href="route('lk')" route="lk">Личный кабинет
+                        </HeaderNavLink>
                         <HeaderNavLink v-if="$page.props.user" :href="route('admin')" route="admin">Админка
                         </HeaderNavLink>
                     </div>
+
+                    <TimeCheck />
 
                     <div class="flex items-center space-x-4">
                         <HeaderNavLink v-if="!$page.props.user" :href="route('login')" route="login">Вход
@@ -32,10 +35,14 @@
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import HeaderNavLink from '../Components/HeaderNavLink.vue';
+import TimeCheck from '../Components/TimeCheck.vue'
 
 export default {
     name: "Header",
-    components: { HeaderNavLink },
+    components: {
+        HeaderNavLink,
+        TimeCheck
+    },
     methods: {
         logout() {
             router.post(`/logout`, {

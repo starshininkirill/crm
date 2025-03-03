@@ -95,6 +95,11 @@ class User extends Authenticatable
         return $this->hasMany(CallHistory::class, 'number', 'number');
     }
 
+    public function timeChecks(): HasMany
+    {
+        return $this->hasMany(TimeCheck::class);
+    }
+
     public function getFirstWorkingDay(): Carbon
     {
 

@@ -30,11 +30,13 @@ import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
 import YesNoSelector from '../../../../Components/YesNoSelector.vue';
 import { route } from 'ziggy-js';
+import Error from '../../../../Components/Error.vue'
 
 export default {
     components: {
         FormInput,
-        YesNoSelector
+        YesNoSelector,
+        Error
     },
     layout: OrganizationLayout,
     setup() {

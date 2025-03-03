@@ -1,5 +1,5 @@
 <template>
-
+    <DepartmentLayout>
     <Head title="Отдел" />
     <div class="contract-page-wrapper flex flex-col">
         <h1 class="text-4xl font-semibold mb-6">{{ department.name }}</h1>
@@ -44,6 +44,7 @@
         </template>
 
     </div>
+    </DepartmentLayout>
 </template>
 
 <script>
@@ -53,6 +54,7 @@ import DepartmentLayout from '../Layouts/DepartmentLayout.vue';
 export default {
     components: {
         Head,
+        DepartmentLayout
     },
     props: {
         department: {
@@ -68,7 +70,6 @@ export default {
             type: Array,
         }
     },
-    layout: DepartmentLayout,
 }
 
 
