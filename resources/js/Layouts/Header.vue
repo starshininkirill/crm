@@ -11,7 +11,7 @@
                         </HeaderNavLink>
                     </div>
 
-                    <TimeCheck />
+                    <TimeCheck v-if="$page.props.user" />
 
                     <div class="flex items-center space-x-4">
                         <HeaderNavLink v-if="!$page.props.user" :href="route('login')" route="login">Вход

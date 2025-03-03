@@ -100,6 +100,13 @@ class User extends Authenticatable
         return $this->hasMany(TimeCheck::class);
     }
 
+    public function lastAction()
+    {
+        return $this->timeChecks()
+            ->orderBy('date')
+            ->first();
+    }
+
     public function getFirstWorkingDay(): Carbon
     {
 

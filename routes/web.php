@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\admin\SettingsController;
+use App\Http\Controllers\Admin\TimeCheckController;
 use App\Http\Controllers\Admin\User\EmploymentTypeController;
 use App\Http\Controllers\Admin\User\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\Resources\OptionController;
 use App\Http\Controllers\Resources\OrganizationServiceDocumentTemplateController as ResourcesOrganizationServiceDocumentTemplateController;
 use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentController;
-
+use App\Models\TimeCheck;
 use Illuminate\Support\Facades\Route;
 
 
@@ -37,6 +38,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
+
+    Route::post('/time-check', [TimeCheckController::class, 'makeAction'])->name('time-check.action');
 
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');

@@ -11,11 +11,15 @@ class TimeCheck extends Model
     use HasFactory;
 
     public $timestamps = false;
-    
+
     public $fillable = [
         'user_id',
         'date',
         'action',
+    ];
+
+    protected $casts = [
+        'date' => 'datetime',
     ];
 
     const ACTION_START = 'start';
@@ -34,5 +38,4 @@ class TimeCheck extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }

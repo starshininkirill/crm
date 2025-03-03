@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('time_checks', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
+            $table->dateTime('date');
             $table->foreignId('user_id')->onDelete('cascade');
             $table->enum('action', TimeCheck::ACTIONS);
         });

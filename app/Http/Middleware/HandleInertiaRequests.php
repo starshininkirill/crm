@@ -38,6 +38,11 @@ class HandleInertiaRequests extends Middleware
     {
         $sessionData = session()->all();
 
+        $user = auth()->user();
+        if ($user) {
+            $user->lastAction = $user->lastAction();
+        }
+
         $filteredSessionData = array_filter($sessionData, function ($key) {
             return !in_array($key, ['_token', '_previous', '_flash']);
         }, ARRAY_FILTER_USE_KEY);
