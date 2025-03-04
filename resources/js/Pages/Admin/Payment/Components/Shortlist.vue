@@ -59,14 +59,14 @@ export default {
         return { shortlist: [] };
     },
     async mounted() {
-        const response = await axios.get(route('payment.shortlist', { payment: this.payment.id }));
+        const response = await axios.get(route('admin.payment.shortlist', { payment: this.payment.id }));
         this.shortlist = response.data;
         this.$emit("update:load", true);
     },
     methods: {
         attachPayment(oldPayment) {
             if (confirm('Вы уверены, что хотите привязать этот платёж?')) {
-                router.post(route('payment.shortlist.attach'), {
+                router.post(route('admin.payment.shortlist.attach'), {
                     oldPayment: oldPayment.id,
                     newPayment: this.payment.id,
                 }, {

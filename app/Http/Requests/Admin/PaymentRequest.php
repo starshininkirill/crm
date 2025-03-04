@@ -27,7 +27,7 @@ class PaymentRequest extends FormRequest
             $rules =  [
                 'payment' => 'required|numeric|exists:payments,id'
             ];
-        } else if (($this->isMethod('POST') && $this->routeIs('payment.shortlist.attach'))) {
+        } else if (($this->isMethod('POST') && $this->routeIs('admin.payment.shortlist.attach'))) {
             $rules = [
                 'oldPayment' => 'required|numeric|exists:payments,id',
                 'newPayment' => 'required|numeric|exists:payments,id'

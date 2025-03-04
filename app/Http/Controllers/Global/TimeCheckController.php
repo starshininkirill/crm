@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Global;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\TimeCheckRequest;
+use App\Http\Requests\Global\TimeCheckRequest;
 use App\Services\TimeCheckService;
 
 

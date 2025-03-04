@@ -104,14 +104,9 @@ class DocumentTemplateController extends Controller
         $services = Service::all();
         $organizations = Organization::all();
 
-        $osdt = OrganizationServiceDocumentTemplate::all()->map(function ($osdt) {
-            return [
-                'id' => $osdt->id,
-                'type' => OrganizationServiceDocumentTemplate::translateType($osdt->type),
-                'documentTemplate' => $osdt->documentTemplate,
-                'service' => $osdt->service,
-                'organization' => $osdt->organization
-            ];
+        $osdt = OrganizationServiceDocumentTemplate::with('organization', 'service', 'documentTemplate')->get()->map(function ($osdt) {
+            $osdt['type'] = OrganizationServiceDocumentTemplate::translateType($osdt->type);
+            return $osdt;
         });
 
         $osdtTypes = OrganizationServiceDocumentTemplate::visualTypes();

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Resources;
+namespace App\Http\Controllers\Global;
 
-use App\Http\Requests\OptionRequest;
+use App\Http\Requests\Global\OptionRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Option;
 

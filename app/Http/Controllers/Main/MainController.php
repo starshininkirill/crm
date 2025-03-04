@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Main;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,7 +14,6 @@ class MainController extends Controller
         return Inertia::render('Main/Main'); 
     }
 
-    
     public function loginHome(Request $request)
     {
         Auth::attempt([

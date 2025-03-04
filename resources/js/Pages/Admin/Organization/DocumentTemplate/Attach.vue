@@ -87,8 +87,8 @@
                                     </td>
                                     <td class="px-6 py-4 ">
                                         <Link class=" text-blue-500 font-semibold"
-                                            :href="route('admin.organization.document-template.edit', { documentTemplate: attachedDocument.documentTemplate.id })">
-                                        {{ attachedDocument.documentTemplate.name }}
+                                            :href="route('admin.organization.document-template.edit', { documentTemplate: attachedDocument.document_template.id })">
+                                        {{ attachedDocument.document_template.name }}
                                         </Link>
                                     </td>
                                     <td class="px-6 py-4">
@@ -171,7 +171,7 @@ export default {
 
 
         const submitForm = () => {
-            form.post(route('osdt.store'), {
+            form.post(route('admin.osdt.store'), {
                 onSuccess: () => {
                     form.document_template_id = null,
                         form.service_id = null,

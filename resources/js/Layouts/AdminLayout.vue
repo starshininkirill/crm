@@ -45,6 +45,12 @@
             </li>
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }" :href="route('admin.user.index')">
+              Time Check
+              </Link>
+            </li>
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
                 :href="route('admin.department.index')">
               Отделы

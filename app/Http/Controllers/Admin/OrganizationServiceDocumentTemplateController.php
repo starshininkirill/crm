@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Resources;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OrganizationServiceDocumentTemplateRequest;
+use App\Http\Requests\Admin\OrganizationServiceDocumentTemplateRequest;
 use App\Models\OrganizationServiceDocumentTemplate;
-use Illuminate\Http\Request;
 
 class OrganizationServiceDocumentTemplateController extends Controller
 {

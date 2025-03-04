@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\Business\BusinessException;
+use App\Http\Resources\ContractForShortlistResource;
 use App\Models\Contract;
 use App\Models\Service;
 use Illuminate\Support\Collection;
@@ -36,6 +37,17 @@ class ContractService
         });
     }
 
+    public function searchContract(string $s)
+    {
+        $contract = Contract::where('number', $s)->first();
+
+        if (!$contract) {
+            throw new BusinessException('Договор не найден');
+        }
+
+        return new ContractForShortlistResource($contract);
+    }
+
     public function attachPerformers(Contract $contract, array $data)
     {
         $contractUsers = $this->groupUsersByRole($contract);
@@ -47,7 +59,6 @@ class ContractService
                 $this->detachAllForRole($contract, $contractUsers, $role['id']);
                 continue;
             }
-
 
             if ($contractUsers->has($role['id'])) {
                 $this->detachMissingUsers($contract, $contractUsers, $newPerformers, $role['id']);

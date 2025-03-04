@@ -6,10 +6,10 @@ use App\Exceptions\Business\BusinessException;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PaymentRequest;
-use App\Models\Contract;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\User;
+use App\Services\ContractService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,8 +18,6 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        // $payments = Payment::query()->where('status', Payment::STATUS_CLOSE)->get();
-        // $payments = Payment::whereNot('status', Payment::STATUS_WAIT_CONFIRMATION)->orderBy('created_at', 'asc')->get();
         $payments = Payment::with('contract')->get();
 
         $payments = $payments->map(function ($payment) {
@@ -91,7 +89,7 @@ class PaymentController extends Controller
         return redirect()->back()->with('success', 'Платёж успешно обновлён');
     }
 
-    public function unsorted()
+    public function unsorted(ContractService $service)
     {
         $payments = Payment::query()->whereNull('contract_id')
             ->where('status', Payment::STATUS_WAIT_CONFIRMATION)
@@ -142,52 +140,31 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function searchContract(Request $request)
+    public function searchContract(Request $request, ContractService $service)
     {
+
         if (!$request->get('s')) {
             throw new BusinessException('Поисковой запрос не найден');
         }
+        return $service->searchContract($request->get('s'));
+    }
 
-        $contract = Contract::where('number', $request->get('s'))->first();
+    public function shortlistAttach(PaymentRequest $request, PaymentService $service)
+    {
+        $validated = $request->validated();
+        $oldPayment = Payment::find($validated['oldPayment']);
+        $newPayment = Payment::find($validated['newPayment']);
+        $user = auth()->user();
 
-        if (!$contract) {
-            throw new BusinessException('Договор не найден');
-        }
+        $service->attachPayment($newPayment, $oldPayment, $user);
 
-        return [
-            'contract' => [
-                'id' => $contract->id,
-                'number' => $contract->number,
-                'created_at' => $contract->created_at->format('Y.m.d'),
-                'client_name' => $contract->getClientName(),
-                'inn' => $contract->getInn(),
-                'amount_price' => TextFormaterHelper::getPrice($contract->amount_price),
-                'services' => $contract->services ?? [],
-                'payments' => $contract->payments->map(function ($payment) {
-                    return [
-                        'id' => $payment->id,
-                        'value' => TextFormaterHelper::getPrice($payment->value),
-                        'close' => $payment->status == Payment::STATUS_CLOSE,
-                        'order' => $payment->order
-                    ];
-                }),
-                'childs' => $contract->childs->map(function ($subContract) {
-                    return [
-                        'id' => $subContract->id,
-                        'number' => $subContract->number,
-                        'created_at' => $subContract->created_at->format('Y.m.d'),
-                        'amount_price' => TextFormaterHelper::getPrice($subContract->amount_price),
-                        'payments' => $subContract->payments->map(function ($payment) {
-                            return [
-                                'id' => $payment->id,
-                                'value' => TextFormaterHelper::getPrice($payment->value),
-                                'close' => $payment->status == Payment::STATUS_CLOSE,
-                                'order' => $payment->order
-                            ];
-                        }),
-                    ];
-                })
-            ],
-        ];
+        return redirect()->back()->with('success', 'Платёж успешно привязан');
+    }
+
+    public function shortlist(Payment $payment, PaymentService $service): array
+    {
+        $payments = $service->getShortlist($payment);
+
+        return $payments;
     }
 }

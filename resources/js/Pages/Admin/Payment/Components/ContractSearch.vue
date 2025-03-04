@@ -142,7 +142,7 @@ export default {
     methods: {
         attachPayment(oldPayment) {
             if (confirm('Вы уверены, что хотите привязать этот платёж?')) {
-                router.post(route('payment.shortlist.attach'), {
+                router.post(route('admin.payment.shortlist.attach'), {
                     oldPayment: oldPayment.id,
                     newPayment: this.payment.id,
                 }, {
@@ -184,7 +184,7 @@ export default {
                 if (response.data.error) {
                     this.contract = [];
                 } else {
-                    this.contract = response.data.contract;
+                    this.contract = response.data;
                 }
             } catch (error) {
                 console.error('Ошибка при поиске контракта:', error);

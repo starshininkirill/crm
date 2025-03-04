@@ -84,6 +84,7 @@ class TimeCheckService
         }
 
         if (!$this->canGoBreak($user)) {
+            // TODO
             // Стучим на него Ивану
             throw new BusinessException('Сейчас на перерыв нельзя');
         }
@@ -141,6 +142,8 @@ class TimeCheckService
 
     private function canGoBreak(User $user): bool
     {
+        // TODO
+        // Можно ли на перерыв
         return true;
     }
 }
