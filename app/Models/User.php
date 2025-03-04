@@ -103,7 +103,8 @@ class User extends Authenticatable
     public function lastAction()
     {
         return $this->timeChecks()
-            ->orderBy('date')
+            ->whereDate('date', Carbon::now())
+            ->orderByDesc('id')
             ->first();
     }
 

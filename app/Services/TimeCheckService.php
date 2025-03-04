@@ -9,20 +9,54 @@ use Carbon\Carbon;
 
 class TimeCheckService
 {
+    public function userBreaktime(User $user, Carbon $date = null)
+    {
+        if (!$date) {
+            $date = Carbon::now();
+        }
+
+        $breaktimes = $user->timeChecks()
+            ->whereIn('action', [TimeCheck::ACTION_CONTINUE, TimeCheck::ACTION_PAUSE])
+            ->whereDate('date', $date)
+            ->orderBy('date')
+            ->get();
+
+        $totalBreakTime = 0;
+        $pauseStart = null;
+
+        foreach ($breaktimes as $timeCheck) {
+            if ($timeCheck->action === TimeCheck::ACTION_PAUSE) {
+                $pauseStart = Carbon::parse($timeCheck->date);
+            } elseif ($timeCheck->action === TimeCheck::ACTION_CONTINUE && $pauseStart) {
+                $continueTime = Carbon::parse($timeCheck->date);
+                $totalBreakTime += $pauseStart->diffInSeconds($continueTime);
+                $pauseStart = null;
+            }
+        }
+
+        if ($pauseStart) {
+            $totalBreakTime += $pauseStart->diffInSeconds(Carbon::now());
+        }
+
+        return $totalBreakTime;
+    }
+
     public function handleAction(string $action, User $user)
     {
         if (!method_exists($this, $action)) {
             throw new BusinessException('Такого метода не существует');
         }
 
-        if (!$this->$action($user)) {
+        $secondsOrBool = $this->$action($user);
+
+        if (!$secondsOrBool) {
             throw new BusinessException('Не удалось совершить действие');
         }
 
-        return true;
+        return $secondsOrBool;
     }
 
-    private function start(User $user)
+    private function start(User $user): bool
     {
         $lastAction = $user->lastAction();
 
@@ -37,7 +71,7 @@ class TimeCheckService
         return $this->registerAction($user, TimeCheck::ACTION_START);
     }
 
-    private function pause(User $user)
+    private function pause(User $user): bool
     {
         $lastAction = $user->lastAction();
 
@@ -69,10 +103,14 @@ class TimeCheckService
             throw new BusinessException('Куда тыкаешь');
         }
 
-        return $this->registerAction($user, TimeCheck::ACTION_CONTINUE);
+        if (!$this->registerAction($user, TimeCheck::ACTION_CONTINUE)) {
+            throw new BusinessException('Не удалось завершить перерыв');
+        }
+
+        return $this->userBreaktime($user);
     }
 
-    private function end(User $user)
+    private function end(User $user): bool
     {
         $lastAction = $user->lastAction();
 
@@ -87,15 +125,21 @@ class TimeCheckService
         return $this->registerAction($user, TimeCheck::ACTION_END);
     }
 
-    private function registerAction(User $user, $action)
+    private function registerAction(User $user, $action): bool
     {
-        return $isCreate = $user->timeChecks()->create([
+        $isCreate = $user->timeChecks()->create([
             'date' => Carbon::now(),
             'action' => $action,
         ]);
+
+        if ($isCreate) {
+            return true;
+        }
+
+        return false;
     }
 
-    private function canGoBreak(User $user)
+    private function canGoBreak(User $user): bool
     {
         return true;
     }

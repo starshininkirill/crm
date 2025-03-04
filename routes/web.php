@@ -26,7 +26,6 @@ use App\Http\Controllers\Resources\PaymentController as ResourcesPaymentControll
 use App\Models\TimeCheck;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/', [MainController::class, 'home'])->name('home');
 Route::get('/fast-login', [MainController::class, 'loginHome'])->name('fastLogin');
 
@@ -40,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
     Route::post('/time-check', [TimeCheckController::class, 'makeAction'])->name('time-check.action');
+    Route::post('/breaktime', [TimeCheckController::class, 'userBreaktime'])->name('time-check.breaktime');
 
     Route::prefix('/lk')->group(function () {
         Route::get('/', [LkMainController::class, 'index'])->name('lk');

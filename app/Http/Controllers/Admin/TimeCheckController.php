@@ -6,7 +6,7 @@ use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeCheckRequest;
 use App\Services\TimeCheckService;
-use Illuminate\Http\Request;
+
 
 class TimeCheckController extends Controller
 {
@@ -19,6 +19,20 @@ class TimeCheckController extends Controller
             return new BusinessException('Пользователь не авторизован!');
         }
 
-        $service->handleAction($action, $user);
+        $secondsOrBool = $service->handleAction($action, $user);
+
+        return response()->json([
+            'seconds' => $secondsOrBool
+        ], 200);
+    }
+
+    public function userBreaktime(TimeCheckService $service)
+    {
+        $user = auth()->user();
+        $breaktime = $service->userBreaktime($user);
+
+        return response()->json([
+            'breaktime' => $breaktime,
+        ], 200);
     }
 }
