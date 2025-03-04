@@ -35,8 +35,13 @@ class Department extends Model
             return $this->parent()->first()->hasMany(Position::class);
         }
     }
+    
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'department_id');
+    }
 
-    public function users(): SimpleCollection
+    public function allUsers(): SimpleCollection
     {
         $users = collect();
 

@@ -57,9 +57,8 @@ class ContractGeneratorController extends Controller
             'secondaryCatsIds' => json_decode($secondaryCatsIds),
             'rkText' => json_decode($contractRkText),
         ]);
-
     }
-    public function store(ContractGeneratorRequest $request)
+    public function store(ContractGeneratorRequest $request, DocumentGenerator $documentGenerator)
     {
         $data = $request->validated();
 
@@ -79,7 +78,7 @@ class ContractGeneratorController extends Controller
 
         $link = '';
         if ($data['client_type'] == Client::TYPE_INDIVIDUAL) {
-            $link =  DocumentGenerator::generatePaymentLink(
+            $link =  $documentGenerator->generatePaymentLink(
                 $data['amount_price'],
                 $data['client_fio'],
                 $data['number'],

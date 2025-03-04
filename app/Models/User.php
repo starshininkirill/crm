@@ -100,12 +100,18 @@ class User extends Authenticatable
         return $this->hasMany(TimeCheck::class);
     }
 
-    public function lastAction()
+    public function lastAction(Carbon $date = null)
     {
-        return $this->timeChecks()
-            ->whereDate('date', Carbon::now())
-            ->orderByDesc('id')
-            ->first();
+        if ($date) {
+            return $this->hasMany(TimeCheck::class)->whereDate('date', $date)->orderByDesc('id')->limit(1);
+        } else {
+            return $this->hasMany(TimeCheck::class)->whereDate('date', Carbon::now())->orderByDesc('id')->limit(1);
+        }
+    }
+
+    public function getLastAction(Carbon $date = null)
+    {
+        return $this->lastAction($date)->first();
     }
 
     public function getFirstWorkingDay(): Carbon

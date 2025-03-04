@@ -40,7 +40,7 @@ class HandleInertiaRequests extends Middleware
 
         $user = auth()->user();
         if ($user) {
-            $user->lastAction = $user->lastAction();
+            $user->lastAction = $user->getLastAction();
         }
 
         $filteredSessionData = array_filter($sessionData, function ($key) {

@@ -1,14 +1,8 @@
 <template>
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
-            <AdminSubnavLink :href="route('admin.user.index')" :route="'admin.user.index'">
-                Сотрудники
-            </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.position.index')" :route="'admin.position.index'">
-                Должности
-            </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.employment-type.index')" :route="'admin.employment-type.index'">
-                Типы устройства
+            <AdminSubnavLink :href="route('admin.time-check.index')" :route="'admin.time-check.index'">
+                Time Check
             </AdminSubnavLink>
         </div>
         <slot />

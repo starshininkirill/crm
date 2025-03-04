@@ -38,7 +38,7 @@ class DepartmentController extends Controller
     public function show(Department $department)
     {
 
-        $users = $department->users()->map(function ($user) {
+        $users = $department->allUsers()->map(function ($user) {
             return [
                 'id' => $user->id,
                 'first_name' => $user->first_name,

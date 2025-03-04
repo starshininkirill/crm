@@ -58,7 +58,7 @@ class TimeCheckService
 
     private function start(User $user): bool
     {
-        $lastAction = $user->lastAction();
+        $lastAction = $user->getLastAction();
 
         if ($lastAction && $lastAction->action == TimeCheck::ACTION_START) {
             throw new BusinessException('День уже начат, либо не завершен предыдущий');
@@ -73,7 +73,7 @@ class TimeCheckService
 
     private function pause(User $user): bool
     {
-        $lastAction = $user->lastAction();
+        $lastAction = $user->getLastAction();
 
         if ($lastAction && $lastAction->action == TimeCheck::ACTION_PAUSE) {
             throw new BusinessException('Перерыв уже начат');
@@ -94,7 +94,7 @@ class TimeCheckService
 
     private function continue(User $user)
     {
-        $lastAction = $user->lastAction();
+        $lastAction = $user->getLastAction();
 
         if ($lastAction && $lastAction->action == TimeCheck::ACTION_CONTINUE) {
             throw new BusinessException('Перерыв уже завершен');
@@ -113,7 +113,7 @@ class TimeCheckService
 
     private function end(User $user): bool
     {
-        $lastAction = $user->lastAction();
+        $lastAction = $user->getLastAction();
 
         if ($lastAction && $lastAction->action == TimeCheck::ACTION_END) {
             throw new BusinessException('День уже завершен');
