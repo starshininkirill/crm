@@ -3,23 +3,85 @@
 namespace App\Services;
 
 use App\Exceptions\Business\BusinessException;
+use App\Models\Department;
 use App\Models\TimeCheck;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class TimeCheckService
 {
+    public function getCurrentWorkTimeReport()
+    {
+        $report = Department::with([
+            'users' => function ($query) {
+                // Добавить проверку на уволенного сотрудника
+
+                $query->with(['lastAction' => function ($query) {
+                    $query->whereDate('date', Carbon::now());
+                }]);
+            },
+            'childDepartments',
+            'childDepartments.users' => function ($query) {
+
+                // TODO
+                // Добавить проверку на уволенного сотрудника
+                // $query->where('created_at', '<=', $date);
+
+                $query->with(['lastAction' => function ($query) {
+                    $query->whereDate('date', Carbon::now());
+                }]);
+            },
+        ])->whereNull('parent_id')->get();
+
+        return $report;
+    }
+
+    public function getWorkTimeDayReport($date)
+    {
+        $report = Department::with([
+            'users' => function ($query) use ($date) {
+                // Добавить проверку на уволенного сотрудника
+
+                $query->with(['timeChecks' => function ($query) use ($date) {
+                    $query->whereDate('date', $date);
+                }]);
+            },
+            'childDepartments',
+            'childDepartments.users' => function ($query) use ($date) {
+
+                // TODO
+                // Добавить проверку на уволенного сотрудника
+                // $query->where('created_at', '<=', $date);
+
+                $query->with(['timeChecks' => function ($query) use ($date) {
+                    $query->whereDate('date', $date);
+                }]);
+            },
+        ])->whereNull('parent_id')->get();
+
+        $report->each(function ($department) use ($date) {
+            $this->processDepartmentUsers($department, $date);
+
+            if ($department->childDepartments) {
+                $department->childDepartments->each(function ($childDepartment) use ($date) {
+                    $this->processDepartmentUsers($childDepartment, $date);
+                });
+            }
+        });
+
+        return $report;
+
+        return $report;
+    }
+
     public function userBreaktime(User $user, Carbon $date = null)
     {
         if (!$date) {
             $date = Carbon::now();
         }
 
-        $breaktimes = $user->timeChecks()
-            ->whereIn('action', [TimeCheck::ACTION_CONTINUE, TimeCheck::ACTION_PAUSE])
-            ->whereDate('date', $date)
-            ->orderBy('date')
-            ->get();
+        $breaktimes = $this->getBreakTimeChecks($user, $date);
 
         $totalBreakTime = 0;
         $pauseStart = null;
@@ -54,6 +116,52 @@ class TimeCheckService
         }
 
         return $secondsOrBool;
+    }
+
+    private function getBreakTimeChecks(User $user, Carbon $date): Collection
+    {
+        if ($user->relationLoaded('timeChecks')) {
+            return $user->timeChecks
+                ->whereIn('action', [TimeCheck::ACTION_CONTINUE, TimeCheck::ACTION_PAUSE])
+                ->filter(fn($timeCheck) => $timeCheck->date->isSameDay($date))
+                ->sortBy('date');
+        } else {
+            return $user->timeChecks()
+                ->whereIn('action', [TimeCheck::ACTION_CONTINUE, TimeCheck::ACTION_PAUSE])
+                ->whereDate('date', $date)
+                ->orderBy('date')
+                ->get();
+        }
+    }
+
+    private function processDepartmentUsers(Department $department, $date)
+    {
+        $department->users->each(function ($user) use ($date) {
+            $timeChecks = $user->timeChecks;
+
+            $actionStart = $timeChecks->firstWhere('action', 'start');
+            $actionEnd = $timeChecks->firstWhere('action', 'end');
+
+            $breaktime = $this->userBreaktime($user, Carbon::parse($date));
+
+            $workTime = 0;
+            if ($actionStart && $actionEnd) {
+                $startTime = Carbon::parse($actionStart->date);
+                $endTime = Carbon::parse($actionEnd->date);
+                $workTime = $startTime->diffInSeconds($endTime) - $breaktime;
+            }
+
+            if ($actionStart && !$actionEnd) {
+                $startTime = Carbon::parse($actionStart->date);
+                $endTime = Carbon::now();
+                $workTime = $startTime->diffInSeconds($endTime) - $breaktime;
+            }
+
+            $user->actionStart = $actionStart ? $actionStart->date->format('H:i:s') : null;
+            $user->actionEnd = $actionEnd ? $actionEnd->date->format('H:i:s') : null;
+            $user->breaktime = $breaktime;
+            $user->workTime = $workTime;
+        });
     }
 
     private function start(User $user): bool

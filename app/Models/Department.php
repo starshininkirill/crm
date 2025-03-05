@@ -56,7 +56,7 @@ class Department extends Model
 
     public function activeUsers(Carbon $date = null): SimpleCollection
     {
-        $users = $this->users();
+        $users = $this->users()->get();
 
         if ($date != null) {
             $users = $users->where('created_at', '<=', $date->endOfMonth());

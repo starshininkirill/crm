@@ -100,12 +100,16 @@ class User extends Authenticatable
         return $this->hasMany(TimeCheck::class);
     }
 
-    public function lastAction(Carbon $date = null)
+    public function lastAction(Carbon $date = null): HasOne
     {
         if ($date) {
-            return $this->hasMany(TimeCheck::class)->whereDate('date', $date)->orderByDesc('id')->limit(1);
+            return $this->hasOne(TimeCheck::class)
+                ->whereDate('date', $date)
+                ->orderByDesc('id');
         } else {
-            return $this->hasMany(TimeCheck::class)->whereDate('date', Carbon::now())->orderByDesc('id')->limit(1);
+            return $this->hasOne(TimeCheck::class)
+                ->whereDate('date', Carbon::now())
+                ->orderByDesc('id');
         }
     }
 

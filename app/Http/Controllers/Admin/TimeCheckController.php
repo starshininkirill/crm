@@ -3,37 +3,34 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Department;
+use App\Services\TimeCheckService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TimeCheckController extends Controller
 {
-    public function index()
+    public function index(Request $request, TimeCheckService $servise)
     {
-        $mainDepartments = Department::with([
-            'users' => function ($query) {
-                // Добавить проверку на уволенного сотрудника
+        $date = $request->get('date') ?? Carbon::now()->format('Y-m-d');
 
-                $query->with(['lastAction' => function ($query) {
-                    $query->whereDate('date', Carbon::now());
-                }]);
-            },
-            'childDepartments',
-            'childDepartments.users' => function ($query) {
+        DB::enableQueryLog();
+        
+        $todayReport = $servise->getCurrentWorkTimeReport();
+        $dateReport = $servise->getWorkTimeDayReport($date);
 
-                // TODO
-                // Добавить проверку на уволенного сотрудника
-                // $query->where('created_at', '<=', $date);
+        $queries = DB::getQueryLog();
+        $queryCount = count($queries);
 
-                $query->with(['lastAction' => function ($query) {
-                    $query->whereDate('date', Carbon::now());
-                }]);
-            },
-        ])->whereNull('parent_id')->get();
+        // dd($queryCount);
+        // dd($dateReport);
+        
 
         return Inertia::render('Admin/TimeCheck/Index', [
-            'mainDepartments' => $mainDepartments,
+            'todayReport' => $todayReport,
+            'dateReport' => $dateReport,
+            'date' => $date,
         ]);
     }
 }
