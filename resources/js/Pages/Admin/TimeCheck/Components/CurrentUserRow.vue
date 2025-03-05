@@ -1,12 +1,12 @@
 <template>
-    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+    <tr class="bg-white border-b   hover:bg-gray-50 ">
         <td class="px-6 py-4">
             <Link :href="route('admin.user.show', user.id)">
             {{ user.full_name }}
             </Link>
         </td>
         <td class="px-6 py-4 font-semibold" :class="getActionColor(user)">
-            {{ translateAction(user.last_action?.action) || 'Не начал'}}
+            {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
         <td class="px-6 py-4">
             <button>Изменить статус</button>

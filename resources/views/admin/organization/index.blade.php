@@ -7,8 +7,8 @@
         <h2 class="text-xl">Организаций не найдено</h2>
     @else
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 ">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
                     <tr>
                         <th scope="col" class="px-6 py-3">
                             Название
@@ -30,9 +30,9 @@
                 <tbody>
                     @foreach ($organizations as $organization)
                         <tr
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            class="bg-white border-b   hover:bg-gray-50 ">
                             <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                 {{ $organization->short_name }}
                             </th>
                             <td class="px-6 py-4">
@@ -51,13 +51,13 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <a href="{{ route('admin.organization.edit', $organization->id) }}"
-                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                    class="font-medium text-blue-600  hover:underline">
                                     Редактировать
                                 </a>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <form method="POST" action="{{ route('organization.destroy', $organization->id) }}"
-                                    class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                    class="font-medium text-red-600  hover:underline">
                                     @method('DELETE')
                                     @csrf
                                     <button type="submit">

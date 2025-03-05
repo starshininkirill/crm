@@ -1,5 +1,5 @@
 <template>
-    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+    <tr class="bg-white border-b   hover:bg-gray-50 ">
         <td class="px-6 py-4">
             <Link :href="route('admin.user.show', user.id)">
             {{ user.full_name }}
@@ -9,7 +9,7 @@
             {{ date }}
         </td>
         <td class="px-6 py-4">
-            <div v-if="user.actionStart">
+            <div v-if="user.actionStart" :class="user.isLate ? 'font-semibold text-red-500' : ''">
                 {{ user.actionStart }}
             </div>
             <div v-else class="font-semibold text-red-500">
@@ -27,12 +27,14 @@
         <td class="px-6 py-4">
             {{ formatTime(user.workTime) }}
         </td>
-        <td class="px-6 py-4">
+        <td class="px-6 py-4" :class="user.isOvertime ? 'font-semibold text-red-500' : ''">
             {{ formatTime(user.breaktime) }}
         </td>
     </tr>
 </template>
 <script>
+
+
 export default {
     props: {
         user: {

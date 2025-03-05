@@ -18,8 +18,8 @@
                 <div class="flex flex-col gap-3 col-span-2">
                     <h2 v-if="!categories.length" class="text-xl">Категорий услуг не найдено</h2>
                     <table v-if="categories.length"
-                        class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     Категория
@@ -41,9 +41,8 @@
                         <tbody>
 
                             <tr v-for="category in categories" :key="category.id"
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                class="bg-white border-b   hover:bg-gray-50 ">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                     {{ category.name }}
                                 </th>
                                 <td class="px-6 py-4">
@@ -51,19 +50,19 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <Link :href="route('admin.service.index', { serviceCategory: category.id })"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                        class="font-medium text-blue-600  hover:underline">
                                     {{ category.services_count }}
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <Link :href="route('admin.service.category.edit', { serviceCategory: category.id })"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                        class="font-medium text-blue-600  hover:underline">
                                     Редактировать
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <button @click="deleteServiceCategory(category.id)"
-                                        class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                        class="font-medium text-red-600  hover:underline">
                                         Удалить
                                     </button>
                                 </td>

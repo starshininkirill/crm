@@ -124,4 +124,15 @@ class SettingsController extends Controller
 
         return redirect()->back()->with('success', 'Финансовые недели успешно изменены');
     }
+
+    public function timeCheck()
+    {
+        $startTimeOption = Option::whereName('time_check_start_work_day_time')->first();
+        $breakTimeOption = Option::whereName('time_check_max_breaktime')->first();
+
+        return Inertia::render('Admin/Settings/TimeCheck',[
+            'startTimeProp' => $startTimeOption->value ?? null,
+            'breakTimeProp' => $breakTimeOption->value ?? null,
+        ]);
+    }
 }

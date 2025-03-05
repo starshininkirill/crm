@@ -7,8 +7,8 @@
             Текущий статус сотрудников
         </div>
         <table
-            class="shadow-md max-w-2xl overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            class="shadow-md max-w-2xl overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
                 <tr>
                     <th scope="col" class="px-6 py-3">Сотрудник</th>
                     <th scope="col" class="px-6 py-3 w-36">Статус</th>
@@ -16,7 +16,7 @@
                 </tr>
             </thead>
             <tbody v-for="mainDepartment in todayReport">
-                <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50  ">
                     <td colspan="3" class="px-6 py-3 bg-gray-900 text-white font-semibold">{{
                         mainDepartment.name }}</td>
                 </tr>
@@ -25,8 +25,7 @@
                     :user="user" />
 
                 <template v-for="department in mainDepartment.child_departments">
-                    <tr
-                        class="text-xs text-gray-700 text-center uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <tr class="text-xs text-gray-700 text-center uppercase bg-gray-200  ">
                         <td colspan="3" class="px-6 py-3 font-semibold">{{ department.name }}</td>
                     </tr>
 

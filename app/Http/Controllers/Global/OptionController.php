@@ -16,12 +16,18 @@ class OptionController extends Controller
         $value = $validated['value'];
         $value = is_array($value) ? json_encode($value) : $value;
 
-        Option::create([
+        $result = Option::updateOrCreate([
             'name' => $validated['name'],
+        ],[
             'value' => $value
         ]);
 
-        return redirect()->back()->with('success', 'Опция успешно создана');
+        if ($result->wasRecentlyCreated) {
+            return redirect()->back()->with('success', 'Опция успешно создана');
+        }else{
+            return redirect()->back()->with('success', 'Опция успешно обновлена');
+        }
+
     }
 
     public function update(OptionRequest $request, Option $option)

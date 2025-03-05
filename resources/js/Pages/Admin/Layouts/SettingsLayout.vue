@@ -10,6 +10,9 @@
             <AdminSubnavLink :href="route('admin.settings.finance-week')" :route="'admin.settings.finance-week'">
                 Настройка рабочих недель
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.settings.time-check')" :route="'admin.settings.time-check'">
+                Настройки Time Check
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>

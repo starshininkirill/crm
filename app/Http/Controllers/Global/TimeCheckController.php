@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Global;
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Global\TimeCheckRequest;
-use App\Services\TimeCheckService;
-
+use App\Services\TimeCheckServices\ActionsService;
+use App\Services\TimeCheckServices\WorkTimeService;
 
 class TimeCheckController extends Controller
 {
-    public function makeAction(TimeCheckRequest $requst, TimeCheckService $service)
+    public function makeAction(TimeCheckRequest $requst, ActionsService $service)
     {
         $action = $requst->validated()['action'];
         $user = auth()->user();
@@ -26,7 +26,7 @@ class TimeCheckController extends Controller
         ], 200);
     }
 
-    public function userBreaktime(TimeCheckService $service)
+    public function userBreaktime(WorkTimeService $service)
     {
         $user = auth()->user();
         $breaktime = $service->userBreaktime($user);

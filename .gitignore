@@ -19,8 +19,3 @@ yarn-error.log
 /.idea
 /.vscode
 package-lock.json
-vite.config.js
-/.vite.config.js
-package-lock.json
-vite.config.js
-vite.config.js
