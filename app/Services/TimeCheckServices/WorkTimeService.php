@@ -24,7 +24,7 @@ class WorkTimeService
             $this->startTime = Option::whereName('time_check_start_work_day_time')->first()->value ?? '09:01:00';
         }
 
-        $startTime = Carbon::createFromFormat('H:i:s', $this->startTime);
+        $startTime = $actionStart->date->copy()->setTimeFromTimeString($this->startTime);
 
         if ($actionStart->date->gt($startTime)) {
             return true;
