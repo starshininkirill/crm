@@ -100,6 +100,11 @@ class User extends Authenticatable
         return $this->hasMany(TimeCheck::class);
     }
 
+    public function dailyWorkStatuses(): HasMany
+    {
+        return $this->hasMany(DailyWorkStatus::class);
+    }
+
     public function lastAction(Carbon $date = null): HasOne
     {
         if ($date) {

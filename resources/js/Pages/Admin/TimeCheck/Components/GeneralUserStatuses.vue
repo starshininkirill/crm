@@ -11,7 +11,7 @@
                 Информации не найдено
             </div>
             <table v-else
-                class="shadow-md w-2/3 overflow-hidden rounded-md sm:rounded-lg  text-sm text-left rtl:text-right text-gray-500 ">
+                class="shadow-md overflow-hidden rounded-md sm:rounded-lg  text-sm text-left rtl:text-right text-gray-500 ">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
                     <tr>
                         <th scope="col" class="px-6 py-3">Сотрудник</th>
