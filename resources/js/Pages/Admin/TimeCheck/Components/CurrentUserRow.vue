@@ -11,17 +11,14 @@
         <td class="px-6 py-4 box-border">
             <VueSelect v-model="selectedStatus" :options="updatedStatuses" :reduce="workStatuse => workStatuse.id"
                 label="name" class="full-vue-select" @update:modelValue="updateStatus" />
-
         </td>
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-auto relative flex flex-col gap-3">
+            <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-visible relative flex flex-col gap-3">
                 <h2 class="text-xl font-bold mb-4">{{ user.full_name }} - Неполный рабочий день</h2>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <FormInput v-model="timeStart" type="time" name="time_start" label="Время начала" />
-
-                    <FormInput v-model="timeEnd" type="time" name="time_end" label="Время конца" />
-
+                    <VueDatePicker v-model="timeStart"  time-picker />
+                    <VueDatePicker v-model="timeEnd"  time-picker />
                 </div>
 
                 <div class="btn" @click="sendWorkStatus">
@@ -42,11 +39,14 @@ import VueSelect from 'vue-select';
 import FormInput from '../../../../Components/FormInput.vue';
 import axios from 'axios';
 import { route } from 'ziggy-js';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 export default {
     components: {
         VueSelect,
-        FormInput
+        FormInput,
+        VueDatePicker
     },
     props: {
         user: {

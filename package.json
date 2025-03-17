@@ -20,6 +20,7 @@
         "@inertiajs/vue3": "^2.0.0",
         "@tinymce/tinymce-vue": "^6.1.0",
         "@vitejs/plugin-vue": "^5.1.4",
+        "@vuepic/vue-datepicker": "^11.0.1",
         "tinymce": "^7.6.1",
         "vue-select": "^4.0.0-beta.1",
         "ziggy-js": "^2.4.2"
