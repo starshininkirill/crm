@@ -1,5 +1,5 @@
 <?php 
-use App\Http\Controllers\Admin\PositionController;
+use App\Http\Controllers\Admin\User\PositionController;
 use App\Http\Controllers\Admin\User\EmploymentTypeController;
 use App\Http\Controllers\Admin\User\UserController;
 
@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('users')->group(function () {
+
+    Route::get('/time-sheet', [UserController::class, 'timeSheet'])->name('admin.time-sheet');
 
     Route::prefix('employment-types')->group(function () {
         Route::get('/', [EmploymentTypeController::class, 'index'])->name('admin.employment-type.index');

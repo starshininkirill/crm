@@ -8,11 +8,18 @@ use App\Models\Contract;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
+use App\Services\UserServices\UserService;
 use Illuminate\Support\Collection;
 
 class PlansService
 {
     private ReportInfo $reportInfo;
+    private $userService;
+
+    public function __construct(){
+        $this->userService = new UserService;
+    }
+
 
     public function prepareData(ReportInfo $reportInfo): void
     {
@@ -322,14 +329,14 @@ class PlansService
         $matchingContractCount = $this->reportInfo->contracts
             ->filter(function ($contract) use ($includedServiceIds, $includedServiceCategoriesIds, $excludeServicePairs) {
                 $serviceIds = $contract->services->pluck('id');
-                
-                if($serviceIds->count() < 2){
+
+                if ($serviceIds->count() < 2) {
                     return false;
                 }
                 $servicesFromCategories = $contract->services->whereIn('service_category_id', $includedServiceCategoriesIds)->pluck('id');
 
                 $hasIncludedService = $serviceIds->intersect($includedServiceIds)->isNotEmpty();
-                
+
                 $hasIncludedCategory = $servicesFromCategories->intersect($includedServiceCategoriesIds)->isNotEmpty();
 
                 $hasValidServices = $hasIncludedService && $hasIncludedCategory;
@@ -459,7 +466,7 @@ class PlansService
 
     public function calculateSalary(Collection $report): Collection
     {
-        $monthWorked = $this->reportInfo->user->getMonthWorked($this->reportInfo->date);
+        $monthWorked = $this->userService->getMonthWorked($this->reportInfo->user, $this->reportInfo->date);
         $bonus = null;
 
         $res = collect([

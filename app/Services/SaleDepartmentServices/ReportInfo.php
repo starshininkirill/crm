@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\WorkingDay;
 use App\Models\WorkPlan;
+use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
@@ -37,8 +38,11 @@ class ReportInfo
     public $isUserData = false;
     public $callsStat;
 
+    private $userService;
+    
     public function __construct(Carbon $date = null, User $user = null, Department $department = null)
     {
+        $this->userService = new UserService();   
         if ($user == null && $date == null) {
             return null;
         }
@@ -77,7 +81,7 @@ class ReportInfo
 
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $this->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
-        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, $this->department->users()->pluck('id'), ContractUser::SALLER);
+        $this->payments = User::monthlyClosePaymentsForRoleGroup($date, $this->department->allUsers()->pluck('id'), ContractUser::SALLER);
 
         $this->newPayments = $this->payments->where('type', Payment::TYPE_NEW);
         $this->oldPayments = $this->payments->where('type', Payment::TYPE_OLD);
@@ -175,7 +179,7 @@ class ReportInfo
         if ($user == null) {
             $user = $this->user;
         }
-        $monthsWorked = $user->getMonthWorked($this->date);
+        $monthsWorked = $this->userService->getMonthWorked($user, $this->date);
         $departmentId = $this->mainDepartmentId;
         $userPosition = $user->position;
         $userPosition == null ? $userPositionId = null : $userPositionId = $userPosition->id;

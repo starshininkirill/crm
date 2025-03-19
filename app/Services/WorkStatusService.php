@@ -13,20 +13,33 @@ class WorkStatusService
     {
         $existingDailyWorkStatus = $this->getDailyWorkStatus(Carbon::now(), $data['user_id']);
 
+        if ($data['work_status_id'] == null && $existingDailyWorkStatus) {
+            $this->deleteDailyWorkStatus($existingDailyWorkStatus);
+            return;
+        }
+
+        if ($data['work_status_id'] == null && !$existingDailyWorkStatus) {
+            return;
+        }
+
         if (!$existingDailyWorkStatus) {
             $this->createDailyWorkStatus($data);
-            
             return;
         }
 
         $this->updateDailyWorkStatus($existingDailyWorkStatus, $data);
     }
 
+    private function deleteDailyWorkStatus($existingDailyWorkStatus)
+    {
+        return $existingDailyWorkStatus->delete();
+    }
+
     private function createDailyWorkStatus($data)
     {
         $workStatus = WorkStatus::find($data['work_status_id']);
 
-        if(!$workStatus){
+        if (!$workStatus) {
             throw new BusinessException('Такого статуса не существует');
         };
 
@@ -39,7 +52,7 @@ class WorkStatusService
             'time_start' => $data['time_start'] != null ? Carbon::parse($data['time_start']) : null,
             'time_end' => $data['time_end'] != null ? Carbon::parse($data['time_end']) : null,
         ]);
-        
+
 
         if (!$dailyWorkStatus) {
             throw new BusinessException('Не удалось обновить статус');
@@ -51,11 +64,11 @@ class WorkStatusService
     private function updateDailyWorkStatus(DailyWorkStatus $dailyWorkStatus, array $data)
     {
         // $workStatus = $dailyWorkStatus->workStatus;
-        
-        if(array_key_exists('work_status_id', $data)){
+
+        if (array_key_exists('work_status_id', $data)) {
             $workStatus = WorkStatus::find($data['work_status_id']);
 
-            if(!$workStatus){
+            if (!$workStatus) {
                 throw new BusinessException('Такого статуса не существует');
             };
 
@@ -65,12 +78,12 @@ class WorkStatusService
             $dailyWorkStatus->confirmed = $workStatus->need_confirmation ? false : true;
             $dailyWorkStatus->hours = $workStatus->hours;
 
-            if($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY){
+            if ($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY) {
                 $dailyWorkStatus->time_start = null;
-                $dailyWorkStatus->time_end = null;  
+                $dailyWorkStatus->time_end = null;
             }
         }
-        
+
         if (!$dailyWorkStatus->save()) {
             throw new BusinessException('Не удалось обновить статус');
         }

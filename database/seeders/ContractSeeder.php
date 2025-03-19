@@ -21,7 +21,7 @@ class ContractSeeder extends Seeder
 
         $clients = Client::all();
 
-        $users = Department::getMainSaleDepartment()->activeUsers();
+        $users = Department::getMainSaleDepartment()->allUsers();
 
         foreach ($clients as $key => $client) {
             $contractData = [

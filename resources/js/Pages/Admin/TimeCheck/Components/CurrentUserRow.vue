@@ -8,17 +8,46 @@
         <td class="px-6 py-4 font-semibold" :class="getActionColor(user)">
             {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
-        <td class="px-6 py-4 box-border">
-            <VueSelect v-model="selectedStatus" :options="updatedStatuses" :reduce="workStatuse => workStatuse.id"
-                label="name" class="full-vue-select" @update:modelValue="updateStatus" />
+        <td class="px-6 py-4 box-border min-h-16">
+            <div v-if="!changeMode" class="flex items-center justify-between gap-2">
+                {{ selectedStatus }}
+                <button @click="changeMode = true" class="p-1 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                </button>
+            </div>
+            <div v-else class="flex items-center justify-between gap-2">
+                <VueSelect v-model="selectedStatusId" :options="updatedStatuses" :reduce="workStatuse => workStatuse.id"
+                    label="name" class="full-vue-select max-h-16" @update:modelValue="updateStatus" />
+
+                <button @click="changeMode = false" class="p-1 text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
         </td>
         <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-visible relative flex flex-col gap-3">
                 <h2 class="text-xl font-bold mb-4">{{ user.full_name }} - Неполный рабочий день</h2>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <VueDatePicker v-model="timeStart"  time-picker />
-                    <VueDatePicker v-model="timeEnd"  time-picker />
+                    <div class="flex flex-col">
+                        <label class="label">
+                            Начало рабочего дня
+                        </label>
+                        <VueDatePicker v-model="timeStart" time-picker />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="label">
+                            Конец рабочего дня
+                        </label>
+                        <VueDatePicker v-model="timeEnd" time-picker />
+                    </div>
                 </div>
 
                 <div class="btn" @click="sendWorkStatus">
@@ -64,22 +93,29 @@ export default {
             ...this.workStatuses,
         ];
 
-        let selectedStatus = null;
+        let selectedStatusId = null;
         let timeStart = null;
         let timeEnd = null;
 
         if (this.user.daily_work_statuses.length) {
-            selectedStatus = this.user.daily_work_statuses[0].work_status_id;
+            selectedStatusId = this.user.daily_work_statuses[0].work_status_id;
             timeStart = this.user.daily_work_statuses[0].time_start;
             timeEnd = this.user.daily_work_statuses[0].time_end;
         }
 
         return {
-            selectedStatus,
+            selectedStatusId,
             updatedStatuses,
             isModalOpen: false,
+            changeMode: false,
             timeStart,
             timeEnd,
+        }
+    },
+    computed: {
+        selectedStatus() {
+            const status = this.updatedStatuses.find(status => status.id === this.selectedStatusId);
+            return status ? status.name : 'Не проставлен статус';
         }
     },
     methods: {
@@ -108,11 +144,11 @@ export default {
             return translations[action];
         },
         updateStatus() {
-            let selectedStatus = this.selectedStatus;
-            let statusObject = this.workStatuses.find((element) => element.id == selectedStatus)
+            let selectedStatusId = this.selectedStatusId;
+            let statusObject = this.workStatuses.find((element) => element.id == selectedStatusId)
 
             if (!statusObject) {
-                // Удалить статус за день
+                this.sendWorkStatus()
                 return;
             }
 
@@ -126,16 +162,23 @@ export default {
                 this.timeEnd = null;
             }
 
-            if (this.selectedStatus != null) {
-                this.sendWorkStatus()
-            }
+            this.sendWorkStatus()
+
         },
         async sendWorkStatus() {
+            const statusObject = this.workStatuses.find((element) => element.id == this.selectedStatusId);
+            if (statusObject?.type === 'part_time_day') {
+                if (!this.timeStart || !this.timeEnd) {
+                    alert('Пожалуйста, заполните время начала и конца рабочего дня.');
+                    return; 
+                }
+            }
+
             let data = {
                 user_id: this.user.id,
-                work_status_id: this.selectedStatus,
-                time_start: this.timeStart,
-                time_end: this.timeEnd,
+                work_status_id: this.selectedStatusId,
+                time_start: this.formatTime(this.timeStart),
+                time_end: this.formatTime(this.timeEnd),
             }
 
             try {
@@ -144,20 +187,28 @@ export default {
                     data,
                     { withCredentials: true }
                 );
-
-                alert('Статус успешно обновлён!')
-
             } catch (error) {
                 console.log(error.response.data);
 
                 alert(error.response?.data?.error || 'Ошибка обновления статуса');
+            } finally {
+                this.changeMode = false;
             }
             this.closeModal();
+        },
+        formatTime(timeObject) {
+            if (!timeObject) return null;
+
+            const hours = String(timeObject.hours).padStart(2, '0');
+            const minutes = String(timeObject.minutes).padStart(2, '0');
+
+            return `${hours}:${minutes}`;
         },
         openModal() {
             let th = this
             setTimeout(function () {
                 th.isModalOpen = true;
+
             }, 200)
         },
         closeModal() {

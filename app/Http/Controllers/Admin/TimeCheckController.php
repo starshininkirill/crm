@@ -19,18 +19,9 @@ class TimeCheckController extends Controller
         $date = $request->get('date') ?? Carbon::now()->format('Y-m-d');
         $workStatuses = WorkStatus::all();
 
-        DB::enableQueryLog();
-
         $todayReport = $servise->getCurrentWorkTimeReport();
         $dateReport = $servise->getWorkTimeDayReport($date);
         $logReport = $servise->getLogReport($date);
-
-        $queries = DB::getQueryLog();
-        $queryCount = count($queries);
-
-        // dd($queryCount);
-        // dd($logReport);
-
 
         return Inertia::render('Admin/TimeCheck/Index', [
             'todayReport' => $todayReport,

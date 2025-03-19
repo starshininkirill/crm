@@ -7,7 +7,8 @@ use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;
 use App\Models\User;
-use App\Services\UserService;
+use App\Services\UserServices\UserService;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class UserController
@@ -29,7 +30,6 @@ class UserController
                 return $user;
             });
 
-
         $departments = Department::mainDepartments()->load('positions');
         $positions = Position::all();
         $employmentTypes = EmploymentType::all();
@@ -39,6 +39,19 @@ class UserController
             'positions' => $positions,
             'departments' => $departments,
             'employmentTypes' => $employmentTypes,
+        ]);
+    }
+
+    public function timeSheet()
+    {
+        $targetDate = Carbon::now()->addMonth();
+
+        $daysInMonth = $targetDate->daysInMonth;
+
+        $days = array_fill(1, $daysInMonth, []);
+
+        return Inertia::render('Admin/User/TimeSheet/Index',[
+            'days' => $days,
         ]);
     }
 

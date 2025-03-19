@@ -1,6 +1,6 @@
 <template>
     <ContractLayout>
-
+ 
         <Head :title="`Договор № ${contract.id}`" />
 
         <div class="contract-page-wrapper flex flex-col">
@@ -49,7 +49,6 @@ export default {
             required: true,
         },
     },
-    layout: ContractLayout,
 }
 
 </script>

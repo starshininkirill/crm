@@ -42,8 +42,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['full_name'];
-
     protected function casts(): array
     {
         return [
@@ -52,6 +50,7 @@ class User extends Authenticatable
         ];
     }
 
+    protected $appends = ['full_name'];
 
     protected function fullName(): Attribute
     {
@@ -121,37 +120,6 @@ class User extends Authenticatable
     public function getLastAction(Carbon $date = null)
     {
         return $this->lastAction($date)->first();
-    }
-
-    public function getFirstWorkingDay(): Carbon
-    {
-
-        $employmentDate = $this->created_at;
-
-        $workingDays = DateHelper::getWorkingDaysInMonth($employmentDate);
-
-        while (!$workingDays->contains($employmentDate->format('Y-m-d'))) {
-            $employmentDate->add(1, 'day');
-        }
-
-        return $employmentDate;
-    }
-    public function getMonthWorked(Carbon $date = null): int
-    {
-        $date = $date ?? Carbon::now();
-
-        $employmentDate = $this->getFirstWorkingDay();
-        if ($date->format('Y-m') == $employmentDate->format('Y-m')) {
-            return 1;
-        }
-
-        $startWorkingDay = $employmentDate->format('d');
-
-        $monthsWorked = $employmentDate->floorMonth()->diffInMonths($date->floorMonth()) + 1;
-        if ($startWorkingDay > 7) {
-            $monthsWorked--;
-        }
-        return $monthsWorked;
     }
 
     public function monthlyClosePaymentsWithRelations(Carbon $date): Collection

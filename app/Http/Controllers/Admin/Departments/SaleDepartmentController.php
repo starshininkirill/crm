@@ -16,6 +16,7 @@ use App\Models\WorkPlan;
 use App\Services\CallHistoryService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
+use App\Services\UserServices\UserService;
 use App\Services\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
@@ -64,7 +65,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request)
+    public function userReport(Request $request, UserService $userServive)
     {
         $departments = Department::getSaleDepartments();
 
@@ -74,15 +75,15 @@ class SaleDepartmentController extends Controller
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
 
-        $allUsers = $departments->whereNull('parent_id')->first()->activeUsers();
+        $allUsers = $departments->whereNull('parent_id')->first()->allUsers();
 
         if ($request->filled(['user', 'date'])) {
             try {
                 $date = DateHelper::getValidatedDateOrNow($request->get('date'));
                 $user = User::find($request->get('user'));
-                $users = $selectDepartment->activeUsers($date);
+                $users = $selectDepartment->allUsers($date);
 
-                if ($user->getFirstWorkingDay()->format('Y-m') > $date->format('Y-m')) {
+                if ($userServive->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
                     $error = 'Сотрудник ещё не работал в этот месяц.';
                 }
 

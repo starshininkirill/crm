@@ -43,12 +43,11 @@ class Department extends Model
 
     public function allUsers(): SimpleCollection
     {
-        $users = collect();
+        $users = $this->hasMany(User::class, 'department_id')->get();
 
-        $users = $users->merge($this->hasMany(User::class, 'department_id')->get());
 
         $this->childDepartments->each(function ($childDepartment) use (&$users) {
-            $users = $users->merge($childDepartment->users());
+            $users = $users->merge($childDepartment->users()->get());
         });
 
         return $users;
