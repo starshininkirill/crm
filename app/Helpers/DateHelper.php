@@ -11,6 +11,21 @@ use Exception;
 
 class DateHelper
 {
+    protected static $cachedWorkingDays = [];
+
+    public static function daysInMonth(Carbon $date): Collection
+    {
+        $daysInMonth = $date->daysInMonth;
+
+        return Collection::range(1, $daysInMonth)
+            ->mapWithKeys(function ($day) use ($date) {
+                $dayDate = Carbon::create($date->year, $date->month, $day);
+                return [$day => [
+                    'date' => $dayDate,
+                ]];
+            });
+    }
+
     public static function workingCalendar(int $year): Collection
     {
         $months = collect();
@@ -82,17 +97,29 @@ class DateHelper
 
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
-        if ($workingDays == null) {
-            $dateInstance = WorkingDay::whereDate('date', $date)->first();
+        // Форматируем дату для использования в качестве ключа
+        $dateKey = $date->format('Y-m-d');
+
+        // Проверяем, есть ли данные в кеше
+        if (isset(self::$cachedWorkingDays[$dateKey])) {
+            return self::$cachedWorkingDays[$dateKey];
+        }
+
+        // Если переданы рабочие дни, используем их
+        if ($workingDays !== null) {
+            $dateInstance = $workingDays->where('date', $dateKey)->first();
         } else {
-            $dateInstance = $workingDays->where('date', $date->format('Y-m-d'))->first();
+            // Иначе загружаем данные из базы данных
+            $dateInstance = WorkingDay::whereDate('date', $date)->first();
         }
 
-        if ($dateInstance) {
-            return $dateInstance->isWorkingDay();
-        }
+        // Определяем, является ли день рабочим
+        $isWorkingDay = $dateInstance ? $dateInstance->isWorkingDay() : $date->isWeekday();
 
-        return $date->isWeekday();
+        // Кешируем результат
+        self::$cachedWorkingDays[$dateKey] = $isWorkingDay;
+
+        return $isWorkingDay;
     }
 
     public static function getValidatedDateOrNow(string|null $date, string $format = 'Y-m'): Carbon

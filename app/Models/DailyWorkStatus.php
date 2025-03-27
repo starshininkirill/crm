@@ -20,6 +20,10 @@ class DailyWorkStatus extends Model
         'time_end'
     ];
 
+    protected $casts = [
+        'date' => 'datetime:Y-m-d',
+    ];
+
     public $timestamps = false;
 
     public function user(): BelongsTo

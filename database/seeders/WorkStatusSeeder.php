@@ -21,11 +21,13 @@ class WorkStatusSeeder extends Seeder
 
         WorkStatus::create([
             'name' => 'День за свой счет',
+            'type' => WorkStatus::TYPE_OWN_DAY,
             'hours' => 0
         ]);
 
         WorkStatus::create([
             'name' => 'Отпуск',
+            'type' => WorkStatus::TYPE_VACATION,
             'hours' => 9
         ]);
 
@@ -40,6 +42,18 @@ class WorkStatusSeeder extends Seeder
             'name' => 'Неполный рабочий день',
             'hours' => null,
             'type' => WorkStatus::TYPE_PART_TIME_DAY,
+        ]);
+
+        WorkStatus::create([
+            'name' => 'Опоздание',
+            'hours' => null,
+            'type' => WorkStatus::TYPE_LATE,
+        ]);
+
+        WorkStatus::create([
+            'name' => 'Переработка',
+            'hours' => null,
+            'type' => WorkStatus::TYPE_OVERWORK,
         ]);
     }
 }

@@ -10,6 +10,9 @@ class TimeCheck extends Model
 {
     use HasFactory;
 
+    const DEFAULT_DAY_START = '09:01:00';
+    const DEAFULT_BREAKTIME = '01:20:00';
+
     public $timestamps = false;
 
     public $fillable = [

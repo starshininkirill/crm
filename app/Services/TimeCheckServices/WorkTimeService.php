@@ -21,7 +21,7 @@ class WorkTimeService
         }
         
         if(!$this->startTime){
-            $this->startTime = Option::whereName('time_check_start_work_day_time')->first()->value ?? '09:01:00';
+            $this->startTime = TimeCheck::DEFAULT_DAY_START;
         }
 
         $startTime = $actionStart->date->copy()->setTimeFromTimeString($this->startTime);
@@ -36,7 +36,7 @@ class WorkTimeService
     public function isBreakOvertime(int $breaktime): bool
     {
         if(!$this->maxBrektime){
-            $this->maxBrektime = Option::whereName('time_check_max_breaktime')->first()->value ?? '01:21:00';
+            $this->maxBrektime = TimeCheck::DEAFULT_BREAKTIME;
         }
 
         $maxBrektime = Carbon::createFromFormat('H:i:s', $this->maxBrektime);

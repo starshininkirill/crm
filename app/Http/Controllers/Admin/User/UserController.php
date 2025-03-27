@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin\User;
 
+use App\Helpers\DateHelper;
 use App\Http\Requests\Admin\UserRequest;
 use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;
 use App\Models\User;
+use App\Services\UserServices\TimeSheetService;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Inertia\Inertia;
@@ -42,16 +44,23 @@ class UserController
         ]);
     }
 
-    public function timeSheet()
+    public function timeSheet(UserRequest $request, TimeSheetService $service)
     {
-        $targetDate = Carbon::now()->addMonth();
+        $departments = Department::all();
+        $targetDate = Carbon::now();
 
-        $daysInMonth = $targetDate->daysInMonth;
+        $days = DateHelper::daysInMonth($targetDate);
 
-        $days = array_fill(1, $daysInMonth, []);
+        $department = Department::whereType(Department::SALE_DEPARTMENT)->whereNull('parent_id')->first();
+        $users = $department->allUsers();
+
+        $usersReport = $service->generateUsersReport($users, $targetDate);
 
         return Inertia::render('Admin/User/TimeSheet/Index',[
             'days' => $days,
+            'departments' => $departments,
+            'date' => $targetDate,
+            'usersReport' => $usersReport,
         ]);
     }
 

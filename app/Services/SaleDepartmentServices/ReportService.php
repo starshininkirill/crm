@@ -6,11 +6,9 @@ use App\Models\User;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\ServiceCategory;
-use App\Models\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleDepartmentServices\PlansService;
-use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
