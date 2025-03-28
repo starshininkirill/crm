@@ -2,6 +2,7 @@
 
 namespace App\Services\TimeCheckServices;
 
+use App\Events\StartWorkDay;
 use App\Exceptions\Business\BusinessException;
 use App\Models\TimeCheck;
 use App\Models\User;
@@ -11,8 +12,8 @@ class ActionsService
 {
     public function __construct(
         protected WorkTimeService $workTimeService,
-    ){}    
-    
+    ) {}
+
     public function handleAction(string $action, User $user)
     {
         if (!method_exists($this, $action)) {
@@ -40,7 +41,16 @@ class ActionsService
             throw new BusinessException('Рабочий день уже завершён');
         }
 
-        return $this->registerAction($user, TimeCheck::ACTION_START);
+
+        $action = $this->registerAction($user, TimeCheck::ACTION_START);
+
+        if(!$action){
+            return false;
+        }
+
+        StartWorkDay::dispatch($action);
+
+        return true;
     }
 
     private function pause(User $user): bool
@@ -61,7 +71,11 @@ class ActionsService
             throw new BusinessException('Сейчас на перерыв нельзя');
         }
 
-        return $this->registerAction($user, TimeCheck::ACTION_PAUSE);
+        if($this->registerAction($user, TimeCheck::ACTION_PAUSE)){
+            return true;
+        }
+        
+        return false;
     }
 
     private function continue(User $user)
@@ -83,7 +97,7 @@ class ActionsService
         return $this->workTimeService->userBreaktime($user);
     }
 
-    private function end(User $user): bool
+    private function end(User $user)
     {
         $lastAction = $user->getLastAction();
 
@@ -98,7 +112,7 @@ class ActionsService
         return $this->registerAction($user, TimeCheck::ACTION_END);
     }
 
-    private function registerAction(User $user, $action): bool
+    private function registerAction(User $user, $action)
     {
         $isCreate = $user->timeChecks()->create([
             'date' => Carbon::now(),
@@ -106,10 +120,10 @@ class ActionsService
         ]);
 
         if ($isCreate) {
-            return true;
+            return $isCreate;
         }
 
-        return false;
+        return null;
     }
 
     private function canGoBreak(User $user): bool

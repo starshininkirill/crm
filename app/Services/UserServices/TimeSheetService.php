@@ -4,17 +4,23 @@ namespace App\Services\UserServices;
 
 use App\Helpers\DateHelper;
 use App\Models\User;
+use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 
 class TimeSheetService
 {
+    public function __construct(
+        private WorkTimeService $service
+    ){}
+
     public function generateUsersReport(Collection $users, Carbon $date)
     {
         $this->loadRelation($users, $date);
 
         $usersReport = $users->map(function ($user) use ($date) {
+            $user['salary'] = $user->salary();
             $user['days'] = $this->userMonthReport($user, $date);
             return $user;
         });
@@ -39,8 +45,10 @@ class TimeSheetService
         $day['status'] = $user->dailyWorkStatuses->first(function ($status) use ($day) {
             return $status->date->isSameDay($day['date']);
         });
-        
+
         $day['isWorkingDay'] = DateHelper::isWorkingDay($day['date']);
+        
+        $day['hours'] = $this->service->countWorkHours($user, Carbon::parse($day['date']));
 
         return $day;
     }
@@ -66,7 +74,7 @@ class TimeSheetService
 
             $users->load(['dailyWorkStatuses' => function ($query) use ($dateStart, $dateEnd) {
                 $query->whereBetween('date', [$dateStart, $dateEnd])
-                      ->with('workStatus');
+                    ->with(['workStatus']);
             }]);
 
             return true;

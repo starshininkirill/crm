@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_status_id')->constrained()->onDelete('cascade');
             $table->boolean('confirmed')->default(false);
-            $table->decimal('hours', 2, 1)->nullable()->default(null);
+            $table->float('hours')->nullable()->default(null);
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();
         });

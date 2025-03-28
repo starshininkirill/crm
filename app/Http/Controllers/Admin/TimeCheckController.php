@@ -17,7 +17,7 @@ class TimeCheckController extends Controller
     public function index(Request $request, ReportService $servise)
     {
         $date = $request->get('date') ?? Carbon::now()->format('Y-m-d');
-        $workStatuses = WorkStatus::all();
+        $workStatuses = WorkStatus::mainStatuses()->get();
 
         $todayReport = $servise->getCurrentWorkTimeReport();
         $dateReport = $servise->getWorkTimeDayReport($date);

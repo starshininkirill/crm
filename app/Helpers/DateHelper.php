@@ -97,26 +97,20 @@ class DateHelper
 
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
-        // Форматируем дату для использования в качестве ключа
         $dateKey = $date->format('Y-m-d');
 
-        // Проверяем, есть ли данные в кеше
         if (isset(self::$cachedWorkingDays[$dateKey])) {
             return self::$cachedWorkingDays[$dateKey];
         }
 
-        // Если переданы рабочие дни, используем их
         if ($workingDays !== null) {
             $dateInstance = $workingDays->where('date', $dateKey)->first();
         } else {
-            // Иначе загружаем данные из базы данных
             $dateInstance = WorkingDay::whereDate('date', $date)->first();
         }
 
-        // Определяем, является ли день рабочим
         $isWorkingDay = $dateInstance ? $dateInstance->isWorkingDay() : $date->isWeekday();
 
-        // Кешируем результат
         self::$cachedWorkingDays[$dateKey] = $isWorkingDay;
 
         return $isWorkingDay;

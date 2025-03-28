@@ -11,7 +11,9 @@ class TimeCheck extends Model
     use HasFactory;
 
     const DEFAULT_DAY_START = '09:01:00';
+    const DEFAULT_DAY_END = '18:00:00';
     const DEAFULT_BREAKTIME = '01:20:00';
+    const DEFAULT_WORKING_DAY_DURATION = 9;
 
     public $timestamps = false;
 

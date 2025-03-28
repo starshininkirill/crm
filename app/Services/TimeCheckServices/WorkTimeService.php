@@ -2,9 +2,10 @@
 
 namespace App\Services\TimeCheckServices;
 
-use App\Models\Option;
+use App\Helpers\DateHelper;
 use App\Models\TimeCheck;
-use App\Models\User; 
+use App\Models\User;
+use App\Models\WorkStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -14,13 +15,46 @@ class WorkTimeService
     private $startTime;
     private $maxBrektime;
 
+    public function countWorkHours(User $user, Carbon $date): float|int|string
+    {
+        $statusesForDay = $user->dailyWorkStatuses->filter(function ($dailyWorkStatus) use ($date) {
+            return $dailyWorkStatus->date->isSameDay($date) &&
+                !in_array($dailyWorkStatus->workStatus?->type, WorkStatus::EXCLUDE_TYPES);
+        });
+
+        $timeChecksForDay = $user->timeChecks->filter(function ($timeCheck) use ($date) {
+            return $timeCheck->date->isSameDay($date);
+        });
+
+        if (($confirmedHours = $this->hoursFromStatus($statusesForDay)) !== null) {
+            return $confirmedHours;
+        }
+
+        if ($date->isToday() || !DateHelper::isWorkingDay($date)) {
+            return '';
+        }
+
+        $startTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_START)?->date;
+        $endTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_END)?->date;
+
+        if (!$startTime || !$endTime) {
+            return '';
+        }
+
+        if ($startTime->format('H:i:s') <= TimeCheck::DEFAULT_DAY_START && $endTime->format('H:i:s') >= TimeCheck::DEFAULT_DAY_END) {
+            return TimeCheck::DEFAULT_WORKING_DAY_DURATION;
+        }
+
+        return $this->hoursFromTimeCheck($startTime, $endTime);
+    }
+
     public function isUserLate(TimeCheck|null $actionStart): bool
     {
-        if(!$actionStart){
+        if (!$actionStart) {
             return false;
         }
-        
-        if(!$this->startTime){
+
+        if (!$this->startTime) {
             $this->startTime = TimeCheck::DEFAULT_DAY_START;
         }
 
@@ -29,13 +63,13 @@ class WorkTimeService
         if ($actionStart->date->gt($startTime)) {
             return true;
         }
-        
+
         return false;
     }
 
     public function isBreakOvertime(int $breaktime): bool
     {
-        if(!$this->maxBrektime){
+        if (!$this->maxBrektime) {
             $this->maxBrektime = TimeCheck::DEAFULT_BREAKTIME;
         }
 
@@ -43,12 +77,12 @@ class WorkTimeService
 
         $maxBrektimeCarbon = Carbon::createFromFormat('H:i:s', $this->maxBrektime);
 
-        $maxBrektimeInSeconds = $maxBrektimeCarbon->hour * 3600 
-            + $maxBrektimeCarbon->minute * 60 
+        $maxBrektimeInSeconds = $maxBrektimeCarbon->hour * 3600
+            + $maxBrektimeCarbon->minute * 60
             + $maxBrektimeCarbon->second;
-    
 
-        if($breaktime > $maxBrektimeInSeconds){
+
+        if ($breaktime > $maxBrektimeInSeconds) {
             return true;
         }
 
@@ -99,6 +133,50 @@ class WorkTimeService
         }
 
         return $totalBreakTime;
+    }
+
+    private function hoursFromStatus(Collection $statusesForDay): ?float
+    {
+        if ($statusesForDay->isNotEmpty()) {
+            $status = $statusesForDay->first();
+
+            if ($status->hours) {
+                if ($status->confirmed) {
+                    return $status->hours;
+                } else {
+                    return 0;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function hoursFromTimeCheck(Carbon $startTime, Carbon $endTime): float
+    {
+        $adjustedStartTime = $this->adjustTimeToNearestInterval($startTime);
+        $adjustedEndTime = $this->adjustTimeToNearestInterval($endTime);
+
+        $hours = $adjustedStartTime->diffInHours($adjustedEndTime);
+
+        return min($hours, TimeCheck::DEFAULT_WORKING_DAY_DURATION);
+    }
+
+
+    private function adjustTimeToNearestInterval(Carbon $time): Carbon
+    {
+        $minutes = $time->minute;
+
+        if ($minutes >= 0 && $minutes < 15) {
+            // Сдвигаем до 0 минут
+            return $time->copy()->setTime($time->hour, 0);
+        } elseif ($minutes >= 15 && $minutes < 45) {
+            // Сдвигаем до 30 минут
+            return $time->copy()->setTime($time->hour, 30);
+        } else {
+            // Сдвигаем до следующего часа (0 минут)
+            return $time->copy()->addHour()->setTime($time->hour + 1, 0);
+        }
     }
 
     private function getBreakTimeChecks(User $user, Carbon $date): Collection

@@ -15,7 +15,7 @@
             </div>
             <div class="w-1/4 flex flex-col">
                 <label class="label">Дата</label>
-                <VueDatePicker v-model="selectedDate" auto-apply="true" month-picker locale="ru" class="h-full" />
+                <VueDatePicker v-model="selectedDate" :auto-apply="true" month-picker locale="ru" class="h-full" />
             </div>
             <div class="btn h-fit mt-auto !w-fit">
                 Выбрать
@@ -38,7 +38,7 @@
                     <th scope="col" class="px-3 py-3 border-r">
                         ФИО
                     </th>
-                    <th v-for="(day, idx) in days" scope="col" class="px-1 py-3 border-r">
+                    <th v-for="(day, idx) in days" scope="col" class="px-1 py-3 border-r text-center">
                         {{ idx }}
                     </th>
                 </tr>
@@ -46,19 +46,19 @@
             <tbody>
                 <tr v-for="user in usersReport" :key="user.id" class="bg-white border-b   hover:bg-gray-50 ">
                     <td class="px-3 py-4 border-r">
-                        0
+                        {{ formatPrice(user.salary) }}
                     </td>
                     <td class="px-3 py-4 border-r">
                         0
                     </td>
                     <th scope="row" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
-                        Должность
+                        {{ user.position?.name ?? 'Не указана' }}
                     </th>
                     <th scope="row" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.full_name }}
                     </th>
-                    <td v-for="day in user.days" class="px-3 py-4 border-r" :class="getActionColor(day)">
-                        {{ day.isWorkingDay == false ? '' : '9' }}
+                    <td v-for="day in user.days" class="px-3 py-4 border-r text-center" :class="getActionColor(day)">
+                        {{ day.hours }}
                     </td>
                 </tr>
             </tbody>
@@ -81,7 +81,7 @@ export default {
     },
     props: {
         days: {
-            type: Array,
+            type: Object,
             required: true,
         },
         departments: {
@@ -105,15 +105,19 @@ export default {
     },
     methods: {
         getActionColor(day) {
+            
             if (day.status) {
-                if (day.status.work_status.type == "sick_leave" || day.status.work_status.type == "own_day") {
-                    return 'bg-cyan-400';
+                if(day.status.work_status?.type == 'late'){
+                    return 'bg-red-500 text-white';
                 }
-                if (day.status.work_status.type == "homework") {
-                    return 'bg-orange-400'
+                if (day.status.work_status?.type == "sick_leave" || day.status.work_status?.type == "own_day") {
+                    return 'bg-cyan-400 text-white';
                 }
-                if (day.status.work_status.type == "vacation") {
-                    return 'bg-stone-400'
+                if (day.status.work_status?.type == "homework") {
+                    return 'bg-orange-400 text-white'
+                }
+                if (day.status.work_status?.type == "vacation") {
+                    return 'bg-stone-400 text-white'
                 }
             }
 

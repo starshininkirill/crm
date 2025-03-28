@@ -63,8 +63,6 @@ class WorkStatusService
 
     private function updateDailyWorkStatus(DailyWorkStatus $dailyWorkStatus, array $data)
     {
-        // $workStatus = $dailyWorkStatus->workStatus;
-
         if (array_key_exists('work_status_id', $data)) {
             $workStatus = WorkStatus::find($data['work_status_id']);
 
@@ -93,6 +91,9 @@ class WorkStatusService
     {
         return DailyWorkStatus::query()->whereDate('date', $date)
             ->where('user_id', $userId)
+            ->whereHas('workStatus', function ($query) {
+                $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
+            })
             ->first();
     }
 }

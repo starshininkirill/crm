@@ -104,6 +104,18 @@ class User extends Authenticatable
         return $this->hasMany(DailyWorkStatus::class);
     }
 
+    public function salary(): int
+    {
+        $position = $this->position;
+        
+        if(!$position){
+            return 0;
+        }
+
+        return $position->salary ?? 0;
+        
+    }
+
     public function lastAction(Carbon $date = null): HasOne
     {
         if ($date) {

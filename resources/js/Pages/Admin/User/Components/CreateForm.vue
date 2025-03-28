@@ -17,27 +17,6 @@
         </div>
 
 
-        <div class="grid grid-cols-2 gap-4">
-            <FormInput type="number" v-model="form.salary" name="salary" label="Персональная ставка"
-                placeholder="Персональная ставка"
-                info="Заполните если персональная ставка сотрудника отличатся от ставки по должности" />
-            <div>
-                <div class="label">
-                    Испытательный срок?
-                </div>
-                <div class="grid grid-cols-2">
-                    <label class="flex gap-1 items-center cursor-pointer w-fit">
-                        <input v-model="form.probation" checked type="radio" name="probation" value="1">
-                        Да
-                    </label>
-                    <label class="flex gap-1 items-center cursor-pointer w-fit">
-                        <input v-model="form.probation" type="radio" name="probation" value="0">
-                        Нет
-                    </label>
-                </div>
-            </div>
-        </div>
-
         <div class="flex flex-col">
             <span class="label">
                 Тип устройства
@@ -67,6 +46,26 @@
             <VueSelect v-model="form.position_id" :reduce="position => position.id" label="name"
                 :options="activePositions">
             </VueSelect>
+        </div>
+
+        <div v-if="form.position_id" class="grid grid-cols-2 gap-4">
+            <FormInput type="number" v-model="form.salary" name="salary" readonly label="Ставка"
+                placeholder="Ставка"/>
+            <div>
+                <div class="label">
+                    Испытательный срок?
+                </div>
+                <div class="grid grid-cols-2">
+                    <label class="flex gap-1 items-center cursor-pointer w-fit">
+                        <input v-model="form.probation" checked type="radio" name="probation" value="1">
+                        Да
+                    </label>
+                    <label class="flex gap-1 items-center cursor-pointer w-fit">
+                        <input v-model="form.probation" type="radio" name="probation" value="0">
+                        Нет
+                    </label>
+                </div>
+            </div>
         </div>
 
         <button class="btn">
@@ -126,6 +125,10 @@ export default {
             handler: 'updatePositions',
             deep: true,
         },
+        'form.position_id': {
+            handler: 'updateSalary',
+            deep: true,
+        },
         'form.employment_type_id': {
             handler: 'setEmploymentFields',
             deep: true,
@@ -161,6 +164,10 @@ export default {
             if (!this.activePositions.includes(this.form.position_id)) {
                 this.form.position_id = null;
             }
+        },
+        updateSalary(){
+            let position = this.positions.find(department => department.id === this.form.position_id)
+            this.form.salary = position.salary
         },
         setEmploymentFields() {
             let activeEmploymentType = this.employmentTypes.find(type => type.id === this.form.employment_type_id);

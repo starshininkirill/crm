@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\WorkStatusExcludeScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,7 +18,7 @@ class WorkStatus extends Model
     const TYPE_OVERWORK = 'overwork';
 
     // Типы которые по умолчанию удаляем из запроса
-    public $excludeTypes = [
+    const EXCLUDE_TYPES = [
         self::TYPE_LATE,
         self::TYPE_OVERWORK,
     ];
@@ -28,20 +27,18 @@ class WorkStatus extends Model
     
     public $timestamps = false;
 
-    protected static function booted(): void
+    public static function mainStatuses()
     {
-        static::addGlobalScope(new WorkStatusExcludeScope);
+        return self::whereNotIn('type', self::EXCLUDE_TYPES);
     }
 
     public static function lateStatuses()
     {
-        return self::withoutGlobalScope(WorkStatusExcludeScope::class)
-            ->where('type', self::TYPE_LATE);
+        return self::where('type', self::TYPE_LATE);
     }
 
     public static function overworkStatuses()
     {
-        return self::withoutGlobalScope(WorkStatusExcludeScope::class)
-            ->where('type', self::TYPE_OVERWORK);
+        return self::where('type', self::TYPE_OVERWORK);
     }
 }
