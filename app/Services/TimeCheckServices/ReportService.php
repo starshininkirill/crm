@@ -3,6 +3,7 @@
 namespace App\Services\TimeCheckServices;
 
 use App\Models\Department;
+use App\Models\WorkStatus;
 use Carbon\Carbon;
 
 class ReportService
@@ -64,8 +65,13 @@ class ReportService
 
                 if (!empty($relations)) {
                     foreach ($relations as $relation) {
-                        $query->with([$relation => function ($query) use ($date) {
+                        $query->with([$relation => function ($query) use ($date, $relation) {
                             $query->whereDate('date', $date);
+                            if ($relation == 'dailyWorkStatuses') {
+                                $query->whereHas('workStatus', function ($query) {
+                                    $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
+                                });
+                            }
                         }]);
                     }
                 }
@@ -77,8 +83,13 @@ class ReportService
 
                 if (!empty($relations)) {
                     foreach ($relations as $relation) {
-                        $query->with([$relation => function ($query) use ($date) {
+                        $query->with([$relation => function ($query) use ($date, $relation) {
                             $query->whereDate('date', $date);
+                            if ($relation == 'dailyWorkStatuses') {
+                                $query->whereHas('workStatus', function ($query) {
+                                    $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
+                                });
+                            }
                         }]);
                     }
                 }

@@ -17,7 +17,8 @@ class DailyWorkStatus extends Model
         'confirmed', 
         'hours', 
         'time_start', 
-        'time_end'
+        'time_end',
+        'description'
     ];
 
     protected $casts = [

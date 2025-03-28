@@ -34,6 +34,16 @@
                         Платёж СБП
                         </Link>
                     </li>
+                    <li class=" ml-auto">
+                        <Link :href="route('lk.overwork.create')" :class="[
+                            'inline-block p-4 rounded-t-lg border-b-2',
+                            isActive('lk.overwork.create')
+                                ? 'text-blue-600 border-blue-600  '
+                                : 'border-transparent hover:text-gray-600 hover:border-gray-300 '
+                        ]">
+                        Переработки
+                        </Link>
+                    </li>
 
                 </ul>
             </div>

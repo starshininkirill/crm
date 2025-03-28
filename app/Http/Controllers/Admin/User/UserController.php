@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Admin\User;
 
-use App\Helpers\DateHelper;
 use App\Http\Requests\Admin\UserRequest;
 use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;
 use App\Models\User;
-use App\Services\UserServices\TimeSheetService;
 use App\Services\UserServices\UserService;
-use Carbon\Carbon;
 use Inertia\Inertia;
 
 class UserController
@@ -18,7 +15,6 @@ class UserController
 
     public function index(UserRequest $request)
     {
-
         $departmentId = $request->get('department'); // Получаем значение department из запроса
 
         $users = User::with('position', 'department')
@@ -41,26 +37,6 @@ class UserController
             'positions' => $positions,
             'departments' => $departments,
             'employmentTypes' => $employmentTypes,
-        ]);
-    }
-
-    public function timeSheet(UserRequest $request, TimeSheetService $service)
-    {
-        $departments = Department::all();
-        $targetDate = Carbon::now();
-
-        $days = DateHelper::daysInMonth($targetDate);
-
-        $department = Department::whereType(Department::SALE_DEPARTMENT)->whereNull('parent_id')->first();
-        $users = $department->allUsers();
-
-        $usersReport = $service->generateUsersReport($users, $targetDate);
-
-        return Inertia::render('Admin/User/TimeSheet/Index',[
-            'days' => $days,
-            'departments' => $departments,
-            'date' => $targetDate,
-            'usersReport' => $usersReport,
         ]);
     }
 

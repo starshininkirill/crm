@@ -4,6 +4,12 @@
             <AdminSubnavLink :href="route('admin.time-check.index')" :route="'admin.time-check.index'">
                 Time Check
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.time-sheet')" :route="'admin.time-sheet'">
+                Кадровый табель
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.time-check.overwork')" :route="'admin.time-check.overwork'">
+                Переработки
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Lk\ContractGeneratorController;
 use App\Http\Controllers\Lk\MainController;
 use App\Http\Controllers\Lk\ActGeneratorController;
+use App\Http\Controllers\Lk\OverworkController;
 use App\Http\Controllers\Lk\SbpGeneratorController;
 
 
@@ -24,5 +25,10 @@ Route::middleware('auth')->prefix('/lk')->group(function () {
     Route::prefix('/sbp')->group(function () {
         Route::get('/create', [SbpGeneratorController::class, 'create'])->name('lk.sbp.create');
         Route::post('/store', [SbpGeneratorController::class, 'store'])->name('lk.sbp.store');
+    });
+
+    Route::prefix('/overworks')->group(function () {
+        Route::get('/create', [OverworkController::class, 'create'])->name('lk.overwork.create');
+        Route::post('/store', [OverworkController::class, 'store'])->name('lk.overwork.store');
     });
 });

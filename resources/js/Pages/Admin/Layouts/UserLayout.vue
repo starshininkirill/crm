@@ -4,9 +4,6 @@
             <AdminSubnavLink :href="route('admin.user.index')" :route="'admin.user.index'">
                 Сотрудники
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.time-sheet')" :route="'admin.time-sheet'">
-                Кадровый табель
-            </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.position.index')" :route="'admin.position.index'">
                 Должности
             </AdminSubnavLink>

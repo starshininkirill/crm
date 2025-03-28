@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('users')->group(function () {
 
-    Route::get('/time-sheet', [UserController::class, 'timeSheet'])->name('admin.time-sheet');
-
     Route::prefix('employment-types')->group(function () {
         Route::get('/', [EmploymentTypeController::class, 'index'])->name('admin.employment-type.index');
         Route::post('/', [EmploymentTypeController::class, 'store'])->name('admin.employment-type.store');

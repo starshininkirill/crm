@@ -1,5 +1,5 @@
 <template>
-    <UserLayout>
+    <TimeCheckLayout>
 
         <Head title="Кадровый табель" />
         <div class="contract-page-wrapper flex flex-col">
@@ -63,19 +63,19 @@
                 </tr>
             </tbody>
         </table>
-    </UserLayout>
+    </TimeCheckLayout>
 </template>
 
 <script>
 import { Head } from '@inertiajs/vue3';
-import UserLayout from '../../Layouts/UserLayout.vue';
+import TimeCheckLayout from '../../Layouts/TimeCheckLayout.vue';
 import VueSelect from 'vue-select';
 import VueDatePicker from '@vuepic/vue-datepicker'
 
 export default {
     components: {
         Head,
-        UserLayout,
+        TimeCheckLayout,
         VueSelect,
         VueDatePicker
     },

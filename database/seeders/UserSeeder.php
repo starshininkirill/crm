@@ -44,7 +44,8 @@ class UserSeeder extends Seeder
             'email' => 'admin@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'role' => 'admin',
-            'position_id' => null,
+            'position_id' => 5,
+            'department_id' => 4,
         ]);
         $sale1 = User::create([
             'first_name' => 'Кирилл',

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('type')->unique();
             $table->decimal('hours', 2, 1)->nullable()->default(null);
             $table->boolean('need_confirmation')->default(false);
-            $table->text('description')->nullable();
         });
     }
 
