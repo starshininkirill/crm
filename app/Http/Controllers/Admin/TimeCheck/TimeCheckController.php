@@ -18,7 +18,7 @@ class TimeCheckController extends Controller
         $date = $request->get('date') ?? Carbon::now()->format('Y-m-d');
         $workStatuses = WorkStatus::mainStatuses()->get();
 
-        $todayReport = $servise->getCurrentWorkTimeReport();
+        $todayReport = $servise->getCurrentWorkTimeReport($date);
         $dateReport = $servise->getWorkTimeDayReport($date);
         $logReport = $servise->getLogReport($date);
 

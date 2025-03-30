@@ -58,7 +58,7 @@
                         {{ user.full_name }}
                     </th>
                     <td v-for="day in user.days" class="px-3 py-4 border-r text-center" :class="getActionColor(day)">
-                        {{ day.hours }}
+                        {{ day.hours == 0 ? '' : day.hours }}
                     </td>
                 </tr>
             </tbody>
@@ -109,6 +109,12 @@ export default {
             if (day.status) {
                 if(day.status.work_status?.type == 'late'){
                     return 'bg-red-500 text-white';
+                }
+                
+                console.log(day.status);
+                
+                if(day.status.work_status?.type == 'overwork'){
+                    return 'bg-yellow-500 text-white';
                 }
                 if (day.status.work_status?.type == "sick_leave" || day.status.work_status?.type == "own_day") {
                     return 'bg-cyan-400 text-white';

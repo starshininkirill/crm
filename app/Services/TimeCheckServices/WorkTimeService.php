@@ -27,26 +27,33 @@ class WorkTimeService
             return $timeCheck->date->isSameDay($date);
         });
 
+        $overworkHours = $user->dailyWorkStatuses->filter(function ($dailyWorkStatus) use ($date) {
+            return $dailyWorkStatus->date->isSameDay($date)
+                && $dailyWorkStatus->status == DailyWorkStatus::STATUS_APPROVED
+                && in_array($dailyWorkStatus->workStatus?->type, [WorkStatus::TYPE_OVERWORK]);
+        })->sum('hours');
+
+
         if (($confirmedHours = $this->hoursFromStatus($statusesForDay)) !== null) {
-            return $confirmedHours;
+            return $confirmedHours + $overworkHours;
         }
 
         if ($date->isToday() || !DateHelper::isWorkingDay($date)) {
-            return '';
+            return 0 + $overworkHours;
         }
 
         $startTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_START)?->date;
         $endTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_END)?->date;
 
         if (!$startTime || !$endTime) {
-            return '';
+            return 0 + $overworkHours;
         }
 
         if ($startTime->format('H:i:s') <= TimeCheck::DEFAULT_DAY_START && $endTime->format('H:i:s') >= TimeCheck::DEFAULT_DAY_END) {
-            return TimeCheck::DEFAULT_WORKING_DAY_DURATION;
+            return TimeCheck::DEFAULT_WORKING_DAY_DURATION + $overworkHours;
         }
 
-        return $this->hoursFromTimeCheck($startTime, $endTime);
+        return $this->hoursFromTimeCheck($startTime, $endTime) + $overworkHours;
     }
 
     public function isUserLate(TimeCheck|null $actionStart): bool

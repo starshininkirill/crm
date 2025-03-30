@@ -47,7 +47,6 @@ class TimeSheetService
         });
 
         $day['isWorkingDay'] = DateHelper::isWorkingDay($day['date']);
-        
         $day['hours'] = $this->service->countWorkHours($user, Carbon::parse($day['date']));
 
         return $day;

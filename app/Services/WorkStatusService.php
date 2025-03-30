@@ -11,7 +11,7 @@ class WorkStatusService
 {
     public function handleChange(array $data)
     {
-        $existingDailyWorkStatus = $this->getDailyWorkStatus(Carbon::now(), $data['user_id']);
+        $existingDailyWorkStatus = $this->getDailyWorkStatus($data['date'], $data['user_id']);
 
         if ($data['work_status_id'] == null && $existingDailyWorkStatus) {
             $this->deleteDailyWorkStatus($existingDailyWorkStatus);
@@ -44,7 +44,7 @@ class WorkStatusService
         };
 
         $dailyWorkStatus = DailyWorkStatus::create([
-            'date' => Carbon::now(),
+            'date' => $data['date'],
             'user_id' => $data['user_id'],
             'work_status_id' => $data['work_status_id'],
             'status' => $workStatus->need_confirmation ? DailyWorkStatus::STATUS_PENDING : DailyWorkStatus::STATUS_APPROVED,

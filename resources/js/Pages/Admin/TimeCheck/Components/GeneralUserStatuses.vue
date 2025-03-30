@@ -2,8 +2,6 @@
 
     <div class="flex flex-col gap-3">
         <div class="flex flex-col gap-3">
-            <FormInput v-model="reactiveDate" type="date" class="!w-fit" name="date" label="Дата отображания информации"
-                @change="updateDate" />
             <div class="text-xl font-semibold">
                 Общий статус сотрудников на {{ date }}
             </div>
@@ -64,18 +62,6 @@ export default {
             required: true,
         }
     },
-    data() {
-        return {
-            reactiveDate: this.date
-        }
-    },
-    methods: {
-        updateDate(input) {
-            router.get(route('admin.time-check.index'), {
-                date: this.reactiveDate,
-            })
-        },
-    }
 }
 
 </script>

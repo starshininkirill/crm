@@ -12,9 +12,9 @@ class ReportService
         protected WorkTimeService $workTimeService,
     ) {}
 
-    public function getCurrentWorkTimeReport()
+    public function getCurrentWorkTimeReport($date)
     {
-        $report = $this->getTimeChecksInfo(['lastAction', 'dailyWorkStatuses']);
+        $report = $this->getTimeChecksInfo(['lastAction', 'dailyWorkStatuses'], $date);
 
         return $report;
     }

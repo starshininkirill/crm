@@ -23,6 +23,7 @@ class WorkStatusRequest extends FormRequest
     { 
         $rules = [
             'user_id' => 'required|integer|exists:users,id',
+            'date' => 'required|date_format:Y-m-d',
             'work_status_id' => 'nullable|integer|exists:work_statuses,id',
             'time_start' => 'nullable|date_format:H:i',
             'time_end' => 'nullable|date_format:H:i|after_or_equal:date_start',

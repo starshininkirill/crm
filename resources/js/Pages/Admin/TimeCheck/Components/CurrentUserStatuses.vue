@@ -21,7 +21,7 @@
                 </tr>
 
                 <CurrentUserRow v-if="mainDepartment.users" v-for="user in mainDepartment.users" :key="user.id"
-                    :workStatuses="workStatuses" :user="user" />
+                    :workStatuses="workStatuses" :user="user" :date="date" />
 
                 <template v-for="department in mainDepartment.child_departments">
                     <tr class="text-xs text-gray-700 text-center uppercase bg-gray-200  ">
@@ -29,7 +29,7 @@
                     </tr>
 
                     <CurrentUserRow v-if="department.users" v-for="user in department.users" :key="user.id"
-                        :workStatuses="workStatuses" :user="user" />
+                        :workStatuses="workStatuses" :user="user" :date="date" />
                 </template>
             </tbody>
         </table>
@@ -51,6 +51,10 @@ export default {
             type: Array,
             required: true,
         },
+        date: {
+            type: String,
+            required: true,
+        }
     },
 }
 

@@ -86,6 +86,10 @@ export default {
             type: Array,
             required: true,
         },
+        date: {
+            type: String,
+            required: true,
+        }
     },
     data() {
         const updatedStatuses = [
@@ -176,6 +180,7 @@ export default {
 
             let data = {
                 user_id: this.user.id,
+                date: this.date,
                 work_status_id: this.selectedStatusId,
                 time_start: this.formatTime(this.timeStart),
                 time_end: this.formatTime(this.timeEnd),
