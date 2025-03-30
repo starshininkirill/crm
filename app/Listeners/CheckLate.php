@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\StartWorkDay;
+use App\Helpers\DateHelper;
 use App\Models\DailyWorkStatus;
 use App\Models\TimeCheck;
 use App\Models\WorkStatus;
@@ -25,6 +26,10 @@ class CheckLate
      */
     public function handle(StartWorkDay $event): void
     {
+        if(!DateHelper::isWorkingDay($event->action->date)){
+            return;
+        }
+
         $dateStartTime = $event->action->date->format('H:i:s');
 
         if ($dateStartTime < TimeCheck::DEFAULT_DAY_START) {
@@ -50,7 +55,7 @@ class CheckLate
                 'work_status_id' => WorkStatus::lateStatuses()->first()?->id,
             ],
             [
-                'confirmed' => true,
+                'status' => DailyWorkStatus::STATUS_APPROVED,
                 'time_start' => $dateStartTime,
             ]
         );

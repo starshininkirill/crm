@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin\TimeCheck;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\TimeCheck\OverworkRequest;
 use App\Models\DailyWorkStatus;
 use App\Models\WorkStatus;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class OverworkController extends Controller
@@ -14,7 +14,7 @@ class OverworkController extends Controller
     public function index()
     {
         $overworks = DailyWorkStatus::with('user')
-            ->where('confirmed', false)
+            ->where('status', DailyWorkStatus::STATUS_PENDING)
             ->whereHas('workStatus', function ($query) {
                 $query->where('type', WorkStatus::TYPE_OVERWORK);
             })->get();
@@ -24,9 +24,13 @@ class OverworkController extends Controller
         ]);
     }
 
-    public function accept(Request $request, DailyWorkStatus $overwork)
+    public function accept(OverworkRequest $request, DailyWorkStatus $overwork)
     {
-        $overwork->confirmed = true;
+        $validated = $request->validated();
+        
+        $overwork->description = $validated['description'];
+        $overwork->status = DailyWorkStatus::STATUS_APPROVED;
+
         if(!$overwork->save()){
             throw new BusinessException('Не удалось подтвердить переработку');
         }
@@ -34,9 +38,18 @@ class OverworkController extends Controller
         return redirect()->back()->with('success', 'Переработка одобрена');
     }
     
-    public function reject()
+    public function reject(OverworkRequest $request, DailyWorkStatus $overwork)
     {
+        $validated = $request->validated();
 
+        $overwork->description = $validated['description'];
+        $overwork->status = DailyWorkStatus::STATUS_REJECTED;
+        
+        if(!$overwork->save()){
+            throw new BusinessException('Не удалось отклонить переработку');
+        }
+
+        return redirect()->back()->with('success', 'Переработка отклонена');
     }
 
 }

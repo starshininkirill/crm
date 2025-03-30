@@ -3,6 +3,7 @@
 namespace App\Services\TimeCheckServices;
 
 use App\Helpers\DateHelper;
+use App\Models\DailyWorkStatus;
 use App\Models\TimeCheck;
 use App\Models\User;
 use App\Models\WorkStatus;
@@ -141,7 +142,7 @@ class WorkTimeService
             $status = $statusesForDay->first();
 
             if ($status->hours) {
-                if ($status->confirmed) {
+                if ($status->status == DailyWorkStatus::STATUS_APPROVED) {
                     return $status->hours;
                 } else {
                     return 0;

@@ -10,15 +10,20 @@ class DailyWorkStatus extends Model
 {
     use HasFactory;
 
+    const STATUS_PENDING = 'pending'; 
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
+
     protected $fillable = [
         'date',
         'user_id', 
         'work_status_id', 
-        'confirmed', 
         'hours', 
         'time_start', 
         'time_end',
-        'description'
+        'description',
+        'report',
+        'status'
     ];
 
     protected $casts = [

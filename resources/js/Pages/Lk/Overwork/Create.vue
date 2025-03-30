@@ -27,7 +27,7 @@
             <div class="label">
                 Комментарий
             </div>
-            <textarea v-model="form.description" name="description" class="input resize-none h-52"
+            <textarea v-model="form.report" name="report" class="input resize-none h-52"
                 placeholder="Комментарий"></textarea>
         </div>
 
@@ -63,7 +63,7 @@ export default {
         let form = useForm({
             'hours': null,
             'date': null,
-            'description': null,
+            'report': null,
         });
 
         return {
@@ -78,7 +78,7 @@ export default {
 
                     this.form.hours = null;
                     this.form.date = null;
-                    this.form.description = null;
+                    this.form.report = null;
                 },
             });
         },

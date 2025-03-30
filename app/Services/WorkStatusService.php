@@ -47,7 +47,7 @@ class WorkStatusService
             'date' => Carbon::now(),
             'user_id' => $data['user_id'],
             'work_status_id' => $data['work_status_id'],
-            'confirmed' => $workStatus->need_confirmation ? false : true,
+            'status' => $workStatus->need_confirmation ? DailyWorkStatus::STATUS_PENDING : DailyWorkStatus::STATUS_APPROVED,
             'hours' => $workStatus->hours,
             'time_start' => $data['time_start'] != null ? Carbon::parse($data['time_start']) : null,
             'time_end' => $data['time_end'] != null ? Carbon::parse($data['time_end']) : null,
@@ -73,7 +73,7 @@ class WorkStatusService
             $dailyWorkStatus->work_status_id = $data['work_status_id'];
             $dailyWorkStatus->time_start = $data['time_start'] ?? null;
             $dailyWorkStatus->time_end = $data['time_end'] ?? null;
-            $dailyWorkStatus->confirmed = $workStatus->need_confirmation ? false : true;
+            $dailyWorkStatus->status = $workStatus->need_confirmation ? DailyWorkStatus::STATUS_PENDING : DailyWorkStatus::STATUS_APPROVED;
             $dailyWorkStatus->hours = $workStatus->hours;
 
             if ($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY) {

@@ -31,9 +31,9 @@ class OverworkController extends Controller
             'date' => $validated['date'],
             'user_id' => auth()->user()->id,
             'work_status_id' => $overworkStatus->id,
-            'confirmed' => false,
+            'status' => DailyWorkStatus::STATUS_PENDING,
             'hours' => $validated['hours'],
-            'description' => $validated['description'],
+            'report' => $validated['report'],
         ]);
 
         return redirect()->back()->with('success', 'Переработка успешно отправлена!');

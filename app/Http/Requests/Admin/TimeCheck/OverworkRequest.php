@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Lk;
+namespace App\Http\Requests\Admin\TimeCheck;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,9 +22,7 @@ class OverworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'hours' => 'required|integer',
-            'date' => 'required|date|date_format:Y-m-d',
-            'report' => 'nullable'
+            'description' => 'required|string',
         ];
     }
 }

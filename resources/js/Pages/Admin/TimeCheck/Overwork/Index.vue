@@ -1,6 +1,5 @@
 <template>
     <TimeCheckLayout>
-
         <Head title="Переработки" />
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Переработки</h1>
@@ -11,7 +10,7 @@
         </h2>
         <table v-else
             class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 w-32">
                         Дата
@@ -22,7 +21,6 @@
                     <th scope="col" class="px-6 py-3">
                         Сотрудник
                     </th>
-
                     <th scope="col" class="px-6 py-3 flex-grow">
                         Описание
                     </th>
@@ -32,29 +30,28 @@
                 </tr>
             </thead>
             <tbody>
-
-                <tr v-for="overwork in overworks" :key="overwork.id" class="bg-white border-b   hover:bg-gray-50 ">
+                <tr v-for="overwork in overworks" :key="overwork.id" class="bg-white border-b hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap">
                         {{ overwork.date }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {{ overwork.hours }}
                     </td>
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                         {{ overwork.user?.full_name }}
                     </th>
                     <td class="px-6 py-4 w-full">
-                        {{ overwork.description }}
+                        {{ overwork.report }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap flex gap-3 items-center">
-                        <button @click="acceptOverwork(overwork.id)">
+                        <button @click="openModal('accept', overwork)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="feather feather-check">
                                 <path d="M20 6L9 17l-5-5" />
                             </svg>
                         </button>
-                        <button @click="rejectOverwork(overwork.id)">
+                        <button @click="openModal('reject', overwork)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="feather feather-x">
@@ -67,6 +64,37 @@
             </tbody>
         </table>
 
+        <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-auto relative flex flex-col gap-3">
+                <h2 class="text-xl font-bold mb-4">{{ selectedOverwork?.user?.full_name }} - 
+                    {{ modalAction === 'accept' ? 'Подтвердить переработку' : 'Отклонить переработку' }}
+                </h2>
+
+                <div >
+                    <label class="label">
+                        Комментарий
+                    </label>
+                    <textarea  v-model="description" placeholder="Введите комментарий..." 
+                        class="input resize-none h-24"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button @click="closeModal"
+                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                        Отмена
+                    </button>
+                    <button @click="submitAction"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        {{ modalAction === 'accept' ? 'Подтвердить' : 'Отклонить' }}
+                    </button>
+                </div>
+
+                <button @click="closeModal"
+                    class="w-6 h-6 bg-red-500 text-white rounded hover:bg-red-600 absolute right-4 top-4">
+                    x
+                </button>
+            </div>
+        </div>
     </TimeCheckLayout>
 </template>
 
@@ -85,15 +113,38 @@ export default {
             required: true,
         },
     },
-    methods:{
-        acceptOverwork(overworkId){
-            router.post(route('admin.time-check.overwork.accept', {overwork: overworkId}));
+    data() {
+        return {
+            isModalOpen: false, // Состояние модального окна
+            modalAction: null,  // Текущее действие ('accept' или 'reject')
+            selectedOverwork: null, // Выбранная переработка
+            description: '', // Комментарий пользователя
+        };
+    },
+    methods: {
+        openModal(action, overwork) {
+            this.modalAction = action;
+            this.selectedOverwork = overwork;
+            this.isModalOpen = true;
+            this.description = ''; // Очистка комментария при открытии
         },
-        rejectOverwork(overworkId){
-            router.post(route('admin.time-check.overwork.reject'));
+        closeModal() {
+            this.isModalOpen = false;
+            this.modalAction = null;
+            this.selectedOverwork = null;
+            this.description = '';
         },
-    }
-}
+        submitAction() {
+            const routeName = this.modalAction === 'accept'
+                ? 'admin.time-check.overwork.accept'
+                : 'admin.time-check.overwork.reject';
 
+            router.post(route(routeName, { overwork: this.selectedOverwork.id }), {
+                description: this.description,
+            });
 
+            this.closeModal();
+        },
+    },
+};
 </script>
