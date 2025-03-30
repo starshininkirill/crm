@@ -19,7 +19,6 @@ class UserController
 
         $users = User::with('position', 'department')
             ->when($departmentId, function ($query, $departmentId) {
-                // Если departmentId передан, добавляем условие фильтрации
                 return $query->where('department_id', $departmentId);
             })
             ->get()
@@ -31,7 +30,7 @@ class UserController
         $departments = Department::mainDepartments()->load('positions');
         $positions = Position::all();
         $employmentTypes = EmploymentType::all();
-
+        
         return Inertia::render('Admin/User/Index', [
             'users' => $users,
             'positions' => $positions,

@@ -45,7 +45,6 @@ class Department extends Model
     {
         $users = $this->hasMany(User::class, 'department_id')->get();
 
-
         $this->childDepartments->each(function ($childDepartment) use (&$users) {
             $users = $users->merge($childDepartment->users()->get());
         });

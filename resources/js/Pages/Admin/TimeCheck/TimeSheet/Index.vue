@@ -15,9 +15,9 @@
             </div>
             <div class="w-1/4 flex flex-col">
                 <label class="label">Дата</label>
-                <VueDatePicker v-model="selectedDate" :auto-apply="true" month-picker locale="ru" class="h-full" />
+                <VueDatePicker v-model="selectedDate"  model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru" class="h-full" />
             </div>
-            <div class="btn h-fit mt-auto !w-fit">
+            <div @click="updateDate" class="btn h-fit mt-auto !w-fit">
                 Выбрать
             </div>
         </div>
@@ -67,10 +67,11 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import TimeCheckLayout from '../../Layouts/TimeCheckLayout.vue';
 import VueSelect from 'vue-select';
 import VueDatePicker from '@vuepic/vue-datepicker'
+import { route } from 'ziggy-js';
 
 export default {
     components: {
@@ -88,6 +89,9 @@ export default {
             type: Array,
             required: true,
         },
+        department: {
+            type: Object,
+        },
         date: {
             type: String,
             required: true,
@@ -100,20 +104,18 @@ export default {
     data() {
         return {
             selectedDate: this.date,
-            selectedDepartment: null,
+            selectedDepartment: this.department,
         }
     },
     methods: {
         getActionColor(day) {
-            
+
             if (day.status) {
-                if(day.status.work_status?.type == 'late'){
+                if (day.status.work_status?.type == 'late') {
                     return 'bg-red-500 text-white';
                 }
-                
-                console.log(day.status);
-                
-                if(day.status.work_status?.type == 'overwork'){
+
+                if (day.status.work_status?.type == 'overwork') {
                     return 'bg-yellow-500 text-white';
                 }
                 if (day.status.work_status?.type == "sick_leave" || day.status.work_status?.type == "own_day") {
@@ -132,8 +134,13 @@ export default {
             }
 
             return ''
-
         },
+        updateDate() {           
+            router.get(route('admin.time-sheet'), {
+                date: this.selectedDate,
+                department_id: this.selectedDepartment.id
+            })
+        }
     }
 }
 

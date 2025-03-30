@@ -4,36 +4,41 @@ namespace App\Http\Controllers\Admin\TimeCheck;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
-use App\Models\DailyWorkStatus;
+use App\Http\Requests\Admin\TimeCheck\TimeSheetRequest;
 use App\Models\Department;
-use App\Models\WorkStatus;
-use App\Services\TimeCheckServices\ReportService;
+use App\Models\User;
 use App\Services\UserServices\TimeSheetService;
-use App\Services\WorkStatusService;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TimeSheetController extends Controller
 {
-    public function index(Request $request, TimeSheetService $service)
+    public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
         $departments = Department::all();
-        $targetDate = Carbon::now();
 
-        $days = DateHelper::daysInMonth($targetDate);
+        $targetDate = null;
+        $department = null;
+        $days = [];
+        $usersReport = [];
 
-        $department = Department::whereType(Department::SALE_DEPARTMENT)->whereNull('parent_id')->first();
-        $users = $department->allUsers();
+        if ($request->filled('date') && $request->filled('department_id')) {
+            $targetDate = Carbon::parse($request->input('date'));
 
-        $usersReport = $service->generateUsersReport($users, $targetDate);
+            $department = Department::findOrFail($request->input('department_id'));
+
+            $days = DateHelper::daysInMonth($targetDate);
+
+            $users = $department->allUsers();
+
+            $usersReport = $service->generateUsersReport($users, $targetDate);
+        }
 
         return Inertia::render('Admin/TimeCheck/TimeSheet/Index', [
             'days' => $days,
             'departments' => $departments,
-            'date' => $targetDate,
+            'department' => $department ?? null,
+            'date' => $targetDate?->format('Y-m') ?? Carbon::now()->format('Y-m'),
             'usersReport' => $usersReport,
         ]);
     }
