@@ -3,7 +3,9 @@
 namespace App\Services\UserServices;
 
 use App\Helpers\DateHelper;
+use App\Models\DailyWorkStatus;
 use App\Models\User;
+use App\Models\WorkStatus;
 use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -43,7 +45,16 @@ class TimeSheetService
     private function userDayReport(User $user, $day): array
     {
         $day['status'] = $user->dailyWorkStatuses->first(function ($status) use ($day) {
-            return $status->date->isSameDay($day['date']);
+            
+            if(!$status->date->isSameDay($day['date'])){
+                return false;
+            }
+
+            if($status->workStatus->type == WorkStatus::TYPE_OVERWORK && $status->status != DailyWorkStatus::STATUS_APPROVED){
+                return false;
+            }
+
+            return true;
         });
 
         $day['isWorkingDay'] = DateHelper::isWorkingDay($day['date']);

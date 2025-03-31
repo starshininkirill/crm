@@ -35,32 +35,10 @@ class Department extends Model
             return $this->parent()->first()->hasMany(Position::class);
         }
     }
-    
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id');
-    }
-
-    public function allUsers(): SimpleCollection
-    {
-        $users = $this->hasMany(User::class, 'department_id')->get();
-
-        $this->childDepartments->each(function ($childDepartment) use (&$users) {
-            $users = $users->merge($childDepartment->users()->get());
-        });
-
-        return $users;
-    }
-
-    public function activeUsers(Carbon $date = null): SimpleCollection
-    {
-        $users = $this->users()->get();
-
-        if ($date != null) {
-            $users = $users->where('created_at', '<=', $date->endOfMonth());
-        }
-
-        return $users;
     }
 
     public function parent(): BelongsTo
@@ -76,6 +54,75 @@ class Department extends Model
     public function workPlans(): HasMany
     {
         return $this->hasMany(WorkPlan::class);
+    }
+
+    public function allUsers(?Carbon $date = null, string $status = 'active'): SimpleCollection
+    {
+        $users = $this->getUsersForDate($date, $status);
+
+        $this->childDepartments->each(function ($childDepartment) use (&$users, $status, $date) {
+            $users = $users->merge($childDepartment->getUsersForDate($date, $status));
+        });
+
+        return $users;
+    }
+
+    protected function getUsersForDate(?Carbon $date, string $status): SimpleCollection
+    {
+        $query = $this->hasMany(User::class, 'department_id');
+
+        if ($date && $date) {
+            $startOfMonth = $date->copy()->startOfMonth();
+            $endOfMonth = $date->copy()->endOfMonth();
+
+            $userIds = History::where('historyable_type', User::class)
+                ->whereDate('created_at', '<=', $endOfMonth)
+                ->groupBy('historyable_id')
+                ->pluck('historyable_id');
+
+            $query->whereIn('id', $userIds);
+
+            $users = $query->get()->filter(function ($user) use ($date, $status, $endOfMonth, $startOfMonth) {
+                $version = $user->getVersionAtDate($date);
+
+                
+                if (!$version) {
+                    return false;
+                }
+                
+                $firedAt = $version->fired_at;
+
+                switch ($status) {
+                    case 'active':
+                        return $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth);
+                    case 'fired':
+                        return $firedAt !== null && $firedAt <= $endOfMonth;
+                    case 'all':
+                        return true;
+                    default:
+                        return $firedAt === null || $firedAt > $endOfMonth;
+                }
+            });
+
+            return $users->map(function ($user) use ($date) {
+                return $user->getVersionAtDate($date) ?? $user;
+            });
+        }
+
+        switch ($status) {
+            case 'active':
+                $query->active();
+                break;
+            case 'fired':
+                $query->fired();
+                break;
+            case 'all':
+                break;
+            default:
+                $query->active();
+        }
+
+        return $query->get();
     }
 
     public static function getSaleDepartments()

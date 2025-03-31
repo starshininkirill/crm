@@ -72,7 +72,7 @@ class PaymentController extends Controller
             'paymentStatuses' => Payment::ASOC_STATUSES,
             'paymentTypes' => Payment::ASOC_TYPES,
             'organizations' => Organization::all(),
-            'users' => User::active(),
+            'users' => User::all(),
         ]);
     }
 

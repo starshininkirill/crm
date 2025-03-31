@@ -30,11 +30,11 @@ class ContractController extends Controller
                 'client' => $contract->client ?? [],
                 'phone' => $contract->phone ?? '',
                 'services' => $contract->services ?? [],
-                'price' => TextFormaterHelper::getPrice($contract->amount_price),
+                'price' => $contract->amount_price,
                 'payments' => $contract->payments->map(function ($payment) {
                     return [
                         'id' => $payment->id,
-                        'value' => TextFormaterHelper::getPrice($payment->value),
+                        'value' => $payment->value,
                         'status' => $payment->status
                     ];
                 }),
@@ -49,7 +49,7 @@ class ContractController extends Controller
 
     public function show(Contract $contract)
     {
-        $users = User::active();
+        $users = User::all();
 
         $contractData = [
             'id' => $contract->id,

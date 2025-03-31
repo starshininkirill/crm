@@ -33,7 +33,7 @@
                                         Отдел
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Дата устройства
+                                        Действия
                                     </th>
                                 </tr>
                             </thead>
@@ -54,7 +54,13 @@
                                         {{ user.department?.name }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ user.formatted_created_at }}
+                                        <button v-if="!user.fired_at" @click="fire(user.id)"
+                                            class="font-medium  hover:underline hover:text-red-600">
+                                            Уволить
+                                        </button>
+                                        <div v-else class="font-medium text-red-600">
+                                            Уволен
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -103,7 +109,12 @@ export default {
             router.get(route('admin.user.index'), {
                 'department': selectedDepartmentId,
             });
-        }
+        },
+        fire(userId){
+            if (confirm('Вы уверены, что хотите уволить этого сотрудника?')) {
+                router.post(route('admin.user.fire', userId));
+            }
+        },
     }
 }
 

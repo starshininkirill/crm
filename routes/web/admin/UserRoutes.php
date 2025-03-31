@@ -21,5 +21,6 @@ Route::prefix('users')->group(function () {
 
     Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
     Route::get('/{user}', [UserController::class, 'show'])->name('admin.user.show');
+    Route::post('/{user}/fire', [UserController::class, 'fire'])->name('admin.user.fire');
     Route::post('/', [UserController::class, 'store'])->name('admin.user.store');
 });

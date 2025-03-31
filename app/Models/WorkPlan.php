@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\TextFormaterHelper;
 use App\Models\Department;
+use App\Models\Traits\HasHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Support\Collection;
 
 class WorkPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, HasHistory;
 
     public const MOUNTH_PLAN = 'monthPlan';
     public const DOUBLE_PLAN = 'doublePlan';

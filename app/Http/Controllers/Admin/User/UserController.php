@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\User;
 
+use App\Exceptions\Business\BusinessException;
 use App\Http\Requests\Admin\UserRequest;
 use App\Models\Department;
 use App\Models\EmploymentType;
@@ -12,7 +13,6 @@ use Inertia\Inertia;
 
 class UserController
 {
-
     public function index(UserRequest $request)
     {
         $departmentId = $request->get('department'); // Получаем значение department из запроса
@@ -53,5 +53,14 @@ class UserController
         $user = $service->createEmployment($validated);
 
         return redirect()->back()->with('success', 'Сотрудник успешно создан');
+    }
+
+    public function fire(User $user)
+    {
+        if(!$user->fire()){
+            throw new BusinessException('Не удалось уволить сотрудника');
+        }
+
+        return redirect()->back()->with('success', 'Сотрудник уволен');
     }
 }

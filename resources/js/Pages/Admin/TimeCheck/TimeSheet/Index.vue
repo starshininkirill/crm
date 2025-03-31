@@ -11,7 +11,7 @@
                 <label class="label">Отдел</label>
                 <VueSelect class="full-vue-select h-full" v-model="selectedDepartment"
                     :reduce="department => department" label="name" :options="departments">
-                </VueSelect>
+                </VueSelect> 
             </div>
             <div class="w-1/4 flex flex-col">
                 <label class="label">Дата</label>
@@ -36,7 +36,7 @@
                         Должность
                     </th>
                     <th scope="col" class="px-3 py-3 border-r">
-                        ФИО
+                        ФИО 
                     </th>
                     <th v-for="(day, idx) in days" scope="col" class="px-1 py-3 border-r text-center">
                         {{ idx }}
@@ -59,6 +59,7 @@
                     </th>
                     <td v-for="day in user.days" class="px-3 py-4 border-r text-center" :class="getActionColor(day)">
                         {{ day.hours == 0 ? '' : day.hours }}
+                        {{ day.date == user.fired_at ?  'Уволен' : ''}}
                     </td>
                 </tr>
             </tbody>

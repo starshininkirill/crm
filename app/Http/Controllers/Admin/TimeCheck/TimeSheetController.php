@@ -23,14 +23,14 @@ class TimeSheetController extends Controller
         $usersReport = [];
 
         if ($request->filled('date') && $request->filled('department_id')) {
-            $targetDate = Carbon::parse($request->input('date'));
+            $targetDate = Carbon::parse($request->input('date'))->endOfMonth();
 
             $department = Department::findOrFail($request->input('department_id'));
 
             $days = DateHelper::daysInMonth($targetDate);
 
-            $users = $department->allUsers();
-
+            $users = $department->allUsers($targetDate);
+            
             $usersReport = $service->generateUsersReport($users, $targetDate);
         }
 

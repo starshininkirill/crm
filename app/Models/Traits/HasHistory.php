@@ -29,16 +29,10 @@ trait HasHistory
         return $this->morphMany(History::class, 'historyable')->latest();
     }
 
-    public function getHistoricalVersion($historyId)
-    {
-        $history = $this->history()->find($historyId);
-        return $history ? $this->recreateFromHistory($history) : null;
-    }
-
     public function getVersionAtDate($date, array $withRelations = [])
     {
         $history = $this->history()
-            ->whereDate('created_at', '<=', $date)
+        ->whereDate('created_at', '<=', $date) 
             ->latest()
             ->first();
 
@@ -72,7 +66,9 @@ trait HasHistory
                 $relation,
                 $related->getVersionAtDate($date)
             );
-        } elseif (is_iterable($related)) {
+        }
+
+        elseif (is_iterable($related)) {
             $collection = $related->map(function ($item) use ($date) {
                 return method_exists($item, 'getVersionAtDate')
                     ? $item->getVersionAtDate($date)

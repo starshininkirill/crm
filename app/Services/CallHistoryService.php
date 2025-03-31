@@ -14,7 +14,7 @@ class CallHistoryService
     public function __construct()
     {
         $department = Department::getMainSaleDepartment();
-        $this->managersNumbers = $department->activeUsers()->whereNotNull('phone')->pluck('phone');
+        $this->managersNumbers = $department->users()->whereNotNull('phone')->pluck('phone');
     }
 
     public function calculateTotalCallsData($date)

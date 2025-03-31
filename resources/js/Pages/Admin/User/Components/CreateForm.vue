@@ -139,7 +139,7 @@ export default {
             let th = this;
 
             this.form.post(route('admin.user.store'), {
-                onSuccess() {
+                onFinish() {
                     th.form.first_name = null;
                     th.form.last_name = null;
                     th.form.email = null;

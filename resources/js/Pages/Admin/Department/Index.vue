@@ -4,8 +4,7 @@
         <Head title="Отделы" />
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Отделы</h1>
-
-
+            
             <h2 v-if="!departments.length" class="text-xl">Отделы не найдены</h2>
 
             <div v-if="departments.length" class="flex flex-col gap-3">

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Department;
+use App\Models\Scopes\UserScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +35,8 @@ class User extends Authenticatable
         'role',
         'position_id',
         'probation',
-        'department_id'
+        'department_id',
+        'fired_at'
     ];
 
     protected $hidden = [
@@ -42,26 +44,42 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = ['full_name'];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'fired_at' => 'date',
             'password' => 'hashed',
         ];
     }
 
-    protected $appends = ['full_name'];
+    protected static function booted(): void
+    {
+        // static::addGlobalScope(new UserScope);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereNull('fired_at');
+    }
+
+    public function scopeFired($query)
+    {
+        return $query->whereNotNull('fired_at');
+    }
+
+    public function scopeAll($query)
+    {
+        return $query;
+    }
 
     protected function fullName(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->first_name . ' ' . $this->last_name,
         );
-    }
-
-    public static function active(): Collection
-    {
-        return User::all();
     }
 
     public function payments(): HasMany
@@ -102,6 +120,12 @@ class User extends Authenticatable
     public function dailyWorkStatuses(): HasMany
     {
         return $this->hasMany(DailyWorkStatus::class);
+    }
+
+    public function fire()
+    {
+        $this->fired_at = Carbon::now();
+        return $this->save();
     }
 
     public function salary(): int
