@@ -16,15 +16,9 @@ class Organization extends Model
 
     protected $fillable = ['short_name', 'name', 'nds', 'inn', 'template', 'active', 'terminal'];
 
-    public function services(): BelongsToMany
-    {
-        return $this->belongsToMany(Service::class, 'organization_service_document_template')
-            ->withPivot('document_template_id', 'type');
-    }
 
-    public function documentTemplates()
+    public function documentSelectionRules()
     {
-        return $this->belongsToMany(DocumentTemplate::class, 'organization_service_document_template')
-            ->withPivot('service_id', 'type');
+        return $this->hasMany(DocumentSelectionRule::class, 'organization_id');
     }
 }

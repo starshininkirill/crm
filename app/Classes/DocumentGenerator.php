@@ -66,6 +66,8 @@ class DocumentGenerator
             return '';
         }
 
+        // TODO 
+        // Убрать documentTemplates
         $documentTemplate = $organisation->documentTemplates()->first();
         if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
             return '';

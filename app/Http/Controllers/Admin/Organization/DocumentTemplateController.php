@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Organization;
 
 use App\Classes\FileManager;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DocumentTemplateRequest;
 use App\Models\DocumentTemplate;
-use App\Models\Organization;
-use App\Models\OrganizationServiceDocumentTemplate;
-use App\Models\Service;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -96,28 +93,5 @@ class DocumentTemplateController extends Controller
         $documentTemplate->delete();
 
         return redirect()->back()->with('success', 'Шаблон документа успешно удалён');
-    }
-
-    public function attach()
-    {
-        $documetTemplates = DocumentTemplate::all();
-        $services = Service::all();
-        $organizations = Organization::all();
-
-        $osdt = OrganizationServiceDocumentTemplate::with('organization', 'service', 'documentTemplate')->get()->map(function ($osdt) {
-            $osdt['type'] = OrganizationServiceDocumentTemplate::translateType($osdt->type);
-            return $osdt;
-        });
-
-        $osdtTypes = OrganizationServiceDocumentTemplate::visualTypes();
-
-        return Inertia::render('Admin/Organization/DocumentTemplate/Attach', [
-            'documetTemplates' => $documetTemplates,
-            'services' => $services,
-            'organizations' => $organizations,
-            'osdt' => $osdt,
-            'osdtTypes' => $osdtTypes
-
-        ]);
     }
 }

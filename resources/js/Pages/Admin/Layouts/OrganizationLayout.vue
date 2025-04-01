@@ -8,8 +8,8 @@
                 :route="'admin.organization.document-template.index'">
                 Шаблоны документов
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.organization.document-template.attach')"
-                :route="'admin.organization.document-template.attach'">
+            <AdminSubnavLink :href="route('admin.organization.document-selection-rule.index')"
+                :route="'admin.organization.document-selection-rule.index'">
                 Привязать шаблон
             </AdminSubnavLink>
         </div>

@@ -1,7 +1,8 @@
 <?php
-use App\Http\Controllers\Admin\DocumentTemplateController;
-use App\Http\Controllers\Admin\OrganizationServiceDocumentTemplateController;
-use App\Http\Controllers\Admin\OrganizationController;
+
+use App\Http\Controllers\Admin\Organization\DocumentSelectionRuleController;
+use App\Http\Controllers\Admin\Organization\DocumentTemplateController;
+use App\Http\Controllers\Admin\Organization\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -16,7 +17,6 @@ Route::prefix('organizations')->group(function () {
 
     Route::prefix('document-templates')->group(function () {
         Route::get('/', [DocumentTemplateController::class, 'index'])->name('admin.organization.document-template.index');
-        Route::get('/attach', [DocumentTemplateController::class, 'attach'])->name('admin.organization.document-template.attach');
         Route::get('/{documentTemplate}/edit', [DocumentTemplateController::class, 'edit'])->name('admin.organization.document-template.edit');
 
         Route::post('/', [DocumentTemplateController::class, 'store'])->name('admin.organization.document-template.store');
@@ -24,8 +24,12 @@ Route::prefix('organizations')->group(function () {
         Route::delete('/{documentTemplate}', [DocumentTemplateController::class, 'destroy'])->name('admin.organization.document-template.destroy');
     });
 
-    Route::prefix('osdt')->group(function () {
-        Route::post('/', [OrganizationServiceDocumentTemplateController::class, 'store'])->name('admin.osdt.store');
-        Route::delete('/{osdt}', [OrganizationServiceDocumentTemplateController::class, 'destroy'])->name('admin.osdt.destroy');
+    Route::prefix('document-selection-rule')->group(function(){
+        Route::get('/', [DocumentSelectionRuleController::class, 'index'])->name('admin.organization.document-selection-rule.index');
     });
+
+    // Route::prefix('osdt')->group(function () {
+    //     Route::post('/', [OrganizationServiceDocumentTemplateController::class, 'store'])->name('admin.osdt.store');
+    //     Route::delete('/{osdt}', [OrganizationServiceDocumentTemplateController::class, 'destroy'])->name('admin.osdt.destroy');
+    // });
 });

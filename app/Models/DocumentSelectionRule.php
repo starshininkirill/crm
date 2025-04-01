@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class OrganizationServiceDocumentTemplate extends Model
+class DocumentSelectionRule extends Model
 {
-    protected $table = 'organization_service_document_template';
+    use HasFactory;
 
-    protected $fillable = [
+    protected $fillable = [ 
         'organization_id',
-        'service_id',
         'document_template_id',
         'type',
     ];
@@ -23,7 +22,22 @@ class OrganizationServiceDocumentTemplate extends Model
     const ACT_DOCUMENT = 'act_document';
 
 
-    public static function types(): array 
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    public function documentTemplate()
+    {
+        return $this->belongsTo(DocumentTemplate::class, 'document_template_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'document_selection_rule_services', 'document_template_id', 'service_id');
+    }
+
+    public static function types(): array
     {
         return [
             self::PHYSIC_DEFAULT,
@@ -34,7 +48,7 @@ class OrganizationServiceDocumentTemplate extends Model
         ];
     }
 
-    public static function visualTypes() : array
+    public static function visualTypes(): array
     {
         return [
             [
@@ -60,7 +74,7 @@ class OrganizationServiceDocumentTemplate extends Model
         ];
     }
 
-    public static function translateType(string $type) : string
+    public static function translateType(string $type): string
     {
         $types = [
             self::PHYSIC_DEFAULT => 'Физик одна услуга',
@@ -70,21 +84,6 @@ class OrganizationServiceDocumentTemplate extends Model
             self::ACT_DOCUMENT => 'Счёт + Акт',
         ];
 
-        return array_key_exists($type, $types) ?  $types[$type] : ''; 
-    }
-
-    public function organization(): BelongsTo
-    {
-        return $this->belongsTo(Organization::class);
-    }
-
-    public function service(): BelongsTo
-    {
-        return $this->belongsTo(Service::class);
-    }
-
-    public function documentTemplate(): BelongsTo
-    {
-        return $this->belongsTo(DocumentTemplate::class);
+        return array_key_exists($type, $types) ?  $types[$type] : '';
     }
 }

@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             WorkPlanSeeder::class,
             OrganizationSeeder::class,
             DocumentTemplateSeeder::class,
-            OSDTSeeder::class,
             CallHistorySeeder::class,
             WorkStatusSeeder::class,
         ]);

@@ -12,20 +12,13 @@ class DocumentTemplate extends Model
     protected $fillable = ['name', 'type', 'file'];
     public $timestamps = false;
 
-    public function organizations()
+    public function documentSelectionRules()
     {
-        return $this->belongsToMany(Organization::class, 'organization_service_document_template')
-            ->withPivot('service_id', 'type');
+        return $this->hasMany(DocumentSelectionRule::class, 'document_template_id');
     }
 
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'organization_service_document_template')
-            ->withPivot('organization_id', 'type');
-    }
-
-    public function filePath()
-    {
-        return str_replace('/storage/', '', $this->file);
+        return $this->belongsToMany(Service::class, 'document_selection_rule_services', 'document_template_id', 'service_id');
     }
 }

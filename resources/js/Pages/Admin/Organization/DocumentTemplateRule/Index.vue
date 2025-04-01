@@ -29,8 +29,8 @@
                         </div>
                         <div class="flex flex-col gap-1">
                             Тип
-                            <VueSelect v-model="form.type" :reduce="osdtTypes => osdtTypes.value" label="name"
-                                :options="osdtTypes">
+                            <VueSelect v-model="form.type" :reduce="documentRuleTypes => documentRuleTypes.value" label="name"
+                                :options="documentRuleTypes">
                             </VueSelect>
                         </div>
                         <div class="flex flex-col gap-1">
@@ -46,7 +46,7 @@
                         </button>
                     </div>
                 </form>
-                <div class=" col-span-2">
+                <!-- <div class=" col-span-2">
                     <h2 v-if="!osdt.length" class="text-xl">Привязанных шаблонов не найдено</h2>
                     <div v-if="osdt.length" class="relative">
                         <div class="mb-2 font-semibold">
@@ -119,7 +119,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </OrganizationLayout>
@@ -156,19 +156,17 @@ export default {
         osdt: {
             type: Array,
         },
-        osdtTypes: {
+        documentRuleTypes: {
             type: Array,
         }
     },
     setup(props) {
-
         const form = useForm({
             'document_template_id': null,
             'service_id': null,
             'organization_id': null,
             'type': null
         });
-
 
         const submitForm = () => {
             form.post(route('admin.osdt.store'), {
