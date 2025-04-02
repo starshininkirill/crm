@@ -60,7 +60,7 @@ export default {
         });
 
         const submitForm = () => {
-            form.post(route('admin.organization.document-template.update', { documentTemplate: props.documentTemplate }), {
+            form.post(route('admin.document-template.update', { documentTemplate: props.documentTemplate }), {
                 onSuccess: () => {
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {

@@ -14,7 +14,8 @@ Route::prefix('servicies')->group(function () {
         Route::delete('/{serviceCategory}', [ServiceCategoryController::class, 'destroy'])->name('admin.service-category.destroy');
     });
 
-    Route::get('/edit/{service}', [ServiceController::class, 'edit'])->name('admin.service.edit');
+    Route::get('/{service}', [ServiceController::class, 'edit'])->name('admin.service.show');
+    Route::get('/{service}/edit/', [ServiceController::class, 'edit'])->name('admin.service.edit');
     Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
 
     Route::post('/', [ServiceController::class, 'store'])->name('admin.service.store');

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Organization;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\OrganizationRequest;
+use App\Http\Requests\Admin\Organization\OrganizationRequest;
 use App\Models\Organization;
 use Inertia\Inertia;
 

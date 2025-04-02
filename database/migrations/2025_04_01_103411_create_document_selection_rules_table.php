@@ -20,6 +20,7 @@ return new class extends Migration
                 ->constrained('document_templates')
                 ->onDelete('cascade');
             $table->string('type');
+            $table->integer('priority')->default(1);
             $table->timestamps();
         });
     }

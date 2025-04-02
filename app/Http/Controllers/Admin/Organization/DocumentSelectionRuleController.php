@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Organization;
 
+use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Organization\DocumentSelectionRuleRequest;
 use App\Models\DocumentSelectionRule;
 use App\Models\DocumentTemplate;
 use App\Models\Organization;
 use App\Models\Service;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DocumentSelectionRuleController extends Controller
@@ -18,10 +20,10 @@ class DocumentSelectionRuleController extends Controller
         $services = Service::all();
         $organizations = Organization::all();
 
-        // $osdt = OrganizationServiceDocumentTemplate::with('organization', 'service', 'documentTemplate')->get()->map(function ($osdt) {
-        //     $osdt['type'] = OrganizationServiceDocumentTemplate::translateType($osdt->type);
-        //     return $osdt;
-        // });
+        $documentRules = DocumentSelectionRule::with('organization', 'services', 'documentTemplate')->get()->map(function ($rule) {
+            $rule['type'] = DocumentSelectionRule::translateType($rule->type);
+            return $rule;
+        });
 
         $documentRuleTypes = DocumentSelectionRule::visualTypes();
 
@@ -29,8 +31,48 @@ class DocumentSelectionRuleController extends Controller
             'documetTemplates' => $documetTemplates,
             'services' => $services,
             'organizations' => $organizations,
-            // 'osdt' => $osdt,
+            'documentRules' => $documentRules,
             'documentRuleTypes' => $documentRuleTypes
         ]);
+    }
+
+    public function store(DocumentSelectionRuleRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $rule = DocumentSelectionRule::create($request->documentSelectedRule());
+
+            if (!$rule) {
+                throw new BusinessException('Не удалось создать правило');
+            }
+
+            $rule->services()->sync($request->services());
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Правило успешно создано');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new BusinessException('Не удалось создать правило');
+        }
+    }
+
+    public function destroy(DocumentSelectionRule $documentSelectionRule)
+    {
+        DB::beginTransaction();
+
+        try {
+            $documentSelectionRule->services()->detach();
+
+            if (!$documentSelectionRule->delete()) {
+                throw new BusinessException('Не удалось удалить правило');
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new BusinessException('Не удалось удалить правило');
+        }
     }
 }

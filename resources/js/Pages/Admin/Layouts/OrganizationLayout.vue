@@ -4,12 +4,12 @@
             <AdminSubnavLink :href="route('admin.organization.index')" :route="'admin.organization.index'">
                 Все организации
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.organization.document-template.index')"
-                :route="'admin.organization.document-template.index'">
+            <AdminSubnavLink :href="route('admin.document-template.index')"
+                :route="'admin.document-template.index'">
                 Шаблоны документов
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.organization.document-selection-rule.index')"
-                :route="'admin.organization.document-selection-rule.index'">
+            <AdminSubnavLink :href="route('admin.document-selection-rule.index')"
+                :route="'admin.document-selection-rule.index'">
                 Привязать шаблон
             </AdminSubnavLink>
         </div>

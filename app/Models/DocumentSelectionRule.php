@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class DocumentSelectionRule extends Model
 {
@@ -15,24 +17,22 @@ class DocumentSelectionRule extends Model
         'type',
     ];
 
-    const PHYSIC_DEFAULT = 'physic_default';
-    const PHYSIC_COMPLEX = 'physic_complex';
-    const LAW_DEFAULT = 'law_default';
-    const LAW_COMPLEX = 'law_complex';
-    const ACT_DOCUMENT = 'act_document';
+    const TYPE_PHYSIC = 'physic';
+    const TYPE_LAW = 'law';
+    const TYPE_ACT_DOCUMENT = 'act_document';
 
 
-    public function organization()
+    public function organization():BelongsTo
     {
         return $this->belongsTo(Organization::class, 'organization_id');
     }
 
-    public function documentTemplate()
+    public function documentTemplate():BelongsTo
     {
         return $this->belongsTo(DocumentTemplate::class, 'document_template_id');
     }
 
-    public function services()
+    public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class, 'document_selection_rule_services', 'document_template_id', 'service_id');
     }
@@ -40,11 +40,9 @@ class DocumentSelectionRule extends Model
     public static function types(): array
     {
         return [
-            self::PHYSIC_DEFAULT,
-            self::PHYSIC_COMPLEX,
-            self::LAW_DEFAULT,
-            self::LAW_COMPLEX,
-            self::ACT_DOCUMENT
+            self::TYPE_PHYSIC,
+            self::TYPE_LAW,
+            self::TYPE_ACT_DOCUMENT
         ];
     }
 
@@ -52,24 +50,16 @@ class DocumentSelectionRule extends Model
     {
         return [
             [
-                'name' => 'Физик одна услуга',
-                'value' => self::PHYSIC_DEFAULT
+                'name' => 'Физик',
+                'value' => self::TYPE_PHYSIC
             ],
             [
-                'name' => 'Физик комплекс',
-                'value' => self::PHYSIC_COMPLEX
-            ],
-            [
-                'name' => 'Юрик одна услуга',
-                'value' => self::LAW_DEFAULT
-            ],
-            [
-                'name' => 'Юрик комплекс',
-                'value' => self::LAW_COMPLEX
+                'name' => 'Юрик',
+                'value' => self::TYPE_LAW
             ],
             [
                 'name' => 'Счёт + Акт',
-                'value' => self::ACT_DOCUMENT
+                'value' => self::TYPE_ACT_DOCUMENT
             ],
         ];
     }
@@ -77,11 +67,9 @@ class DocumentSelectionRule extends Model
     public static function translateType(string $type): string
     {
         $types = [
-            self::PHYSIC_DEFAULT => 'Физик одна услуга',
-            self::PHYSIC_COMPLEX => 'Физик комплекс',
-            self::LAW_DEFAULT => 'Юрик одна услуга',
-            self::LAW_COMPLEX => 'Юрик комплекс',
-            self::ACT_DOCUMENT => 'Счёт + Акт',
+            self::TYPE_PHYSIC => 'Физик',
+            self::TYPE_LAW => 'Юрик',
+            self::TYPE_ACT_DOCUMENT => 'Счёт + Акт',
         ];
 
         return array_key_exists($type, $types) ?  $types[$type] : '';

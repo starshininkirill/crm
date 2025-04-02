@@ -14,41 +14,61 @@
                     <Error />
 
                     <div class=" flex flex-col gap-2">
-                        <div class="flex flex-col gap-1">
-                            Шаблон документа
+                        <div>
+                            <div class="label">
+                                Шаблон документа
+                            </div>
                             <VueSelect v-model="form.document_template_id"
                                 :reduce="documetTemplates => documetTemplates.id" label="name"
                                 :options="documetTemplates">
                             </VueSelect>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            Организация
+                        <div>
+                            <div class="label">
+                                Организация
+                            </div>
                             <VueSelect v-model="form.organization_id" :reduce="organizations => organizations.id"
                                 label="short_name" :options="organizations">
                             </VueSelect>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            Тип
-                            <VueSelect v-model="form.type" :reduce="documentRuleTypes => documentRuleTypes.value" label="name"
-                                :options="documentRuleTypes">
+                        <div>
+                            <div class="label">
+                                Тип
+                            </div>
+                            <VueSelect v-model="form.type" :reduce="documentRuleTypes => documentRuleTypes.value"
+                                label="name" :options="documentRuleTypes">
                             </VueSelect>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            Услуга
-                            <VueSelect v-model="form.service_id" :reduce="services => services.id" label="name"
-                                :options="services">
-                            </VueSelect>
+                        <div class="mb-2">
+                            <div class="flex flex-col gap-2">
+                                <div v-for="(service, idx) in selectedServices">
+                                    <div class="label">
+                                        Услуга {{ idx + 1 }}
+                                    </div>
+                                    <div class="flex gap-3 items-center w-full">
+                                        <VueSelect v-model="selectedServices[idx]" label="name"
+                                            :options="filtredServices" class="full-vue-select"
+                                            @update:modelValue="selectService">
+                                        </VueSelect>
+                                        <div @click="removeService(idx)"
+                                            class="flex items-center justify-center rounded-full w-8 h-8 bg-red-400 flex-shrink-0 cursor-pointer">
+                                            <span class="w-1/4 h-0.5 bg-white"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-green-500 font-semibold cursor-pointer mt-2" @click="addService">
+                                Добавить услугу
+                            </div>
                         </div>
-
-
-                        <button type="submit" class="btn !h-auto w-full" data-ripple-light="true">
+                        <button type="submit" class="btn !h-auto w-full-" data-ripple-light="true">
                             Создать
                         </button>
                     </div>
                 </form>
-                <!-- <div class=" col-span-2">
-                    <h2 v-if="!osdt.length" class="text-xl">Привязанных шаблонов не найдено</h2>
-                    <div v-if="osdt.length" class="relative">
+                <div class=" col-span-2">
+                    <h2 v-if="!documentRules.length" class="text-xl">Привязанных шаблонов не найдено</h2>
+                    <div v-if="documentRules.length" class="relative">
                         <div class="mb-2 font-semibold">
                             Тут будет фильтр
                         </div>
@@ -80,37 +100,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="attachedDocument in osdt" :key="attachedDocument.id"
+                                <tr v-for="documentRule in documentRules" :key="documentRule.id"
                                     class="bg-white border-b hover:bg-gray-50">
                                     <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        {{ attachedDocument.id }}
+                                        {{ documentRule.id }}
                                     </td>
                                     <td class="px-6 py-4 ">
                                         <Link class=" text-blue-500 font-semibold"
-                                            :href="route('admin.organization.document-template.edit', { documentTemplate: attachedDocument.document_template.id })">
-                                        {{ attachedDocument.document_template.name }}
+                                            :href="route('admin.document-template.show', { documentTemplate: documentRule.document_template.id })">
+                                        {{ documentRule.document_template.name }}
                                         </Link>
                                     </td>
                                     <td class="px-6 py-4">
                                         <Link class=" text-blue-500 font-semibold"
-                                            :href="route('admin.organization.edit', { organization: attachedDocument.organization.id })">
-                                        {{ attachedDocument.organization.short_name }}
+                                            :href="route('admin.organization.show', { organization: documentRule.organization.id })">
+                                        {{ documentRule.organization.short_name }}
                                         </Link>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <Link v-if="attachedDocument.service" class=" text-blue-500 font-semibold"
-                                            :href="route('admin.service.edit', { service: attachedDocument.service.id })">
-                                        {{ attachedDocument.service.name }}
-                                        </Link>
+                                        <div v-if="documentRule.services.length">
+                                            <Link v-for="(service, idx) in documentRule.services"
+                                                class=" text-blue-500 font-semibold hover:underline"
+                                                :href="route('admin.service.show', { service: service.id })">
+                                            {{ service.name }}<span v-if="idx !== documentRule.services.length - 1">,
+                                            </span>
+                                            </Link>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ attachedDocument.type }}
+                                        {{ documentRule.type }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         Редактировать
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <button @click="deleteOsdt(attachedDocument.id)"
+                                        <button @click="deleteRule(documentRule.id)"
                                             class="font-medium text-red-600 hover:underline">
                                             Удалить
                                         </button>
@@ -119,7 +143,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </OrganizationLayout>
@@ -153,44 +177,56 @@ export default {
         organizations: {
             type: Array,
         },
-        osdt: {
+        documentRules: {
             type: Array,
         },
         documentRuleTypes: {
             type: Array,
         }
     },
-    setup(props) {
-        const form = useForm({
-            'document_template_id': null,
-            'service_id': null,
-            'organization_id': null,
-            'type': null
-        });
-
-        const submitForm = () => {
-            form.post(route('admin.osdt.store'), {
-                onSuccess: () => {
-                    form.document_template_id = null,
-                        form.service_id = null,
-                        form.organization_id = null,
-                        form.type = null
-                },
-            });
-        };
-
+    data() {
         return {
-            form,
-            submitForm
-        }
+            form: useForm({
+                document_template_id: null,
+                services: [],
+                organization_id: null,
+                type: null
+            }),
+            filtredServices: this.services,
+            selectedServices: [null]
+        };
     },
     methods: {
-        deleteOsdt(id) {
-            if (confirm('Вы уверены, что хотите отвязать Шаблон документа?')) {
-                router.delete(route('osdt.destroy', id));
+        submitForm() {
+            this.form.services = this.selectedServices.map(service => service?.id);
+            this.form.post(route('admin.document-selection-rule.store'), {
+                onSuccess: () => {
+                    this.form.document_template_id = null;
+                    this.form.services = [null];
+                    this.form.organization_id = null;
+                    this.form.type = null;
+                    this.selectedServices = [null];
+                },
+            });
+        },
+        deleteRule(id) {
+            if (confirm('Вы уверены, что хотите удалить правило?')) {
+                router.delete(route('admin.document-selection-rule.destroy', id));
             }
         },
+        addService() {
+            this.selectedServices.push(null);
+        },
+        removeService(idx) {
+            if (idx > 0 && idx < this.selectedServices.length) {
+                this.selectedServices.splice(idx, 1);
+            }
+        },
+        selectService(newId){        
+            this.filtredServices = this.filtredServices.filter(function(el){
+                return el.id != newId.id;
+            })            
+        },
     }
-}
-
+};
 </script>

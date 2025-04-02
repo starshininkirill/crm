@@ -71,7 +71,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <Link
-                                            :href="route('admin.organization.document-template.edit', { documentTemplate: documentTemplate })"
+                                            :href="route('admin.document-template.edit', { documentTemplate: documentTemplate })"
                                             class="font-medium text-blue-600  hover:underline">
                                         Редактировать
                                         </Link>
@@ -123,7 +123,7 @@ export default {
 
             console.log(form.file);
 
-            form.post(route('admin.organization.document-template.store'), {
+            form.post(route('admin.document-template.store'), {
                 onSuccess: () => {
                     form.name = '';
                     form.file = '';
@@ -152,7 +152,7 @@ export default {
         },
         deleteDocumentTemplate(id) {
             if (confirm('Вы уверены, что хотите удалить этот Шаблон документа?')) {
-                router.delete(route('admin.organization.document-template.destroy', id));
+                router.delete(route('admin.document-template.destroy', id));
             }
         },
     }

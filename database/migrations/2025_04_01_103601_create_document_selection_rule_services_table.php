@@ -21,8 +21,6 @@ return new class extends Migration
                 ->onDelete('cascade');
         
             $table->index(['document_template_id', 'service_id'], 'dsr_template_service_idx');
-        
-            $table->unique(['document_template_id', 'service_id'], 'dsr_template_service_unique');
         });
     }
 
