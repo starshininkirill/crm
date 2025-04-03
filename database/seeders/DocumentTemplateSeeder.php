@@ -25,5 +25,41 @@ class DocumentTemplateSeeder extends Seeder
             'name' => 'ООО Счёт + Акт',
             'file' => 'documents/Счет ООО ЭДДИ ГРУПП.docx'
         ]);
+
+        // ИП 2
+        DocumentTemplate::create([
+            'name' => 'ИП_2_Физ_инд_Ленд',
+            'file' => 'documents/9. Физ_инд_Ленд.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_2_Физ_инд_КС',
+            'file' => 'documents/10. Физ_инд_КС.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_2_Физ_инд_Каталог',
+            'file' => 'documents/11. Физ_инд_Каталог.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_2_Физ_инд_ИМ',
+            'file' => 'documents/12. Физ_инд_ИМ.docx'
+        ]);
+
+        // ИП 6
+        DocumentTemplate::create([
+            'name' => 'ИП_6_Зимина_Физ_инд_Ленд',
+            'file' => 'documents/9. Зимина_Физ_инд_Ленд.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_6_Зимина_Физ_инд_КС',
+            'file' => 'documents/10. Зимина_Физ_инд_КС.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_6_Зимина_Физ_инд_Каталог',
+            'file' => 'documents/11. Зимина_Физ_инд_Каталог.docx'
+        ]);
+        DocumentTemplate::create([
+            'name' => 'ИП_6_Зимина_Физ_инд_ИМ',
+            'file' => 'documents/12. Зимина_Физ_инд_ИМ.docx'
+        ]);
     }
 }

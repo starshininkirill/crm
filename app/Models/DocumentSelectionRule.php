@@ -15,6 +15,7 @@ class DocumentSelectionRule extends Model
         'organization_id',
         'document_template_id',
         'type',
+        'priority',
     ];
 
     const TYPE_PHYSIC = 'physic';

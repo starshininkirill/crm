@@ -42,6 +42,32 @@ class OrganizationSeeder extends Seeder
             'template' => 298,
             'active' => 1,
         ]);
-
+        Organization::create([
+            'short_name' => 'ИП 4',
+            'name' => 'Индивидуальный предприниматель 4',
+            'nds' => Organization::WITHOUT_NDS,
+            'inn' => 888888888,
+            'terminal' => 5,
+            'template' => 290,
+            'active' => 1,
+        ]);
+        Organization::create([
+            'short_name' => 'ИП 5',
+            'name' => 'Индивидуальный предприниматель 5',
+            'nds' => Organization::WITHOUT_NDS,
+            'inn' => 7777777777,
+            'terminal' => 6,
+            'template' => 290,
+            'active' => 1,
+        ]);
+        Organization::create([
+            'short_name' => 'ИП 6',
+            'name' => 'Индивидуальный предприниматель 6',
+            'nds' => Organization::WITHOUT_NDS,
+            'inn' => 6666666666,
+            'terminal' => 7,
+            'template' => 290,
+            'active' => 1,
+        ]);
     }
 }

@@ -9,6 +9,7 @@ use App\Models\DocumentSelectionRule;
 use App\Models\DocumentTemplate;
 use App\Models\Organization;
 use App\Models\Service;
+use App\Services\DocumentTemplateServices\DocumentTemplateService;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -74,5 +75,16 @@ class DocumentSelectionRuleController extends Controller
             DB::rollBack();
             throw new BusinessException('Не удалось удалить правило');
         }
+    }
+
+    public function check(DocumentSelectionRuleRequest $request, DocumentTemplateService $service)
+    {
+        $validated = $request->validated();
+
+        $serviceIds = $validated['services'];
+        
+        $document = $service->findDocumentTemplateByServices($serviceIds);
+        
+        dd($document);
     }
 }

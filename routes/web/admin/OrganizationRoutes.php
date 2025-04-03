@@ -20,6 +20,7 @@ Route::prefix('organizations')->group(function () {
     Route::prefix('document-selection-rule')->group(function(){
         Route::get('/', [DocumentSelectionRuleController::class, 'index'])->name('admin.document-selection-rule.index');
         Route::post('/', [DocumentSelectionRuleController::class, 'store'])->name('admin.document-selection-rule.store');
+        Route::get('/check', [DocumentSelectionRuleController::class, 'check'])->name('admin.document-selection-rule.check');
         Route::delete('/{documentSelectionRule}', [DocumentSelectionRuleController::class, 'destroy'])->name('admin.document-selection-rule.destroy');
     });
 

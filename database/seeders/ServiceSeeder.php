@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 
-use App\Models\Client; 
+use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractUser;
 use App\Models\Department;
@@ -62,11 +62,11 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Сайт-Каталог',
+            'name' => 'Инд КС',
             'service_category_id' => 1,
-            'price' => 25000,
+            'price' => 20000,
             'work_days_duration' => '30 (тридцать) рабочих дней',
-            'description' => 'описание Инд каталог',
+            'description' => 'описание Инд КС',
             'deal_template_ids' => json_encode([
                 'law_default' => 70,
                 'law_complex' => 232,
@@ -75,7 +75,20 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
-            'name' => 'Интернет-магазин',
+            'name' => 'Инд Каталог',
+            'service_category_id' => 1,
+            'price' => 25000,
+            'work_days_duration' => '30 (тридцать) рабочих дней',
+            'description' => 'описание Каталог',
+            'deal_template_ids' => json_encode([
+                'law_default' => 70,
+                'law_complex' => 232,
+                'physic_default' => 34,
+                'physic_complex' => 250
+            ]),
+        ]);
+        Service::create([
+            'name' => 'Инд ИМ',
             'service_category_id' => 1,
             'price' => 140000,
             'work_days_duration' => '35 (тридцать пять) рабочих дней',
@@ -101,11 +114,37 @@ class ServiceSeeder extends Seeder
             ]),
         ]);
         Service::create([
+            'name' => 'Гот КС',
+            'service_category_id' => 2,
+            'price' => 29000,
+            'description' => 'описание Гот КС',
+            'work_days_duration' => '8 (восемь) рабочих дней',
+            'deal_template_ids' => json_encode([
+                'law_default' => 46,
+                'law_complex' => 220,
+                'physic_default' => 22,
+                'physic_complex' => 238
+            ]),
+        ]);
+        Service::create([
             'name' => 'Гот Каталог',
             'service_category_id' => 2,
             'price' => 58000,
             'work_days_duration' => '19 (девятнадцать) рабочих дней',
             'description' => 'описание Гот Каталог',
+            'deal_template_ids' => json_encode([
+                'law_default' => 50,
+                'law_complex' => 224,
+                'physic_default' => 26,
+                'physic_complex' => 242
+            ]),
+        ]);
+        Service::create([
+            'name' => 'Гот ИМ',
+            'service_category_id' => 2,
+            'price' => 70000,
+            'work_days_duration' => '23 (девятнадцать) рабочих дней',
+            'description' => 'описание Гот ИМ',
             'deal_template_ids' => json_encode([
                 'law_default' => 50,
                 'law_complex' => 224,
@@ -203,4 +242,3 @@ class ServiceSeeder extends Seeder
         ]);
     }
 }
- 

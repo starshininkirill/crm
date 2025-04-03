@@ -39,6 +39,13 @@
                                 label="name" :options="documentRuleTypes">
                             </VueSelect>
                         </div>
+                        <div>
+                            <div class="label">
+                                Приоритет
+                                <Info text="Для определения документа при одинаковом наборе услуг"/>
+                            </div>
+                            <FormInput v-model="form.priority" type="number" name="priority" value="1" min="0" max="100" />
+                        </div>
                         <div class="mb-2">
                             <div class="flex flex-col gap-2">
                                 <div v-for="(service, idx) in selectedServices">
@@ -69,8 +76,13 @@
                 <div class=" col-span-2">
                     <h2 v-if="!documentRules.length" class="text-xl">Привязанных шаблонов не найдено</h2>
                     <div v-if="documentRules.length" class="relative">
-                        <div class="mb-2 font-semibold">
-                            Тут будет фильтр
+                        <div class="mb-2 font-semibold flex gap-3  items-center justify-between mb-3">
+                            <span>
+                                Тут будет фильтр
+                            </span>
+                            <div class="btn !w-fit" @click="openModal">
+                                Проверить
+                            </div>
                         </div>
                         <table
                             class="w-full text-sm text-left rtl:text-right text-gray-500 overflow-x-auto shadow-md sm:rounded-lg">
@@ -145,6 +157,7 @@
                     </div>
                 </div>
             </div>
+            <Modal v-if="isModalOpen" :services="services"  @closeModal="isModalOpen = false" />
         </div>
     </OrganizationLayout>
 </template>
@@ -153,6 +166,8 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
+import Info from '../../../../Components/Info.vue';
+import Modal from './Modal.vue';
 import VueSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import { route } from 'ziggy-js';
@@ -165,7 +180,9 @@ export default {
         FormInput,
         VueSelect,
         OrganizationLayout,
-        Error
+        Error,
+        Info,
+        Modal,
     },
     props: {
         documetTemplates: {
@@ -190,10 +207,12 @@ export default {
                 document_template_id: null,
                 services: [],
                 organization_id: null,
-                type: null
+                type: null,
+                priority: 1,
             }),
             filtredServices: this.services,
-            selectedServices: [null]
+            selectedServices: [null],
+            isModalOpen: false,
         };
     },
     methods: {
@@ -206,6 +225,8 @@ export default {
                     this.form.organization_id = null;
                     this.form.type = null;
                     this.selectedServices = [null];
+
+                    this.filtredServices = this.services;
                 },
             });
         },
@@ -222,10 +243,13 @@ export default {
                 this.selectedServices.splice(idx, 1);
             }
         },
-        selectService(newId){        
-            this.filtredServices = this.filtredServices.filter(function(el){
+        selectService(newId) {
+            this.filtredServices = this.filtredServices.filter(function (el) {
                 return el.id != newId.id;
-            })            
+            })
+        },
+        openModal() {
+            this.isModalOpen = true;
         },
     }
 };

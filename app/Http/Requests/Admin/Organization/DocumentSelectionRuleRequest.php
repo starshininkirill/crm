@@ -23,14 +23,24 @@ class DocumentSelectionRuleRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd($this->all());
-        return [
-            'document_template_id' => 'required|exists:document_templates,id',
-            'organization_id' => 'required|exists:organizations,id',
-            'type' => 'required|in:' . implode(',', DocumentSelectionRule::types()),
-            'services' => 'required|array',
-            'services.*' => 'required|exists:services,id',
-        ];
+        $rules = [];
+        if ($this->method() == 'POST') {
+            $rules = array_merge($rules, [
+                'document_template_id' => 'required|exists:document_templates,id',
+                'organization_id' => 'required|exists:organizations,id',
+                'type' => 'required|in:' . implode(',', DocumentSelectionRule::types()),
+                'services' => 'required|array',
+                'services.*' => 'required|exists:services,id',
+                'priority' => 'required|integer|between:1,100',
+            ]);
+        } else if ($this->method() == 'GET') {
+            $rules = array_merge($rules, [
+                'services' => 'required|array',
+                'services.*' => 'required|exists:services,id',
+            ]);
+        }
+
+        return $rules;
     }
 
     public function documentSelectedRule(): array

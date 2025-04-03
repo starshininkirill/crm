@@ -50,14 +50,5 @@ class OptionSeeder extends Seeder
             'value' => '[12, 13, 14, 15]'
         ]);
 
-        Option::create([
-            'name' => 'time_check_start_work_day_time',
-            'value' => '09:01:00'
-        ]);
-
-        Option::create([
-            'name' => 'time_check_max_breaktime',
-            'value' => '01:20:00'
-        ]);
     }
 }
