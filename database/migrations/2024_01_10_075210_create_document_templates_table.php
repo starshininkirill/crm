@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('document_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('organization_id')
+                ->constrained('organizations')
+                ->onDelete('cascade');
             $table->string('file');
         });
     }

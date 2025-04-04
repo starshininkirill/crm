@@ -16,6 +16,14 @@
                     <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
                         label="Название шаблона" autocomplete="name" required />
 
+                    <div>
+                        <div class="label">
+                            Организация
+                        </div>
+                        <VueSelect v-model="form.organization_id" :reduce="organization => organization.id" label="short_name" :options="organizations"
+                            class="full-vue-select" />
+                    </div>
+
                     <label class="text-sm font-medium leading-6 text-gray-900 flex flex-col gap-1" for="file">
                         Файл
                         <input type="file" id="file" name="file" class="form-input cursor-pointer"
@@ -27,8 +35,8 @@
                     </button>
                 </form>
                 <div class=" col-span-2">
-                    <h2 v-if="!documetTemplates.length" class="text-xl">Шаблонов документов не найдено</h2>
-                    <div v-if="documetTemplates.length" class="relative">
+                    <h2 v-if="!documentTemplates.length" class="text-xl">Шаблонов документов не найдено</h2>
+                    <div v-if="documentTemplates.length" class="relative">
                         <div class="mb-2 font-semibold">
                             Тут будет фильтр
                         </div>
@@ -43,6 +51,9 @@
                                     <th scope="col" class="px-6 py-3">
                                         Файл
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Организация
+                                    </th>
                                     <th scope="col" class="px-6 py-3 ">
                                         Скачать
                                     </th>
@@ -55,13 +66,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="documentTemplate in documetTemplates" :key="documentTemplate.id"
+                                <tr v-for="documentTemplate in documentTemplates" :key="documentTemplate.id"
                                     class="bg-white border-b hover:bg-gray-50">
                                     <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         {{ documentTemplate.name }}
                                     </td>
                                     <td class="px-6 py-4 ">
                                         {{ documentTemplate.file_name }}
+                                    </td>
+                                    <td class="px-6 py-4 ">
+                                        <Link class=" text-blue-500 font-semibold"
+                                            :href="route('admin.organization.show', { organization: documentTemplate.organization.id })">
+                                        {{ documentTemplate.organization.short_name }}
+                                        </Link>
                                     </td>
                                     <td class="px-6 py-4">
                                         <a download class="font-medium text-blue-600  hover:underline"
@@ -96,6 +113,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
+import VueSelect from 'vue-select';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import Error from '../../../../Components/Error.vue'
@@ -105,28 +123,33 @@ export default {
         Head,
         FormInput,
         Error,
-        OrganizationLayout
+        OrganizationLayout,
+        VueSelect
     },
     props: {
-        documetTemplates: {
+        documentTemplates: {
             type: Array,
         },
+        organizations: {
+            type: Array,
+        }
     },
     setup(props) {
 
         const form = useForm({
             'name': null,
-            'file': null
+            'file': null,
+            'organization_id': null,
         });
 
         const submitForm = () => {
-
-            console.log(form.file);
-
+            console.log(form);
+            
             form.post(route('admin.document-template.store'), {
                 onSuccess: () => {
                     form.name = '';
                     form.file = '';
+                    form.organization_id = null;
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {

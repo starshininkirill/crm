@@ -12,7 +12,6 @@ class DocumentSelectionRule extends Model
     use HasFactory;
 
     protected $fillable = [ 
-        'organization_id',
         'document_template_id',
         'type',
         'priority',
@@ -21,12 +20,6 @@ class DocumentSelectionRule extends Model
     const TYPE_PHYSIC = 'physic';
     const TYPE_LAW = 'law';
     const TYPE_ACT_DOCUMENT = 'act_document';
-
-
-    public function organization():BelongsTo
-    {
-        return $this->belongsTo(Organization::class, 'organization_id');
-    }
 
     public function documentTemplate():BelongsTo
     {

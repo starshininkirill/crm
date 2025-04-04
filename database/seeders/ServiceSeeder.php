@@ -100,58 +100,58 @@ class ServiceSeeder extends Seeder
                 'physic_complex' => 254
             ]),
         ]);
-        Service::create([
-            'name' => 'Гот Лендинг',
-            'service_category_id' => 2,
-            'price' => 25000,
-            'description' => 'описание Гот лендинг',
-            'work_days_duration' => '8 (восемь) рабочих дней',
-            'deal_template_ids' => json_encode([
-                'law_default' => 46,
-                'law_complex' => 220,
-                'physic_default' => 22,
-                'physic_complex' => 238
-            ]),
-        ]);
-        Service::create([
-            'name' => 'Гот КС',
-            'service_category_id' => 2,
-            'price' => 29000,
-            'description' => 'описание Гот КС',
-            'work_days_duration' => '8 (восемь) рабочих дней',
-            'deal_template_ids' => json_encode([
-                'law_default' => 46,
-                'law_complex' => 220,
-                'physic_default' => 22,
-                'physic_complex' => 238
-            ]),
-        ]);
-        Service::create([
-            'name' => 'Гот Каталог',
-            'service_category_id' => 2,
-            'price' => 58000,
-            'work_days_duration' => '19 (девятнадцать) рабочих дней',
-            'description' => 'описание Гот Каталог',
-            'deal_template_ids' => json_encode([
-                'law_default' => 50,
-                'law_complex' => 224,
-                'physic_default' => 26,
-                'physic_complex' => 242
-            ]),
-        ]);
-        Service::create([
-            'name' => 'Гот ИМ',
-            'service_category_id' => 2,
-            'price' => 70000,
-            'work_days_duration' => '23 (девятнадцать) рабочих дней',
-            'description' => 'описание Гот ИМ',
-            'deal_template_ids' => json_encode([
-                'law_default' => 50,
-                'law_complex' => 224,
-                'physic_default' => 26,
-                'physic_complex' => 242
-            ]),
-        ]);
+        // Service::create([
+        //     'name' => 'Гот Лендинг',
+        //     'service_category_id' => 2,
+        //     'price' => 25000,
+        //     'description' => 'описание Гот лендинг',
+        //     'work_days_duration' => '8 (восемь) рабочих дней',
+        //     'deal_template_ids' => json_encode([
+        //         'law_default' => 46,
+        //         'law_complex' => 220,
+        //         'physic_default' => 22,
+        //         'physic_complex' => 238
+        //     ]),
+        // ]);
+        // Service::create([
+        //     'name' => 'Гот КС',
+        //     'service_category_id' => 2,
+        //     'price' => 29000,
+        //     'description' => 'описание Гот КС',
+        //     'work_days_duration' => '8 (восемь) рабочих дней',
+        //     'deal_template_ids' => json_encode([
+        //         'law_default' => 46,
+        //         'law_complex' => 220,
+        //         'physic_default' => 22,
+        //         'physic_complex' => 238
+        //     ]),
+        // ]);
+        // Service::create([
+        //     'name' => 'Гот Каталог',
+        //     'service_category_id' => 2,
+        //     'price' => 58000,
+        //     'work_days_duration' => '19 (девятнадцать) рабочих дней',
+        //     'description' => 'описание Гот Каталог',
+        //     'deal_template_ids' => json_encode([
+        //         'law_default' => 50,
+        //         'law_complex' => 224,
+        //         'physic_default' => 26,
+        //         'physic_complex' => 242
+        //     ]),
+        // ]);
+        // Service::create([
+        //     'name' => 'Гот ИМ',
+        //     'service_category_id' => 2,
+        //     'price' => 70000,
+        //     'work_days_duration' => '23 (девятнадцать) рабочих дней',
+        //     'description' => 'описание Гот ИМ',
+        //     'deal_template_ids' => json_encode([
+        //         'law_default' => 50,
+        //         'law_complex' => 224,
+        //         'physic_default' => 26,
+        //         'physic_complex' => 242
+        //     ]),
+        // ]);
         Service::create([
             'name' => 'Настройка и ведение рекламы в Яндекс Директ',
             'service_category_id' => 3,
@@ -205,40 +205,40 @@ class ServiceSeeder extends Seeder
                 'physic_complex' => 44
             ]),
         ]);
-        Service::create([
-            'name' => 'Вариативность',
-            'service_category_id' => 5,
-            'price' => 39000,
-            'work_days_duration' => '5 (пять) рабочих дней',
-            'description' => 'описание Вариативная карточка товара'
-        ]);
-        Service::create([
-            'name' => 'Калькулятор',
-            'service_category_id' => 5,
-            'price' => 15000,
-            'work_days_duration' => '3 (пять) рабочих дней',
-            'description' => 'описание Калькулятор'
-        ]);
+        // Service::create([
+        //     'name' => 'Вариативность',
+        //     'service_category_id' => 5,
+        //     'price' => 39000,
+        //     'work_days_duration' => '5 (пять) рабочих дней',
+        //     'description' => 'описание Вариативная карточка товара'
+        // ]);
+        // Service::create([
+        //     'name' => 'Калькулятор',
+        //     'service_category_id' => 5,
+        //     'price' => 15000,
+        //     'work_days_duration' => '3 (пять) рабочих дней',
+        //     'description' => 'описание Калькулятор'
+        // ]);
 
-        Service::create([
-            'name' => 'Пополнение бюджета',
-            'service_category_id' => 6,
-            'description' => 'Пополнение бюджета'
-        ]);
-        Service::create([
-            'name' => 'Ведение РК',
-            'service_category_id' => 6,
-            'description' => 'Ведение РК'
-        ]);
-        Service::create([
-            'name' => 'Допродажа',
-            'service_category_id' => 6,
-            'description' => 'Допродажа'
-        ]);
-        Service::create([
-            'name' => '2й и далее платёж за настройку',
-            'service_category_id' => 6,
-            'description' => '2й и далее платёж за настройку'
-        ]);
+        // Service::create([
+        //     'name' => 'Пополнение бюджета',
+        //     'service_category_id' => 6,
+        //     'description' => 'Пополнение бюджета'
+        // ]);
+        // Service::create([
+        //     'name' => 'Ведение РК',
+        //     'service_category_id' => 6,
+        //     'description' => 'Ведение РК'
+        // ]);
+        // Service::create([
+        //     'name' => 'Допродажа',
+        //     'service_category_id' => 6,
+        //     'description' => 'Допродажа'
+        // ]);
+        // Service::create([
+        //     'name' => '2й и далее платёж за настройку',
+        //     'service_category_id' => 6,
+        //     'description' => '2й и далее платёж за настройку'
+        // ]);
     }
 }

@@ -26,7 +26,8 @@ class DocumentTemplateRequest extends FormRequest
         if ($this->isMethod('POST')) {
             $rules = array_merge($rules, [
                 'name' => 'required|min:2|max:255|unique:document_templates|',
-                'file' => 'required|file',
+                'file' => 'required|file', 
+                'organization_id' => 'required|exists:organizations,id',
             ]);
         }
         if($this->isMethod('PUT') || $this->isMethod('PATCH')){

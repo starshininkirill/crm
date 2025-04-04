@@ -19,16 +19,8 @@
                                 Шаблон документа
                             </div>
                             <VueSelect v-model="form.document_template_id"
-                                :reduce="documetTemplates => documetTemplates.id" label="name"
-                                :options="documetTemplates">
-                            </VueSelect>
-                        </div>
-                        <div>
-                            <div class="label">
-                                Организация
-                            </div>
-                            <VueSelect v-model="form.organization_id" :reduce="organizations => organizations.id"
-                                label="short_name" :options="organizations">
+                                :reduce="documentTemplates => documentTemplates.id" label="name"
+                                :options="documentTemplates">
                             </VueSelect>
                         </div>
                         <div>
@@ -103,6 +95,9 @@
                                     <th scope="col" class="px-6 py-3">
                                         Тип
                                     </th>
+                                    <th scope="col" class="px-6 py-3 w-12">
+                                        Приоритет
+                                    </th>
                                     <th scope="col" class="px-6 py-3 text-right w-12">
                                         Редактировать
                                     </th>
@@ -125,8 +120,8 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <Link class=" text-blue-500 font-semibold"
-                                            :href="route('admin.organization.show', { organization: documentRule.organization.id })">
-                                        {{ documentRule.organization.short_name }}
+                                            :href="route('admin.organization.show', { organization: documentRule.document_template.organization.id })">
+                                        {{ documentRule.document_template.organization.short_name }}
                                         </Link>
                                     </td>
                                     <td class="px-6 py-4">
@@ -141,6 +136,9 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ documentRule.type }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        {{ documentRule.priority }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         Редактировать
@@ -185,7 +183,7 @@ export default {
         Modal,
     },
     props: {
-        documetTemplates: {
+        documentTemplates: {
             type: Array,
         },
         services: {
@@ -206,7 +204,6 @@ export default {
             form: useForm({
                 document_template_id: null,
                 services: [],
-                organization_id: null,
                 type: null,
                 priority: 1,
             }),
@@ -222,7 +219,6 @@ export default {
                 onSuccess: () => {
                     this.form.document_template_id = null;
                     this.form.services = [null];
-                    this.form.organization_id = null;
                     this.form.type = null;
                     this.selectedServices = [null];
 

@@ -48,7 +48,7 @@ export default {
             default: true,
         },
     },
-    data() {
+    data() {        
         return {
             selectedServices: this.initialServices.map(service => ({ selectedService: service })),
         };
@@ -58,10 +58,10 @@ export default {
             const selectedIds = this.selectedIds;
             return this.allOptions.filter(option => !selectedIds.includes(option.id));
         },
-        selectedIds() {
+        selectedIds() {            
             return this.selectedServices
                 .filter(item => item.selectedService !== null)
-                .map(item => item.selectedService.id);
+                .map(item => item.selectedService?.id);
         },
         canAddService() {
             return this.selectedServices.every(item => item.selectedService !== null) &&

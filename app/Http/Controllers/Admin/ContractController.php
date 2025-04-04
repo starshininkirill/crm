@@ -66,6 +66,7 @@ class ContractController extends Controller
                     'price' => TextFormaterHelper::getPrice($service->pivot->price),
                 ];
             }),
+
             'payments' => $contract->payments->map(function ($payment) {
                 return [
                     'id' => $payment->id,
@@ -87,7 +88,7 @@ class ContractController extends Controller
     public function attachPerformers(ContractRequest $request, Contract $contract, ContractService $service)
     {
         $service->attachPerformers($contract, $request->getPerformersData());
-        
+
         return redirect()->back()->with('success', 'Исполнители успешно изменены');
     }
 

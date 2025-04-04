@@ -6,6 +6,7 @@ use App\Classes\FileManager;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Organization\DocumentTemplateRequest;
 use App\Models\DocumentTemplate;
+use App\Models\Organization;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -13,19 +14,22 @@ class DocumentTemplateController extends Controller
 {
     public function index()
     {
-        $documetTemplates = DocumentTemplate::all();
+        $documentTemplates = DocumentTemplate::all()->load('organization');
+        $organizations = Organization::all();
 
-        $documetTemplates = $documetTemplates->map(function ($document) {
+        $documentTemplates = $documentTemplates->map(function ($document) {
             return [
                 'id' => $document->id,
                 'name' => $document->name,
+                'organization' => $document->organization,
                 'file_path' => Storage::url($document->file),
                 'file_name' => basename($document->file),
             ];
         });
 
         return Inertia::render('Admin/Organization/DocumentTemplate/Index', [
-            'documetTemplates' => $documetTemplates,
+            'documentTemplates' => $documentTemplates,
+            'organizations' => $organizations,
         ]);
     }
 
@@ -58,6 +62,7 @@ class DocumentTemplateController extends Controller
         DocumentTemplate::create([
             'name' => $validated['name'],
             'file' => $path,
+            'organization_id' => $validated['organization_id'],
         ]);
 
         return redirect()->back()->with('success', 'Шаблон документа успешно создан');

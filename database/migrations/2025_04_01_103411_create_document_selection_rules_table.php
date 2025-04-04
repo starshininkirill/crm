@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::create('document_selection_rules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')
-                ->constrained('organizations')
-                ->onDelete('cascade');
             $table->foreignId('document_template_id')
                 ->constrained('document_templates')
                 ->onDelete('cascade');

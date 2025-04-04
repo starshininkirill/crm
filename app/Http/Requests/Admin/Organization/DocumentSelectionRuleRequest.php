@@ -27,7 +27,6 @@ class DocumentSelectionRuleRequest extends FormRequest
         if ($this->method() == 'POST') {
             $rules = array_merge($rules, [
                 'document_template_id' => 'required|exists:document_templates,id',
-                'organization_id' => 'required|exists:organizations,id',
                 'type' => 'required|in:' . implode(',', DocumentSelectionRule::types()),
                 'services' => 'required|array',
                 'services.*' => 'required|exists:services,id',

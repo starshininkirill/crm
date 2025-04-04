@@ -17,19 +17,20 @@ class DocumentSelectionRuleController extends Controller
 {
     public function index()
     {
-        $documetTemplates = DocumentTemplate::all();
+        $documentTemplates = DocumentTemplate::all();
         $services = Service::all();
         $organizations = Organization::all();
 
-        $documentRules = DocumentSelectionRule::with('organization', 'services', 'documentTemplate')->get()->map(function ($rule) {
+        $documentRules = DocumentSelectionRule::with('services', 'documentTemplate.organization')->get()->map(function ($rule) {
             $rule['type'] = DocumentSelectionRule::translateType($rule->type);
             return $rule;
         });
 
+
         $documentRuleTypes = DocumentSelectionRule::visualTypes();
 
         return Inertia::render('Admin/Organization/DocumentTemplateRule/Index', [
-            'documetTemplates' => $documetTemplates,
+            'documentTemplates' => $documentTemplates,
             'services' => $services,
             'organizations' => $organizations,
             'documentRules' => $documentRules,
