@@ -8,11 +8,11 @@
             <Error />
 
             <div class="">
-                <table v-if="payments.length" class="min-w-full border border-gray-300">
-                    <thead>
-                        <tr class="bg-gray-800 text-white">
+                <table v-if="payments.length" class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
                             <th v-for="header in headers" :key="header"
-                                class="border border-gray-300 px-4 py-2 text-left">
+                                class="border px-4 py-2 text-left">
                                 {{ header }}
                             </th>
                         </tr>

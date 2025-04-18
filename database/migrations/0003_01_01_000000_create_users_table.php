@@ -21,11 +21,10 @@ return new class extends Migration
             $table->tinyInteger('probation')->default(0);
             $table->foreignId('position_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
-            $table->boolean('active')->default(true);
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
             $table->timestamp('fired_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
  

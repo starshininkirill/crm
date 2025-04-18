@@ -26,12 +26,14 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import FormInput from '../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
+import Error from '../../Components/Error.vue'
 
 export default {
     name: 'LoginForm',
     components: {
         Head,
         FormInput,
+        Error,
     },
     setup() {
         const form = useForm({

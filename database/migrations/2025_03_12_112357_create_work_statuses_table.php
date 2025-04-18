@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('type')->unique();
-            $table->decimal('hours', 2, 1)->nullable()->default(null);
+            $table->float('hours')->nullable()->default(null);
             $table->boolean('need_confirmation')->default(false);
         });
     }

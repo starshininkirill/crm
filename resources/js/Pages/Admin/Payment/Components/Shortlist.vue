@@ -1,40 +1,40 @@
 <template>
     <div>
         <div class="text-xl mb-3">Шортлист</div>
-        <table v-if="shortlist.length > 0" class="w-full border border-gray-300">
-            <thead>
-                <tr class="bg-gray-800">
-                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+        <table v-if="shortlist.length > 0" class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="border border px-4 py-2 text-left">
                         Сделка
                     </th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                    <th class="border border px-4 py-2 text-left">
                         Сумма</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                    <th class="border border px-4 py-2 text-left">
                         ИНН</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                    <th class="border border px-4 py-2 text-left">
                         Номер платежа</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left text-white">
+                    <th class="border border px-4 py-2 text-left">
                         Прикрепить
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(waitPayment, idx) in shortlist" :key="idx">
-                    <td class="border border-gray-300 px-4 py-2">
+                    <td class="border border px-4 py-2">
                         <Link v-if="waitPayment.contract"
                             :href="route('admin.contract.show', { contract: waitPayment.contract.id })"
                             class="text-blue-700">
                         {{ waitPayment.contract.number }}
                         </Link>
                     </td>
-                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.value }}
+                    <td class="border border px-4 py-2">{{ waitPayment.value }}
                     </td>
-                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.inn }}
+                    <td class="border border px-4 py-2">{{ waitPayment.inn }}
                     </td>
-                    <td class="border border-gray-300 px-4 py-2">{{ waitPayment.order }}
+                    <td class="border border px-4 py-2">{{ waitPayment.order }}
                     </td>
                     <td @click="attachPayment(waitPayment)"
-                        class="border border-gray-300 px-4 py-2 cursor-pointer text-blue-700">
+                        class="border border px-4 py-2 cursor-pointer text-blue-700">
                         Прикрепить</td>
                 </tr>
             </tbody>

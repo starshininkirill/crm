@@ -14,7 +14,7 @@ class Payment extends Model
     use HasFactory;
 
 
-    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'payment_method', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
+    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
 
     const STATUS_WAIT = 0;
     const STATUS_WAIT_CONFIRMATION = 1;
@@ -57,11 +57,6 @@ class Payment extends Model
     public function responsible(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_id');
-    }
-
-    public function method(): BelongsTo
-    {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     public function organization(): BelongsTo
@@ -118,27 +113,6 @@ class Payment extends Model
             self::STATUS_WAIT_CONFIRMATION => 'Ожидает подтверждения',
             self::STATUS_CLOSE => 'Оплачен',
         ];
-    }
-
-    public function generetePaymentMethodHierarchy(): string
-    {
-        $method = $this->method;
-        if ($method == null) {
-            return '';
-        }
-        if ($method->parent == null) {
-            return $method->name;
-        }
-
-        $res = $method->parent->name;
-
-
-        while ($method->parent != null) {
-            $res = $res . ' / ' . $method->name;
-            $method = $method->parent;
-        }
-
-        return $res;
     }
 
     public function getStatusNameAttribute()

@@ -48,7 +48,6 @@ class PaymentController extends Controller
                 'formatStatus' => $payment->getStatusNameAttribute(),
                 'inn' => $payment->inn ?? 'Не определён',
                 'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
-                // 'method' => $payment->generetePaymentMethodHierarchy() != '' ? $payment->generetePaymentMethodHierarchy() : 'Не определён',
                 'is_technical' => $payment->is_technical,
                 'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён',
                 'created_at' => $payment->created_at->format('d.m.Y H:i'),
@@ -100,7 +99,7 @@ class PaymentController extends Controller
         $payments = $payments->map(function ($payment) {
             return [
                 'id' => $payment->id,
-                'created_at' => $payment->created_at->format('d.m.Y H:i '),
+                'created_at' => $payment->created_at->format('Y.m.d H:i '),
                 'value' => TextFormaterHelper::getPrice($payment->value),
                 'inn' => $payment->inn,
                 'organization' => $payment->organization,

@@ -30,11 +30,11 @@ class ActGeneratorController extends Controller
         }
 
         $serviceIds = json_decode($serviceIdsOption->value);
-
+        
         if (empty($serviceIds)) {
             throw new BusinessException('Не выбраны Технические услуги для генератора');
         }
-
+        
         $services = Service::whereIn('id', $serviceIds)->get();
 
         if ($services->isEmpty()) {

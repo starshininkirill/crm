@@ -47,7 +47,7 @@ class OptionSeeder extends Seeder
 
         Option::create([
             'name' => 'payment_generator_services',
-            'value' => '[12, 13, 14, 15]'
+            'value' => '[9, 10, 11, 12]'
         ]);
 
     }

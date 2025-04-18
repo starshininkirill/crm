@@ -14,7 +14,7 @@ class Organization extends Model
     public const WITHOUT_NDS = 0;
     public const WITH_NDS = 1;
 
-    protected $fillable = ['short_name', 'name', 'nds', 'inn', 'template', 'active', 'terminal'];
+    protected $fillable = ['short_name', 'name', 'nds', 'inn', 'terminal'];
 
 
     public function documentSelectionRules()

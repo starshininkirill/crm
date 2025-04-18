@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('service_categories', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name');
             $table->integer('type')->nullable()->unique();
-            $table->tinyInteger('needed_for_calculations')->default(0);
+            $table->timestamps();
         });
     }
 

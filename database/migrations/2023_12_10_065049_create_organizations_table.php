@@ -18,8 +18,6 @@ return new class extends Migration
             $table->bigInteger('inn')->unique();
             $table->tinyInteger('nds');
             $table->integer('terminal');
-            $table->integer('template')->nullable();
-            $table->boolean('active')->default(1);
         });
     }
 

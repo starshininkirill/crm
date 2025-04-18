@@ -19,9 +19,6 @@
                                     <th scope="col" class="px-6 py-3">
                                         ИНН
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Статус
-                                    </th>
                                     <th scope="col" class="px-6 py-3 text-right w-12">
                                         Редактировать
                                     </th>
@@ -38,15 +35,6 @@
                                     </th>
                                     <td class="px-6 py-4">
                                         {{ organization.inn }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span v-if="organization.active" class=" text-green-500">
-                                            Активен
-                                        </span>
-
-                                        <span v-else class=" text-red-500">
-                                            Не активен
-                                        </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <Link

@@ -1,5 +1,5 @@
 <template>
-    <tr>
+    <tr class="bg-white border-b   hover:bg-gray-50">
         <td class="border px-4 py-2">{{ payment.organization?.short_name }}</td>
         <td class="border px-4 py-2">{{ payment.value }}</td>
         <td class="border px-4 py-2">{{ payment.description }}</td>

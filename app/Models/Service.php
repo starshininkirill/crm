@@ -10,11 +10,7 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'service_category_id', 'price', 'description', 'deal_template_ids', 'work_days_duration'];
-
-    protected $casts = [
-        'deal_template_ids' => 'array',
-    ];
+    protected $fillable = ['name', 'service_category_id', 'price', 'description', 'work_days_duration'];
 
     public function contracts()
     {
@@ -30,13 +26,6 @@ class Service extends Model
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
-    }
-
-    public function dealTemplateId(bool $isIndividual, bool $isDefault)
-    {
-        $searchString = $isIndividual ? 'physic_' : 'law_';
-        $searchString = $isDefault ? $searchString . 'default' : $searchString . 'complex';
-        return json_decode($this->deal_template_ids, true)[$searchString];
     }
 
     public function numeric_working_days() : int

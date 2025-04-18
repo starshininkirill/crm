@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('daily_work_statuses', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_status_id')->constrained()->onDelete('cascade');
+            $table->date('date');
             $table->string('status')->default('pending');
             $table->float('hours')->nullable()->default(null);
             $table->time('time_start')->nullable();
