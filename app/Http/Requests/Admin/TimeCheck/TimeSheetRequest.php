@@ -23,7 +23,7 @@ class TimeSheetRequest extends FormRequest
     {
         return [
             'date' => 'sometimes|date|date_format:Y-m',
-            'department_id' => 'sometimes|integer|exists:departments,id'
+            'department_id' => 'nullable|integer|exists:departments,id'
         ];
     }
 }

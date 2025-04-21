@@ -3,87 +3,15 @@
 
         <Head :title="`Платеж №${payment.id}`" />
         <div class="bg-white p-6">
-            <div class=" flex max-w-md items-center justify-between mb-4">
+            <div class=" flex max-w-lg items-center justify-between mb-4">
                 <h1 class="text-3xl font-semibold">Платеж №: {{ payment.id }}</h1>
-                <Link :href="route('admin.payment.edit', payment.id)" class="btn !w-fit">
-                Редактировать
-                </Link>
-            </div>
-            <div
-                class="payment-info text-lg flex flex-col gap-4 p-4 bg-white border border-gray-200 rounded-md max-w-lg">
-                <div class="contract font-semibold grid grid-cols-2 gap-3 max-w-sm">
-                    Сделка(Направление):
-                    <Link v-if="payment.contract" class="text-blue-500 hover:underline"
-                        :href="route('admin.contract.show', { contract: payment.contract.id })">
-                    {{ payment.contract.number }}
-                    </Link>
-                    <template v-else>
-                        Не прикреплён
-                    </template>
-                </div>
-                <div class="value grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Сумма:</span>
-                    <span>
-                        {{ payment.value }}
-                    </span>
-                </div>
-                <div class="status grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">ИНН: </span>
-                    <span>
-                        {{ payment.inn }}
-                    </span>
-                </div>
-                <div class="status grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Статус: </span>
-                    <span :class="payment.status == paymentStatuses.close ? 'text-green-600' : 'text-red-600'">
-                        {{ payment.formatStatus }}
-                    </span>
-                </div>
-                <div class="status grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Тип (Новые/Старые): </span>
-                    <span>
-                        {{ payment.type }}
-                    </span>
-                </div>
-                <div class="date grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Технический платёж:</span>
-                    <span>
-                        {{ payment.is_technical ? 'Да' : 'Нет' }}
-                    </span>
-                </div>
-                <div class="date grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Ответственный: </span>
-                    <Link v-if="payment.responsible" class="text-blue-500 hover:underline"
-                        :href="route('admin.user.show', payment.responsible.id)">
-                    {{ payment.responsible.first_name }} {{ payment.responsible.last_name }}
-                    </Link>
-                    <template v-else>
-                        Не прикреплён
-                    </template>
-                </div>
-                <div class="date grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Организация: </span>
-                    <Link v-if="payment.organization" class="text-blue-500 hover:underline"
-                        :href="route('admin.organization.show', payment.organization.id)">
-                    {{ payment.organization.short_name }}
-                    </Link>
-                    <template v-else>
-                        Не прикреплёна
-                    </template>
-                </div>
-                <div class="date grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Когда подтверждён:</span>
-                    <span>
-                        {{ payment.confirmed_at }}
-                    </span>
-                </div>
-                <div class="date grid grid-cols-2 gap-3 max-w-sm">
-                    <span class="font-semibold">Создан:</span>
-                    <span>
-                        {{ payment.created_at }}
-                    </span>
+                <div class="btn !w-fit" @click="showMode = !showMode">
+                    {{ showMode ? 'Редактировать' : 'Назад' }}
                 </div>
             </div>
+            <ShowForm v-if="showMode" :payment="payment" :paymentStatuses="paymentStatuses" />
+            <EditForm v-if="!showMode" :payment="payment" :paymentStatuses="paymentStatuses" :paymentTypes="paymentTypes"
+                :organizations="organizations" :users="users"/>
         </div>
     </PaymentLayout>
 </template>
@@ -92,11 +20,15 @@
 <script>
 import { Head } from '@inertiajs/vue3';
 import PaymentLayout from '../Layouts/PaymentLayout.vue';
+import ShowForm from './Components/ShowForm.vue';
+import EditForm from './Components/EditForm.vue';
 
 export default {
     components: {
         Head,
-        PaymentLayout
+        PaymentLayout,
+        ShowForm,
+        EditForm
     },
     props: {
         payment: {
@@ -105,6 +37,23 @@ export default {
         paymentStatuses: {
             type: Object
         },
+        paymentTypes: {
+            required: true,
+            type: Object
+        },
+        organizations: {
+            required: true,
+            type: Array,
+        },
+        users: {
+            required: true,
+            type: Array,
+        },
+    },
+    data() {
+        return {
+            showMode: true,
+        }
     },
 }
 

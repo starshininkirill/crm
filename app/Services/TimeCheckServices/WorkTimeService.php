@@ -24,7 +24,7 @@ class WorkTimeService
         });
 
         $timeChecksForDay = $user->timeChecks->filter(function ($timeCheck) use ($date) {
-            return $timeCheck->date->isSameDay($date);
+            return $timeCheck->date->format('Y-m-d') ==  $date->format('Y-m-d');
         });
 
         $overworkHours = $user->dailyWorkStatuses->filter(function ($dailyWorkStatus) use ($date) {
@@ -38,12 +38,17 @@ class WorkTimeService
             return $confirmedHours + $overworkHours;
         }
 
-        if ($date->isToday() || !DateHelper::isWorkingDay($date)) {
+        if (!DateHelper::isWorkingDay($date)) {
             return 0 + $overworkHours;
         }
 
         $startTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_START)?->date;
-        $endTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_END)?->date;
+        
+        if (!$startTime) {
+            return 0 + $overworkHours;
+        }
+
+        $endTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_END)?->date ?? Carbon::now();
 
         if (!$startTime || !$endTime) {
             return 0 + $overworkHours;

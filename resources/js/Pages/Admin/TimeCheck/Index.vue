@@ -26,7 +26,7 @@
 <script>
 import { Head, router } from '@inertiajs/vue3';
 import TimeCheckLayout from '../Layouts/TimeCheckLayout.vue';
-import CurrentUserStatuses from './Components/CurrentUserStatuses.vue';
+import CurrentUserStatuses from './Components/CurrentTable/CurrentUserStatuses.vue';
 import GeneralUserStatuses from './Components/GeneralUserStatuses.vue';
 import LogReport from './Components/LogReport.vue'
 import { route } from 'ziggy-js';

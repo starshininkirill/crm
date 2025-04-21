@@ -32,7 +32,7 @@ class CheckLate
 
         $dateStartTime = $event->action->date->format('H:i:s');
 
-        if ($dateStartTime < TimeCheck::DEFAULT_DAY_START) {
+        if ($dateStartTime <= TimeCheck::DEFAULT_DAY_START) {
             return;
         }
 

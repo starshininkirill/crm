@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ServiceSeeder::class,
             ContractSeeder::class,
-            PaymentMethodSeeder::class,
             WorkPlanSeeder::class,
             OrganizationSeeder::class,
             DocumentTemplateSeeder::class,

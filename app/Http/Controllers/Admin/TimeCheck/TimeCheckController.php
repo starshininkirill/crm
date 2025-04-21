@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\TimeCheck;
 
+use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
 use App\Models\WorkStatus;
@@ -31,15 +32,31 @@ class TimeCheckController extends Controller
         ]);
     }
 
+    public function handleSickLeave(WorkStatusRequest $request, WorkStatusService $service)
+    {
+        $validated = $request->validated();
+
+        $service->handleSickLeave($validated);
+
+        return redirect()->back()->with('success', 'Больничный успешно проставлен!');
+    }
+
+    public function closeSickLeave(WorkStatusRequest $request, WorkStatusService $service)
+    {
+        $validated = $request->validated();
+        $validated['image'] = $request->file('image');
+
+        $service->closeSickLeave($validated);
+
+        return redirect()->back()->with('success', 'Больничный успешно закрыт!');
+    }
+
     public function handleWorkStatus(WorkStatusRequest $request, WorkStatusService $service)
     {
         $validated = $request->validated();
 
         $service->handleChange($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Статус успешно обновлен!',
-        ], 200);
+        return redirect()->back()->with('success', 'Статус успешно обновлен!');
     }
 }

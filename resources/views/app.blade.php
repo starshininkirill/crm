@@ -15,7 +15,7 @@
     @inertiaHead
 </head>
 
-<body>
+<body class=" overflow-y-scroll">
     @inertia
 </body>
 

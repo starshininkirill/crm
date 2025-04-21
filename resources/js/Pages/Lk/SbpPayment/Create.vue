@@ -76,8 +76,6 @@ export default {
         });
 
         const submitForm = () => {
-            console.log(form);
-
             form.post(route('lk.sbp.store'), {
                 onSuccess: () => {
                     const fileInput = document.querySelector('input[type="file"]');

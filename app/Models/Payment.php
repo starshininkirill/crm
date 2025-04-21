@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
-use Ramsey\Uuid\Type\Integer;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, HasHistory;
 
 
     protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];

@@ -17,7 +17,6 @@ class WorkStatus extends Model
     const TYPE_LATE = 'late';
     const TYPE_OVERWORK = 'overwork';
 
-    // Типы которые по умолчанию удаляем из запроса
     const EXCLUDE_TYPES = [
         self::TYPE_LATE,
         self::TYPE_OVERWORK,

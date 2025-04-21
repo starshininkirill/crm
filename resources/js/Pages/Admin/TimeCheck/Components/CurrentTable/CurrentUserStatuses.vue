@@ -20,7 +20,7 @@
                         mainDepartment.name }}</td>
                 </tr>
 
-                <CurrentUserRow v-if="mainDepartment.users" v-for="user in mainDepartment.users" :key="user.id"
+                <UserRow v-if="mainDepartment.users" v-for="user in mainDepartment.users" :key="user.id"
                     :workStatuses="workStatuses" :user="user" :date="date" />
 
                 <template v-for="department in mainDepartment.child_departments">
@@ -28,7 +28,7 @@
                         <td colspan="3" class="px-6 py-3 font-semibold">{{ department.name }}</td>
                     </tr>
 
-                    <CurrentUserRow v-if="department.users" v-for="user in department.users" :key="user.id"
+                    <UserRow v-if="department.users" v-for="user in department.users" :key="user.id"
                         :workStatuses="workStatuses" :user="user" :date="date" />
                 </template>
             </tbody>
@@ -36,11 +36,11 @@
     </div>
 </template>
 <script>
-import CurrentUserRow from './CurrentUserRow.vue';
+import UserRow from './UserRow.vue';
 
 export default {
     components: {
-        CurrentUserRow,
+        UserRow,
     },
     props: {
         todayReport: {

@@ -22,8 +22,9 @@ class TimeSheetService
         $this->loadRelation($users, $date);
 
         $usersReport = $users->map(function ($user) use ($date) {
-            $user['salary'] = $user->salary();
             $user['days'] = $this->userMonthReport($user, $date);
+            $user['salary'] = $user->salary();
+            $user['hour_salary'] = round($user['salary'] / count(DateHelper::getWorkingDaysInMonth($date)) / 9);
             return $user;
         });
 

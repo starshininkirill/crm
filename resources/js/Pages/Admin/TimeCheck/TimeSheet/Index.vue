@@ -10,12 +10,13 @@
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
                 <VueSelect class="full-vue-select h-full" v-model="selectedDepartment"
-                    :reduce="department => department" label="name" :options="departments">
-                </VueSelect> 
+                    :reduce="department => department.id" label="name" :options="departmentOptions">
+                </VueSelect>
             </div>
             <div class="w-1/4 flex flex-col">
                 <label class="label">Дата</label>
-                <VueDatePicker v-model="selectedDate"  model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru" class="h-full" />
+                <VueDatePicker v-model="selectedDate" model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru"
+                    class="h-full" />
             </div>
             <div @click="updateDate" class="btn h-fit mt-auto !w-fit">
                 Выбрать
@@ -36,7 +37,7 @@
                         Должность
                     </th>
                     <th scope="col" class="px-3 py-3 border-r">
-                        ФИО 
+                        ФИО
                     </th>
                     <th v-for="(day, idx) in days" scope="col" class="px-1 py-3 border-r text-center">
                         {{ idx }}
@@ -49,7 +50,7 @@
                         {{ formatPrice(user.salary) }}
                     </td>
                     <td class="px-3 py-4 border-r">
-                        0
+                        {{ formatPrice(user.hour_salary) }}
                     </td>
                     <th scope="row" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.position?.name ?? 'Не указана' }}
@@ -59,7 +60,7 @@
                     </th>
                     <td v-for="day in user.days" class="px-3 py-4 border-r text-center" :class="getActionColor(day)">
                         {{ day.hours == 0 ? '' : day.hours }}
-                        {{ day.date == user.fired_at ?  'Уволен' : ''}}
+                        {{ day.date == user.fired_at ? 'Уволен' : '' }}
                     </td>
                 </tr>
             </tbody>
@@ -104,8 +105,12 @@ export default {
     },
     data() {
         return {
+            departmentOptions: [
+                { id: null, name: 'Все' },
+                ...this.departments
+            ],
             selectedDate: this.date,
-            selectedDepartment: this.department,
+            selectedDepartment: this.department?.id ?? null,
         }
     },
     methods: {
@@ -136,10 +141,10 @@ export default {
 
             return ''
         },
-        updateDate() {           
+        updateDate() {            
             router.get(route('admin.time-sheet'), {
                 date: this.selectedDate,
-                department_id: this.selectedDepartment.id
+                department_id: this.selectedDepartment
             })
         }
     }

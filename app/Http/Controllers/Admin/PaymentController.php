@@ -43,10 +43,10 @@ class PaymentController extends Controller
             'payment' => [
                 'id' => $payment->id,
                 'contract' => $payment->contract,
-                'value' => TextFormaterHelper::getPrice($payment->value),
+                'value' => $payment->value,
                 'status' => $payment->status,
                 'formatStatus' => $payment->getStatusNameAttribute(),
-                'inn' => $payment->inn ?? 'Не определён',
+                'inn' => $payment->inn,
                 'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
                 'is_technical' => $payment->is_technical,
                 'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён',
@@ -55,23 +55,9 @@ class PaymentController extends Controller
                 'organization' => $payment->organization,
             ],
             'paymentStatuses' => Payment::vueStatuses(),
-        ]);
-    }
-
-    public function edit(Payment $payment)
-    {
-        $payment->load('contract');
-
-        $paymentArray = $payment->toArray();
-        $paymentArray['confirmed_at'] = $payment->confirmed_at?->format('Y-m-d\TH:i');
-        $paymentArray['created_at'] = $payment->created_at?->format('Y-m-d\TH:i');
-
-        return Inertia::render('Admin/Payment/Edit', [
-            'payment' => $paymentArray,
-            'paymentStatuses' => Payment::ASOC_STATUSES,
             'paymentTypes' => Payment::ASOC_TYPES,
             'organizations' => Organization::all(),
-            'users' => User::all(),
+            'users' => User::all()
         ]);
     }
 

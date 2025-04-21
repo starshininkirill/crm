@@ -59,10 +59,6 @@ class ReportService
 
         return Department::with([
             'users' => function ($query) use ($relations, $date) {
-                // TODO
-                // Добавить проверку на уволенного сотрудника, если нужно
-                // $query->where('created_at', '<=', $date);
-
                 if (!empty($relations)) {
                     foreach ($relations as $relation) {
                         $query->with([$relation => function ($query) use ($date, $relation) {
@@ -78,9 +74,6 @@ class ReportService
             },
             'childDepartments',
             'childDepartments.users' => function ($query) use ($relations, $date) {
-                // Добавить проверку на уволенного сотрудника, если нужно
-                // $query->where('created_at', '<=', $date);
-
                 if (!empty($relations)) {
                     foreach ($relations as $relation) {
                         $query->with([$relation => function ($query) use ($date, $relation) {

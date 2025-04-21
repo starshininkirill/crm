@@ -22,7 +22,7 @@ class ActGeneratorController extends Controller
 {
     public function create()
     {
-        $organisations = Organization::where('active', 1)->get()->toArray();
+        $organisations = Organization::get()->toArray();
         $serviceIdsOption = Option::whereName('payment_generator_services')->first();
 
         if (!$serviceIdsOption) {
@@ -78,7 +78,8 @@ class ActGeneratorController extends Controller
                 'operation_id' =>  mt_rand(100000, 1000000),
             ]);
 
-            $generatedDocumentData = $documentGenerator->generatePaymentDocument($validated);
+            // $generatedDocumentData = $documentGenerator->generatePaymentDocument($validated);
+            $generatedDocumentData = true;
 
             if (!$generatedDocumentData) {
                 DB::rollBack();

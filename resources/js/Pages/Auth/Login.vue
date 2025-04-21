@@ -19,6 +19,10 @@
                 Войти
             </button>
         </div>
+
+        <div class=" mt-4">
+            Войти как <span class=" italic font-semibold cursor-pointer" @click="loginSale">sale1@mail.ru</span>
+        </div>
     </form>
 </template>
 
@@ -34,6 +38,12 @@ export default {
         Head,
         FormInput,
         Error,
+    },
+    methods: {
+        loginSale(){
+            this.form.email = 'sale1@mail.ru';
+            this.form.password = '1409199696Rust';
+        }
     },
     setup() {
         const form = useForm({

@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Collection;
 
 class ContractUser extends Pivot
 {
+
+    use HasHistory;
+
     protected $table = 'contract_user';
 
     protected $fillable = [

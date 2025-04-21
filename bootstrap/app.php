@@ -36,6 +36,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 return response()->json($json, 400);
             }
+
+            if ($e->isFlash()) {
+                return redirect()->back()->with('flash.error', $e->getUserMessage());
+            }
+
             return redirect()->back()->withErrors($e->getUserMessage());
         });
 

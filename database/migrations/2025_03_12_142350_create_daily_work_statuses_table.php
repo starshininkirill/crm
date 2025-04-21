@@ -22,6 +22,7 @@ return new class extends Migration
             $table->time('time_end')->nullable();
             $table->text('report')->nullable();
             $table->text('description')->nullable();
+            $table->string('file')->nullable();
         });
     }
 

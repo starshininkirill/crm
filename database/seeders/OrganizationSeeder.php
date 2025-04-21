@@ -19,8 +19,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITHOUT_NDS,
             'inn' => 352531026755,
             'terminal' => 1,
-            'template' => 288,
-            'active' => 1,
         ]);
 
         Organization::create([
@@ -29,8 +27,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITHOUT_NDS,
             'inn' => 352512760417,
             'terminal' => 2,
-            'template' => 290,
-            'active' => 1,
         ]);
 
         Organization::create([
@@ -39,8 +35,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITH_NDS,
             'inn' => 3500007401,
             'terminal' => 3,
-            'template' => 298,
-            'active' => 1,
         ]);
         Organization::create([
             'short_name' => 'ИП 4',
@@ -48,8 +42,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITHOUT_NDS,
             'inn' => 888888888,
             'terminal' => 5,
-            'template' => 290,
-            'active' => 1,
         ]);
         Organization::create([
             'short_name' => 'ИП 5',
@@ -57,8 +49,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITHOUT_NDS,
             'inn' => 7777777777,
             'terminal' => 6,
-            'template' => 290,
-            'active' => 1,
         ]);
         Organization::create([
             'short_name' => 'ИП 6',
@@ -66,8 +56,6 @@ class OrganizationSeeder extends Seeder
             'nds' => Organization::WITHOUT_NDS,
             'inn' => 6666666666,
             'terminal' => 7,
-            'template' => 290,
-            'active' => 1,
         ]);
     }
 }

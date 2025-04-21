@@ -2,13 +2,20 @@
 
 namespace App\Services;
 
+use App\Classes\FileManager;
 use App\Exceptions\Business\BusinessException;
+use App\Helpers\DateHelper;
 use App\Models\DailyWorkStatus;
+use App\Models\User;
 use App\Models\WorkStatus;
 use Carbon\Carbon;
 
 class WorkStatusService
 {
+    public function __construct(
+        private FileManager $fileManager
+    ){}
+
     public function handleChange(array $data)
     {
         $existingDailyWorkStatus = $this->getDailyWorkStatus($data['date'], $data['user_id']);
@@ -28,6 +35,65 @@ class WorkStatusService
         }
 
         $this->updateDailyWorkStatus($existingDailyWorkStatus, $data);
+    }
+
+    public function handleSickLeave(array $data)
+    {
+        if (empty($data)) {
+            throw new BusinessException('Данные для проставления больничного не заполнены');
+        }
+
+        if (!array_key_exists('dates', $data) || count($data['dates']) < 2) {
+            throw new BusinessException('Не выбраны даты для проставления больничного');
+        }
+
+        $startDate = Carbon::parse($data['dates'][0]);
+        $endDate = Carbon::parse($data['dates'][1]);
+
+        $days = DateHelper::getWorkingDaysInRange($startDate, $endDate);
+
+        foreach ($days as $day) {
+            $data = [
+                'date' => $day,
+                'user_id' => $data['user_id'],
+                'work_status_id' => $data['work_status_id'],
+                'time_start' => null,
+                'time_end' => null,
+            ];
+            if ($currentStatus = $this->getDailyWorkStatus($day, $data['user_id'])) {
+                $this->updateDailyWorkStatus($currentStatus, $data);
+            } else {
+                $this->createDailyWorkStatus($data);
+            }
+        };
+    }
+
+    public function closeSickLeave(array $data)
+    {
+        if (empty($data)) {
+            throw new BusinessException('Данные для проставления больничного не заполнены');
+        }
+
+        if (!array_key_exists('dates', $data) || count($data['dates']) < 2) {
+            throw new BusinessException('Не выбраны даты для проставления больничного');
+        }
+
+        $startDate = Carbon::parse($data['dates'][0]);
+        $endDate = Carbon::parse($data['dates'][1]);
+        $user =  User::find($data['user_id']);
+        $path = $this->fileManager->upload($data['image'], 'sickLeave');
+
+        $updated = $user->dailyWorkStatuses()
+            ->whereDate('date', '>=', $startDate)
+            ->whereDate('date', '<=', $endDate)
+            ->update([
+                'status' => DailyWorkStatus::STATUS_APPROVED,
+                'file' => $path
+            ]);
+
+        if(!$updated){
+            throw new BusinessException('Не удалось закрыть больничный');
+        }
     }
 
     private function deleteDailyWorkStatus($existingDailyWorkStatus)

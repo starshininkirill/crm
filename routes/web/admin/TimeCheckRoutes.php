@@ -15,6 +15,8 @@ Route::prefix('time-check')->group(function () {
     });
 
     Route::post('/work-status', [TimeCheckController::class, 'handleWorkStatus'])->name('admin.time-check.handle-work-status');
+    Route::post('/sick-leave', [TimeCheckController::class, 'handleSickLeave'])->name('admin.time-check.handle-sick-leave');
+    Route::post('/close-sick-leave', [TimeCheckController::class, 'closeSickLeave'])->name('admin.time-check.close-sick-leave');
 
     Route::get('/', [TimeCheckController::class, 'index'])->name('admin.time-check.index');
 });

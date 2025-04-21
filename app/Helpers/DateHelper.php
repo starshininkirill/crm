@@ -95,6 +95,21 @@ class DateHelper
         return $days;
     }
 
+    public static function getWorkingDaysInRange(Carbon $startDate, Carbon $endDate): array
+    {
+        $workingDays = [];
+
+        while ($startDate->lte($endDate)) {
+            if (DateHelper::isWorkingDay($startDate)) {
+                $workingDays[] = $startDate->toDateString();
+            }
+
+            $startDate->addDay();
+        }
+
+        return $workingDays;
+    }
+
     public static function isWorkingDay(Carbon $date, Collection $workingDays = null): bool
     {
         $dateKey = $date->format('Y-m-d');

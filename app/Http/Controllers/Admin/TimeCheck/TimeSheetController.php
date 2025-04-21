@@ -15,6 +15,7 @@ class TimeSheetController extends Controller
 {
     public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
+        // dd($request->all());
         $departments = Department::all();
 
         $targetDate = null;
@@ -22,17 +23,19 @@ class TimeSheetController extends Controller
         $days = [];
         $usersReport = [];
 
-        if ($request->filled('date') && $request->filled('department_id')) {
-            $targetDate = Carbon::parse($request->input('date'))->endOfMonth();
-
+        if ($request->filled('department_id') && $request->filled('department_id') != null) {
             $department = Department::findOrFail($request->input('department_id'));
 
-            $days = DateHelper::daysInMonth($targetDate);
-
             $users = $department->allUsers($targetDate);
-            
-            $usersReport = $service->generateUsersReport($users, $targetDate);
+        }else{
+            $users = User::all();
         }
+
+        $targetDate = $request->filled('date') != null ? Carbon::parse($request->input('date'))->endOfMonth() : Carbon::now()->endOfMonth();
+
+        $days = DateHelper::daysInMonth($targetDate);
+        
+        $usersReport = $service->generateUsersReport($users, $targetDate);
 
         return Inertia::render('Admin/TimeCheck/TimeSheet/Index', [
             'days' => $days,
