@@ -2,9 +2,11 @@
 
 namespace App\Services\TimeCheckServices;
 
+use App\Models\DailyWorkStatus;
 use App\Models\Department;
 use App\Models\WorkStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class ReportService
 {
@@ -14,7 +16,7 @@ class ReportService
 
     public function getWorkTimeDayReport($date)
     {
-        $report = $this->getTimeChecksInfo(['timeChecks', 'lastAction', 'dailyWorkStatuses'], $date);
+        $report = $this->getTimeChecksInfo(['timeChecks', 'lastAction', 'dailyWorkStatuses', 'lateWorkStatuses'], $date);
 
         $report->each(function ($department) use ($date) {
             $this->processDepartmentUsers($department, $date);
@@ -46,41 +48,35 @@ class ReportService
         return $report;
     }
 
-    private function getTimeChecksInfo(array $relations, string|null $date = null)
+    private function getTimeChecksInfo(array $relations, ?string $date = null): Collection
     {
         $date = $date ?? Carbon::now();
 
         return Department::with([
-            'users' => function ($query) use ($relations, $date) {
-                if (!empty($relations)) {
-                    foreach ($relations as $relation) {
-                        $query->with([$relation => function ($query) use ($date, $relation) {
-                            $query->whereDate('date', $date);
-                            if ($relation == 'dailyWorkStatuses') {
-                                $query->whereHas('workStatus', function ($query) {
-                                    $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
-                                });
-                            }
-                        }]);
-                    }
-                }
-            },
+            'users' => fn($query) => $this->loadUserRelations($query, $relations, $date),
             'childDepartments',
-            'childDepartments.users' => function ($query) use ($relations, $date) {
-                if (!empty($relations)) {
-                    foreach ($relations as $relation) {
-                        $query->with([$relation => function ($query) use ($date, $relation) {
-                            $query->whereDate('date', $date);
-                            if ($relation == 'dailyWorkStatuses') {
-                                $query->whereHas('workStatus', function ($query) {
-                                    $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
-                                });
-                            }
-                        }]);
+            'childDepartments.users' => fn($query) => $this->loadUserRelations($query, $relations, $date),
+        ])->whereNull('parent_id')->get();
+    }
+
+    private function loadUserRelations($query, array $relations, string $date): void
+    {
+        if (empty($relations)) {
+            return;
+        }
+
+        foreach ($relations as $relation) {
+            $query->with([
+                $relation => function ($query) use ($date, $relation) {
+                    $query->whereDate('date', $date);
+                    if ($relation == 'dailyWorkStatuses') {
+                        $query->whereHas('workStatus', function ($query) {
+                            $query->whereNotIn('type', WorkStatus::EXCLUDE_TYPES);
+                        });
                     }
                 }
-            },
-        ])->whereNull('parent_id')->get();
+            ]);
+        }
     }
 
     private function processDepartmentUsers(Department $department, $date)
@@ -93,8 +89,7 @@ class ReportService
 
             $breaktime = $this->workTimeService->userBreaktime($user, Carbon::parse($date));
 
-            // $user->isLate = $this->workTimeService->isUserLate($actionStart);
-            $user->isLate = $this->workTimeService->isUserLate2($user, $date);
+            $user->isLate = $this->workTimeService->isUserLate($user, $date);
             $user->isOvertime = $this->workTimeService->isBreakOvertime($breaktime);
             $user->actionStart = $actionStart ? $actionStart->date->format('H:i:s') : null;
             $user->actionEnd = $actionEnd ? $actionEnd->date->format('H:i:s') : null;

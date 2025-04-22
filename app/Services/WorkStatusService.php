@@ -96,6 +96,20 @@ class WorkStatusService
         }
     }
 
+    public function rejectLate($userId, $date)
+    {
+        $user = User::find($userId);
+
+        $updated = $user->lateWorkStatuses()->whereDate('date', $date)->update([
+            'status' => DailyWorkStatus::STATUS_REJECTED,
+        ]);
+
+        if(!$updated){
+            throw new BusinessException('Не удалось отменить опоздание');
+        }
+
+    }
+
     private function deleteDailyWorkStatus($existingDailyWorkStatus)
     {
         return $existingDailyWorkStatus->delete();

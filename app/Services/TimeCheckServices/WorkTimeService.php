@@ -43,7 +43,7 @@ class WorkTimeService
         }
 
         $startTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_START)?->date;
-        
+
         if (!$startTime) {
             return 0 + $overworkHours;
         }
@@ -61,33 +61,13 @@ class WorkTimeService
         return $this->hoursFromTimeCheck($startTime, $endTime) + $overworkHours;
     }
 
-    public function isUserLate(TimeCheck|null $actionStart): bool
-    {
-        if (!$actionStart) {
-            return false;
-        }
-
-        if (!$this->startTime) {
-            $this->startTime = TimeCheck::DEFAULT_DAY_START;
-        }
-
-        $startTime = $actionStart->date->copy()->setTimeFromTimeString($this->startTime);
-
-        if ($actionStart->date->gt($startTime)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function isUserLate2(User $user, $date) : bool
+    public function isUserLate(User $user, $date): bool
     {
         $date = Carbon::parse($date);
 
-        $dailyWorkStatuses = $user->dailyWorkStatuses->filter(function($status) use ($date){
-            // dd($status);
-            return $status->date->isSameDay($date);
-        });
+        if (!$user->lateWorkStatuses->isEmpty()) {
+            return true;
+        }
 
         return false;
     }

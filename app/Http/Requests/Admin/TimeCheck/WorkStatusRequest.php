@@ -44,6 +44,10 @@ class WorkStatusRequest extends FormRequest
                 'dates.*' => 'required|date_format:Y-m-d',
                 'image' => 'required|image',
             ]);
+        } elseif ($this->routeIs('admin.time-check.reject-late')) {
+            $rules = array_merge($rules, [
+                'date' => 'required|date_format:Y-m-d',
+            ]);
         }
 
         return $rules;

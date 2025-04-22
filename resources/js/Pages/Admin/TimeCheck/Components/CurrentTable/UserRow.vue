@@ -9,8 +9,16 @@
             {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
         <td class="px-4 py-3 border-r">
-            <div v-if="user.actionStart" :class="user.isLate ? 'font-semibold text-red-500' : ''">
+            <div v-if="user.actionStart" class="flex gap-1 items-center justify-between" :class="user.isLate ? 'font-semibold text-red-500' : ''">
                 {{ user.actionStart }}
+                <button title="Отменить опоздание" v-if="user.isLate" @click="rejectLate"
+                    class="p-1 text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
             </div>
             <div v-else class="font-semibold text-red-500">
                 Не начат
@@ -130,14 +138,14 @@ export default {
             if (!timeObject) return null
             return `${String(timeObject.hours).padStart(2, '0')}:${String(timeObject.minutes).padStart(2, '0')}`
         },
-        async sendWorkStatus() {
+        sendWorkStatus() {
             const statusObject = this.workStatuses.find(e => e.id === this.selectedStatusId)
             if (statusObject?.type === 'part_time_day' && (!this.timeStart || !this.timeEnd)) {
                 alert('Пожалуйста, заполните время начала и конца рабочего дня.')
                 return
             }
 
-            if(statusObject?.type != 'part_time_day'){
+            if (statusObject?.type != 'part_time_day') {
                 this.timeStart = null;
                 this.timeEnd = null;
             }
@@ -178,7 +186,7 @@ export default {
             )
 
         },
-        async closeSickLeave() {
+        closeSickLeave() {
             var formData = {
                 user_id: this.user.id,
                 dates: this.closeRangeDates,
@@ -192,6 +200,18 @@ export default {
                     onSuccess: () => {
                         this.closeModal();
                     },
+                },
+            )
+        },
+        rejectLate(){
+            let formData = {
+                user_id: this.user.id,
+                date: this.date,
+            }
+            router.post(route('admin.time-check.reject-late'),
+                formData,
+                {
+                    preserveScroll: true,
                 },
             )
         },

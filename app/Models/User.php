@@ -122,6 +122,15 @@ class User extends Authenticatable
         return $this->hasMany(DailyWorkStatus::class);
     }
 
+    public function lateWorkStatuses()
+    {
+        return $this->hasMany(DailyWorkStatus::class)
+            ->where('status', DailyWorkStatus::STATUS_APPROVED)
+            ->whereHas('workStatus', function ($q) {
+                $q->where('type', WorkStatus::TYPE_LATE);
+            });
+    }
+
     public function fire()
     {
         $this->fired_at = Carbon::now();
@@ -131,13 +140,12 @@ class User extends Authenticatable
     public function salary(): int
     {
         $position = $this->position;
-        
-        if(!$position){
+
+        if (!$position) {
             return 0;
         }
 
         return $position->salary ?? 0;
-        
     }
 
     public function lastAction(Carbon $date = null): HasOne

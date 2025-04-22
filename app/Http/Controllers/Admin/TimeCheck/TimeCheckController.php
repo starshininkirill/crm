@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\TimeCheck;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
+use App\Models\User;
 use App\Models\WorkStatus;
 use App\Services\TimeCheckServices\ReportService;
 use App\Services\WorkStatusService;
@@ -29,6 +30,16 @@ class TimeCheckController extends Controller
         ]);
     }
 
+
+    public function handleWorkStatus(WorkStatusRequest $request, WorkStatusService $service)
+    {
+        $validated = $request->validated();
+
+        $service->handleChange($validated);
+
+        return redirect()->back()->with('success', 'Статус успешно обновлен!');
+    }
+
     public function handleSickLeave(WorkStatusRequest $request, WorkStatusService $service)
     {
         $validated = $request->validated();
@@ -48,12 +59,12 @@ class TimeCheckController extends Controller
         return redirect()->back()->with('success', 'Больничный успешно закрыт!');
     }
 
-    public function handleWorkStatus(WorkStatusRequest $request, WorkStatusService $service)
+    public function rejectLate(WorkStatusRequest $request, WorkStatusService $service)
     {
         $validated = $request->validated();
 
-        $service->handleChange($validated);
+        $service->rejectLate($validated['user_id'], $validated['date']);
 
-        return redirect()->back()->with('success', 'Статус успешно обновлен!');
+        return redirect()->back()->with('success', 'Опоздание успешно отменено!');
     }
 }
