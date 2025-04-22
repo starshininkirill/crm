@@ -15,7 +15,7 @@ class TimeSheetService
 {
     public function __construct(
         private WorkTimeService $service
-    ){}
+    ) {}
 
     public function generateUsersReport(Collection $users, Carbon $date)
     {
@@ -45,13 +45,17 @@ class TimeSheetService
 
     private function userDayReport(User $user, $day): array
     {
+        $day['statuses'] = $user->dailyWorkStatuses->filter(function ($status) use ($day) {
+            return $status->date->isSameDay($day['date']);
+        })->values();
+
         $day['status'] = $user->dailyWorkStatuses->first(function ($status) use ($day) {
-            
-            if(!$status->date->isSameDay($day['date'])){
+
+            if (!$status->date->isSameDay($day['date'])) {
                 return false;
             }
 
-            if($status->workStatus->type == WorkStatus::TYPE_OVERWORK && $status->status != DailyWorkStatus::STATUS_APPROVED){
+            if ($status->workStatus->type == WorkStatus::TYPE_OVERWORK && $status->status != DailyWorkStatus::STATUS_APPROVED) {
                 return false;
             }
 

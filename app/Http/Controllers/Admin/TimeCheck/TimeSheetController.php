@@ -15,7 +15,6 @@ class TimeSheetController extends Controller
 {
     public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
-        // dd($request->all());
         $departments = Department::all();
 
         $targetDate = null;

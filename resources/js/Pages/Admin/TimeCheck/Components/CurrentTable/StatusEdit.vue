@@ -1,6 +1,7 @@
 <template>
   <div v-if="!changeMode" class="flex items-center justify-between gap-2">
-    <div class="flex gap-1 items-center" :class="sickLeaveDailyStatus?.status == 'approved' ? ' text-green-500 font-semibold' : ''">
+    <div class="flex gap-1 items-center"
+      :class="sickLeaveDailyStatus?.status == 'approved' ? ' text-green-500 font-semibold' : ''">
       {{ selectedStatus?.name }}
     </div>
     <button v-if="needCloseSeakLeave" @click="$emit('openModal', 'close_sick_leave')" title="Закрыть больничный"

@@ -24,43 +24,55 @@
         </div>
 
         <table
-            class="shadow-md border-collapse overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
+            class="shadow-md border-collapse rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
                 <tr>
-                    <th scope="col" class="px-3 py-3 border-r">
+                    <th scope="col" class="px-2 py-2 border-r">
                         Ставка
                     </th>
-                    <th scope="col" class="px-3 py-3 border-r">
+                    <th scope="col" class="px-2 py-2 border-r">
                         Час
                     </th>
-                    <th scope="col" class="px-3 py-3 border-r">
+                    <th scope="col" class="px-2 py-2 border-r">
                         Должность
                     </th>
-                    <th scope="col" class="px-3 py-3 border-r">
+                    <th scope="col" class="px-2 py-2 border-r">
                         ФИО
                     </th>
-                    <th v-for="(day, idx) in days" scope="col" class="px-1 py-3 border-r text-center">
+                    <th v-for="(day, idx) in days" scope="col" class="px-1 py-2 border-r text-center">
                         {{ idx }}
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="user in usersReport" :key="user.id" class="bg-white border-b   hover:bg-gray-50 ">
-                    <td class="px-3 py-4 border-r">
+                    <td class="px-2 py-4 border-r">
                         {{ formatPrice(user.salary) }}
                     </td>
-                    <td class="px-3 py-4 border-r">
+                    <td class="px-2 py-4 border-r">
                         {{ formatPrice(user.hour_salary) }}
                     </td>
-                    <th scope="row" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
+                    <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.position?.name ?? 'Не указана' }}
                     </th>
-                    <th scope="row" class="px-3 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
+                    <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.full_name }}
                     </th>
-                    <td v-for="day in user.days" class="px-3 py-4 border-r text-center" :class="getActionColor(day)">
+                    <td v-for="day in user.days" class="px-2 py-4 border-r text-center cursor-pointer relative group"
+                        :class="getActionColor(day)">
                         {{ day.hours == 0 ? '' : day.hours }}
                         {{ day.date == user.fired_at ? 'Уволен' : '' }}
+
+                        <!-- Всплывающее окно -->
+                        <div v-if="day.statuses.length"
+                            class="absolute hidden group-hover:block z-10 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[150px] left-0 transform -translate-x-3/4 mt-2">
+                            <div class="flex flex-col gap-1">
+                                <div v-for="status in day.statuses" class="flex justify-between items-center">
+                                    <span class="font-medium text-gray-600">{{ status.work_status.name }}:</span>
+                                    <span class="text-gray-600">{{ status.hours ?? 0 }} ч</span>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -115,21 +127,19 @@ export default {
     },
     methods: {
         getActionColor(day) {
-
             if (day.status) {
                 if (day.status.work_status?.type == 'late') {
                     return 'bg-red-500 text-white';
                 }
 
-                if (day.status.work_status?.type == 'overwork') {
-                    return 'bg-yellow-500 text-white';
-                }
                 if (day.status.work_status?.type == "sick_leave" || day.status.work_status?.type == "own_day") {
                     return 'bg-cyan-400 text-white';
                 }
+
                 if (day.status.work_status?.type == "homework") {
                     return 'bg-orange-400 text-white'
                 }
+
                 if (day.status.work_status?.type == "vacation") {
                     return 'bg-stone-400 text-white'
                 }
@@ -141,11 +151,14 @@ export default {
 
             return ''
         },
-        updateDate() {            
+        updateDate() {
             router.get(route('admin.time-sheet'), {
                 date: this.selectedDate,
                 department_id: this.selectedDepartment
             })
+        },
+        getDailyStatusName(statusId) {
+
         }
     }
 }

@@ -21,7 +21,7 @@ class ReportService
 
     public function getWorkTimeDayReport($date)
     {
-        $report = $this->getTimeChecksInfo(['timeChecks'], $date);
+        $report = $this->getTimeChecksInfo(['timeChecks', 'lastAction', 'dailyWorkStatuses'], $date);
 
         $report->each(function ($department) use ($date) {
             $this->processDepartmentUsers($department, $date);
