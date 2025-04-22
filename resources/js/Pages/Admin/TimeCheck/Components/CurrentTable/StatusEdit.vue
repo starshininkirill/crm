@@ -98,7 +98,7 @@ export default {
         this.$emit('openModal', 'part_time')
         return
       }
-
+  
       if (status.type === 'sick_leave') {
         this.$emit('openModal', 'sick_leave')
         return

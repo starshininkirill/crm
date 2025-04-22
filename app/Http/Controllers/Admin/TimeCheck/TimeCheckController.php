@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\TimeCheck;
 
-use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
 use App\Models\WorkStatus;
@@ -19,13 +18,11 @@ class TimeCheckController extends Controller
         $date = $request->get('date') ?? Carbon::now()->format('Y-m-d');
         $workStatuses = WorkStatus::mainStatuses()->get();
 
-        $todayReport = $servise->getCurrentWorkTimeReport($date);
-        $dateReport = $servise->getWorkTimeDayReport($date);
+        $todayReport = $servise->getWorkTimeDayReport($date);
         $logReport = $servise->getLogReport($date);
 
         return Inertia::render('Admin/TimeCheck/Index', [
             'todayReport' => $todayReport,
-            'dateReport' => $dateReport,
             'logReport' => $logReport,
             'date' => $date,
             'workStatuses' => $workStatuses,

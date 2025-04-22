@@ -4,7 +4,7 @@
         <Head title="Time Check" />
         <div class="flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Time Check</h1>
-            <div class="flex flex-col gap-6 w-2/3">
+            <div class="flex flex-col gap-6 w-3/4">
                 <div>
                     <div class="label">
                         Дата отображения
@@ -14,8 +14,6 @@
                 </div>
 
                 <CurrentUserStatuses :date="date" :todayReport="todayReport" :workStatuses="workStatuses" />
-
-                <GeneralUserStatuses :dateReport="dateReport" :date="date" />
 
                 <LogReport :logReport="logReport" />
             </div>
@@ -27,7 +25,6 @@
 import { Head, router } from '@inertiajs/vue3';
 import TimeCheckLayout from '../Layouts/TimeCheckLayout.vue';
 import CurrentUserStatuses from './Components/CurrentTable/CurrentUserStatuses.vue';
-import GeneralUserStatuses from './Components/GeneralUserStatuses.vue';
 import LogReport from './Components/LogReport.vue'
 import { route } from 'ziggy-js';
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -37,7 +34,6 @@ export default {
         Head,
         TimeCheckLayout,
         CurrentUserStatuses,
-        GeneralUserStatuses,
         LogReport,
         VueDatePicker
     },
@@ -46,10 +42,10 @@ export default {
             type: Array,
             required: true,
         },
-        dateReport: {
-            type: Array,
-            required: true,
-        },
+        // dateReport: {
+        //     type: Array,
+        //     required: true,
+        // },
         logReport: {
             type: Array,
             required: true,

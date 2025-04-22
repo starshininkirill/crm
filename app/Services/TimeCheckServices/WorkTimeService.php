@@ -80,6 +80,18 @@ class WorkTimeService
         return false;
     }
 
+    public function isUserLate2(User $user, $date) : bool
+    {
+        $date = Carbon::parse($date);
+
+        $dailyWorkStatuses = $user->dailyWorkStatuses->filter(function($status) use ($date){
+            // dd($status);
+            return $status->date->isSameDay($date);
+        });
+
+        return false;
+    }
+
     public function isBreakOvertime(int $breaktime): bool
     {
         if (!$this->maxBrektime) {

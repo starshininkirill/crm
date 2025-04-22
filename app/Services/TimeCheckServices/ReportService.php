@@ -12,13 +12,6 @@ class ReportService
         protected WorkTimeService $workTimeService,
     ) {}
 
-    public function getCurrentWorkTimeReport($date)
-    {
-        $report = $this->getTimeChecksInfo(['lastAction', 'dailyWorkStatuses'], $date);
-
-        return $report;
-    }
-
     public function getWorkTimeDayReport($date)
     {
         $report = $this->getTimeChecksInfo(['timeChecks', 'lastAction', 'dailyWorkStatuses'], $date);
@@ -100,7 +93,8 @@ class ReportService
 
             $breaktime = $this->workTimeService->userBreaktime($user, Carbon::parse($date));
 
-            $user->isLate = $this->workTimeService->isUserLate($actionStart);
+            // $user->isLate = $this->workTimeService->isUserLate($actionStart);
+            $user->isLate = $this->workTimeService->isUserLate2($user, $date);
             $user->isOvertime = $this->workTimeService->isBreakOvertime($breaktime);
             $user->actionStart = $actionStart ? $actionStart->date->format('H:i:s') : null;
             $user->actionEnd = $actionEnd ? $actionEnd->date->format('H:i:s') : null;

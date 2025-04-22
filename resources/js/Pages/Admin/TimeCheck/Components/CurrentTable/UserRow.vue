@@ -1,14 +1,36 @@
 <template>
     <tr class="bg-white border-b hover:bg-gray-50">
-        <td class="px-6 py-4">
+        <td class="px-4 py-3 border-x">
             <Link :href="route('admin.user.show', user.id)">
             {{ user.full_name }}
             </Link>
         </td>
-        <td class="px-6 py-4 font-semibold" :class="getActionColor(user)">
+        <td class="px-4 py-3 border-r font-semibold" :class="getActionColor(user)">
             {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
-        <td class="px-6 py-4 box-border min-h-16">
+        <td class="px-4 py-3 border-r">
+            <div v-if="user.actionStart" :class="user.isLate ? 'font-semibold text-red-500' : ''">
+                {{ user.actionStart }}
+            </div>
+            <div v-else class="font-semibold text-red-500">
+                Не начат
+            </div>
+        </td>
+        <td class="px-4 py-3 border-r">
+            <div v-if="user.actionEnd">
+                {{ user.actionEnd }}
+            </div>
+            <div v-else>
+                Не завершён
+            </div>
+        </td>
+        <td class="px-4 py-3 border-r">
+            {{ formatWorkTime(user.workTime) }}
+        </td>
+        <td class="px-4 py-3 border-r" :class="user.isOvertime ? 'font-semibold text-red-500' : ''">
+            {{ formatWorkTime(user.breaktime) }}
+        </td>
+        <td class="px-4 py-3 border-x box-border min-h-16">
             <StatusEdit v-model:selectedStatusId="selectedStatusId" :statuses="updatedStatuses" :user="user"
                 :date="date" :timeStart.sync="timeStart" :timeEnd.sync="timeEnd" :changeMode="changeMode"
                 @openModal="openModal" @sendWorkStatus="sendWorkStatus" @toggleСhangeMode="toggleСhangeMode" />
@@ -80,6 +102,13 @@ export default {
         },
     },
     methods: {
+        formatWorkTime(seconds) {
+            if (seconds == 0) {
+                return '00:00:00';
+            } else {
+                return new Date(seconds * 1000).toISOString().substr(11, 8);
+            }
+        },
         getActionColor(user) {
             const action = user?.last_action?.action
             return {
@@ -106,6 +135,11 @@ export default {
             if (statusObject?.type === 'part_time_day' && (!this.timeStart || !this.timeEnd)) {
                 alert('Пожалуйста, заполните время начала и конца рабочего дня.')
                 return
+            }
+
+            if(statusObject?.type != 'part_time_day'){
+                this.timeStart = null;
+                this.timeEnd = null;
             }
 
             router.post(route('admin.time-check.handle-work-status'),
