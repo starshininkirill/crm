@@ -34,6 +34,7 @@ class OverworkController extends Controller
             'status' => DailyWorkStatus::STATUS_PENDING,
             'hours' => $validated['hours'],
             'report' => $validated['report'],
+            'links' => $validated['links'],
         ]);
 
         return redirect()->back()->with('success', 'Переработка успешно отправлена!');

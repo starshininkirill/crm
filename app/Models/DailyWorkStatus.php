@@ -21,9 +21,10 @@ class DailyWorkStatus extends Model
         'hours', 
         'time_start', 
         'time_end',
+        'links',
         'description',
         'report',
-        'status'
+        'status',
     ];
 
     protected $casts = [

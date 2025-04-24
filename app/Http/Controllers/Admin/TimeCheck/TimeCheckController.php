@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\TimeCheck;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
-use App\Models\User;
 use App\Models\WorkStatus;
 use App\Services\TimeCheckServices\ReportService;
 use App\Services\WorkStatusService;
@@ -29,7 +28,6 @@ class TimeCheckController extends Controller
             'workStatuses' => $workStatuses,
         ]);
     }
-
 
     public function handleWorkStatus(WorkStatusRequest $request, WorkStatusService $service)
     {

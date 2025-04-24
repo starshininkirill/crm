@@ -24,7 +24,20 @@ class OverworkRequest extends FormRequest
         return [
             'hours' => 'required|integer',
             'date' => 'required|date|date_format:Y-m-d',
-            'report' => 'nullable'
+            'report' => 'nullable',
+            'links' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $links = explode(',', $value);
+                    foreach ($links as $link) {
+                        $link = trim($link);
+                        if (!preg_match('/^https:\/\/grampus\.bitrix24\.ru\/.*/', $link)) {
+                            $fail("Поле $attribute содержит некорректную ссылку: $link");
+                        }
+                    }
+                },
+            ],
         ];
     }
 }

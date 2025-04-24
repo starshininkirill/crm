@@ -23,6 +23,9 @@
             </div>
         </div>
 
+        <FormInput required v-model="form.links" type="text" name="links" placeholder="Ссылка на задачу"
+            label="Ссылка на задачу" info="Перечислите ссылки на задачи через запятую"/>
+
         <div>
             <div class="label">
                 Комментарий
@@ -43,7 +46,6 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import FormInput from '../../../Components/FormInput.vue';
 import LkLayout from '../../../Layouts/LkLayout.vue';
-import VueSelect from 'vue-select';
 import { route } from 'ziggy-js';
 import Error from '../../../Components/Error.vue'
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -52,7 +54,6 @@ export default {
     components: {
         Head,
         FormInput,
-        VueSelect,
         Error,
         VueDatePicker
 
@@ -64,6 +65,7 @@ export default {
             'hours': null,
             'date': null,
             'report': null,
+            'links': null
         });
 
         return {
@@ -79,6 +81,7 @@ export default {
                     this.form.hours = null;
                     this.form.date = null;
                     this.form.report = null;
+                    this.form.links = null;
                 },
             });
         },

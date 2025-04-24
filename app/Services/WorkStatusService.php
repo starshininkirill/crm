@@ -8,12 +8,14 @@ use App\Helpers\DateHelper;
 use App\Models\DailyWorkStatus;
 use App\Models\User;
 use App\Models\WorkStatus;
+use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 
 class WorkStatusService
 {
     public function __construct(
-        private FileManager $fileManager
+        private FileManager $fileManager,
+        private WorkTimeService $workTimeService,
     ){}
 
     public function handleChange(array $data)
@@ -123,7 +125,7 @@ class WorkStatusService
             throw new BusinessException('Такого статуса не существует');
         };
 
-        $dailyWorkStatus = DailyWorkStatus::create([
+        $createdData = [
             'date' => $data['date'],
             'user_id' => $data['user_id'],
             'work_status_id' => $data['work_status_id'],
@@ -131,7 +133,14 @@ class WorkStatusService
             'hours' => $workStatus->hours,
             'time_start' => $data['time_start'] != null ? Carbon::parse($data['time_start']) : null,
             'time_end' => $data['time_end'] != null ? Carbon::parse($data['time_end']) : null,
-        ]);
+        ];
+        
+
+        if($workStatus->type == WorkStatus::TYPE_PART_TIME_DAY){
+            $createdData['hours'] = $this->workTimeService->hoursFromTimeCheck($createdData['time_start'], $createdData['time_end']);
+        }
+
+        $dailyWorkStatus = DailyWorkStatus::create($createdData);
 
 
         if (!$dailyWorkStatus) {
@@ -159,6 +168,8 @@ class WorkStatusService
             if ($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY) {
                 $dailyWorkStatus->time_start = null;
                 $dailyWorkStatus->time_end = null;
+            }else{
+                $dailyWorkStatus->hours = $this->workTimeService->hoursFromTimeCheck($data['time_start'], $data['time_end']);
             }
         }
 

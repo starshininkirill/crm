@@ -20,6 +20,7 @@ return new class extends Migration
             $table->float('hours')->nullable()->default(null);
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();
+            $table->string('links')->nullable();
             $table->text('report')->nullable();
             $table->text('description')->nullable();
             $table->string('file')->nullable();

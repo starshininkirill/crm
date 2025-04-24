@@ -46,30 +46,47 @@
             </thead>
             <tbody>
                 <tr v-for="user in usersReport" :key="user.id" class="bg-white border-b   hover:bg-gray-50 ">
-                    <td class="px-2 py-4 border-r">
+                    <td class="px-2 py-3 border-r">
                         {{ formatPrice(user.salary) }}
                     </td>
-                    <td class="px-2 py-4 border-r">
+                    <td class="px-2 py-3 border-r">
                         {{ formatPrice(user.hour_salary) }}
                     </td>
-                    <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
+                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.position?.name ?? 'Не указана' }}
                     </th>
-                    <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap border-r">
+                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
                         {{ user.full_name }}
                     </th>
-                    <td v-for="day in user.days" class="px-2 py-4 border-r text-center cursor-pointer relative group"
-                        :class="getActionColor(day)">
-                        {{ day.hours == 0 ? '' : day.hours }}
-                        {{ day.date == user.fired_at ? 'Уволен' : '' }}
+                    <td v-for="day in user.days" class="px-2 py-3 border-r text-center cursor-pointer relative group">
+                        <div class="absolute inset-0 flex z-0">
+                            <div v-for="color in getActionColor(day)" :class="color" class="h-full"></div>
+                        </div>
+                        <span class=" relative z-10" :class="getActionColor(day).length ? 'text-white' : ''">
+                            {{ day.hours == 0 ? '' : day.hours }}
+                            {{ day.date == user.fired_at ? 'Уволен' : '' }}
+                        </span>
 
-                        <!-- Всплывающее окно -->
-                        <div v-if="day.statuses.length"
-                            class="absolute hidden group-hover:block z-10 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[150px] left-0 transform -translate-x-3/4 mt-2">
+                        <div v-if="day.statuses.length || day.timeCheckHours != null"
+                            class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[200px] left-2/4 transform -translate-x-full mt-2 pointer-events-none">
                             <div class="flex flex-col gap-1">
+                                <div v-if="day.timeCheckHours != null" class="flex justify-between items-center">
+                                    <span class="font-medium text-gray-600">Отработно часов: </span>
+                                    <span class="text-gray-600">
+                                        {{ day.timeCheckHours }} ч
+                                    </span>
+                                </div>
                                 <div v-for="status in day.statuses" class="flex justify-between items-center">
                                     <span class="font-medium text-gray-600">{{ status.work_status.name }}:</span>
-                                    <span class="text-gray-600">{{ status.hours ?? 0 }} ч</span>
+                                    <span v-if="status.work_status.type != 'late'" class="text-gray-600">
+                                        <span v-if="status.status == 'approved'">
+                                            {{ status.hours ?? 0 }}
+                                        </span>
+                                        <span v-else>
+                                            0
+                                        </span>
+                                        ч
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -127,29 +144,37 @@ export default {
     },
     methods: {
         getActionColor(day) {
+            let colors = [];
+
             if (day.status) {
                 if (day.status.work_status?.type == 'late') {
-                    return 'bg-red-500 text-white';
+                    colors.push('bg-red-500');
                 }
 
                 if (day.status.work_status?.type == "sick_leave" || day.status.work_status?.type == "own_day") {
-                    return 'bg-cyan-400 text-white';
+                    colors.push('bg-cyan-400');
                 }
 
-                if (day.status.work_status?.type == "homework") {
-                    return 'bg-orange-400 text-white'
+                if (day.status.work_status?.type == "homework" || day.status.work_status?.type == "part_time_day") {
+                    colors.push('bg-orange-400')
                 }
 
                 if (day.status.work_status?.type == "vacation") {
-                    return 'bg-stone-400 text-white'
+                    colors.push('bg-stone-400')
                 }
             }
 
             if (!day.isWorkingDay) {
-                return 'bg-gray-400'
+                colors.push('bg-gray-400')
             }
 
-            return ''
+            if (day.isLate) {
+                colors.push('bg-red-500');
+            }
+
+            colors = [...new Set(colors)];
+
+            return colors.map(color => `${color} flex-1`);
         },
         updateDate() {
             router.get(route('admin.time-sheet'), {

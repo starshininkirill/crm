@@ -22,6 +22,9 @@
                         Сотрудник
                     </th>
                     <th scope="col" class="px-6 py-3 flex-grow">
+                        Задачи
+                    </th>
+                    <th scope="col" class="px-6 py-3 flex-grow">
                         Описание
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -40,6 +43,15 @@
                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                         {{ overwork.user?.full_name }}
                     </th>
+                    <td class="px-6 py-4">
+                        <div v-if="overwork.links">
+                            <a v-for="(link, index) in parseLinks(overwork.links)" :key="index"
+                                :href="link" target="_blank" rel="noopener noreferrer"
+                                class="block text-blue-500 hover:underline">
+                                {{ link }}
+                            </a>
+                        </div>
+                    </td>
                     <td class="px-6 py-4 w-full">
                         {{ overwork.report }}
                     </td>
@@ -109,16 +121,16 @@ export default {
     },
     props: {
         overworks: {
-            type: Object,
+            type: Array,
             required: true,
         },
     },
     data() {
         return {
-            isModalOpen: false, // Состояние модального окна
-            modalAction: null,  // Текущее действие ('accept' или 'reject')
-            selectedOverwork: null, // Выбранная переработка
-            description: '', // Комментарий пользователя
+            isModalOpen: false,
+            modalAction: null, 
+            selectedOverwork: null,
+            description: '',
         };
     },
     methods: {
@@ -126,7 +138,7 @@ export default {
             this.modalAction = action;
             this.selectedOverwork = overwork;
             this.isModalOpen = true;
-            this.description = ''; // Очистка комментария при открытии
+            this.description = '';
         },
         closeModal() {
             this.isModalOpen = false;
@@ -144,6 +156,10 @@ export default {
             });
 
             this.closeModal();
+        },
+        parseLinks(links) {
+            if (!links) return [];
+            return links.split(',').map(link => link.trim());
         },
     },
 };

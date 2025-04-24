@@ -16,49 +16,105 @@ class WorkTimeService
     private $startTime;
     private $maxBrektime;
 
-    public function countWorkHours(User $user, Carbon $date): float|int|string
+    public function countWorkHours(User $user, Carbon $date): array
     {
-        $statusesForDay = $user->dailyWorkStatuses->filter(function ($dailyWorkStatus) use ($date) {
+        $statusForDay = $this->getStatusForDay($user, $date);
+        $confirmedHours = $this->getConfirmedHours($statusForDay);
+        $overworkHours = $this->getOverworkHours($user, $date);
+        $timeCheckHours = $this->getTimeCheckHours($user, $date, $statusForDay);
+
+        $result = $this->calculateTotalHours(
+            $confirmedHours,
+            $overworkHours,
+            $timeCheckHours,
+            $statusForDay,
+            $date
+        );
+
+        return [
+            'totalHours' => $result['totalHours'],
+            'overworkHours' => $overworkHours,
+            'timeCheckHours' => $result['timeCheckHours'],
+            'status' => $statusForDay,
+        ];
+    }
+
+    private function getStatusForDay(User $user, Carbon $date): ?DailyWorkStatus
+    {
+        return $user->dailyWorkStatuses->first(function ($dailyWorkStatus) use ($date) {
             return $dailyWorkStatus->date->isSameDay($date) &&
                 !in_array($dailyWorkStatus->workStatus?->type, WorkStatus::EXCLUDE_TYPES);
         });
+    }
+
+    private function getConfirmedHours(?DailyWorkStatus $statusForDay): float
+    {
+        return $statusForDay ? $this->hoursFromStatus($statusForDay) : 0;
+    }
+
+    private function getOverworkHours(User $user, Carbon $date): float
+    {
+        return $user->dailyWorkStatuses
+            ->filter(function ($dailyWorkStatus) use ($date) {
+                return $dailyWorkStatus->date->isSameDay($date)
+                    && $dailyWorkStatus->status == DailyWorkStatus::STATUS_APPROVED
+                    && in_array($dailyWorkStatus->workStatus?->type, [WorkStatus::TYPE_OVERWORK]);
+            })
+            ->sum('hours');
+    }
+
+    private function getTimeCheckHours(User $user, Carbon $date, ?DailyWorkStatus $statusForDay): ?float
+    {
+        if (!DateHelper::isWorkingDay($date)) {
+            return null;
+        }
 
         $timeChecksForDay = $user->timeChecks->filter(function ($timeCheck) use ($date) {
-            return $timeCheck->date->format('Y-m-d') ==  $date->format('Y-m-d');
+            return $timeCheck->date->format('Y-m-d') == $date->format('Y-m-d');
         });
 
-        $overworkHours = $user->dailyWorkStatuses->filter(function ($dailyWorkStatus) use ($date) {
-            return $dailyWorkStatus->date->isSameDay($date)
-                && $dailyWorkStatus->status == DailyWorkStatus::STATUS_APPROVED
-                && in_array($dailyWorkStatus->workStatus?->type, [WorkStatus::TYPE_OVERWORK]);
-        })->sum('hours');
-
-
-        if (($confirmedHours = $this->hoursFromStatus($statusesForDay)) !== null) {
-            return $confirmedHours + $overworkHours;
-        }
-
-        if (!DateHelper::isWorkingDay($date)) {
-            return 0 + $overworkHours;
-        }
-
         $startTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_START)?->date;
-
-        if (!$startTime) {
-            return 0 + $overworkHours;
-        }
-
         $endTime = $timeChecksForDay->firstWhere('action', TimeCheck::ACTION_END)?->date ?? Carbon::now();
 
-        if (!$startTime || !$endTime) {
-            return 0 + $overworkHours;
+        if (!$startTime) {
+            return null;
         }
 
-        if ($startTime->format('H:i:s') <= TimeCheck::DEFAULT_DAY_START && $endTime->format('H:i:s') >= TimeCheck::DEFAULT_DAY_END) {
-            return TimeCheck::DEFAULT_WORKING_DAY_DURATION + $overworkHours;
+        return $this->hoursFromTimeCheck($startTime, $endTime);
+    }
+
+    private function calculateTotalHours(
+        float $confirmedHours,
+        float $overworkHours,
+        ?float $timeCheckHours,
+        ?DailyWorkStatus $statusForDay,
+        Carbon $date
+    ): array {
+        $shouldNullifyTimeCheck = false;
+        $totalHours = 0;
+
+        if ($statusForDay && $statusForDay->workStatus?->type == WorkStatus::TYPE_PART_TIME_DAY) {
+            if ($statusForDay->hours > $timeCheckHours && $timeCheckHours !== null) {
+                $totalHours = $timeCheckHours + $overworkHours;
+            } elseif ($timeCheckHours >= $statusForDay->hours) {
+                $shouldNullifyTimeCheck = true;
+            }
         }
 
-        return $this->hoursFromTimeCheck($startTime, $endTime) + $overworkHours;
+        if ($totalHours === 0) {
+            if ($confirmedHours != 0) {
+                $totalHours = $confirmedHours + $overworkHours;
+            } elseif (!DateHelper::isWorkingDay($date)) {
+                $totalHours = $overworkHours;
+            } else {
+                $totalHours = ($timeCheckHours ?? 0) + $overworkHours;
+            }
+        }
+
+        return [
+            'totalHours' => $totalHours,
+            'timeCheckHours' => $shouldNullifyTimeCheck ? null : $timeCheckHours,
+        ];
     }
 
     public function isUserLate(User $user, $date): bool
@@ -77,8 +133,6 @@ class WorkTimeService
         if (!$this->maxBrektime) {
             $this->maxBrektime = TimeCheck::DEAFULT_BREAKTIME;
         }
-
-        $maxBrektime = Carbon::createFromFormat('H:i:s', $this->maxBrektime);
 
         $maxBrektimeCarbon = Carbon::createFromFormat('H:i:s', $this->maxBrektime);
 
@@ -140,24 +194,20 @@ class WorkTimeService
         return $totalBreakTime;
     }
 
-    private function hoursFromStatus(Collection $statusesForDay): ?float
+    private function hoursFromStatus(DailyWorkStatus $status): ?float
     {
-        if ($statusesForDay->isNotEmpty()) {
-            $status = $statusesForDay->first();
-
-            if ($status->hours) {
-                if ($status->status == DailyWorkStatus::STATUS_APPROVED) {
-                    return $status->hours;
-                } else {
-                    return 0;
-                }
+        if ($status->hours) {
+            if ($status->status == DailyWorkStatus::STATUS_APPROVED) {
+                return $status->hours;
+            } else {
+                return 0;
             }
         }
 
         return null;
     }
 
-    private function hoursFromTimeCheck(Carbon $startTime, Carbon $endTime): float
+    public function hoursFromTimeCheck(Carbon $startTime, Carbon $endTime): float
     {
         $adjustedStartTime = $this->adjustTimeToNearestInterval($startTime);
         $adjustedEndTime = $this->adjustTimeToNearestInterval($endTime);

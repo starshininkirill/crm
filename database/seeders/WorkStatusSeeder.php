@@ -39,7 +39,7 @@ class WorkStatusSeeder extends Seeder
         ]);
 
         WorkStatus::create([
-            'name' => 'Неполный рабочий день',
+            'name' => 'Неполный день',
             'hours' => null,
             'type' => WorkStatus::TYPE_PART_TIME_DAY,
         ]);

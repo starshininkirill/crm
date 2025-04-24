@@ -45,25 +45,30 @@ class TimeSheetService
 
     private function userDayReport(User $user, $day): array
     {
+        $workingDayInfo = $this->service->countWorkHours($user, Carbon::parse($day['date']));
+        $day['hours'] = $workingDayInfo['totalHours'];
+        $day['timeCheckHours'] = $workingDayInfo['timeCheckHours'];
+        $day['status'] = $workingDayInfo['status'];
+
         $day['statuses'] = $user->dailyWorkStatuses->filter(function ($status) use ($day) {
+            if (in_array($status->workStatus->type, WorkStatus::EXCLUDE_TYPES)) {
+                if ($status->status != DailyWorkStatus::STATUS_APPROVED) {
+                    return false;
+                }
+            }
+            if($status->workStatus->type == WorkStatus::TYPE_PART_TIME_DAY){
+                if ($status->hours > $day['timeCheckHours'] && $day['timeCheckHours'] != null) {
+                    return false;
+                }
+            }
             return $status->date->isSameDay($day['date']);
         })->values();
 
-        $day['status'] = $user->dailyWorkStatuses->first(function ($status) use ($day) {
-
-            if (!$status->date->isSameDay($day['date'])) {
-                return false;
-            }
-
-            if ($status->workStatus->type == WorkStatus::TYPE_OVERWORK && $status->status != DailyWorkStatus::STATUS_APPROVED) {
-                return false;
-            }
-
-            return true;
+        $day['isLate'] = $day['statuses']->contains(function ($status) use ($day) {
+            return $status->workStatus->type == WorkStatus::TYPE_LATE;
         });
 
         $day['isWorkingDay'] = DateHelper::isWorkingDay($day['date']);
-        $day['hours'] = $this->service->countWorkHours($user, Carbon::parse($day['date']));
 
         return $day;
     }
