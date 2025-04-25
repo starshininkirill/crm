@@ -6,8 +6,9 @@
     </div>
     <button v-if="needCloseSeakLeave" @click="$emit('openModal', 'close_sick_leave')" title="Закрыть больничный"
       class="p-1 text-gray-500 hover:text-gray-700 ml-auto">
-      <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512"
-        height="512" x="0" y="0" viewBox="0 0 64 64" style="enable-background:new 0 0 512 512" xml:space="preserve">
+      <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="512" height="512" x="0" y="0" viewBox="0 0 64 64" style="enable-background:new 0 0 512 512"
+        xml:space="preserve">
         <g>
           <path
             d="M35 24h-6a1 1 0 0 0-1 1v5h-5a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h5v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-5h5a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-5v-5a1 1 0 0 0-1-1zm5 8v4h-5a1 1 0 0 0-1 1v5h-4v-5a1 1 0 0 0-1-1h-5v-4h5a1 1 0 0 0 1-1v-5h4v5a1 1 0 0 0 1 1zM12 31a1 1 0 0 0-1 1v28a1 1 0 0 0 1 1h29a1 1 0 0 0 0-2H13V32a1 1 0 0 0-1-1zM53 20a1 1 0 0 0-2 0v39h-4a1 1 0 0 0 0 2h5a1 1 0 0 0 1-1zM52.923 13.618a1 1 0 0 0-.217-.326l-9.998-9.998A1.013 1.013 0 0 0 42 3H12a1 1 0 0 0-1 1v22a1 1 0 0 0 2 0V5h28v9a1 1 0 0 0 1 1h10a1 1 0 0 0 .923-1.382zM43 6.414 49.586 13H43z"

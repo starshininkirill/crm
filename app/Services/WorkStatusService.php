@@ -165,13 +165,15 @@ class WorkStatusService
             $dailyWorkStatus->status = $workStatus->need_confirmation ? DailyWorkStatus::STATUS_PENDING : DailyWorkStatus::STATUS_APPROVED;
             $dailyWorkStatus->hours = $workStatus->hours;
 
+
             if ($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY) {
                 $dailyWorkStatus->time_start = null;
                 $dailyWorkStatus->time_end = null;
             }else{
-                $dailyWorkStatus->hours = $this->workTimeService->hoursFromTimeCheck($data['time_start'], $data['time_end']);
+                $dailyWorkStatus->hours = $this->workTimeService->hoursFromTimeCheck(Carbon::parse($data['time_start']), Carbon::parse($data['time_end']));
             }
         }
+
 
         if (!$dailyWorkStatus->save()) {
             throw new BusinessException('Не удалось обновить статус');

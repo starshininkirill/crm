@@ -12,8 +12,8 @@
                 <tr>
                     <th scope="col" class="px-4 py-3 w-56 border-x">Сотрудник</th>
                     <th scope="col" class="px-4 py-3 border-r">Статус</th>
-                    <th scope="col" class="px-4 py-3 border-r">Начало рабочего дня</th>
-                    <th scope="col" class="px-4 py-3 border-r">Конец рабочего дня</th>
+                    <th scope="col" class="px-4 py-3 border-r">Начало дня</th>
+                    <th scope="col" class="px-4 py-3 border-r">Конец дня</th>
                     <th scope="col" class="px-4 py-3 border-r">Рабочее время</th>
                     <th scope="col" class="px-4 py-3 border-r">Время перерывов</th>
                     <th scope="col" class="px-4 py-3 w-72 border-x">Управление Статусом</th>

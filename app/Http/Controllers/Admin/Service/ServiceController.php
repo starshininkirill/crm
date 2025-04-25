@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Service;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceRequest;
@@ -19,13 +19,18 @@ class ServiceController extends Controller
             $services = Service::all();
         };
 
+
+        $services->load('category');
+
         $services = $services->sortBy('name')->map(function ($service) {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
+                'price' => $service->price,
                 'category' => $service->category->only('id', 'name')
             ];
         });
+
         $categories = ServiceCategory::all(['id', 'name'])->toArray();
 
         return Inertia::render('Admin/Service/Index', [

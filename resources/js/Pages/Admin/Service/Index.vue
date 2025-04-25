@@ -1,12 +1,24 @@
-<template>
+<template> 
     <ServiceLayout>
 
         <Head title="Услуги" />
+        <Modal :open="openModal" @close="openModal = false">
+            <ServiceCreateForm @success="openModal = false" :categories="categories" />
+        </Modal>
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Услуги</h1>
-            <div class="grid grid-cols-3 gap-8">
-                <ServiceCreateForm :categories="categories" />
-                <div class=" col-span-2">
+            <div class="flex mb-4 items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <VueSelect v-model="selectedCategory" :options="categoriesOptions" :reduce="service => service.id" label="name"
+                        class="full-vue-select min-w-[360px]"/>
+                    <input type="text" class="input min-w-[300px]" placeholder="Поиск...">
+                </div>
+                <div class="btn !w-fit ml-auto" @click="openModal = true">
+                    Создать
+                </div>
+            </div>
+            <div>
+                <div>
                     <h2 v-if="!services.length" class="text-xl">Услуг не найдено</h2>
 
                     <div v-if="services.length">
@@ -19,6 +31,9 @@
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Категория
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Цена
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-right w-12">
                                         Редактировать
@@ -40,6 +55,9 @@
                                             :href="route('admin.service.index', { serviceCategory: service.category.id })">
                                         {{ service.category.name }}
                                         </Link>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ formatPrice(service.price) }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <Link :href="route('admin.service.edit', { service: service.id })"
@@ -69,12 +87,16 @@ import ServiceLayout from '../Layouts/ServiceLayout.vue';
 import { router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js';
 import ServiceCreateForm from './Components/ServiceCreateForm.vue';
+import VueSelect from 'vue-select';
+import Modal from '../../../Components/Modal.vue';
 
 export default {
     components: {
         Head,
         ServiceCreateForm,
-        ServiceLayout
+        ServiceLayout,
+        VueSelect,
+        Modal
     },
     props: {
         services: {
@@ -85,6 +107,16 @@ export default {
             type: Array,
             required: true,
         },
+    },
+    data() {
+        return {
+            openModal: false,
+            categoriesOptions: [
+                { id: null, name: 'Все категории' },
+                ...this.categories
+            ],
+            selectedCategory: this.department?.id ?? null,
+        };
     },
     methods: {
         deleteService(id) {

@@ -5,11 +5,12 @@
             {{ user.full_name }}
             </Link>
         </td>
-        <td class="px-4 py-3 border-r font-semibold" :class="getActionColor(user)">
+        <td class="px-4 py-3 border-r font-semibold whitespace-nowrap w-32" :class="getActionColor(user)">
             {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
         <td class="px-4 py-3 border-r">
-            <div v-if="user.actionStart" class="flex gap-1 items-center justify-between" :class="user.isLate ? 'font-semibold text-red-500' : ''">
+            <div v-if="user.actionStart" class="flex gap-1 items-center justify-between"
+                :class="user.isLate ? 'font-semibold text-red-500' : ''">
                 {{ user.actionStart }}
                 <button title="Отменить опоздание" v-if="user.isLate" @click="rejectLate"
                     class="p-1 text-gray-500 hover:text-gray-700">
@@ -44,31 +45,39 @@
                 @openModal="openModal" @sendWorkStatus="sendWorkStatus" @toggleСhangeMode="toggleСhangeMode" />
         </td>
 
-        <ModalPartTime v-if="modals['part_time']" :user="user" v-model:timeStart="timeStart" v-model:timeEnd="timeEnd"
-            @save="sendWorkStatus" @close="closeModal" />
+        <Modal :open="modals['part_time']" @close="closeModal">
+            <PartTimeForm :user="user" v-model:timeStart="timeStart" v-model:timeEnd="timeEnd" @save="sendWorkStatus"
+                @close="closeModal" />
+        </Modal>
 
-        <ModalSickLeave v-if="modals['sick_leave']" :user="user" v-model:dates="rangeDates"
-            :workStatusId="selectedStatusId" @save="sendSickLeave" @close="closeModal" />
+        <Modal :open="modals['sick_leave']" @close="closeModal">
+            <SickLeaveForm :user="user" v-model:dates="rangeDates" :workStatusId="selectedStatusId"
+                @save="sendSickLeave" @close="closeModal" />
+        </Modal>
 
-        <ModalCloseSickLeave v-if="modals['close_sick_leave']" v-model:dates="closeRangeDates" v-model:image="image"
-            :user="user" @save="closeSickLeave" @close="closeModal" />
+        <Modal :open="modals['close_sick_leave']" @close="closeModal">
+            <CloseSickLeaveForm v-model:dates="closeRangeDates" v-model:image="image" :user="user"
+                @save="closeSickLeave" @close="closeModal" />
+        </Modal>
     </tr>
 </template>
 
 <script>
 import StatusEdit from './StatusEdit.vue'
-import ModalPartTime from './ModalPartTime.vue'
-import ModalSickLeave from './ModalSickLeave.vue'
-import ModalCloseSickLeave from './ModalCloseSickLeave.vue'
+import PartTimeForm from './PartTimeForm.vue'
+import SickLeaveForm from './SickLeaveForm.vue'
+import CloseSickLeaveForm from './CloseSickLeaveForm.vue'
 import { route } from 'ziggy-js'
 import { router } from '@inertiajs/vue3'
+import Modal from '../../../../../Components/Modal.vue'
 
 export default {
     components: {
         StatusEdit,
-        ModalPartTime,
-        ModalSickLeave,
-        ModalCloseSickLeave,
+        PartTimeForm,
+        SickLeaveForm,
+        CloseSickLeaveForm,
+        Modal
     },
     props: {
         user: Object,
@@ -150,6 +159,9 @@ export default {
                 this.timeEnd = null;
             }
 
+            console.log(this.timeStart, this.timeEnd);
+
+
             router.post(route('admin.time-check.handle-work-status'),
                 {
                     user_id: this.user.id,
@@ -203,7 +215,7 @@ export default {
                 },
             )
         },
-        rejectLate(){
+        rejectLate() {
             let formData = {
                 user_id: this.user.id,
                 date: this.date,

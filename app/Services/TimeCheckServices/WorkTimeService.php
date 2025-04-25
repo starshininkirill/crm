@@ -80,6 +80,7 @@ class WorkTimeService
             return null;
         }
 
+        dd($startTime);
         return $this->hoursFromTimeCheck($startTime, $endTime);
     }
 
@@ -204,11 +205,12 @@ class WorkTimeService
             }
         }
 
-        return null;
+        return 0;
     }
 
     public function hoursFromTimeCheck(Carbon $startTime, Carbon $endTime): float
     {
+        
         $adjustedStartTime = $this->adjustTimeToNearestInterval($startTime);
         $adjustedEndTime = $this->adjustTimeToNearestInterval($endTime);
 

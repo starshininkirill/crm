@@ -38,40 +38,40 @@ export default {
         VueDatePicker
     },
     props: {
-        todayReport: {
-            type: Array,
-            required: true,
-        },
-        // dateReport: {
-        //     type: Array,
-        //     required: true,
-        // },
-        logReport: {
-            type: Array,
-            required: true,
-        },
-        workStatuses: {
-            type: Array,
-            required: true,
-        },
-        date: {
-            type: String,
-            required: true,
-        }
+        todayReport: Array,
+        logReport: Array,
+        workStatuses: Array,
+        date: String
     },
     data() {
         return {
-            reactiveDate: this.date
+            reactiveDate: this.date,
+            pollInterval: null
         }
     },
     methods: {
         updateDate() {
             router.get(route('admin.time-check.index'), {
                 date: this.reactiveDate,
-            })
+            });
         },
+        // startPolling() {
+        //     this.pollInterval = setInterval(() => {
+        //         router.get(route('admin.time-check.index'), {
+        //             date: this.reactiveDate,
+        //         }, {
+        //             preserveState: true,
+        //             preserveScroll: true,
+        //             only: ['todayReport'],
+        //         });
+        //     }, 3000);
+        // }
+    },
+    mounted() {
+        // this.startPolling();
+    },
+    beforeUnmount() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
     }
 }
-
-
 </script>

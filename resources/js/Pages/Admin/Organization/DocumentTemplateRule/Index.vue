@@ -34,9 +34,10 @@
                         <div>
                             <div class="label">
                                 Приоритет
-                                <Info text="Для определения документа при одинаковом наборе услуг"/>
+                                <Info text="Для определения документа при одинаковом наборе услуг" />
                             </div>
-                            <FormInput v-model="form.priority" type="number" name="priority" value="1" min="0" max="100" />
+                            <FormInput v-model="form.priority" type="number" name="priority" value="1" min="0"
+                                max="100" />
                         </div>
                         <div class="mb-2">
                             <div class="flex flex-col gap-2">
@@ -155,7 +156,10 @@
                     </div>
                 </div>
             </div>
-            <Modal v-if="isModalOpen" :services="services"  @closeModal="isModalOpen = false" />
+
+            <Modal :open="isModalOpen" @close="isModalOpen = false">
+                <CheckRule :services="services" />
+            </Modal>
         </div>
     </OrganizationLayout>
 </template>
@@ -165,12 +169,13 @@ import { Head, useForm } from '@inertiajs/vue3';
 import OrganizationLayout from '../../Layouts/OrganizationLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
 import Info from '../../../../Components/Info.vue';
-import Modal from './Modal.vue';
 import VueSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import Error from '../../../../Components/Error.vue';
+import CheckRule from './CheckRule.vue';
+import Modal from '../../../../Components/Modal.vue';
 
 export default {
     components: {
@@ -180,6 +185,7 @@ export default {
         OrganizationLayout,
         Error,
         Info,
+        CheckRule,
         Modal,
     },
     props: {
