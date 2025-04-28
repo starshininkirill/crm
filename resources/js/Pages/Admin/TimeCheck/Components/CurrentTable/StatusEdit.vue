@@ -102,6 +102,11 @@ export default {
         return
       }
 
+      if (status.type === 'vacation') {
+        this.$emit('openModal', 'vacation')
+        return
+      }
+
       this.$emit('sendWorkStatus', { closeEditor: true })
     }
 

@@ -80,7 +80,6 @@ class WorkTimeService
             return null;
         }
 
-        dd($startTime);
         return $this->hoursFromTimeCheck($startTime, $endTime);
     }
 

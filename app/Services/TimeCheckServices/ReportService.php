@@ -28,8 +28,82 @@ class ReportService
             }
         });
 
-        return $report;
+        return [
+            'detailed' => $report,
+            'aggregated' => $this->calculateAggregatedData($report),
+        ];
     }
+
+    public function calculateAggregatedData(Collection $report): array
+    {
+        $aggregated = [];
+        $totals = ['work' => 0, 'onBreak' => 0, 'notWork' => 0, 'totalUsers' => 0];
+
+        foreach ($report as $department) {
+            $this->aggregateDepartment($department, $aggregated, $totals);
+
+            if ($department->childDepartments->isNotEmpty()) {
+                foreach ($department->childDepartments as $child) {
+                    $this->aggregateDepartment($child, $aggregated, $totals);
+                }
+            }
+        }
+
+        $aggregated['Тотал'] = [
+            'work' => $totals['work'] . ' / ' . $totals['totalUsers'],
+            'onBreak' => $totals['onBreak'] . ' / ' . $totals['work'],
+            'notWork' => $totals['notWork'],
+        ];
+
+        return $aggregated;
+    }
+
+    protected function aggregateDepartment(Department $department, array &$aggregated, array &$totals): void
+    {
+        $working = 0;
+        $onBreak = 0;
+        $finished = 0;
+        $totalInDept = $department->users->count();
+
+        foreach ($department->users as $user) {
+            $hasStart = $user->timeChecks->where('action', 'start')->isNotEmpty();
+            $hasEnd = $user->timeChecks->where('action', 'end')->isNotEmpty();
+
+            $latestTimeCheck = $user->timeChecks->sortByDesc('id')->first();
+            $isOnBreak = $latestTimeCheck?->action === 'pause';
+
+            if ($hasEnd || $user->timeChecks->isEmpty()) {
+                $finished++;
+            } elseif ($hasStart) {
+                $working++;
+                if ($isOnBreak) {
+                    $onBreak++;
+                }
+            }
+        }
+
+        if ($totalInDept > 0) {
+            $aggregated[$department->name] = [
+                'work' => $working . ' / ' . $totalInDept,
+                'onBreak' => $onBreak . ' / ' . $working,
+                'notWork' => $finished,
+                'isMain' => $department->parent == null ? true :false,
+            ];
+        } else {
+            $aggregated[$department->name] = [
+                'work' => '',
+                'onBreak' => '',
+                'notWork' => '',
+                'isMain' => $department->parent == null ? true :false,
+            ];
+        }
+
+        $totals['work'] += $working;
+        $totals['onBreak'] += $onBreak;
+        $totals['notWork'] += $finished;
+        $totals['totalUsers'] += $totalInDept;
+    }
+
 
     public function getLogReport($date)
     {

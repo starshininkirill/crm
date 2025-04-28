@@ -37,7 +37,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(numberData, number) in totalNumberValues"
-                            class="bg-white border-b hover:bg-gray-50">
+                            class="table-row">
                             <th scope="row"
                                 class="px-1 pl-2 py-2 text-gray-900 font-medium border-r text-xs whitespace-nowrap">
                                 <template v-if="numberData.user">

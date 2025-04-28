@@ -42,8 +42,8 @@
                         </div>
                         <Error />
                         <table
-                            class="w-full text-sm text-left rtl:text-right text-gray-500 overflow-x-auto shadow-md sm:rounded-lg">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            class="w-full table">
+                            <thead class="thead">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
                                         Название
@@ -67,7 +67,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="documentTemplate in documentTemplates" :key="documentTemplate.id"
-                                    class="bg-white border-b hover:bg-gray-50">
+                                    class="table-row">
                                     <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         {{ documentTemplate.name }}
                                     </td>

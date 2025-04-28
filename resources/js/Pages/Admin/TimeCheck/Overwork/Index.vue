@@ -11,7 +11,7 @@
         </h2>
         <table v-else
             class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <thead class="thead">
                 <tr>
                     <th scope="col" class="px-6 border-r py-3 w-32">
                         Дата
@@ -34,7 +34,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="overwork in overworks" :key="overwork.id" class="bg-white border-b hover:bg-gray-50">
+                <tr v-for="overwork in overworks" :key="overwork.id" class="table-row">
                     <td class="px-6 border-r py-4 whitespace-nowrap">
                         {{ overwork.date }}
                     </td>

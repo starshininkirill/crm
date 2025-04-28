@@ -1,14 +1,14 @@
 <template>
-    <tr class="bg-white border-b hover:bg-gray-50">
-        <td class="px-4 py-3 border-x">
+    <tr class="table-row">
+        <td class="px-2 py-2 border-x">
             <Link :href="route('admin.user.show', user.id)">
             {{ user.full_name }}
             </Link>
         </td>
-        <td class="px-4 py-3 border-r font-semibold whitespace-nowrap w-32" :class="getActionColor(user)">
+        <td class="px-2 py-2 border-r font-semibold whitespace-nowrap w-32" :class="getActionColor(user)">
             {{ translateAction(user.last_action?.action) || 'Не начал' }}
         </td>
-        <td class="px-4 py-3 border-r">
+        <td class="px-2 py-2 border-r">
             <div v-if="user.actionStart" class="flex gap-1 items-center justify-between"
                 :class="user.isLate ? 'font-semibold text-red-500' : ''">
                 {{ user.actionStart }}
@@ -25,7 +25,7 @@
                 Не начат
             </div>
         </td>
-        <td class="px-4 py-3 border-r">
+        <td class="px-2 py-2 border-r">
             <div v-if="user.actionEnd">
                 {{ user.actionEnd }}
             </div>
@@ -33,13 +33,13 @@
                 Не завершён
             </div>
         </td>
-        <td class="px-4 py-3 border-r">
+        <td class="px-2 py-2 border-r">
             {{ formatWorkTime(user.workTime) }}
         </td>
-        <td class="px-4 py-3 border-r" :class="user.isOvertime ? 'font-semibold text-red-500' : ''">
+        <td class="px-2 py-2 border-r" :class="user.isOvertime ? 'font-semibold text-red-500' : ''">
             {{ formatWorkTime(user.breaktime) }}
         </td>
-        <td class="px-4 py-3 border-x box-border min-h-16">
+        <td class="px-2 py-2 border-x box-border min-h-16">
             <StatusEdit v-model:selectedStatusId="selectedStatusId" :statuses="updatedStatuses" :user="user"
                 :date="date" :timeStart.sync="timeStart" :timeEnd.sync="timeEnd" :changeMode="changeMode"
                 @openModal="openModal" @sendWorkStatus="sendWorkStatus" @toggleСhangeMode="toggleСhangeMode" />
@@ -52,7 +52,12 @@
 
         <Modal :open="modals['sick_leave']" @close="closeModal">
             <SickLeaveForm :user="user" v-model:dates="rangeDates" :workStatusId="selectedStatusId"
-                @save="sendSickLeave" @close="closeModal" />
+                @save="sendMassUpdate" @close="closeModal" />
+        </Modal>
+
+        <Modal :open="modals['vacation']" @close="closeModal">
+            <VacationForm :user="user" v-model:dates="rangeDates" :workStatusId="selectedStatusId" @save="sendMassUpdate"
+                @close="closeModal" />
         </Modal>
 
         <Modal :open="modals['close_sick_leave']" @close="closeModal">
@@ -67,6 +72,7 @@ import StatusEdit from './StatusEdit.vue'
 import PartTimeForm from './PartTimeForm.vue'
 import SickLeaveForm from './SickLeaveForm.vue'
 import CloseSickLeaveForm from './CloseSickLeaveForm.vue'
+import VacationForm from './VacationForm .vue'
 import { route } from 'ziggy-js'
 import { router } from '@inertiajs/vue3'
 import Modal from '../../../../../Components/Modal.vue'
@@ -77,6 +83,7 @@ export default {
         PartTimeForm,
         SickLeaveForm,
         CloseSickLeaveForm,
+        VacationForm,
         Modal
     },
     props: {
@@ -106,6 +113,7 @@ export default {
             closeRangeDates: [],
             image: null,
             modals: {
+                vacation: false,
                 part_time: false,
                 sick_leave: false,
                 close_sick_leave: false,
@@ -159,9 +167,6 @@ export default {
                 this.timeEnd = null;
             }
 
-            console.log(this.timeStart, this.timeEnd);
-
-
             router.post(route('admin.time-check.handle-work-status'),
                 {
                     user_id: this.user.id,
@@ -179,9 +184,9 @@ export default {
                 },
             )
         },
-        sendSickLeave() {
+        sendMassUpdate() {
 
-            router.post(route('admin.time-check.handle-sick-leave'),
+            router.post(route('admin.time-check.handle-mass-update'),
                 {
                     user_id: this.user.id,
                     dates: this.rangeDates,
@@ -236,6 +241,7 @@ export default {
             }, 200)
         },
         closeModal() {
+            this.modals.vacation = false
             this.modals.part_time = false
             this.modals.sick_leave = false
             this.modals.close_sick_leave = false

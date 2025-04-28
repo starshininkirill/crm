@@ -16,7 +16,7 @@ class WorkStatusService
     public function __construct(
         private FileManager $fileManager,
         private WorkTimeService $workTimeService,
-    ){}
+    ) {}
 
     public function handleChange(array $data)
     {
@@ -39,14 +39,14 @@ class WorkStatusService
         $this->updateDailyWorkStatus($existingDailyWorkStatus, $data);
     }
 
-    public function handleSickLeave(array $data)
+    public function handleMassUpdate(array $data)
     {
         if (empty($data)) {
-            throw new BusinessException('Данные для проставления больничного не заполнены');
+            throw new BusinessException('Данные для проставления статуса не выбраны');
         }
 
         if (!array_key_exists('dates', $data) || count($data['dates']) < 2) {
-            throw new BusinessException('Не выбраны даты для проставления больничного');
+            throw new BusinessException('Не выбраны даты для проставления статуса');
         }
 
         $startDate = Carbon::parse($data['dates'][0]);
@@ -93,7 +93,7 @@ class WorkStatusService
                 'file' => $path
             ]);
 
-        if(!$updated){
+        if (!$updated) {
             throw new BusinessException('Не удалось закрыть больничный');
         }
     }
@@ -106,10 +106,9 @@ class WorkStatusService
             'status' => DailyWorkStatus::STATUS_REJECTED,
         ]);
 
-        if(!$updated){
+        if (!$updated) {
             throw new BusinessException('Не удалось отменить опоздание');
         }
-
     }
 
     private function deleteDailyWorkStatus($existingDailyWorkStatus)
@@ -134,9 +133,9 @@ class WorkStatusService
             'time_start' => $data['time_start'] != null ? Carbon::parse($data['time_start']) : null,
             'time_end' => $data['time_end'] != null ? Carbon::parse($data['time_end']) : null,
         ];
-        
 
-        if($workStatus->type == WorkStatus::TYPE_PART_TIME_DAY){
+
+        if ($workStatus->type == WorkStatus::TYPE_PART_TIME_DAY) {
             $createdData['hours'] = $this->workTimeService->hoursFromTimeCheck($createdData['time_start'], $createdData['time_end']);
         }
 
@@ -169,7 +168,7 @@ class WorkStatusService
             if ($workStatus->type != WorkStatus::TYPE_PART_TIME_DAY) {
                 $dailyWorkStatus->time_start = null;
                 $dailyWorkStatus->time_end = null;
-            }else{
+            } else {
                 $dailyWorkStatus->hours = $this->workTimeService->hoursFromTimeCheck(Carbon::parse($data['time_start']), Carbon::parse($data['time_end']));
             }
         }

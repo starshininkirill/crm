@@ -7,8 +7,8 @@
                 <h2 v-if="!payments.length">Платежей не найдено</h2>
 
                 <table v-else
-                    class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    class="table">
+                    <thead class="thead">
                         <tr>
                             <th scope="col" class="px-4 py-3 border-x">
                                 Номер
@@ -31,7 +31,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="payment in payments" :key="payment.id" class="bg-white border-b   hover:bg-gray-50">
+                        <tr v-for="payment in payments" :key="payment.id" class="table-row">
                             <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap border-x">
                                 <Link :href="route('admin.payment.show', { payment: payment.id })"
                                     class=" text-blue-700 underline">

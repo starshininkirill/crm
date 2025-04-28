@@ -32,7 +32,7 @@ class WorkStatusRequest extends FormRequest
                 'time_start' => 'nullable|date_format:H:i',
                 'time_end' => 'nullable|date_format:H:i|after_or_equal:date_start',
             ]);
-        } elseif ($this->routeIs('admin.time-check.handle-sick-leave')) {
+        } elseif ($this->routeIs('admin.time-check.handle-mass-update')) {
             $rules = array_merge($rules, [
                 'work_status_id' => 'nullable|integer|exists:work_statuses,id',
                 'dates' => 'required|array',

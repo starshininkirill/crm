@@ -16,9 +16,8 @@
                 </div> -->
                     <h2 v-if="!users.length" class="text-xl">Сотрудников не найдено</h2>
                     <div v-else class="flex flex-col gap-5">
-                        <table
-                            class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
+                        <table class="table">
+                            <thead class="thead">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
                                         Имя
@@ -38,8 +37,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="user in users" :key="user.id" class="bg-white border-b   hover:bg-gray-50 ">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
+                                <tr v-for="user in users" :key="user.id" class="table-row">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         <Link :href="route('admin.user.show', user.id)">
                                         {{ user.full_name }}
                                         </Link>
@@ -110,7 +109,7 @@ export default {
                 'department': selectedDepartmentId,
             });
         },
-        fire(userId){
+        fire(userId) {
             if (confirm('Вы уверены, что хотите уволить этого сотрудника?')) {
                 router.post(route('admin.user.fire', userId));
             }

@@ -10,8 +10,8 @@
                     <h2 v-if="!organizations.length" class="text-xl">Организаций не найдено</h2>
                     <div v-if="organizations.length" class="">
                         <table
-                            class="w-full text-sm text-left rtl:text-right text-gray-500 relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            class="table">
+                            <thead class="thead">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
                                         Название
@@ -29,7 +29,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="organization in organizations" :key="organization.id"
-                                    class="bg-white border-b hover:bg-gray-50">
+                                    class="table-row">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         {{ organization.short_name }}
                                     </th>

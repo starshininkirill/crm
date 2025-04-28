@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="text-xl mb-3">Шортлист</div>
-        <table v-if="shortlist.length > 0" class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <table v-if="shortlist.length > 0" class="table">
+            <thead class="thead">
                 <tr>
                     <th class="border border px-4 py-2 text-left">
                         Сделка

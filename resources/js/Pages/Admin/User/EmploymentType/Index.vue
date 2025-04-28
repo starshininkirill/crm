@@ -55,7 +55,7 @@
 
                     <table v-if="employmentTypes.length"
                         class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
+                        <thead class="thead  ">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     Название
@@ -77,7 +77,7 @@
                         <tbody>
 
                             <tr v-for="type in employmentTypes" :key="type.id"
-                                class="bg-white border-b   hover:bg-gray-50 ">
+                                class="table-row ">
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                     {{ type.name }}
                                 </th>

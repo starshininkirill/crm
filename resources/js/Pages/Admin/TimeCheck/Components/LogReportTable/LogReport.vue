@@ -8,7 +8,7 @@
         </div>
         <table
             class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50  ">
+            <thead class="thead  ">
                 <tr>
                     <th scope="col" class="px-6 py-3">Сотрудник</th>
                     <th scope="col" class="px-6 py-3">Дата действия</th>
@@ -19,7 +19,7 @@
             <tbody v-for="mainDepartment in logReport">
                 <template v-for="user in mainDepartment.users">
                     <tr v-if="user.time_checks && user.time_checks.length > 0" v-for="action in user.time_checks"
-                        class="bg-white border-b   hover:bg-gray-50 ">
+                        class="table-row ">
                         <td class="px-6 py-4">
                             <Link :href="route('admin.user.show', user.id)">
                             {{ user.full_name }}
@@ -40,7 +40,7 @@
                 <template v-for="department in mainDepartment.child_departments">
                     <template v-for="user in department.users">
                         <tr v-if="user.time_checks && user.time_checks.length > 0" v-for="action in user.time_checks"
-                            class="bg-white border-b   hover:bg-gray-50 ">
+                            class="table-row ">
                             <td class="px-6 py-4">
                                 <Link :href="route('admin.user.show', user.id)">
                                 {{ user.full_name }}

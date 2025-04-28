@@ -22,7 +22,8 @@ class TimeCheckController extends Controller
         $logReport = $servise->getLogReport($date);
 
         return Inertia::render('Admin/TimeCheck/Index', [
-            'todayReport' => $todayReport,
+            'todayReport' => $todayReport['detailed'],
+            'aggregatedReport' => $todayReport['aggregated'],
             'logReport' => $logReport,
             'date' => $date,
             'workStatuses' => $workStatuses,
@@ -38,13 +39,13 @@ class TimeCheckController extends Controller
         return redirect()->back()->with('success', 'Статус успешно обновлен!');
     }
 
-    public function handleSickLeave(WorkStatusRequest $request, WorkStatusService $service)
+    public function handleMassUpdate(WorkStatusRequest $request, WorkStatusService $service)
     {
         $validated = $request->validated();
 
-        $service->handleSickLeave($validated);
+        $service->handleMassUpdate($validated);
 
-        return redirect()->back()->with('success', 'Больничный успешно проставлен!');
+        return redirect()->back()->with('success', 'Статус успешно проставлен!');
     }
 
     public function closeSickLeave(WorkStatusRequest $request, WorkStatusService $service)

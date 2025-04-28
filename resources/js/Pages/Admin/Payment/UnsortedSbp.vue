@@ -9,7 +9,7 @@
 
             <div class="">
                 <table v-if="payments.length" class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <thead class="thead">
                         <tr>
                             <th v-for="header in headers" :key="header"
                                 class="border px-4 py-2 text-left">

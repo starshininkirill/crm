@@ -7,8 +7,8 @@
             <h2 v-if="!contracts.length">Договоров не найдено</h2>
             <div v-if="contracts.length" class="overflow-x-auto">
                 <table
-                    class="shadow-md  overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    class="table">
+                    <thead class="thead">
                         <tr>
                             <th scope="col" class="px-2 py-2 border-x">
                                 Дата
@@ -51,7 +51,7 @@
                     <tbody>
 
                         <tr v-for="contract in contracts" :key="contract.id"
-                            class="bg-white border-b   hover:bg-gray-50 ">
+                            class="table-row ">
                             <th scope="row" class="px-2 border-x py-4 font-medium text-gray-900 whitespace-nowrap ">
                                 {{ contract.created_at }}
                             </th>
