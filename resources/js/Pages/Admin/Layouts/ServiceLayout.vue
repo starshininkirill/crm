@@ -1,11 +1,11 @@
 <template>
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
-            <AdminSubnavLink :href="route('admin.service.category.index')" :route="'admin.service.category.index'">
-                Категории Услуг
-            </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.service.index')" :route="'admin.service.index'">
                 Все Услуги
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.service.category.index')" :route="'admin.service.category.index'">
+                Категории Услуг
             </AdminSubnavLink>
         </div>
         <slot />

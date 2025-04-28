@@ -32,7 +32,7 @@
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.service.index') }"
-                :href="route('admin.service.category.index')">
+                :href="route('admin.service.index')">
               Услуги
               </Link>
             </li>

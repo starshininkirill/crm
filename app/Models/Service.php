@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Helpers\TextFormaterHelper;
+use App\Models\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-    use HasFactory;
+    use HasFactory, HasFilter;
 
     protected $fillable = ['name', 'service_category_id', 'price', 'description', 'work_days_duration'];
 

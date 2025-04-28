@@ -16,7 +16,7 @@ Route::prefix('servicies')->group(function () {
 
     Route::get('/{service}', [ServiceController::class, 'edit'])->name('admin.service.show');
     Route::get('/{service}/edit/', [ServiceController::class, 'edit'])->name('admin.service.edit');
-    Route::get('/{serviceCategory?}', [ServiceController::class, 'index'])->name('admin.service.index');
+    Route::get('/', [ServiceController::class, 'index'])->name('admin.service.index');
 
     Route::post('/', [ServiceController::class, 'store'])->name('admin.service.store');
     Route::patch('/{service}', [ServiceController::class, 'update'])->name('admin.service.update');

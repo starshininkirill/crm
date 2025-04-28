@@ -3,41 +3,40 @@
 namespace App\Http\Controllers\Admin\Service;
 
 use App\Http\Controllers\Controller;
+use App\Http\Filters\Models\ServiceFilter;
 use App\Http\Requests\Admin\ServiceRequest;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    public function index($serviceCategoryId = null)
+    public function index(Request $request, ServiceFilter $filter)
     {
-
-        if ($serviceCategoryId) {
-            $services = Service::where('service_category_id', $serviceCategoryId)->get();
-        } else {
-            $services = Service::all();
-        };
-
-
-        $services->load('category');
-
-        $services = $services->sortBy('name')->map(function ($service) {
-            return [
-                'id' => $service->id,
-                'name' => $service->name,
-                'price' => $service->price,
-                'category' => $service->category->only('id', 'name')
-            ];
-        });
+        $services = Service::with('category')
+            ->filter($filter)
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString()
+            ->through(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'price' => $service->price,
+                    'category' => $service->category ? $service->category->only('id', 'name') : null,
+                ];
+            });
 
         $categories = ServiceCategory::all(['id', 'name'])->toArray();
 
         return Inertia::render('Admin/Service/Index', [
-            'services' => $services->sortBy('name')->values()->toArray(),
+            'services' => $services,
             'categories' => $categories,
+            'filters' => $request->all(),
         ]);
     }
+
     public function edit(Service $service)
     {
         $categories = ServiceCategory::all();

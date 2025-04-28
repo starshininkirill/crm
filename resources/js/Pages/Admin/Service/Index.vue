@@ -1,4 +1,4 @@
-<template> 
+<template>
     <ServiceLayout>
 
         <Head title="Услуги" />
@@ -9,9 +9,12 @@
             <h1 class="text-4xl font-semibold mb-6">Услуги</h1>
             <div class="flex mb-4 items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <VueSelect v-model="selectedCategory" :options="categoriesOptions" :reduce="service => service.id" label="name"
-                        class="full-vue-select min-w-[360px]"/>
-                    <input type="text" class="input min-w-[300px]" placeholder="Поиск...">
+                    <VueSelect v-model="selectedCategory" :options="categoriesOptions" :reduce="service => service.id"
+                        label="name" class="full-vue-select min-w-[360px]" />
+                    <input v-model="search" type="text" class="input min-w-[300px]" placeholder="Поиск...">
+                    <div class="btn !w-fit" @click="resetFilter">
+                        Сбросить
+                    </div>
                 </div>
                 <div class="btn !w-fit ml-auto" @click="openModal = true">
                     Создать
@@ -19,9 +22,9 @@
             </div>
             <div>
                 <div>
-                    <h2 v-if="!services.length" class="text-xl">Услуг не найдено</h2>
+                    <h2 v-if="!services.data.length" class="text-xl">Услуг не найдено</h2>
 
-                    <div v-if="services.length">
+                    <div v-if="services.data.length">
                         <table
                             class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
                             <thead class="thead  ">
@@ -44,8 +47,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="service in services" :key="service.id"
-                                    class="table-row ">
+                                <tr v-for="service in services.data" :key="service.id" class="table-row ">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                         {{ service.name }}
                                     </th>
@@ -73,6 +75,8 @@
                                 </tr>
                             </tbody>
                         </table>
+                        
+                        <Pagination :links="services.links" />
                     </div>
                 </div>
             </div>
@@ -81,13 +85,14 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import ServiceLayout from '../Layouts/ServiceLayout.vue';
 import { router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js';
 import ServiceCreateForm from './Components/ServiceCreateForm.vue';
 import VueSelect from 'vue-select';
 import Modal from '../../../Components/Modal.vue';
+import Pagination from '../../../Components/Pagination.vue';
 
 export default {
     components: {
@@ -95,17 +100,26 @@ export default {
         ServiceCreateForm,
         ServiceLayout,
         VueSelect,
-        Modal
+        Modal,
+        Pagination
     },
     props: {
         services: {
-            type: Array,
+            type: Object,
             required: true,
         },
         categories: {
             type: Array,
             required: true,
         },
+        selectedCategoryId: {
+            type: Number,
+            default: null,
+        },
+        filters: {
+            type: Object,
+            default: () => ({})
+        }
     },
     data() {
         return {
@@ -114,7 +128,9 @@ export default {
                 { id: null, name: 'Все категории' },
                 ...this.categories
             ],
-            selectedCategory: this.department?.id ?? null,
+            selectedCategory: this.filters.category || null,
+            search: this.filters.name || '',
+            searchTimeout: null,
         };
     },
     methods: {
@@ -123,6 +139,39 @@ export default {
                 router.delete(route('admin.service.destroy', id));
             }
         },
+        updateServices() {
+            const params = {};
+            if (this.selectedCategory !== null) params.category = this.selectedCategory;
+            if (this.search !== null) params.name = this.search;
+
+            router.get(route('admin.service.index'), params, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        },
+        handleSearchInput() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.updateServices();
+            }, 300);
+        },
+        resetFilter() {
+            this.search = '';
+            this.selectedCategory = null
+        }
+    },
+    watch: {
+        selectedCategory(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.updateServices();
+            }
+        },
+        search(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.handleSearchInput();
+            }
+        }
     },
 }
 
