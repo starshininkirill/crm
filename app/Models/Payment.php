@@ -13,7 +13,6 @@ class Payment extends Model
 {
     use HasFactory, HasHistory;
 
-
     protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
 
     const STATUS_WAIT = 0;
@@ -21,7 +20,7 @@ class Payment extends Model
     const STATUS_CLOSE = 2;
 
     const TYPE_NEW = 0;
-    const TYPE_OLD = 1;
+    const TYPE_OLD = 1; 
 
     const STATUSES = [
         self::STATUS_WAIT,

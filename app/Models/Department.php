@@ -27,15 +27,6 @@ class Department extends Model
         return Department::whereNull('parent_id')->get();
     }
 
-    public function positions(): HasMany
-    {
-        if ($this->parent_id == null) {
-            return $this->hasMany(Position::class);
-        } else {
-            return $this->parent()->first()->hasMany(Position::class);
-        }
-    }
-
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id');

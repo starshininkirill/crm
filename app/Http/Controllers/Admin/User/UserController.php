@@ -15,7 +15,7 @@ class UserController
 {
     public function index(UserRequest $request)
     {
-        $departmentId = $request->get('department'); // Получаем значение department из запроса
+        $departmentId = $request->get('department');
 
         $users = User::with('position', 'department')
             ->when($departmentId, function ($query, $departmentId) {
@@ -27,7 +27,7 @@ class UserController
                 return $user;
             });
 
-        $departments = Department::mainDepartments()->load('positions');
+        $departments = Department::mainDepartments();
         $positions = Position::all();
         $employmentTypes = EmploymentType::all();
         

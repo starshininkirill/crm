@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('salary');
-            $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -13,7 +13,8 @@ class EmploymentDetail extends Model
 
     protected $fillable = [
         'employment_type_id',
-        'details'
+        'details',
+        'payment_account',
     ];
 
     protected $casts = [

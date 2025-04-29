@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AdvertisingDepartment;
 use App\Models\Department;
+use App\Models\Position;
 use App\Models\ServiceCategory;
 use Illuminate\Database\Seeder;
 
@@ -29,7 +30,7 @@ class DepartmentSeeder extends Seeder
         $mainDepartment->save();
 
         foreach ($salePositions as $position) {
-            $mainDepartment->positions()->create(array_merge($position, ['department_id' => $mainDepartment->id]));
+            Position::create($position);
         };
 
         $saleDepartment1 = Department::create([
@@ -56,7 +57,7 @@ class DepartmentSeeder extends Seeder
         ];
 
         foreach ($advertisingPositions as $position) {
-            $mainDepartment->positions()->create(array_merge($position, ['department_id' => $mainDepartment->id]));
+            Position::create($position);
         }
     }
 }

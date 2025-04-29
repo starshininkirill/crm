@@ -41,6 +41,9 @@ class UserSeeder extends Seeder
         $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'User',
+            'surname' => 'Иванович',
+            'work_phone' => 89999999999,
+            'bitrix_id' => 1,
             'email' => 'admin@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'role' => 'admin',
@@ -50,6 +53,9 @@ class UserSeeder extends Seeder
         $sale1 = User::create([
             'first_name' => 'Кирилл',
             'last_name' => 'Продажник',
+            'surname' => 'Иванович',
+            'work_phone' => 89999999999,
+            'bitrix_id' => 2,
             'email' => 'sale1@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 4,
@@ -59,6 +65,9 @@ class UserSeeder extends Seeder
         $sale2 = User::create([
             'first_name' => 'Илья',
             'last_name' => 'Продажник',
+            'surname' => 'Иванович',
+            'work_phone' => 89999999999,
+            'bitrix_id' => 3,
             'email' => 'sale2@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 2,
@@ -69,6 +78,9 @@ class UserSeeder extends Seeder
         $sale2 = User::create([
             'first_name' => 'Игорь',
             'last_name' => 'Продажник 2 отд',
+            'surname' => 'Иванович',
+            'work_phone' => 89999999999,
+            'bitrix_id' => 4,
             'email' => 'sale3@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 2,
@@ -90,3 +102,5 @@ class UserSeeder extends Seeder
         // }
     }
 }
+
+

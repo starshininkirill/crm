@@ -13,7 +13,7 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable = [ 
         'number',
         'fio',
         'phone',

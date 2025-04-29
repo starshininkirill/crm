@@ -13,6 +13,7 @@ class EmploymentType extends Model
         'name',
         'fields',
         'compensation',
+        'is_another_recipient'
     ];
 
     protected $casts = [

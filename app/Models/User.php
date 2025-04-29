@@ -17,7 +17,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Traits\HasHistory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Collection; 
 
 class User extends Authenticatable
 {
@@ -30,13 +30,18 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'surname',
         'email',
-        'password',
+        'phone',
+        'work_phone',
+        'probation',
         'role',
         'position_id',
-        'probation',
         'department_id',
-        'fired_at'
+        'password',
+        'fired_at',
+        'bitrix_id',
+        'salary',
     ];
 
     protected $hidden = [

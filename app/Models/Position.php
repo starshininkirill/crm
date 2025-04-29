@@ -14,12 +14,8 @@ class Position extends Model
 {
     use HasFactory, HasHistory;
 
-    protected $fillable = ['name', 'salary', 'department_id'];
+    protected $fillable = ['name', 'salary'];
 
-    public function department() : BelongsTo
-    {
-        return $this->belongsTo(Department::class);
-    }
 
     public function users() : HasMany
     {

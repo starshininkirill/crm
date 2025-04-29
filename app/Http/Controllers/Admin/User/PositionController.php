@@ -13,7 +13,7 @@ class PositionController extends Controller
     public function index()
     {
         $departments = Department::mainDepartments();
-        $positions = Position::with('department')->get();
+        $positions = Position::get();
 
         return Inertia::render('Admin/User/Position/Index', [
             'departments' => $departments,

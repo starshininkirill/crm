@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-fit h-fit flex items-center justify-center">
+    <div class="relative z-50 w-fit h-fit flex items-center justify-center">
         <div class="border cursor-pointer border-gray-500 text-xs text-gray-500 p-1 rounded-full w-4 h-4 flex items-center justify-center"
             @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
             ?

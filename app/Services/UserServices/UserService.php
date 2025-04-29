@@ -46,20 +46,29 @@ class UserService
     public function createEmployment(array $data): User
     {
         return  DB::transaction(function () use ($data) {
-            $user = User::create([
+            $userData = [
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
+                'surname' => $data['surname'],
+                'bitrix_id' => $data['bitrix_id'],
+                'work_phone' => $data['work_phone'],
                 'email' => $data['email'],
                 'password' => $data['password'],
-                'salary' => $data['salary'],
                 'probation' => $data['probation'],
                 'department_id' => $data['department_id'],
                 'position_id' => $data['position_id'],
-            ]);
+            ];
+
+            if(array_key_exists('personal_salary', $data) && $data['personal_salary'] != null){
+                $userData['salary'] = $data['personal_salary'];
+            }
+
+            $user = User::create($userData);
 
             $user->employmentDetail()->create([
                 'employment_type_id' => $data['employment_type_id'],
                 'details' => $data['details'],
+                'payment_account' => $data['payment_account'],
             ]);
 
             return $user;

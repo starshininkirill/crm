@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->onDelete('cascade');
             $table->foreignId('employment_type_id')->onDelete('cascade');
+            $table->string('payment_account')->nullable();
             $table->json('details');
             $table->timestamps();
         });

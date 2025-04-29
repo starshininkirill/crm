@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('short_name');
             $table->string('name');
             $table->bigInteger('inn')->unique();
-            $table->tinyInteger('nds');
+            $table->boolean('nds');
             $table->integer('terminal');
         });
     }

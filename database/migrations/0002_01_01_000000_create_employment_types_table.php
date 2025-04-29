@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('employment_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->json('fields');
+            $table->json('fields')->nullable();
+            $table->boolean('is_another_recipient')->default(false);
             $table->integer('compensation')->default(0);
-            $table->timestamps();
+            $table->timestamps(); 
         });
     }
 

@@ -14,15 +14,6 @@
                             placeholder="Ставка" />
                     </div>
 
-                    <div class="flex flex-col">
-                        <span class="label">
-                            Отдел
-                        </span>
-                        <VueSelect v-model="form.department_id" :reduce="department => department.id" label="name"
-                            :options="departments">
-                        </VueSelect>
-                    </div>
-
                     <button class="btn">
                         Создать
                     </button>
@@ -40,9 +31,6 @@
                                     <th scope="col" class="px-6 py-3">
                                         Ставка
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Отдел
-                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,9 +41,6 @@
                                     </th>
                                     <td class="px-6 py-4">
                                         {{ formatPrice(position.salary) }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {{ position.department.name }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -98,7 +83,6 @@ export default {
         let form = useForm({
             'name': null,
             'salary': null,
-            'department_id': null,
         })
         return {
             form
@@ -112,7 +96,6 @@ export default {
                 onSuccess() {
                     th.form.name = null;
                     th.form.salary = null;
-                    th.form.department_id = null;
                 },
             });
         },

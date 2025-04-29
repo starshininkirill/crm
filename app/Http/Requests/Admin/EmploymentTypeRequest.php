@@ -21,11 +21,10 @@ class EmploymentTypeRequest extends FormRequest
      */
     public function rules(): array
     {
-        // dd($this->all());
         return [
             'name' => 'required|string|min:4|max:255',
             'compensation' => 'required|numeric|between:0,100',
-            'fields' => 'required|array',
+            'fields' => 'nullable|array',
             'fields.*.name' => 'required|string|min:1|max:255|regex:/^[a-zA-Z0-9_\-]+$/',
             'fields.*.readName' => 'required|string|min:1|max:255|regex:/^[а-яА-ЯёЁ\s]+$/u',
             'fields.*.type' => 'required|string|in:text,number',

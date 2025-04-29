@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('working_days', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->tinyInteger('is_working_day');
+            $table->boolean('is_working_day');
         });
     }
 
