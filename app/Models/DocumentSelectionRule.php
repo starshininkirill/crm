@@ -14,7 +14,6 @@ class DocumentSelectionRule extends Model
     protected $fillable = [ 
         'document_template_id',
         'type',
-        'priority',
     ];
 
     const TYPE_PHYSIC = 'physic';

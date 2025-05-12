@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('phone')->nullable()->unique();
             $table->string('work_phone')->nullable();
             $table->integer('salary')->nullable();
-            $table->boolean('probation')->default(0);
+            $table->date('probation_start')->nullable();
+            $table->date('probation_end')->nullable();
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->foreignId('position_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');

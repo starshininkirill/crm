@@ -53,24 +53,20 @@
             </VueSelect>
         </div>
 
+
         <div v-if="form.position_id" class="grid grid-cols-2 gap-4">
             <FormInput type="number" v-model="form.salary" name="salary" readonly label="Ставка" placeholder="Ставка" />
-            <FormInput type="number" v-model="form.personal_salary" name="personal_salary" info="Заполнить если ставка сотрудника отличается от стандартной ставки для должности"
+            <FormInput type="number" v-model="form.personal_salary" name="personal_salary"
+                info="Заполнить если ставка сотрудника отличается от стандартной ставки для должности"
                 label="Персональная ставка" placeholder="Персональная ставка" />
-            <div>
+            <div v-if="selectedPositionHasProbation">
                 <div class="label">
-                    Испытательный срок?
+                    Испытательный срок
+                    <Info text="Заполнить если для сотрудника предусмотрен испытательный срок" />
                 </div>
-                <div class="grid grid-cols-2">
-                    <label class="flex gap-1 items-center cursor-pointer w-fit">
-                        <input v-model="form.probation" checked type="radio" name="probation" value="1">
-                        Да
-                    </label>
-                    <label class="flex gap-1 items-center cursor-pointer w-fit">
-                        <input v-model="form.probation" type="radio" name="probation" value="0">
-                        Нет
-                    </label>
-                </div>
+
+                <VueDatePicker v-model="form.probation_dates" locale="ru" format="yyyy-MM-dd" model-type="yyyy-MM-dd"
+                    range />
             </div>
         </div>
 
@@ -85,12 +81,16 @@ import { useForm } from '@inertiajs/vue3';
 import FormInput from '../../../../Components/FormInput.vue';
 import VueSelect from 'vue-select';
 import Error from '../../../../Components/Error.vue'
+import Info from '../../../../Components/Info.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
 
 export default {
     components: {
         FormInput,
         VueSelect,
         Error,
+        Info,
+        VueDatePicker
     },
     props: {
         positions: {
@@ -116,7 +116,7 @@ export default {
             'password': null,
             'salary': null,
             'personal_salary': null,
-            'probation': 1,
+            'probation_dates': null,
             'department_id': null,
             'position_id': null,
             'employment_type_id': null,
@@ -156,7 +156,7 @@ export default {
                         th.form.password = null;
                     th.form.salary = null;
                     th.form.personal_salary = null,
-                        th.form.probation = 1;
+                        th.form.probation_dates = null;
                     th.form.department_id = null;
                     th.form.position_id = null;
                     th.form.employment_type_id = null;
@@ -186,6 +186,13 @@ export default {
                 this.form.details = [];
             }
         },
+    },
+    computed: {
+        selectedPositionHasProbation() {
+            if (!this.form.position_id) return false;
+            const position = this.positions.find(d => d.id === this.form.position_id);
+            return position ? position.has_probation : false;
+        }
     },
 };
 </script>

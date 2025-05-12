@@ -19,7 +19,7 @@ class PositionController extends Controller
             'departments' => $departments,
             'positions' => $positions,
         ]);
-    }
+    } 
 
     public function store(PositionRequest $request)
     {

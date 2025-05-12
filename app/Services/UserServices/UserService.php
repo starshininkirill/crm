@@ -54,12 +54,16 @@ class UserService
                 'work_phone' => $data['work_phone'],
                 'email' => $data['email'],
                 'password' => $data['password'],
-                'probation' => $data['probation'],
                 'department_id' => $data['department_id'],
                 'position_id' => $data['position_id'],
             ];
 
-            if(array_key_exists('personal_salary', $data) && $data['personal_salary'] != null){
+            if (array_key_exists('probation_dates', $data) && $data['probation_dates'] != null && count($data['probation_dates']) == 2) {
+                $userData['probation_start'] = Carbon::parse($data['probation_dates'][0]);
+                $userData['probation_end'] = Carbon::parse($data['probation_dates'][1]);
+            }
+
+            if (array_key_exists('personal_salary', $data) && $data['personal_salary'] != null) {
                 $userData['salary'] = $data['personal_salary'];
             }
 

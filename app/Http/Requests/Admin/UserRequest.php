@@ -44,6 +44,8 @@ class UserRequest extends FormRequest
                 'details.*.name' => 'string|required',
                 'details.*.readName' => 'string|required',
                 'details.*.value' => 'required',
+                'probation_dates' => 'nullable|array',
+                'probation_dates.*' => 'nullable|date_format:Y-m-d',
             ];
         }
 

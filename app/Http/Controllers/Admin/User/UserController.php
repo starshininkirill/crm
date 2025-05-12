@@ -10,7 +10,7 @@ use App\Models\Position;
 use App\Models\User;
 use App\Services\UserServices\UserService;
 use Inertia\Inertia;
-
+ 
 class UserController
 {
     public function index(UserRequest $request)

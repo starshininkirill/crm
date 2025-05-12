@@ -34,7 +34,8 @@ class User extends Authenticatable
         'email',
         'phone',
         'work_phone',
-        'probation',
+        'probation_start',
+        'probation_end',
         'role',
         'position_id',
         'department_id',
@@ -55,6 +56,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'probation_start' => 'date',
+            'probation_end' => 'date',
             'fired_at' => 'date',
             'password' => 'hashed',
         ];

@@ -30,7 +30,6 @@ class DocumentSelectionRuleRequest extends FormRequest
                 'type' => 'required|in:' . implode(',', DocumentSelectionRule::types()),
                 'services' => 'required|array',
                 'services.*' => 'required|exists:services,id',
-                'priority' => 'required|integer|between:1,100',
             ]);
         } else if ($this->method() == 'GET') {
             $rules = array_merge($rules, [

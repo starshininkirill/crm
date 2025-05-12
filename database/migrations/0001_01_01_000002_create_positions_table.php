@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('salary');
+            $table->boolean('has_probation')->default(false);
             $table->timestamps();
         });
     }

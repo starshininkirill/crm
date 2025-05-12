@@ -14,7 +14,7 @@ class Position extends Model
 {
     use HasFactory, HasHistory;
 
-    protected $fillable = ['name', 'salary'];
+    protected $fillable = ['name', 'salary', 'has_probation'];
 
 
     public function users() : HasMany

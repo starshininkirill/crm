@@ -31,14 +31,6 @@
                                 label="name" :options="documentRuleTypes">
                             </VueSelect>
                         </div>
-                        <div>
-                            <div class="label">
-                                Приоритет
-                                <Info text="Для определения документа при одинаковом наборе услуг" />
-                            </div>
-                            <FormInput v-model="form.priority" type="number" name="priority" value="1" min="0"
-                                max="100" />
-                        </div>
                         <div class="mb-2">
                             <div class="flex flex-col gap-2">
                                 <div v-for="(service, idx) in selectedServices">
@@ -96,9 +88,6 @@
                                     <th scope="col" class="px-6 py-3">
                                         Тип
                                     </th>
-                                    <th scope="col" class="px-6 py-3 w-12">
-                                        Приоритет
-                                    </th>
                                     <th scope="col" class="px-6 py-3 text-right w-12">
                                         Редактировать
                                     </th>
@@ -137,9 +126,6 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ documentRule.type }}
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        {{ documentRule.priority }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         Редактировать
@@ -211,7 +197,6 @@ export default {
                 document_template_id: null,
                 services: [],
                 type: null,
-                priority: 1,
             }),
             filtredServices: this.services,
             selectedServices: [null],

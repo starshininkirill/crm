@@ -22,9 +22,9 @@ class DepartmentSeeder extends Seeder
 
         $salePositions = [
             ['name' => 'Руководитель отдела продаж', 'salary' => 100000],
-            ['name' => 'Ведущий менеджер по продажам', 'salary' => 50000],
-            ['name' => 'Главный менеджер по продажам', 'salary' => 25000],
-            ['name' => 'Менеджер по продажам', 'salary' => 25000],
+            ['name' => 'Ведущий менеджер по продажам', 'salary' => 50000, 'has_probation' => true],
+            ['name' => 'Главный менеджер по продажам', 'salary' => 25000, 'has_probation' => true],
+            ['name' => 'Менеджер по продажам', 'salary' => 25000, 'has_probation' => true],
         ];
 
         $mainDepartment->save();
@@ -52,8 +52,8 @@ class DepartmentSeeder extends Seeder
 
         $advertisingPositions = [
             ['name' => 'Руководитель отдела рекламы', 'salary' => 100000],
-            ['name' => 'Старший менеджер по рекламе', 'salary' => 50000],
-            ['name' => 'Менеджер по рекламе', 'salary' => 25000],
+            ['name' => 'Старший менеджер по рекламе', 'salary' => 50000, 'has_probation' => true],
+            ['name' => 'Менеджер по рекламе', 'salary' => 25000, 'has_probation' => true],
         ];
 
         foreach ($advertisingPositions as $position) {

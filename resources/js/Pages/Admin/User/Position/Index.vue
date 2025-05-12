@@ -12,6 +12,8 @@
                             placeholder="Название" />
                         <FormInput type="number" v-model="form.salary" name="salary" label="Ставка"
                             placeholder="Ставка" />
+                        <ToggleSwitch class=" col-span-2" v-model="form.has_probation"
+                            label="Имеет испытательный срок" />
                     </div>
 
                     <button class="btn">
@@ -21,8 +23,7 @@
                 <div class=" col-span-2">
                     <h2 v-if="!positions.length" class="text-xl">Должностей не найдено</h2>
                     <div v-else class="flex flex-col gap-5">
-                        <table
-                            class="table">
+                        <table class="table">
                             <thead class="thead  ">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
@@ -31,16 +32,21 @@
                                     <th scope="col" class="px-6 py-3">
                                         Ставка
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Имеет испытательный срок
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="position in positions" :key="position.id"
-                                    class="table-row ">
+                                <tr v-for="position in positions" :key="position.id" class="table-row ">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                         {{ position.name }}
                                     </th>
                                     <td class="px-6 py-4">
                                         {{ formatPrice(position.salary) }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ position.has_probation ? 'Да' : 'Нет' }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -60,6 +66,7 @@ import Error from '../../../../Components/Error.vue';
 import VueSelect from 'vue-select';
 import { router } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import ToggleSwitch from '../../../../Components/ToggleSwitch.vue';
 
 export default {
     components: {
@@ -67,7 +74,8 @@ export default {
         FormInput,
         Error,
         VueSelect,
-        UserLayout
+        UserLayout,
+        ToggleSwitch
     },
     props: {
         departments: {
@@ -83,6 +91,7 @@ export default {
         let form = useForm({
             'name': null,
             'salary': null,
+            'has_probation': false,
         })
         return {
             form
@@ -96,6 +105,7 @@ export default {
                 onSuccess() {
                     th.form.name = null;
                     th.form.salary = null;
+                    th.form.has_probation = false;
                 },
             });
         },
