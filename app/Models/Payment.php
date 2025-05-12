@@ -13,14 +13,29 @@ class Payment extends Model
 {
     use HasFactory, HasHistory;
 
-    protected $fillable = ['value', 'inn', 'contract_id', 'status', 'order', 'confirmed_at', 'created_at', 'type', 'is_technical', 'organization_id', 'description', 'receipt_url', 'operation_id'];
+    protected $fillable = [
+        'value',
+        'inn',
+        'created_at',
+        'confirmed_at',
+        'organization_id',
+        'description',
+        'receipt_url',
+        'operation_id',
+
+        'status',
+        'is_technical',
+        'type',
+        'order',
+        'contract_id',
+    ];
 
     const STATUS_WAIT = 0;
     const STATUS_WAIT_CONFIRMATION = 1;
     const STATUS_CLOSE = 2;
 
     const TYPE_NEW = 0;
-    const TYPE_OLD = 1; 
+    const TYPE_OLD = 1;
 
     const STATUSES = [
         self::STATUS_WAIT,

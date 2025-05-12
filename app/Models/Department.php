@@ -47,6 +47,23 @@ class Department extends Model
         return $this->hasMany(WorkPlan::class);
     }
 
+    public static function getDepartmentWithChildrenIds(int $departmentId): array
+    {
+        $department = Department::with('childDepartments')->find($departmentId);
+
+        if (!$department) {
+            return [$departmentId];
+        }
+
+        $ids = [$department->id];
+
+        foreach ($department->childDepartments as $child) {
+            $ids = array_merge($ids, self::getDepartmentWithChildrenIds($child->id));
+        }
+
+        return $ids;
+    }
+
     public function allUsers(?Carbon $date = null, string $status = 'active'): SimpleCollection
     {
         $users = $this->getUsersForDate($date, $status);
@@ -76,11 +93,11 @@ class Department extends Model
             $users = $query->get()->filter(function ($user) use ($date, $status, $endOfMonth, $startOfMonth) {
                 $version = $user->getVersionAtDate($date);
 
-                
+
                 if (!$version) {
                     return false;
                 }
-                
+
                 $firedAt = $version->fired_at;
 
                 switch ($status) {

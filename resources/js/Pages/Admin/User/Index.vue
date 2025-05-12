@@ -7,14 +7,15 @@
             <div class="grid grid-cols-3 gap-8">
                 <CreateForm :positions="positions" :departments="departments" :employmentTypes="employmentTypes" />
                 <div class=" col-span-2">
-                    <!-- <div class="max-w-xs mb-4">
-                    <div class="label">
-                        Отдел
+                    <div class="flex items-center gap-3 mb-4 max-w-64">
+                        <VueSelect v-model="filtredDepartment" :options="departmentOptions"
+                            :reduce="department => department.id" label="name" class="full-vue-select min-w-[360px]" />
+                        <input v-model="search" type="text" class="input min-w-[300px]" placeholder="Поиск...">
+                        <div class="btn !w-fit" @click="resetFilter">
+                            Сбросить
+                        </div>
                     </div>
-                    <VueSelect :options="departments" :reduce="department => department.id" label="name"
-                        @update:model-value="updateUsers" />
-                </div> -->
-                    <h2 v-if="!users.length" class="text-xl">Сотрудников не найдено</h2>
+                    <h2 v-if="!users.data.length" class="text-xl">Сотрудников не найдено</h2>
                     <div v-else class="flex flex-col gap-5">
                         <table class="table">
                             <thead class="thead">
@@ -37,7 +38,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="user in users" :key="user.id" class="table-row">
+                                <tr v-for="user in users.data" :key="user.id" class="table-row">
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         <Link :href="route('admin.user.show', user.id)">
                                         {{ user.full_name }}
@@ -64,6 +65,8 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <Pagination :links="users.links" />
                     </div>
                 </div>
             </div>
@@ -78,17 +81,19 @@ import CreateForm from './Components/CreateForm.vue';
 import VueSelect from 'vue-select';
 import { router } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import Pagination from '../../../Components/Pagination.vue';
 
 export default {
     components: {
         Head,
         CreateForm,
         VueSelect,
-        UserLayout
+        UserLayout,
+        Pagination
     },
     props: {
         users: {
-            type: Array,
+            type: Object,
         },
         positions: {
             type: Array,
@@ -102,6 +107,21 @@ export default {
             type: Array,
             required: true,
         },
+        filters: {
+            type: Object,
+            default: () => ({})
+        }
+    },
+    data() {
+        return {
+            filtredDepartment: null,
+            search: this.filters.name || '',
+            searchTimeout: null,
+            departmentOptions: [
+                { id: null, name: 'Все отделы' },
+                ...this.departments
+            ],
+        }
     },
     methods: {
         updateUsers(selectedDepartmentId) {
@@ -114,7 +134,40 @@ export default {
                 router.post(route('admin.user.fire', userId));
             }
         },
-    }
+        updateUsers() {
+            const params = {};
+            if (this.filtredDepartment !== null) params.department = this.filtredDepartment;
+            if (this.search !== null) params.name = this.search;
+
+            router.get(route('admin.user.index'), params, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        },
+        handleSearchInput() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.updateUsers();
+            }, 300);
+        },
+        resetFilter() {
+            this.search = '';
+            this.filtredDepartment = null;
+        }
+    },
+    watch: {
+        filtredDepartment(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.updateUsers();
+            }
+        },
+        search(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.handleSearchInput();
+            }
+        }
+    },
 }
 
 

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Department;
 use App\Models\Scopes\UserScope;
+use App\Models\Traits\HasFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,11 +18,11 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Traits\HasHistory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Collection; 
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasHistory;
+    use HasApiTokens, HasFactory, Notifiable, HasHistory, HasFilter;
 
     const ROLE_ADMIN = 'admin';
     const ROLE_SALLER = 'saller';
@@ -147,6 +148,10 @@ class User extends Authenticatable
 
     public function salary(): int
     {
+        if ($this->salary) {
+            return $this->salary;
+        }
+
         $position = $this->position;
 
         if (!$position) {
@@ -158,15 +163,11 @@ class User extends Authenticatable
 
     public function lastAction(Carbon $date = null): HasOne
     {
-        if ($date) {
-            return $this->hasOne(TimeCheck::class)
-                ->whereDate('date', $date)
-                ->orderByDesc('id');
-        } else {
-            return $this->hasOne(TimeCheck::class)
-                ->whereDate('date', Carbon::now())
-                ->orderByDesc('id');
-        }
+        $date = $date ?? Carbon::now();
+
+        return $this->hasOne(TimeCheck::class)
+            ->whereDate('date', $date)
+            ->latest('id');
     }
 
     public function getLastAction(Carbon $date = null)

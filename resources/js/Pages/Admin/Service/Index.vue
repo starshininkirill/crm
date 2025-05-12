@@ -75,7 +75,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        
+
                         <Pagination :links="services.links" />
                     </div>
                 </div>
