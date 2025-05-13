@@ -47,6 +47,19 @@ class Department extends Model
         return $this->hasMany(WorkPlan::class);
     }
 
+    public static function getSaleDepartments()
+    {
+        return Department::where('type', Department::SALE_DEPARTMENT)
+            ->get();
+    }
+
+    public static function getMainSaleDepartment(): ?Department
+    {
+        return Department::where('type', Department::SALE_DEPARTMENT)
+            ->whereNull('parent_id')
+            ->first();
+    }
+
     public static function getDepartmentWithChildrenIds(int $departmentId): array
     {
         $department = Department::with('childDepartments')->find($departmentId);
@@ -64,85 +77,73 @@ class Department extends Model
         return $ids;
     }
 
-    public function allUsers(?Carbon $date = null, string $status = 'active'): SimpleCollection
+    public function allUsers(?Carbon $date = null): SimpleCollection
     {
-        $users = $this->getUsersForDate($date, $status);
+        $users = $this->users;
 
-        $this->childDepartments->each(function ($childDepartment) use (&$users, $status, $date) {
-            $users = $users->merge($childDepartment->getUsersForDate($date, $status));
+        $this->childDepartments->each(function ($childDepartment) use (&$users) {
+            $users = $users->merge($childDepartment->users);
         });
 
         return $users;
     }
 
-    protected function getUsersForDate(?Carbon $date, string $status): SimpleCollection
+    public function allHistoryUsers(?Carbon $date = null, array $relations = [], string $status = 'all'): SimpleCollection
     {
-        $query = $this->hasMany(User::class, 'department_id');
+        $users = $this->getUsersForDate($date, $relations, $status);
 
-        if ($date && $date) {
+        $this->childDepartments->each(function ($childDepartment) use (&$users, $status, $date, $relations) {
+            $users = $users->merge($childDepartment->getUsersForDate($date, $relations, $status));
+        });
+
+        return $users;
+    }
+
+    protected function getUsersForDate(?Carbon $date, array $relations = [], string $status): SimpleCollection
+    {
+        $query = $this->users;
+
+        if ($date) {
             $startOfMonth = $date->copy()->startOfMonth();
             $endOfMonth = $date->copy()->endOfMonth();
 
-            $userIds = History::where('historyable_type', User::class)
-                ->whereDate('created_at', '<=', $endOfMonth)
-                ->groupBy('historyable_id')
-                ->pluck('historyable_id');
+            return User::getLatestHistoricalRecords($date, $relations);
 
-            $query->whereIn('id', $userIds);
+            // return $users->filter(function ($user) use ($date, $status, $endOfMonth, $startOfMonth) {
+            //     $version = $user->getVersionAtDate($date);
 
-            $users = $query->get()->filter(function ($user) use ($date, $status, $endOfMonth, $startOfMonth) {
-                $version = $user->getVersionAtDate($date);
+            //     if (!$version) {
+            //         return false;
+            //     }
 
+            //     $firedAt = $version->fired_at;
 
-                if (!$version) {
-                    return false;
-                }
-
-                $firedAt = $version->fired_at;
-
-                switch ($status) {
-                    case 'active':
-                        return $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth);
-                    case 'fired':
-                        return $firedAt !== null && $firedAt <= $endOfMonth;
-                    case 'all':
-                        return true;
-                    default:
-                        return $firedAt === null || $firedAt > $endOfMonth;
-                }
-            });
-
-            return $users->map(function ($user) use ($date) {
-                return $user->getVersionAtDate($date) ?? $user;
-            });
+            //     switch ($status) {
+            //         case 'active':
+            //             return $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth);
+            //         case 'fired':
+            //             return $firedAt !== null && $firedAt <= $endOfMonth;
+            //         case 'all':
+            //             return true;
+            //         default:
+            //             return $firedAt === null || $firedAt > $endOfMonth;
+            //     }
+            // });
         }
 
-        switch ($status) {
-            case 'active':
-                $query->active();
-                break;
-            case 'fired':
-                $query->fired();
-                break;
-            case 'all':
-                break;
-            default:
-                $query->active();
-        }
+        // switch ($status) {
+        //     case 'active':
+        //         $query->active();
+        //         break;
+        //     case 'fired':
+        //         $query->fired();
+        //         break;
+        //     case 'all':
+        //         break;
+        //     default:
+        //         $query->active();
+        // }
 
         return $query->get();
-    }
-
-    public static function getSaleDepartments()
-    {
-        return Department::where('type', Department::SALE_DEPARTMENT)
-            ->get();
-    }
-
-    public static function getMainSaleDepartment(): ?Department
-    {
-        return Department::where('type', Department::SALE_DEPARTMENT)
-            ->whereNull('parent_id')
-            ->first();
     }
 }

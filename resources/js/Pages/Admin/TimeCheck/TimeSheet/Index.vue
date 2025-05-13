@@ -6,11 +6,17 @@
             <h1 class="text-4xl font-semibold mb-6">Кадровый табель</h1>
         </div>
 
-        <div class="flex gap-3 max-w-xl mb-4">
+        <div class="flex gap-3 max-w-3xl mb-4">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
                 <VueSelect class="full-vue-select h-full" v-model="selectedDepartment"
                     :reduce="department => department.id" label="name" :options="departmentOptions">
+                </VueSelect>
+            </div>
+            <div class=" w-2/4 flex flex-col">
+                <label class="label">Статус</label>
+                <VueSelect class="full-vue-select h-full" v-model="selectedStatus" :reduce="status => status.value"
+                    label="name" :options="statuses">
                 </VueSelect>
             </div>
             <div class="w-1/4 flex flex-col">
@@ -18,14 +24,15 @@
                 <VueDatePicker v-model="selectedDate" model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru"
                     class="h-full" />
             </div>
+
             <div @click="updateDate" class="btn h-fit mt-auto !w-fit">
                 Выбрать
             </div>
         </div>
 
-        <table
+        <table v-if="usersReport.length"
             class="shadow-md border-collapse rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="thead  ">
+            <thead class="thead ">
                 <tr>
                     <th scope="col" class="px-2 py-2 border-r">
                         Ставка
@@ -94,6 +101,9 @@
                 </tr>
             </tbody>
         </table>
+        <h1 v-else class="text-4xl font-semibold mb-6">
+            Нет данных для расчёта
+        </h1>
     </TimeCheckLayout>
 </template>
 
@@ -130,14 +140,35 @@ export default {
         usersReport: {
             type: Array,
             required: true,
-        }
+        },
+        status: {
+            type: String,
+            required: true,
+        },
     },
     data() {
+        let statuses = [
+            {
+                'name': 'Все',
+                'value': 'all'
+            },
+            {
+                'name': 'Активные',
+                'value': 'active'
+            },
+            {
+                'name': 'Уволенные',
+                'value': 'fired'
+            }
+        ]
+
         return {
             departmentOptions: [
                 { id: null, name: 'Все' },
                 ...this.departments
             ],
+            statuses,
+            selectedStatus: this.status ?? statuses[0],
             selectedDate: this.date,
             selectedDepartment: this.department?.id ?? null,
         }
@@ -179,7 +210,8 @@ export default {
         updateDate() {
             router.get(route('admin.time-sheet'), {
                 date: this.selectedDate,
-                department_id: this.selectedDepartment
+                department_id: this.selectedDepartment,
+                status: this.selectedStatus,
             })
         },
         getDailyStatusName(statusId) {

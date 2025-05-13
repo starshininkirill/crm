@@ -146,7 +146,7 @@ class User extends Authenticatable
         return $this->save();
     }
 
-    public function salary(): int
+    public function getSalary(): int
     {
         if ($this->salary) {
             return $this->salary;

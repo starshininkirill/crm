@@ -23,7 +23,7 @@ class TimeSheetService
 
         $usersReport = $users->map(function ($user) use ($date) {
             $user['days'] = $this->userMonthReport($user, $date);
-            $user['salary'] = $user->salary();
+            $user['salary'] = $user->getSalary();
             $user['hour_salary'] = round($user['salary'] / count(DateHelper::getWorkingDaysInMonth($date)) / 9);
             return $user;
         });

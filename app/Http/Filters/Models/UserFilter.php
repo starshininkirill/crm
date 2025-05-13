@@ -22,4 +22,6 @@ class UserFilter extends Filter
 
         return $this->builder->whereIn('department_id', $departmentIds);
     }
+
+    
 }

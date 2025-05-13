@@ -20,18 +20,7 @@ class DepartmentSeeder extends Seeder
             'type' => Department::SALE_DEPARTMENT
         ]);
 
-        $salePositions = [
-            ['name' => 'Руководитель отдела продаж', 'salary' => 100000],
-            ['name' => 'Ведущий менеджер по продажам', 'salary' => 50000, 'has_probation' => true],
-            ['name' => 'Главный менеджер по продажам', 'salary' => 25000, 'has_probation' => true],
-            ['name' => 'Менеджер по продажам', 'salary' => 25000, 'has_probation' => true],
-        ];
-
         $mainDepartment->save();
-
-        foreach ($salePositions as $position) {
-            Position::create($position);
-        };
 
         $saleDepartment1 = Department::create([
             'name' => 'Подотдел продаж 1',
@@ -49,15 +38,5 @@ class DepartmentSeeder extends Seeder
             'name' => 'Отдел рекламы',
             'type' => Department::ADVERTISING_DEPARTMENT,
         ]);
-
-        $advertisingPositions = [
-            ['name' => 'Руководитель отдела рекламы', 'salary' => 100000],
-            ['name' => 'Старший менеджер по рекламе', 'salary' => 50000, 'has_probation' => true],
-            ['name' => 'Менеджер по рекламе', 'salary' => 25000, 'has_probation' => true],
-        ];
-
-        foreach ($advertisingPositions as $position) {
-            Position::create($position);
-        }
     }
 }

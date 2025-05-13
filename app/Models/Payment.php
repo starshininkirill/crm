@@ -16,18 +16,17 @@ class Payment extends Model
     protected $fillable = [
         'value',
         'inn',
-        'created_at',
+        'contract_id',
+        'status',
+        'order',
         'confirmed_at',
+        'created_at',
+        'type',
+        'is_technical',
         'organization_id',
         'description',
         'receipt_url',
-        'operation_id',
-
-        'status',
-        'is_technical',
-        'type',
-        'order',
-        'contract_id',
+        'operation_id'
     ];
 
     const STATUS_WAIT = 0;

@@ -29,6 +29,7 @@ class UserController
                     'department' => $user->department,
                     'email' => $user->email,
                     'formatted_created_at' => $user->created_at->format('d.m.Y'),
+                    'fired_at' => $user->fired_at,
                 ];
             });
 

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,6 +39,7 @@ class UserSeeder extends Seeder
 
 
 
+        Carbon::setTestNow('2025-01-02 10:26:39');
         $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'User',
@@ -47,9 +49,18 @@ class UserSeeder extends Seeder
             'email' => 'admin@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'role' => 'admin',
-            'position_id' => 5,
+            'position_id' => 6,
             'department_id' => 4,
+            'created_at' => '2025-03-02 10:26:39'
         ]);
+        Carbon::setTestNow();
+
+        Carbon::setTestNow('2025-03-02 10:26:39');
+        $admin->position_id = 7;
+        $admin->save();
+        Carbon::setTestNow();
+
+
         $sale1 = User::create([
             'first_name' => 'Кирилл',
             'last_name' => 'Продажник',
@@ -58,7 +69,7 @@ class UserSeeder extends Seeder
             'bitrix_id' => 2,
             'email' => 'sale1@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            'position_id' => 4,
+            'position_id' => 1,
             'department_id' => 2,
             'phone' => 79535175470
         ]);
@@ -83,7 +94,7 @@ class UserSeeder extends Seeder
             'bitrix_id' => 4,
             'email' => 'sale3@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            'position_id' => 2,
+            'position_id' => 3,
             'department_id' => 3,
             'phone' => 79922857462
         ]);
@@ -102,5 +113,3 @@ class UserSeeder extends Seeder
         // }
     }
 }
-
-
