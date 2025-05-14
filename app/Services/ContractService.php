@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\Business\BusinessException;
 use App\Http\Resources\ContractForShortlistResource;
 use App\Models\Contract;
+use App\Models\ContractUser;
 use App\Models\Service;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -72,7 +73,7 @@ class ContractService
 
     private function groupUsersByRole(Contract $contract)
     {
-        return $contract->users->groupBy(function ($user) {
+        return $contract->allUsers()->groupBy(function ($user) {
             return $user->pivot->role;
         });
     }
@@ -95,7 +96,15 @@ class ContractService
 
         if ($usersToDetach->isNotEmpty()) {
             $usersToDetach->each(function ($userId) use ($contract, $roleId) {
-                $contract->users()->newPivotStatementForId($userId)->where('role', $roleId)->delete();
+                // $contract->users()->newPivotStatementForId($userId)->where('role', $roleId)->delete();
+                $record = ContractUser::where('contract_id', $contract->id)
+                    ->where('user_id', $userId)
+                    ->where('role', $roleId)
+                    ->first();
+
+                if ($record) {
+                    $record->delete();
+                }
             });
         }
     }
@@ -104,7 +113,13 @@ class ContractService
     {
         foreach ($performers as $userId) {
             if (!$this->isUserAttachedToRole($contractUsers, $roleId, $userId)) {
-                $contract->users()->attach($userId, ['role' => $roleId]);
+                // $contract->users()->attach($userId, ['role' => $roleId]);
+
+                ContractUser::create([
+                    'contract_id' => $contract->id,
+                    'user_id' => $userId,
+                    'role' => $roleId
+                ]);
             }
         }
     }

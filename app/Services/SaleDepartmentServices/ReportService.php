@@ -2,9 +2,12 @@
 
 namespace App\Services\SaleDepartmentServices;
 
+use App\DTO\SaleDepartment\ReportDTO;
+use App\Factories\SaleDepartment\ReportFactory;
 use App\Models\User;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
+use App\Models\Payment;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -12,12 +15,14 @@ use App\Services\SaleDepartmentServices\PlansService;
 
 class ReportService
 {
-    protected $planService;
-    protected $fullData;
+    protected PlansService $planService;
+    protected ReportDTO $fullData;
+    protected ReportFactory $reportFactory;
 
-    public function __construct(ReportInfo $reportInfo)
+    public function __construct(ReportDTO $reportInfo)
     {
         $this->planService = new PlansService;
+        $this->reportFactory = new ReportFactory;
         $this->fullData = $reportInfo;
     }
 
@@ -85,7 +90,7 @@ class ReportService
     {
         $report = collect();
 
-        $reportInfo = $this->fullData->getUserSubdata($user);
+        $reportInfo = $this->reportFactory->createUserSubReport($this->fullData, $user);
 
         $this->planService->prepareData($reportInfo);
         $report['monthPlan'] = $this->planService->monthPlan();
@@ -103,11 +108,26 @@ class ReportService
         return $report;
     }
 
+    public function unusedPayments(ReportDTO $fullData)
+    {
+        $unusedPayments = $fullData->payments->diff($fullData->usedPayments);
 
-    public function monthByDayReport(User $user = null): Collection
+        $newMoney = $unusedPayments->where('type', Payment::TYPE_NEW)->sum('value');
+        $oldMoney = $unusedPayments->where('type', Payment::TYPE_OLD)->sum('value');
+        $allMoney = $newMoney + $oldMoney;
+
+        return collect([
+            'newMoney' => $newMoney,
+            'oldMoney' => $oldMoney,
+            'allMoney' => $allMoney,
+        ]);
+    }
+
+
+    public function monthByDayReport(User|null $user = null): Collection
     {
         if ($this->fullData && $user != null) {
-            $reportInfo = $this->fullData->getUserSubdata($user);
+            $reportInfo = $this->reportFactory->createUserSubReport($this->fullData, $user);;
         } else {
             $reportInfo = $this->fullData;
         }
@@ -160,5 +180,4 @@ class ReportService
                 : DateHelper::getNearestPreviousWorkingDay($paymentDate, $this->fullData->workingDays);
         });
     }
-
 }

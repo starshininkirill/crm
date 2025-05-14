@@ -10,24 +10,28 @@ use Illuminate\Support\Facades\DB;
 
 trait HasHistory
 {
+    const ACTION_CREATED = 'created';
+    const ACTION_UPDATED = 'updated';
+    const ACTION_DELETED = 'deleted';
+
     public static function bootHasHistory()
     {
         static::created(function ($model) {
-            $model->recordHistory('created');
+            $model->recordHistory(self::ACTION_CREATED);
         });
 
         static::updated(function ($model) {
-            $model->recordHistory('updated');
+            $model->recordHistory(self::ACTION_UPDATED);
         });
 
         static::deleted(function ($model) {
-            $model->recordHistory('deleted');
+            $model->recordHistory(self::ACTION_DELETED);
         });
     }
 
-    public static function getLatestHistoricalRecords($date, array $withRelations = [])
+    public static function getLatestHistoricalRecordsQuery($date, array $withRelations = [])
     {
-        $query = History::whereIn('id', function ($query) use ($date) {
+        return History::whereIn('id', function ($query) use ($date) {
             $query->select(DB::raw('MAX(id)'))
                 ->from('histories')
                 ->where('historyable_type', self::class);
@@ -37,9 +41,21 @@ trait HasHistory
             }
 
             $query->groupBy('historyable_id');
-        });
+        })->with('historyable');
+    }
 
-        return $query->get()->map(function ($history) use ($withRelations, $date) {
+    public static function getLatestHistoricalRecords($date, array $withRelations = [])
+    {
+        return self::getLatestHistoricalRecordsQuery($date, $withRelations)
+            ->get()
+            ->map(function ($history) use ($withRelations, $date) {
+                return self::recreateModelWithRelations($history, $withRelations, $date);
+            });
+    }
+
+    public static function recreateFromQuery($histories, array $withRelations = [], $date = null)
+    {
+        return $histories->get()->map(function ($history) use ($withRelations, $date) {
             return self::recreateModelWithRelations($history, $withRelations, $date);
         });
     }
@@ -47,7 +63,7 @@ trait HasHistory
     public function history(): MorphMany
     {
         return $this->morphMany(History::class, 'historyable');
-    } 
+    }
 
     public function getVersionAtDate($date, array $withRelations = [])
     {
@@ -119,6 +135,13 @@ trait HasHistory
     {
         $model = new static;
         $model->forceFill($history->new_values);
+
+        foreach ($model->getCasts() as $attribute => $cast) {
+            if (array_key_exists($attribute, $history->new_values)) {
+                $model->setAttribute($attribute, $model->castAttribute($attribute, $history->new_values[$attribute]));
+            }
+        }
+
         $model->exists = $history->action !== 'created';
         return $model;
     }

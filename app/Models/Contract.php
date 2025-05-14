@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 
+    protected $fillable = [
         'number',
         'fio',
         'phone',
@@ -36,7 +37,33 @@ class Contract extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
-        ->withPivot('role');
+            ->withPivot('role');
+    }
+
+    public function allUsers(?Carbon $date = null, array $relations = []): Collection
+    {
+        if (!$date) {
+            return $this->users()->with($relations)->get();
+        }
+
+        $historicalUsers = $this->getHistoricalUsersForDate($date, $relations);
+
+        return $historicalUsers;
+    }
+
+    protected function getHistoricalUsersForDate(Carbon $date, array $relations = []): Collection
+    {
+        $historicalContractUserIds = ContractUser::getLatestHistoricalRecordsQuery($date)
+            ->whereNot('action', ContractUser::ACTION_DELETED)
+            ->where('new_values->contract_id', $this->id)
+            ->pluck('new_values')
+            ->map(function ($data) {
+                return $data['user_id'];
+            });
+
+
+        return User::getLatestHistoricalRecords($date, $relations)
+            ->whereIn('id', $historicalContractUserIds);
     }
 
     public function client(): BelongsTo
@@ -95,6 +122,30 @@ class Contract extends Model
         }
 
         return '';
+    }
+
+
+    public function attachUsersWithHistory($userId, $attributes = [])
+    {
+        $this->users()->attach($userId, $attributes);
+
+        $pivotModel = $this?->pivot;
+
+        if ($pivotModel) {
+            $this->recordPivotHistory($pivotModel, 'created');
+        }
+
+        return $pivotModel;
+    }
+
+    protected function recordPivotHistory($pivotModel, $action)
+    {
+        History::create([
+            'historyable_type' => get_class($pivotModel),
+            'historyable_id' => $pivotModel->id,
+            'action' => $action,
+            'new_values' => $pivotModel->getAttributes(),
+        ]);
     }
 
     public function addPayments(array $payments): void

@@ -2,6 +2,7 @@
 
 namespace App\Services\SaleDepartmentServices;
 
+use App\DTO\SaleDepartment\ReportDTO;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\Contract;
@@ -13,7 +14,7 @@ use Illuminate\Support\Collection;
 
 class PlansService
 {
-    private ReportInfo $reportInfo;
+    private ReportDTO $reportInfo;
     private $userService;
 
     public function __construct(){
@@ -21,7 +22,7 @@ class PlansService
     }
 
 
-    public function prepareData(ReportInfo $reportInfo): void
+    public function prepareData(ReportDTO $reportInfo): void
     {
         $this->reportInfo = $reportInfo;
     }

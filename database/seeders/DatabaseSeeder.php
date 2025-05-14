@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             DocumentSelectionRuleSeeder::class,
             CallHistorySeeder::class,
             WorkStatusSeeder::class,
+
+            TestSeeder::class,
         ]);
     }
 }

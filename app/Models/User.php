@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Helpers\DateHelper;
 use App\Models\Department;
 use App\Models\Scopes\UserScope;
 use App\Models\Traits\HasFilter;
@@ -185,24 +186,6 @@ class User extends Authenticatable
             ->whereIn('contract_id', $contractIds)
             ->where('status', Payment::STATUS_CLOSE)
             ->with(['contract.services.category'])
-            ->get();
-    }
-
-    public static function monthlyClosePaymentsForRoleGroup(Carbon $date, array|Collection $userIds, int $role)
-    {
-        $startOfMonth = $date->copy()->startOfMonth();
-        $endOfMonth = $date->copy()->endOfMonth();
-
-        return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->where('status', Payment::STATUS_CLOSE)
-            ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
-                $query->whereIn('user_id', $userIds)
-                    ->where('role', $role);
-            })
-            ->with([
-                'contract.services.category',
-                'contract.users'
-            ])
             ->get();
     }
 }

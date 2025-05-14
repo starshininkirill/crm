@@ -73,6 +73,47 @@
             </tr>
         </thead>
         <tbody>
+            <tr v-if="unusedPayments">
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    GRAMPUS
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ unusedPayments.newMoney }}
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ unusedPayments.oldMoney }}
+                </td>
+                <td colspan="5" class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ unusedPayments.allMoney }}
+                </td>
+            </tr>
             <tr v-for="user in pivotUsers">
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ user.name }}
@@ -83,8 +124,9 @@
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ formatPrice(user.totalValues.oldMoney) }}
                 </td>
-                <td v-for="service in user.totalValues.servicesByCatsCount" class="border text-xs border-gray-300 text-md px-1 py-1">
-                      {{ service }}
+                <td v-for="service in user.totalValues.servicesByCatsCount"
+                    class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ service }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ user.monthPlan.completed ? 'Да' : 'Нет' }}
@@ -124,6 +166,9 @@ export default {
         pivotUsers: {
             type: Object,
             required: true,
+        },
+        unusedPayments: {
+            type: Object,
         }
     },
 }

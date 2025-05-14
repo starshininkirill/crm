@@ -63,6 +63,7 @@ class PaymentService
             $oldPayment->responsible_id = $user->id;
             $oldPayment->operation_id = $newPayment->operation_id ?? null;
             $oldPayment->type = $oldPayment->determineType($newPayment);
+            $oldPayment->create_at = Carbon::now();
 
             $newPayment->delete();
 

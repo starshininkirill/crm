@@ -8,6 +8,8 @@ use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Services\ContractService;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class ContractSeeder extends Seeder
@@ -15,8 +17,9 @@ class ContractSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(ContractService $contractService): void
     {
+        Carbon::setTestNow('2025-04-01 10:26:39');
         $services = Service::query()->WhereNotNull('price')->get();
 
         $clients = Client::all();
@@ -51,11 +54,14 @@ class ContractSeeder extends Seeder
             if ($users->count() > 0) {
                 $randomUser = $users->random();
 
-                $randomUser->contracts()->attach($contract->id, [
-                    'role' => ContractUser::SALLER,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $attachData = [
+                    [
+                        'id' => 0,
+                        'performers' => [$randomUser->id]
+                    ]
+                ];
+                $contractService->attachPerformers($contract, $attachData);
+                // $contract->users()->attach($randomUser->id, ['role' => ContractUser::SALLER]);
             }
         }
 
@@ -65,6 +71,8 @@ class ContractSeeder extends Seeder
         $firstContract = Contract::find(1);
         $firstContract->client->inn = '9999';
         $firstContract->client->save();
+
+        Carbon::setTestNow();
     }
 
     private function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5)

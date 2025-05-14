@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Classes\T2Api;
-
+use App\Factories\SaleDepartment\ReportFactory;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;
@@ -16,8 +16,8 @@ use App\Models\WorkPlan;
 use App\Services\CallHistoryService;
 use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
+use App\Services\SaleDepartmentServices\WorkPlanService;
 use App\Services\UserServices\UserService;
-use App\Services\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -25,6 +25,10 @@ use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
 {
+    public function __construct(
+        private ReportFactory $reportFactory,
+    ) {}
+
     public function index()
     {
         $department = Department::getMainSaleDepartment();
@@ -75,19 +79,22 @@ class SaleDepartmentController extends Controller
             $selectDepartment = $departments->whereNull('parent_id')->first();
         }
 
-        $allUsers = $departments->whereNull('parent_id')->first()->allUsers();
+        $userId = $request->get('user') ?? null;
+        $date = Carbon::parse($request->get('date')) ?? Carbon::now();
+        $date = $date->endOfMonth();
 
-        if ($request->filled(['user', 'date'])) {
-            try {
-                $date = DateHelper::getValidatedDateOrNow($request->get('date'));
-                $user = User::find($request->get('user'));
+        $allUsers = $departments->whereNull('parent_id')->first()->allUsers($date);
+
+        if ($userId && $date) {
+            // try {
+                $user = User::find($userId);
                 $users = $selectDepartment->allUsers($date);
 
                 if ($userServive->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
                     $error = 'Сотрудник ещё не работал в этот месяц.';
                 }
 
-                $reportInfo = new ReportInfo($date, null, $selectDepartment);
+                $reportInfo = $this->reportFactory->createFullReport($date, $selectDepartment);
                 $reportService = new ReportService($reportInfo);
 
                 $daylyReport = $reportService->monthByDayReport($user);
@@ -100,17 +107,20 @@ class SaleDepartmentController extends Controller
                 $pivotUsers = $reportService->pivotUsers($users);
 
                 $generalPlan = $reportService->generalPlan($pivotUsers);
-            } catch (Exception $e) {
-                if (isset($error)) {
-                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                } else {
-                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                }
-            }
+
+                $unusedPayments = $reportService->unusedPayments($reportInfo);
+
+            // } catch (Exception $e) {
+            //     if (isset($error)) {
+            //         $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            //     } else {
+            //         $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+            //     }
+            // }
         }
 
         return Inertia::render('Admin/SaleDapartment/UserReport', [
-            'date' => isset($date) && $date != null ?  $date->format('Y-m') : now()->format('Y-m'),
+            'date' => $date ? $date->format('Y-m') : now()->format('Y-m'),
             'users' => $allUsers,
             'selectUser' => $user ?? null,
             'departments' => $departments ?? collect(),
@@ -121,9 +131,10 @@ class SaleDepartmentController extends Controller
             'pivotWeeks' => $pivotWeeks ?? collect(),
             'generalPlan' => $generalPlan ?? collect(),
             'pivotUsers' => $pivotUsers ?? collect(),
+            'unusedPayments' => $unusedPayments ?? collect(),
         ]);
     }
-    public function plansSettings(Request $request)
+    public function plansSettings(Request $request, WorkPlanService $workPlanService)
     {
         $requestDate = $request->query('date');
 
@@ -131,7 +142,7 @@ class SaleDepartmentController extends Controller
         $isCurrentMonth = DateHelper::isCurrentMonth($date);
 
         $departmentId = Department::getMainSaleDepartment()->id;
-        $plans = WorkPlan::plansForSaleSettings($date);
+        $plans = $workPlanService->plansForSaleSettings($date);
 
         $services = Service::with('category')->get();
         $rkServices = $services->where('category.type', ServiceCategory::RK)->values();
@@ -187,11 +198,11 @@ class SaleDepartmentController extends Controller
         return redirect()->back()->with('success', 'Данные успешно загружены');
     }
 
-    public function storeWorkPlan(SaleWorkPlanRequest $request, WorkPlanService $workPlanService)
+    public function storeWorkPlan(SaleWorkPlanRequest $request)
     {
         $validated = $request->validated();
 
-        $workPlan = $workPlanService->store($validated);
+        $workPlan = WorkPlan::create($validated);
 
         if (!$workPlan) {
             return redirect()->back()->withErrors('Не удалось создать план');
@@ -200,20 +211,20 @@ class SaleDepartmentController extends Controller
         return redirect()->back()->with('success', 'План успешно создан');
     }
 
-    public function updateWorkPlan(SaleWorkPlanRequest $request, WorkPlan $workPlan, WorkPlanService $workPlanService)
+    public function updateWorkPlan(SaleWorkPlanRequest $request, WorkPlan $workPlan)
     {
         $validated = $request->validated();
 
-        if (!$workPlanService->update($workPlan, $validated)) {
+        if (!$workPlan->update($validated)) {
             return redirect()->back()->withErrors('Не удалось обновить план');
         }
 
         return redirect()->back()->with('success', 'План успешно изменён');
     }
 
-    public function destroyWorkPlan(WorkPlan $workPlan, WorkPlanService $workPlanService)
+    public function destroyWorkPlan(WorkPlan $workPlan)
     {
-        if (!$workPlanService->destroy($workPlan)) {
+        if (!$workPlan->delete()) {
             return redirect()->back()->withErrors('Не удалось Удалить план');
         }
 

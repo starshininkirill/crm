@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Position;
+use App\Models\Traits\HasHistory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use Carbon\Carbon;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
-    use HasFactory;
+    use HasFactory, HasHistory;
 
     public const SALE_DEPARTMENT = 0;
     public const ADVERTISING_DEPARTMENT = 1;
@@ -77,73 +77,36 @@ class Department extends Model
         return $ids;
     }
 
-    public function allUsers(?Carbon $date = null): SimpleCollection
+    public function allUsers(?Carbon $date = null, array $relations = []): SimpleCollection
     {
-        $users = $this->users;
+        if (!$date) {
+            $users = $this->users;
 
-        $this->childDepartments->each(function ($childDepartment) use (&$users) {
-            $users = $users->merge($childDepartment->users);
+            $this->childDepartments->each(function ($childDepartment) use (&$users) {
+                $users = $users->merge($childDepartment->users);
+            });
+
+            return $users;
+        }
+        $users = $this->getUsersForDate($date, $relations);
+
+        $this->childDepartments->each(function ($childDepartment) use (&$users, $date, $relations) {
+            $users = $users->merge($childDepartment->getUsersForDate($date, $relations));
         });
 
         return $users;
     }
 
-    public function allHistoryUsers(?Carbon $date = null, array $relations = [], string $status = 'all'): SimpleCollection
+    protected function getUsersForDate(?Carbon $date = null, array $relations = [],): SimpleCollection
     {
-        $users = $this->getUsersForDate($date, $relations, $status);
-
-        $this->childDepartments->each(function ($childDepartment) use (&$users, $status, $date, $relations) {
-            $users = $users->merge($childDepartment->getUsersForDate($date, $relations, $status));
-        });
-
-        return $users;
-    }
-
-    protected function getUsersForDate(?Carbon $date, array $relations = [], string $status): SimpleCollection
-    {
-        $query = $this->users;
-
         if ($date) {
-            $startOfMonth = $date->copy()->startOfMonth();
-            $endOfMonth = $date->copy()->endOfMonth();
+            $allHistoricalUsers = User::getLatestHistoricalRecords($date, array_merge($relations, ['department']));
 
-            return User::getLatestHistoricalRecords($date, $relations);
-
-            // return $users->filter(function ($user) use ($date, $status, $endOfMonth, $startOfMonth) {
-            //     $version = $user->getVersionAtDate($date);
-
-            //     if (!$version) {
-            //         return false;
-            //     }
-
-            //     $firedAt = $version->fired_at;
-
-            //     switch ($status) {
-            //         case 'active':
-            //             return $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth);
-            //         case 'fired':
-            //             return $firedAt !== null && $firedAt <= $endOfMonth;
-            //         case 'all':
-            //             return true;
-            //         default:
-            //             return $firedAt === null || $firedAt > $endOfMonth;
-            //     }
-            // });
+            return $allHistoricalUsers->filter(function ($user) {
+                return $user->department_id == $this->id;
+            });
         }
 
-        // switch ($status) {
-        //     case 'active':
-        //         $query->active();
-        //         break;
-        //     case 'fired':
-        //         $query->fired();
-        //         break;
-        //     case 'all':
-        //         break;
-        //     default:
-        //         $query->active();
-        // }
-
-        return $query->get();
+        return $this->users()->with($relations)->get();
     }
 }

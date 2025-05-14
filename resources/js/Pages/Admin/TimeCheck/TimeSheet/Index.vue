@@ -5,7 +5,7 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Кадровый табель</h1>
         </div>
-
+ 
         <div class="flex gap-3 max-w-3xl mb-4">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>

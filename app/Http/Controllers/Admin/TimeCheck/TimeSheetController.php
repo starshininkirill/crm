@@ -8,12 +8,18 @@ use App\Http\Requests\Admin\TimeCheck\TimeSheetRequest;
 use App\Models\Department;
 use App\Models\User;
 use App\Services\UserServices\TimeSheetService;
+use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
 
 class TimeSheetController extends Controller
 {
+    public function __construct(
+        protected UserService $userService
+    ) {
+    }
+
     public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
         $status = $request->input('status', 'all');
@@ -28,7 +34,7 @@ class TimeSheetController extends Controller
 
         $users = $this->getUsersCollection($department, $targetDate);
 
-        $users = $this->filterUsersByStatus($users, $status, $targetDate);
+        $users = $this->userService->filterUsersByStatus($users, $status, $targetDate);
 
 
         $info = [
@@ -53,29 +59,12 @@ class TimeSheetController extends Controller
 
         if ($department) {
             return $isCurrentMonth
-                ? $department->allUsers($targetDate)->loadMissing($relations)
-                : $department->allHistoryUsers($targetDate, $relations);
+                ? $department->allUsers()->loadMissing($relations)
+                : $department->allUsers($targetDate, $relations);
         }
 
         return $isCurrentMonth
             ? User::with($relations)->get()
             : User::getLatestHistoricalRecords($targetDate, $relations);
-    }
-
-    protected function filterUsersByStatus(Collection $users, string $status, Carbon $targetDate): Collection
-    {
-        $endOfMonth = $targetDate->copy()->endOfMonth();
-        $startOfMonth = $targetDate->copy()->startOfMonth();
-
-        return $users->filter(function ($user) use ($status, $startOfMonth, $endOfMonth) {
-            $firedAt = $user->fired_at;
-
-            return match ($status) {
-                'active' => $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth),
-                'fired' => $firedAt !== null && $firedAt <= $endOfMonth,
-                'all' => true,
-                default => $firedAt === null || $firedAt > $endOfMonth,
-            };
-        });
     }
 }

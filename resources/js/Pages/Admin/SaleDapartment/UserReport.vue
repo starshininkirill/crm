@@ -34,7 +34,7 @@
             </div>
 
             <div class="w-100 mt-6">
-                <PivotUsersReport v-if="pivotUsers && Object.keys(pivotUsers).length > 0" :pivotUsers="pivotUsers" />
+                <PivotUsersReport  :pivotUsers="pivotUsers" :unusedPayments="unusedPayments" />
             </div>
         </div>
     </SaleDepartmentLayout>
@@ -95,6 +95,9 @@ export default {
             type: Object,
         },
         pivotUsers: {
+            type: Object,
+        },
+        unusedPayments: {
             type: Object,
         }
     },

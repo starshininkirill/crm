@@ -6,6 +6,7 @@ use App\Models\AdvertisingDepartment;
 use App\Models\Department;
 use App\Models\Position;
 use App\Models\ServiceCategory;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class DepartmentSeeder extends Seeder
@@ -15,6 +16,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
+        Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
             'name' => 'Отдел продаж',
             'type' => Department::SALE_DEPARTMENT
@@ -38,5 +40,7 @@ class DepartmentSeeder extends Seeder
             'name' => 'Отдел рекламы',
             'type' => Department::ADVERTISING_DEPARTMENT,
         ]);
+
+        Carbon::setTestNow();
     }
 }

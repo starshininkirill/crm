@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DateHelper;
 use App\Helpers\TextFormaterHelper;
 use App\Models\Department;
 use App\Models\Traits\HasHistory;
@@ -42,7 +43,17 @@ class WorkPlan extends Model
         self::NO_PERCENTAGE_MONTH,
     ];
 
-    protected $fillable = ['type', 'data', 'goal', 'month', 'bonus', 'service_category_id', 'department_id', 'position_id', 'created_at'];
+    protected $fillable = [
+        'type',
+        'data',
+        'goal',
+        'month',
+        'bonus',
+        'service_category_id',
+        'department_id',
+        'position_id',
+        'created_at'
+    ];
 
     protected $casts = [
         'data' => 'array',
@@ -63,29 +74,4 @@ class WorkPlan extends Model
         return $this->BelongsTo(Department::class);
     }
 
-    public static function plansForSaleSettings(Carbon $date): Collection
-    {
-        $departmentId = Department::getMainSaleDepartment()->id;
-        $plans = WorkPlan::where('department_id', $departmentId)
-            ->whereYear('created_at', $date->year)
-            ->whereMonth('created_at', $date->month)
-            ->get()
-            ->groupBy('type');
-
-        if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
-            $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->filter(function ($plan) {
-                return array_key_exists('month', $plan->data) && $plan->data['month'] != null;
-            });
-        }
-
-
-        if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
-            $plans[WorkPlan::MOUNTH_PLAN]->sortBy('data.month');
-        }
-        if ($plans->has(WorkPlan::PERCENT_LADDER)) {
-            $plans[WorkPlan::PERCENT_LADDER]->sortBy('data.goal');
-        }
-
-        return $plans;
-    }
 }

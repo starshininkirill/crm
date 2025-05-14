@@ -7,6 +7,7 @@ use App\Models\TimeCheck;
 use App\Models\User;
 use App\Models\WorkStatus;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -39,6 +40,7 @@ class UserService
         if ($startWorkingDay > 7) {
             $monthsWorked--;
         }
+
         return $monthsWorked;
     }
 
@@ -76,6 +78,23 @@ class UserService
             ]);
 
             return $user;
+        });
+    }
+
+    public function filterUsersByStatus(Collection $users, string $status, Carbon $targetDate): Collection
+    {
+        $endOfMonth = $targetDate->copy()->endOfMonth();
+        $startOfMonth = $targetDate->copy()->startOfMonth();
+
+        return $users->filter(function ($user) use ($status, $startOfMonth, $endOfMonth) {
+            $firedAt = $user->fired_at;
+
+            return match ($status) {
+                'active' => $firedAt === null || ($firedAt >= $startOfMonth && $firedAt <= $endOfMonth),
+                'fired' => $firedAt !== null && $firedAt <= $endOfMonth,
+                'all' => true,
+                default => $firedAt === null || $firedAt > $endOfMonth,
+            };
         });
     }
 }

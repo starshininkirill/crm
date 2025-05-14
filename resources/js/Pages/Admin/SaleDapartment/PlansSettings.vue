@@ -1,50 +1,55 @@
 <template>
     <SaleDepartmentLayout>
-    <Head title="Настройка планов отдела продаж" />
-    <div class="contract-page-wrapper flex flex-col">
-        <h1 class="text-4xl font-semibold mb-6">Настройка планов отдела продаж</h1>
-    </div>
 
-    <div class=" flex gap-3 mb-4">
-        <FormInput @change="changeDate" v-model="date" name="date" type="month" />
-    </div>
-
-    <Error />
-
-    <div class="grid grid-cols-3 gap-8 mb-4">
-        <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
-        <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
-            :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
-
-        <div class="flex flex-col gap-4">
-            <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
-                :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true" />
-            <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Двойной план'"
-                :planType="'doublePlan'" :plans="plans.doublePlan" />
-            <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'План недели'"
-                :planType="'weekPlan'" :plans="plans.weekPlan" />
-            <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Супер план'"
-                :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true" />
+        <Head title="Настройка планов отдела продаж" />
+        <div class="contract-page-wrapper flex flex-col">
+            <h1 class="text-4xl font-semibold mb-6">Настройка планов отдела продаж</h1>
         </div>
 
-        <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
-
-        <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
-            :departmentId="departmentId" />
-        <div>
-
+        <div class=" flex gap-3 mb-4">
+            <div class="w-fit flex flex-col">
+                <label class="label">Дата</label>
+                <VueDatePicker v-model="date" model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru"
+                    @update:modelValue="changeDate" class="h-full" />
+            </div>
         </div>
 
-        <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices"
-            :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+        <Error />
 
+        <div class="grid grid-cols-3 gap-8 mb-4">
+            <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
+            <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
+                :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
 
-        <div class=" col-span-2">
-            <B3Plan :serviceCats="serviceCats" :services="services" :propPlan="plans.b3Plan"
+            <div class="flex flex-col gap-4">
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
+                    :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Двойной план'"
+                    :planType="'doublePlan'" :plans="plans.doublePlan" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'План недели'"
+                    :planType="'weekPlan'" :plans="plans.weekPlan" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Супер план'"
+                    :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true" />
+            </div>
+
+            <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+
+            <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
+                :departmentId="departmentId" />
+            <div>
+
+            </div>
+
+            <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices"
                 :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
-        </div>
 
-    </div>
+
+            <div class=" col-span-2">
+                <B3Plan :serviceCats="serviceCats" :services="services" :propPlan="plans.b3Plan"
+                    :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+            </div>
+
+        </div>
     </SaleDepartmentLayout>
 </template>
 
@@ -62,6 +67,7 @@ import B3Plan from './Settings/B3Plan.vue';
 import B4Plan from './Settings/B4Plan.vue';
 import PercentLadder from './Settings/PercentLadder.vue';
 import Error from '../../../Components/Error.vue';
+import VueDatePicker from '@vuepic/vue-datepicker'
 
 export default {
     components: {
@@ -75,7 +81,8 @@ export default {
         B4Plan,
         PercentLadder,
         Error,
-        SaleDepartmentLayout
+        SaleDepartmentLayout,
+        VueDatePicker
     },
     props: {
         dateProp: {
@@ -111,7 +118,7 @@ export default {
             required: true,
         },
     },
-    data() {        
+    data() {
         return {
             date: this.dateProp
         }

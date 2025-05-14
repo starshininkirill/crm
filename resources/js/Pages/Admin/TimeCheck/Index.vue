@@ -71,7 +71,7 @@ export default {
             this.pollInterval = setInterval(() => {
                 router.get(route('admin.time-check.index'), {
                     date: this.reactiveDate,
-                }, {
+                }, { 
                     preserveState: true,
                     preserveScroll: true,
                     only: ['todayReport', 'aggregatedReport'],

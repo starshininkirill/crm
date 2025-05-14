@@ -13,6 +13,8 @@ class ContractUser extends Pivot
 
     protected $table = 'contract_user';
 
+    public $incrementing = true;
+
     protected $fillable = [
         'contract_id',
         'user_id',

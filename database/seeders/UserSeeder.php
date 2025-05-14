@@ -50,17 +50,18 @@ class UserSeeder extends Seeder
             'password' => Hash::make('1409199696Rust'),
             'role' => 'admin',
             'position_id' => 6,
-            'department_id' => 4,
+            'department_id' => 1,
             'created_at' => '2025-03-02 10:26:39'
         ]);
         Carbon::setTestNow();
 
         Carbon::setTestNow('2025-03-02 10:26:39');
         $admin->position_id = 7;
+        $admin->department_id = 4;
         $admin->save();
         Carbon::setTestNow();
 
-
+        Carbon::setTestNow('2025-04-01 10:26:39');
         $sale1 = User::create([
             'first_name' => 'Кирилл',
             'last_name' => 'Продажник',
@@ -95,9 +96,11 @@ class UserSeeder extends Seeder
             'email' => 'sale3@mail.ru',
             'password' => Hash::make('1409199696Rust'),
             'position_id' => 3,
-            'department_id' => 3,
+            'department_id' => 2,
             'phone' => 79922857462
         ]);
+
+        Carbon::setTestNow();
 
         // foreach ($realManagersNumbers as $number) {
         //     User::create([
