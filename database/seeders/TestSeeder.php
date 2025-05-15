@@ -118,6 +118,14 @@ class TestSeeder extends Seeder
         $thirdPayment->type = Payment::TYPE_OLD;
         $thirdPayment->save();
 
+        
+        Carbon::setTestNow('2025-02-20 10:26:39');
+
+        $last->created_at = Carbon::now();
+        $last->status = Payment::STATUS_CLOSE;
+        $last->type = Payment::TYPE_OLD;
+        $last->save();
+
         Carbon::setTestNow('2025-02-15 10:26:39');
 
         $user->fire();
@@ -132,12 +140,6 @@ class TestSeeder extends Seeder
 
         // $contractService->attachPerformers($contract, $attachData);
 
-        Carbon::setTestNow('2025-03-20 10:26:39');
-
-        $last->created_at = Carbon::now();
-        $last->status = Payment::STATUS_CLOSE;
-        $last->type = Payment::TYPE_OLD;
-        $last->save();
 
         Carbon::setTestNow('2025-03-30 10:26:39');
 

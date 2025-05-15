@@ -19,7 +19,7 @@ class ContractSeeder extends Seeder
      */
     public function run(ContractService $contractService): void
     {
-        Carbon::setTestNow('2025-04-01 10:26:39');
+        Carbon::setTestNow('2025-05-05 10:26:39');
         $services = Service::query()->WhereNotNull('price')->get();
 
         $clients = Client::all();

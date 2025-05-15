@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DateHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,7 +43,7 @@ class Contract extends Model
 
     public function allUsers(?Carbon $date = null, array $relations = []): Collection
     {
-        if (!$date) {
+        if (!$date || DateHelper::isCurrentMonth($date)) {
             return $this->users()->with($relations)->get();
         }
 

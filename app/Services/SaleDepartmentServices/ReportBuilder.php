@@ -109,16 +109,37 @@ class ReportBuilder
         $subData->workingDays = $mainData->workingDays;
 
         // Устанавливаем пользовательские данные
+        if(!DateHelper::isCurrentMonth($subData->date)){
+            $user = $user->getVersionAtDate($subData->date);
+        }
+
         $subData->user = $user;
         $subData->callsStat = $mainData->callsStat->get($user->phone) ?? collect();
-        $subData->monthWorkPlan = $this->getMonthPlan($mainData->workPlans, $user, $mainData->date, $mainData->mainDepartmentId);
+        $subData->monthWorkPlan = $this->getMonthPlan($mainData->workPlans, $user, $subData->date, $mainData->mainDepartmentId);
         $subData->monthWorkPlanGoal = $subData->monthWorkPlan->data['goal'];
 
-
-        // Фильтрация данных по пользователю
         $subData->payments = $mainData->payments->filter(
-            fn($payment) => $payment->contract && $payment->contract->allUsers($subData->date)->contains('id', $user->id)
+            function ($payment) use ($user, $subData) {
+                if (!$payment->contract) {
+                    return false;
+                }
+
+                $contractUsers = $payment->contract->allUsers($subData->date);
+
+                $userInContract = $contractUsers->contains('id', $user->id);
+
+                if (!$userInContract) {
+                    return false;
+                }
+
+                if ($user->fired_at) {
+                    return $payment->created_at <= $user->fired_at;
+                }
+
+                return true;
+            }
         );
+
 
         $mainData->usedPayments = $mainData->usedPayments->merge(
             $subData->payments->diff($mainData->usedPayments)
@@ -223,8 +244,7 @@ class ReportBuilder
             return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->where('status', Payment::STATUS_CLOSE)
                 ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
-                    $query->whereIn('user_id', $userIds)
-                        ->where('role', $role);
+                    $query->where('role', $role);
                 })
                 ->with([
                     'contract.services.category',
@@ -233,7 +253,7 @@ class ReportBuilder
                 ->get();
         } else {
             $historicalContractIds = ContractUser::getLatestHistoricalRecordsQuery($date)
-                ->whereIn('new_values->user_id', $userIds)
+                // ->whereIn('new_values->user_id', $userIds)
                 ->where('new_values->role', $role)
                 ->pluck('new_values')
                 ->map(function ($data) {

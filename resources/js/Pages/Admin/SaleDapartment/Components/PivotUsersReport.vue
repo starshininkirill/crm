@@ -78,10 +78,10 @@
                     GRAMPUS
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    {{ unusedPayments.newMoney }}
+                    {{ formatPrice(unusedPayments.newMoney) }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    {{ unusedPayments.oldMoney }}
+                    {{ formatPrice(unusedPayments.oldMoney) }}
                 </td>
                 <td colspan="5" class="border text-xs border-gray-300 text-md px-1 py-1">
                     -
@@ -111,7 +111,8 @@
                     -
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    {{ unusedPayments.allMoney }}
+                    <!-- {{ formatPrice(unusedPayments.allMoney) }} -->
+                    -
                 </td>
             </tr>
             <tr v-for="user in pivotUsers">

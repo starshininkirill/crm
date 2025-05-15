@@ -86,9 +86,12 @@ class SaleDepartmentController extends Controller
         $allUsers = $departments->whereNull('parent_id')->first()->allUsers($date);
 
         if ($userId && $date) {
-            // try {
+            try {
                 $user = User::find($userId);
-                $users = $selectDepartment->allUsers($date);
+
+                $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
+
+                $users = $selectDepartment->allUsers($findUsersDate);
 
                 if ($userServive->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
                     $error = 'Сотрудник ещё не работал в этот месяц.';
@@ -109,14 +112,13 @@ class SaleDepartmentController extends Controller
                 $generalPlan = $reportService->generalPlan($pivotUsers);
 
                 $unusedPayments = $reportService->unusedPayments($reportInfo);
-
-            // } catch (Exception $e) {
-            //     if (isset($error)) {
-            //         $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            //     } else {
-            //         $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-            //     }
-            // }
+            } catch (Exception $e) {
+                if (isset($error)) {
+                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                } else {
+                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
+                }
+            }
         }
 
         return Inertia::render('Admin/SaleDapartment/UserReport', [
