@@ -3,30 +3,63 @@
 namespace App\Services\SaleDepartmentServices;
 
 use App\DTO\SaleDepartment\ReportDTO;
+use App\Exceptions\Business\BusinessException;
 use App\Factories\SaleDepartment\ReportFactory;
 use App\Models\User;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
+use App\Models\Department;
 use App\Models\Payment;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleDepartmentServices\PlansService;
+use App\Services\UserServices\UserService;
 
 class ReportService
 {
-    protected PlansService $planService;
     protected ReportDTO $fullData;
-    protected ReportFactory $reportFactory;
 
-    public function __construct(ReportDTO $reportInfo)
-    {
-        $this->planService = new PlansService;
-        $this->reportFactory = new ReportFactory;
-        $this->fullData = $reportInfo;
+    public function __construct(
+        protected PlansService $planService,
+        protected ReportFactory $reportFactory,
+        protected UserService $userService,
+    ) {}
+
+    public function generateFullReport(
+        Department $department,
+        User $user,
+        Carbon|null $date,
+    ) {
+        $this->fullData = $this->reportFactory->createFullReport($date, $department);
+
+        $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
+
+        $users = $department->allUsers($findUsersDate);
+
+        if ($this->userService->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
+            throw new BusinessException('Сотрудник ещё не работал в этот месяц.');
+        }
+
+        $report = [
+            'daylyReport' => $this->monthByDayReport($user),
+            'motivationReport' => $this->motivationReport($user),
+            'pivotWeeks' => $this->pivotWeek(),
+            'pivotDaily' => $this->monthByDayReport(),
+        ];
+
+        $pivotUsers = $this->pivotUsers($users);
+
+        return array_merge($report, [
+            'pivotUsers' => $pivotUsers,
+            'generalPlan' => $this->generalPlan($pivotUsers),
+            'unusedPayments' => $this->unusedPayments($this->fullData),
+        ]);
+
+        return $report;
     }
 
-    public function generalPlan($pivotUsers): Collection
+    protected function generalPlan($pivotUsers): Collection
     {
         $res = collect([
             'monthPlan' => 0,
@@ -62,7 +95,7 @@ class ReportService
         return $res;
     }
 
-    public function pivotUsers(Collection $users): Collection
+    protected function pivotUsers(Collection $users): Collection
     {
         $report = collect();
 
@@ -75,7 +108,7 @@ class ReportService
         return $report;
     }
 
-    public function pivotWeek(): Collection
+    protected function pivotWeek(): Collection
     {
         $report = collect();
 
@@ -86,7 +119,7 @@ class ReportService
         return $report;
     }
 
-    public function motivationReport(User $user): Collection
+    protected function motivationReport(User $user): Collection
     {
         $report = collect();
 
@@ -108,7 +141,7 @@ class ReportService
         return $report;
     }
 
-    public function unusedPayments(ReportDTO $fullData)
+    protected function unusedPayments(ReportDTO $fullData)
     {
         $unusedPayments = $fullData->payments->diff($fullData->usedPayments);
 
@@ -124,7 +157,7 @@ class ReportService
     }
 
 
-    public function monthByDayReport(User|null $user = null): Collection
+    protected function monthByDayReport(User|null $user = null): Collection
     {
         if ($this->fullData && $user != null) {
             $reportInfo = $this->reportFactory->createUserSubReport($this->fullData, $user);;

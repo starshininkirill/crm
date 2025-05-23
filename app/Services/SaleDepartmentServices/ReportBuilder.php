@@ -109,7 +109,7 @@ class ReportBuilder
         $subData->workingDays = $mainData->workingDays;
 
         // Устанавливаем пользовательские данные
-        if(!DateHelper::isCurrentMonth($subData->date)){
+        if (!DateHelper::isCurrentMonth($subData->date)) {
             $user = $user->getVersionAtDate($subData->date);
         }
 
@@ -244,7 +244,8 @@ class ReportBuilder
             return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->where('status', Payment::STATUS_CLOSE)
                 ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
-                    $query->where('role', $role);
+                    $query->where('role', $role)
+                        ->whereIn('user_id', $userIds);
                 })
                 ->with([
                     'contract.services.category',
@@ -253,7 +254,7 @@ class ReportBuilder
                 ->get();
         } else {
             $historicalContractIds = ContractUser::getLatestHistoricalRecordsQuery($date)
-                // ->whereIn('new_values->user_id', $userIds)
+                ->whereIn('new_values->user_id', $userIds)
                 ->where('new_values->role', $role)
                 ->pluck('new_values')
                 ->map(function ($data) {

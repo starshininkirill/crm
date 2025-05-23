@@ -20,7 +20,7 @@ class WorkPlanSeeder extends Seeder
         $firstMonth = WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
             'data' => [
-                'goal' =>  150000,
+                'goal' =>  180000,
                 'month' => 1,
             ],
             'department_id' => 1,
@@ -28,7 +28,7 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
             'data' => [
-                'goal' =>  220000,
+                'goal' =>  250000,
                 'month' => 2,
             ],
             'department_id' => 1,
@@ -36,40 +36,8 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::MOUNTH_PLAN,
             'data' => [
-                'goal' =>  290000,
-                'month' => 3,
-            ],
-            'department_id' => 1,
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::MOUNTH_PLAN,
-            'data' => [
-                'goal' =>  300000,
-                'month' => 4,
-            ],
-            'department_id' => 1,
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::MOUNTH_PLAN,
-            'data' => [
-                'goal' =>  300000,
-                'month' => 5,
-            ],
-            'department_id' => 1,
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::MOUNTH_PLAN,
-            'data' => [
-                'goal' =>  300000,
-                'month' => 6,
-            ],
-            'department_id' => 1,
-        ]);
-        WorkPlan::create([
-            'type' => WorkPlan::MOUNTH_PLAN,
-            'data' => [
                 'goal' =>  350000,
-                'month' => 7,
+                'month' => 3,
             ],
             'department_id' => 1,
         ]);

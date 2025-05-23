@@ -21,6 +21,7 @@ use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -69,73 +70,45 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request, UserService $userServive)
+    public function userReport(Request $request, ReportService $reportService)
     {
         $departments = Department::getSaleDepartments();
+        $mainDepartment = $departments->whereNull('parent_id')->first();
 
-        if ($request->filled(['department'])) {
-            $selectDepartment = $departments->find($request->department);
-        } else {
-            $selectDepartment = $departments->whereNull('parent_id')->first();
-        }
+        $selectDepartment = $request->filled(['department']) ?
+            $selectDepartment = $departments->find($request->get('department'))
+            : $mainDepartment;
 
-        $userId = $request->get('user') ?? null;
+        $user = $request->get('user') ? User::find($request->get('user')) : null;
+
         $date = Carbon::parse($request->get('date')) ?? Carbon::now();
         $date = $date->endOfMonth();
 
-        $allUsers = $departments->whereNull('parent_id')->first()->allUsers($date);
-
-        if ($userId && $date) {
-            try {
-                $user = User::find($userId);
-
-                $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
-
-                $users = $selectDepartment->allUsers($findUsersDate);
-
-                if ($userServive->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
-                    $error = 'Сотрудник ещё не работал в этот месяц.';
-                }
-
-                $reportInfo = $this->reportFactory->createFullReport($date, $selectDepartment);
-                $reportService = new ReportService($reportInfo);
-
-                $daylyReport = $reportService->monthByDayReport($user);
-
-                $motivationReport = $reportService->motivationReport($user);
-
-                $pivotWeeks = $reportService->pivotWeek();
-                $pivotDaily = $reportService->monthByDayReport();
-
-                $pivotUsers = $reportService->pivotUsers($users);
-
-                $generalPlan = $reportService->generalPlan($pivotUsers);
-
-                $unusedPayments = $reportService->unusedPayments($reportInfo);
-            } catch (Exception $e) {
-                if (isset($error)) {
-                    $error .= ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                } else {
-                    $error = ' Не хватает данных для расчёта. Проверьте, все ли планы заполненны';
-                }
-            }
+        if ($user && $date) {
+            $report = $reportService->generateFullReport($selectDepartment, $user, $date);
         }
 
         return Inertia::render('Admin/SaleDapartment/UserReport', [
-            'date' => $date ? $date->format('Y-m') : now()->format('Y-m'),
-            'users' => $allUsers,
-            'selectUser' => $user ?? null,
-            'departments' => $departments ?? collect(),
-            'selectedDepartment' => $selectDepartment ?? null,
-            'daylyReport' => $daylyReport ?? collect(),
-            'motivationReport' => $motivationReport ?? collect(),
-            'pivotDaily' => $pivotDaily ?? collect(),
-            'pivotWeeks' => $pivotWeeks ?? collect(),
-            'generalPlan' => $generalPlan ?? collect(),
-            'pivotUsers' => $pivotUsers ?? collect(),
-            'unusedPayments' => $unusedPayments ?? collect(),
+            'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
+            'users' => fn() => $mainDepartment->allUsers($date),
+            'selectUser' => fn() => $user ?? null,
+            'departments' => fn() => $departments ?? collect(),
+            'selectedDepartment' => fn() => $selectDepartment ?? null,
+            'report' => fn() => $report ?? [],
         ]);
     }
+
+    public function usersInDepartment(Request $request)
+    {
+        $date = $request->filled('date') ? Carbon::parse($request->get('date')) : Carbon::now();
+        $date = $date->endOfMonth();
+        $department = Department::getMainSaleDepartment();
+
+        return response()->json([
+            'users' => $department->allUsers($date),
+        ]);
+    }
+
     public function plansSettings(Request $request, WorkPlanService $workPlanService)
     {
         $requestDate = $request->query('date');

@@ -20,13 +20,23 @@ class Department extends Model
     public const SALE_DEPARTMENT = 0;
     public const ADVERTISING_DEPARTMENT = 1;
 
-    protected $fillable = ['name', 'parent_id', 'type'];
+    protected $fillable = [
+        'head',
+        'name',
+        'parent_id',
+        'type'
+    ];
 
     public static function mainDepartments(): Collection
     {
         return Department::whereNull('parent_id')->get();
     }
 
+    public function headUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'head');
+    }
+    
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id');

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
 
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ Route::prefix('sale-department')->group(function () {
 
     Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
     Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
+    Route::get('/users-in-department', [SaleDepartmentController::class, 'usersInDepartment'])->name('admin.sale-department.users-in-department');
 
     Route::get('/plans-settings', [SaleDepartmentController::class, 'plansSettings'])->name('admin.sale-department.plans-settings');
     Route::put('/{workPlan}', [SaleDepartmentController::class, 'updateWorkPlan'])->name('admin.sale-department.work-plan.update');

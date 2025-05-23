@@ -26,10 +26,11 @@
 </template>
 
 <script>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router } from '@inertiajs/vue3';
 import VueSelect from 'vue-select';
 import { route } from 'ziggy-js';
 import VueDatePicker from '@vuepic/vue-datepicker'
+import axios from 'axios';
 
 export default {
     components: {
@@ -54,6 +55,7 @@ export default {
             selectedDepartment: this.initialDepartment || null,
             selectedUser: this.initialUser || null,
             filtredUsers: [],
+            allUsers: this.users,
         };
     },
     watch: {
@@ -66,11 +68,11 @@ export default {
     },
     methods: {
         filterUsers() {
-            if (!this.form.department || this.form.department.parent_id == null) {
-                this.filtredUsers = this.users;
+            if (!this.selectedDepartment || this.selectedDepartment.parent_id == null) {
+                this.filtredUsers = this.allUsers;
             } else {
-                this.filtredUsers = this.users.filter(
-                    user => user.department_id === this.form.department.id
+                this.filtredUsers = this.allUsers.filter(
+                    user => user.department_id === this.selectedDepartment.id
                 );
             }
             this.validateUser();
@@ -87,8 +89,22 @@ export default {
                 // preserveScroll: true,
             });
         },
-        updateDate() {
-            this.submitForm();
+        async updateDate() {
+            try {
+                const response = await axios.get(route('admin.sale-department.users-in-department'), {
+                    params: { date: this.form.date }
+                });
+
+                if (response.data.error) {
+                    alert(response.data.error)
+                } else {
+                    this.allUsers = response.data.users;
+                    this.filterUsers()
+                    this.validateUser();
+                }
+            } catch (error) {
+                console.error('Ошибка при запросе пользователей:', error);
+            }
         },
     }
 };

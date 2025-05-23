@@ -24,9 +24,9 @@ class TestSeeder extends Seeder
         Carbon::setTestNow('2025-01-01 10:26:39');
 
         $user = User::create([
-            'first_name' => 'Мужичок',
+            'first_name' => 'Продажник',
             'last_name' => 'Тестовый',
-            'surname' => 'Иванович',
+            'surname' => 'Тестович',
             'work_phone' => 89999999999,
             'bitrix_id' => 1,
             'email' => 'test@mail.ru',

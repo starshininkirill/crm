@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -40,6 +41,7 @@ class UserSeeder extends Seeder
 
 
         Carbon::setTestNow('2025-01-02 10:26:39');
+
         $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'User',
@@ -51,8 +53,8 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'position_id' => 6,
             'department_id' => 1,
-            'created_at' => '2025-03-02 10:26:39'
         ]);
+
         Carbon::setTestNow();
 
         Carbon::setTestNow('2025-03-02 10:26:39');
@@ -101,6 +103,22 @@ class UserSeeder extends Seeder
         ]);
 
         Carbon::setTestNow();
+        Carbon::setTestNow('2025-01-02 10:26:39');
+
+        $saleHead = User::create([
+            'first_name' => 'Руководитель',
+            'last_name' => 'Sale 1',
+            'surname' => 'продажнивич',
+            'work_phone' => 89999999999,
+            'bitrix_id' => 10,
+            'email' => 'sale-head@mail.ru',
+            'password' => Hash::make('1409199696Rust'),
+            'position_id' => 1,
+            'department_id' => 2,
+        ]);
+
+        $sale1Department = Department::find(2);
+        $sale1Department->head = $saleHead->id;
 
         // foreach ($realManagersNumbers as $number) {
         //     User::create([

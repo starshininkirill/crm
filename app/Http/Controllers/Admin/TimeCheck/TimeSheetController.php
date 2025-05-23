@@ -44,7 +44,7 @@ class TimeSheetController extends Controller
             'status' => $status,
             'date' => $targetDate->format('Y-m'),
             'usersReport' => collect(),
-        ];
+        ]; 
         if ($targetDate <= Carbon::now()->endOfMonth()) {
             $info['usersReport'] =  $service->generateUsersReport($users, $targetDate);
         }
@@ -63,6 +63,8 @@ class TimeSheetController extends Controller
                 : $department->allUsers($targetDate, $relations);
         }
 
+        // TODO
+        // Пофиксить след месяца
         return $isCurrentMonth
             ? User::with($relations)->get()
             : User::getLatestHistoricalRecords($targetDate, $relations);

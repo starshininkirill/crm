@@ -74,6 +74,7 @@ class User extends Authenticatable
     {
         return $query->whereNull('fired_at');
     }
+    
 
     public function scopeFired($query)
     {

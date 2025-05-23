@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('type')->nullable();
+            $table->foreignId('head')->nullable()->constrained('users')->references('id')->onDelete('set null');
             $table->foreignId('parent_id')->nullable()->constrained('departments')->references('id')->onDelete('set null');
-            $table->timestamps(); 
+            $table->timestamps();
         });
     }
 
@@ -28,4 +29,3 @@ return new class extends Migration
         Schema::dropIfExists('departments');
     }
 };
- 
