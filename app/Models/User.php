@@ -93,6 +93,11 @@ class User extends Authenticatable
         );
     }
 
+    public function departmentHead(): HasMany
+    {
+        return $this->hasMany(Department::class, 'head_id');
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'responsible_id');

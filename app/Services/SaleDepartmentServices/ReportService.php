@@ -26,6 +26,64 @@ class ReportService
         protected UserService $userService,
     ) {}
 
+    public function generateHeadsReport(Carbon|null $date)
+    {
+        $departments = Department::saleDepartments()
+            ->historical($date, ['head'])
+            ->whereNotNull('head');
+
+        if ($departments->isEmpty()) return collect();
+
+        $report = $departments->map(function ($department) use ($date) {
+            $reportData = $this->reportFactory->createHeadReportData($date, $department);
+
+            return [
+                'department' => $department,
+                'head' => $department->head,
+                'report' => $this->headReport($department, $date, $reportData),
+            ];
+        });
+
+        return $report;
+    }
+
+    protected function headReport(Department $department, Carbon|null $date, ReportDTO $mainReportData)
+    {
+        $report = collect();
+
+        $users = $department->allUsers($date)->filter(function ($user) use ($department, $mainReportData) {
+            return $user->id != $department->head->id;
+        });
+
+        $userPercentageWeight = 100 / $users->count();
+
+        $report['generalPlan'] = 0;
+        $report['completed'] = 0;
+        $report['users_count'] = $users->count();
+        $report['new_money'] = $mainReportData->newMoney;
+
+        $users->each(function ($user) use ($mainReportData, &$report) {
+            $reportData = $this->reportFactory->createHeadSubReportData($mainReportData, $user);
+
+            $report['generalPlan'] = $report['generalPlan'] + $reportData->monthWorkPlanGoal;
+
+            $monthResult = $this->planService->monthPlan($reportData);
+
+            if ($monthResult['completed']) {
+                $report['completed'] = $report['completed'] + 1;
+            }
+        });
+
+        $report['completed_percent'] = round($report['completed'] * $userPercentageWeight);
+
+        //TODO
+        // Поменять на план
+        $headFullBonus = ($report['new_money'] / 100) * 3.5;
+        $report['headBonus'] = ($headFullBonus / 100) * (100 - $report['completed_percent']);
+
+
+    }
+
     public function generateFullReport(
         Department $department,
         User $user,
@@ -112,9 +170,8 @@ class ReportService
     {
         $report = collect();
 
-        $this->planService->prepareData($this->fullData);
-        $report['weeksPlan'] = $this->planService->weeksReport();
-        $report['totalValues'] = $this->planService->totalValues();
+        $report['weeksPlan'] = $this->planService->weeksReport($this->fullData);
+        $report['totalValues'] = $this->planService->totalValues($this->fullData);
 
         return $report;
     }
@@ -125,18 +182,20 @@ class ReportService
 
         $reportInfo = $this->reportFactory->createUserSubReport($this->fullData, $user);
 
-        $this->planService->prepareData($reportInfo);
-        $report['monthPlan'] = $this->planService->monthPlan();
-        $report['doublePlan'] = $this->planService->doublePlan();
-        $report['bonusPlan'] = $this->planService->bonusPlan();
-        $report['weeksPlan'] = $this->planService->weeksPlan();
-        $report['superPlan'] = $this->planService->superPlan($report['weeksPlan']);
-        $report['totalValues'] = $this->planService->totalValues();
-        $report['b1'] = $this->planService->b1Plan();
-        $report['b2'] = $this->planService->b2Plan();
-        $report['b3'] = $this->planService->b3Plan();
-        $report['b4'] = $this->planService->b4Plan();
-        $report['salary'] = $this->planService->calculateSalary($report);
+        $report['monthPlan'] = $this->planService->monthPlan($reportInfo);
+        $report['doublePlan'] = $this->planService->doublePlan($reportInfo);
+        $report['bonusPlan'] = $this->planService->bonusPlan($reportInfo);
+        $report['weeksPlan'] = $this->planService->weeksPlan($reportInfo);
+        $report['superPlan'] = $this->planService->superPlan($report['weeksPlan'], $reportInfo);
+        $report['totalValues'] = $this->planService->totalValues($reportInfo);
+        $report['b1'] = $this->planService->b1Plan($reportInfo);
+        $report['b2'] = $this->planService->b2Plan($reportInfo);
+        $report['b3'] = $this->planService->b3Plan($reportInfo);
+        $report['b4'] = $this->planService->b4Plan($reportInfo);
+
+        $bonuses = $this->planService->getBonuses();
+        $report['salary'] = $this->planService->calculateSalary($report, $reportInfo, $bonuses);
+
 
         return $report;
     }

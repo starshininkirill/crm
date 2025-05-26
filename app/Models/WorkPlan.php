@@ -29,6 +29,9 @@ class WorkPlan extends Model
     public const PERCENT_LADDER = 'percentLadder';
     public const NO_PERCENTAGE_MONTH = 'noPercentageMonth';
 
+    public const HEAD_B1_PLAN = 'headB1Plan';
+    public const HEAD_B2_PLAN = 'headB2Plan';
+
     public const ALL_PLANS = [
         self::MOUNTH_PLAN,
         self::DOUBLE_PLAN,
@@ -73,5 +76,4 @@ class WorkPlan extends Model
     {
         return $this->BelongsTo(Department::class);
     }
-
 }

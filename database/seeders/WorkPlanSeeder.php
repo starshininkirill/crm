@@ -49,14 +49,14 @@ class WorkPlanSeeder extends Seeder
             'position_id' => 2,
             'department_id' => 1,
         ]);
-        WorkPlan::create([
-            'type' => WorkPlan::MOUNTH_PLAN,
-            'data' => [
-                'goal' =>  430000,
-            ],
-            'department_id' => 1,
-            'position_id' => 3,
-        ]);
+        // WorkPlan::create([
+        //     'type' => WorkPlan::MOUNTH_PLAN,
+        //     'data' => [
+        //         'goal' =>  430000,
+        //     ],
+        //     'department_id' => 1,
+        //     'position_id' => 3,
+        // ]);
 
 
         // Двойной план продажников
@@ -200,6 +200,25 @@ class WorkPlanSeeder extends Seeder
                 'goal' => 3,
             ]
         ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B1_PLAN,
+            'department_id' => 1,
+            'data' => [
+                'goal' => 10,
+                'bonus' => 7500,
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B2_PLAN,
+            'department_id' => 1,
+            'data' => [
+                'goal' => 20,
+                'bonus' => 15000,
+            ],
+        ]);
+
 
         Carbon::setTestNow();
 

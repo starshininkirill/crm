@@ -14,14 +14,11 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use App\Services\CallHistoryService;
-use App\Services\SaleDepartmentServices\ReportInfo;
 use App\Services\SaleDepartmentServices\ReportService;
 use App\Services\SaleDepartmentServices\WorkPlanService;
-use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -72,7 +69,7 @@ class SaleDepartmentController extends Controller
 
     public function userReport(Request $request, ReportService $reportService)
     {
-        $departments = Department::getSaleDepartments();
+        $departments = Department::saleDepartments()->get();
         $mainDepartment = $departments->whereNull('parent_id')->first();
 
         $selectDepartment = $request->filled(['department']) ?
@@ -107,6 +104,15 @@ class SaleDepartmentController extends Controller
         return response()->json([
             'users' => $department->allUsers($date),
         ]);
+    }
+
+    public function heads(Request $request, ReportService $reportService)
+    {
+        $date = $request->filled('date') ? Carbon::parse($request->get('date'))->endOfMonth() : Carbon::now();
+
+        $report = $reportService->generateHeadsReport($date);
+
+        return Inertia::render('Admin/SaleDapartment/Head');
     }
 
     public function plansSettings(Request $request, WorkPlanService $workPlanService)

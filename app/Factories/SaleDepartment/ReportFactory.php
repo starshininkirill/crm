@@ -22,6 +22,16 @@ class ReportFactory
         );
     }
 
+    public function createHeadReportData(Carbon $date, ?Department $department = null): ReportDTO
+    {
+        return $this->builder->buildHeadReport($date, $department);
+    }
+
+    public function createHeadSubReportData(ReportDTO $mainReport, User $user): ReportDTO
+    {
+        return $this->builder->buildHeadSubReport($mainReport, $user);
+    }
+
     public function createFullReport(Carbon $date, ?Department $department = null): ReportDTO
     {
         return $this->builder->buildFullReport($date, $department);

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Department extends Model
 {
@@ -21,7 +22,7 @@ class Department extends Model
     public const ADVERTISING_DEPARTMENT = 1;
 
     protected $fillable = [
-        'head',
+        'head_id',
         'name',
         'parent_id',
         'type'
@@ -32,11 +33,11 @@ class Department extends Model
         return Department::whereNull('parent_id')->get();
     }
 
-    public function headUser(): BelongsTo
+    public function head(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'head');
+        return $this->BelongsTo(User::class, 'head_id');
     }
-    
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id');
@@ -57,10 +58,9 @@ class Department extends Model
         return $this->hasMany(WorkPlan::class);
     }
 
-    public static function getSaleDepartments()
+    public static function saleDepartments()
     {
-        return Department::where('type', Department::SALE_DEPARTMENT)
-            ->get();
+        return Department::where('type', Department::SALE_DEPARTMENT);
     }
 
     public static function getMainSaleDepartment(): ?Department

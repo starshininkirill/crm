@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 
 class WorkPlanService
 {
-    public function actualSalePlans(Carbon|null $date = null, array $relations = []) : Collection
+    public function actualSalePlans(Carbon|null $date = null, array $relations = []): Collection
     {
         $mainDepartmentId = Department::getMainSaleDepartment()->id;
 

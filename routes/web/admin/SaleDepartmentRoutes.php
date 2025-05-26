@@ -8,6 +8,7 @@ Route::prefix('sale-department')->group(function () {
     Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
 
     Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
+    Route::get('/heads', [SaleDepartmentController::class, 'heads'])->name('admin.sale-department.heads');
     Route::get('/user-report', [SaleDepartmentController::class, 'userReport'])->name('admin.sale-department.user-report');
     Route::get('/users-in-department', [SaleDepartmentController::class, 'usersInDepartment'])->name('admin.sale-department.users-in-department');
 

@@ -29,6 +29,7 @@ trait HasHistory
         });
     }
 
+
     public static function getLatestHistoricalRecordsQuery($date, array $withRelations = [])
     {
         return History::whereIn('id', function ($query) use ($date) {
@@ -60,9 +61,19 @@ trait HasHistory
         });
     }
 
+
     public function history(): MorphMany
     {
         return $this->morphMany(History::class, 'historyable');
+    }
+
+    public function scopeHistorical($query, $date = null, array $withRelations = [])
+    {
+        $date = $date ? Carbon::parse($date) : Carbon::now();
+
+        return $query->get()->map(function ($model) use ($date, $withRelations) {
+            return $model->getVersionAtDate($date, $withRelations);
+        })->filter();
     }
 
     public function getVersionAtDate($date, array $withRelations = [])
@@ -77,31 +88,6 @@ trait HasHistory
         }
 
         return self::recreateModelWithRelations($history, $withRelations, $date);
-    }
-
-    protected function isValidRelation($relation)
-    {
-        return method_exists($this, $relation) &&
-            $this->$relation() instanceof Relation;
-    }
-
-    protected function loadHistoricalRelation($model, $relation, $date)
-    {
-        $related = $model->$relation;
-
-        if ($related && method_exists($related, 'getVersionAtDate')) {
-            $model->setRelation(
-                $relation,
-                $related->getVersionAtDate($date)
-            );
-        } elseif (is_iterable($related)) {
-            $collection = $related->map(function ($item) use ($date) {
-                return method_exists($item, 'getVersionAtDate')
-                    ? $item->getVersionAtDate($date)
-                    : $item;
-            });
-            $model->setRelation($relation, $collection);
-        }
     }
 
     protected function recordHistory($action)
@@ -130,6 +116,33 @@ trait HasHistory
 
         return $model;
     }
+
+
+    protected function loadHistoricalRelation($model, $relation, $date)
+    {
+        $related = $model->$relation;
+
+        if ($related && method_exists($related, 'getVersionAtDate')) {
+            $model->setRelation(
+                $relation,
+                $related->getVersionAtDate($date)
+            );
+        } elseif (is_iterable($related)) {
+            $collection = $related->map(function ($item) use ($date) {
+                return method_exists($item, 'getVersionAtDate')
+                    ? $item->getVersionAtDate($date)
+                    : $item;
+            });
+            $model->setRelation($relation, $collection);
+        }
+    }
+
+    protected function isValidRelation($relation)
+    {
+        return method_exists($this, $relation) &&
+            $this->$relation() instanceof Relation;
+    }
+
 
     protected static function recreateFromHistory(History $history)
     {

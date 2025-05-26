@@ -11,6 +11,10 @@
                 :route="'admin.sale-department.user-report'">
                 Отчёт по менеджерам
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.sale-department.heads')"
+                :route="'admin.sale-department.heads'">
+                Руководители
+            </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.sale-department.plans-settings')"
                 :route="'admin.sale-department.plans-settings'">
                 Настройка планов
@@ -30,7 +34,7 @@ import AdminSubnavLink from '../../../Components/AdminSubnavLink.vue';
 
 export default {
     name: "UserLayout",
-    components: {  AdminSubnavLink },
+    components: { AdminSubnavLink },
     layout: AdminLayout,
 };
 </script>

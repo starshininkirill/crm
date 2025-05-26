@@ -25,9 +25,8 @@
                     <h2 v-if="!services.data.length" class="text-xl">Услуг не найдено</h2>
 
                     <div v-if="services.data.length">
-                        <table
-                            class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-                            <thead class="thead  ">
+                        <table class="overflow-hidden table ">
+                            <thead class="thead">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
                                         Услуга

@@ -118,7 +118,9 @@ class UserSeeder extends Seeder
         ]);
 
         $sale1Department = Department::find(2);
-        $sale1Department->head = $saleHead->id;
+
+        $sale1Department->head_id = $saleHead->id;
+        $sale1Department->save();
 
         // foreach ($realManagersNumbers as $number) {
         //     User::create([
