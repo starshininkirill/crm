@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\SaleDepartmentServices;
+namespace App\Services\SaleReports\WorkPlans;
 
 use App\Helpers\DateHelper;
 use App\Models\Department;

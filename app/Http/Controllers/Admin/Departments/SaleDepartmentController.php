@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Classes\T2Api;
-use App\Factories\SaleDepartment\ReportFactory;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;
@@ -14,8 +13,9 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use App\Services\CallHistoryService;
-use App\Services\SaleDepartmentServices\ReportService;
-use App\Services\SaleDepartmentServices\WorkPlanService;
+use App\Services\SaleReports\Generators\DepartmentReportGenerator;
+use App\Services\SaleReports\Generators\HeadsReportGenerator;
+use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,9 +23,6 @@ use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
 {
-    public function __construct(
-        private ReportFactory $reportFactory,
-    ) {}
 
     public function index()
     {
@@ -67,7 +64,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request, ReportService $reportService)
+    public function userReport(Request $request, DepartmentReportGenerator $reportService)
     {
         $departments = Department::saleDepartments()->get();
         $mainDepartment = $departments->whereNull('parent_id')->first();
@@ -106,7 +103,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function heads(Request $request, ReportService $reportService)
+    public function heads(Request $request, HeadsReportGenerator $reportService)
     {
         $date = $request->filled('date') ? Carbon::parse($request->get('date'))->endOfMonth() : Carbon::now();
 

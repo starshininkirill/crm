@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Services\SaleDepartmentServices;
+namespace App\Services\SaleReports\Builders;
 
-use App\DTO\SaleDepartment\ReportDTO;
 use App\Exceptions\Business\BusinessException;
-use App\Factories\SaleDepartment\ReportFactory;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\CallHistory;
@@ -14,12 +12,14 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\WorkingDay;
 use App\Models\WorkPlan;
+use App\Services\SaleReports\DTO\ReportDTO;
+use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 
-class ReportBuilder
+class ReportDTOBuilder
 {
     private UserService $userService;
     private WorkPlanService $workPlanService;
@@ -30,11 +30,6 @@ class ReportBuilder
     ) {
         $this->userService = $userService;
         $this->workPlanService = $workPlanService;
-    }
-
-    public static function factory(): ReportFactory
-    {
-        return new ReportFactory();
     }
 
     public function buildHeadReport(Carbon $date, ?Department $department = null): ReportDTO

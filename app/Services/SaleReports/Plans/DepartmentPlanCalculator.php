@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Services\SaleDepartmentServices;
+namespace App\Services\SaleReports\Plans;
 
-use App\DTO\SaleDepartment\ReportDTO;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\ServiceCategory;
 use App\Models\WorkPlan;
+use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\Collection;
 
-class PlansService
+class DepartmentPlanCalculator
 {
-    private $userService;
-    private $boneses;
+    private $boneses = 0;
 
-    public function __construct()
-    {
-        $this->userService = new UserService;
-    }
+    public function __construct(
+        private UserService $userService
+    ) {}
 
     public function getBonuses()
     {
