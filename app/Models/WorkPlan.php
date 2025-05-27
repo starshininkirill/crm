@@ -31,6 +31,7 @@ class WorkPlan extends Model
 
     public const HEAD_B1_PLAN = 'headB1Plan';
     public const HEAD_B2_PLAN = 'headB2Plan';
+    public const HEAD_PERCENT_BONUS = 'headPercentBonus';
 
     public const ALL_PLANS = [
         self::MOUNTH_PLAN,

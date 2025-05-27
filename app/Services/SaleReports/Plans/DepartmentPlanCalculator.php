@@ -17,7 +17,7 @@ class DepartmentPlanCalculator
     public function __construct(
         private UserService $userService
     ) {}
-
+ 
     public function getBonuses()
     {
         $bonuses = $this->boneses;

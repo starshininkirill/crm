@@ -3,6 +3,7 @@
 namespace App\Services\SaleReports\Generators;
 
 use App\Models\Department;
+use App\Models\WorkPlan;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use Carbon\Carbon;
 use App\Services\SaleReports\DTO\ReportDTO;
@@ -34,8 +35,8 @@ class HeadsReportGenerator extends BaseReportGenerator
             $reportData = $this->reportDTOBuilder->buildHeadReport($date, $department);
 
             return [
-                'department' => $department,
-                'head' => $department->head,
+                'department' => $department->only('name', 'id'),
+                'head' => $department->head->only('id', 'full_name', 'calculated_salary'),
                 'report' => $this->headReport($department, $date, $reportData),
             ];
         });
@@ -43,11 +44,11 @@ class HeadsReportGenerator extends BaseReportGenerator
         return $report;
     }
 
-    protected function headReport(Department $department, Carbon|null $date, ReportDTO $mainReportData)
+    protected function headReport(Department $department, Carbon|null $date, ReportDTO $reportData)
     {
         $report = collect();
 
-        $users = $department->allUsers($date)->filter(function ($user) use ($department, $mainReportData) {
+        $users = $department->allUsers($date)->filter(function ($user) use ($department, $reportData) {
             return $user->id != $department->head->id;
         });
 
@@ -56,10 +57,10 @@ class HeadsReportGenerator extends BaseReportGenerator
         $report['generalPlan'] = 0;
         $report['completed'] = 0;
         $report['usersCount'] = $users->count();
-        $report['newMoney'] = $mainReportData->newMoney;
+        $report['newMoney'] = $reportData->newMoney;
 
-        $users->each(function ($user) use ($mainReportData, &$report) {
-            $reportData = $this->reportDTOBuilder->buildHeadSubReport($mainReportData, $user);
+        $users->each(function ($user) use ($reportData, &$report) {
+            $reportData = $this->reportDTOBuilder->buildHeadSubReport($reportData, $user);
 
             $report['generalPlan'] = $report['generalPlan'] + $reportData->monthWorkPlanGoal;
 
@@ -70,13 +71,28 @@ class HeadsReportGenerator extends BaseReportGenerator
             }
         });
 
-        $report['completed_percent'] = round($report['completed'] * $userPercentageWeight);
+        $report['completedPercent'] = round($report['completed'] * $userPercentageWeight);
 
-        //TODO
-        // Поменять на план
-        $headFullBonus = ($report['newMoney'] / 100) * 3.5;
-        $report['headBonus'] = ($headFullBonus / 100) * (100 - $report['completed_percent']);
 
-        
+        $headBonus = $reportData->workPlans->firstWhere('type', WorkPlan::HEAD_PERCENT_BONUS)?->data['bonus'] ?? 0;
+
+        $headFullBonus = ($report['newMoney'] / 100) * $headBonus;
+        $report['headBonus'] = ($headFullBonus / 100) * (100 - $report['completedPercent']);
+
+
+        $b2 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B2_PLAN);
+
+        if ($b2['completed']) {
+            $report['b1Completed'] = true;
+            $report['b2Completed'] = true;
+            $report['bonus'] = $b2['bonus'];
+        } else {
+            $b1 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B1_PLAN);
+            $report['b2Completed'] = false;
+            $report['b1Completed'] = $b1['completed'] ? true : false;
+            $report['bonus'] = $b1['completed'] ? $b1['bonus'] : 0;
+        }
+
+        return $report;
     }
 }

@@ -219,6 +219,14 @@ class WorkPlanSeeder extends Seeder
             ],
         ]);
 
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_PERCENT_BONUS,
+            'department_id' => 1,
+            'data' => [
+                'bonus' => 3.5,
+            ],
+        ]);
+
 
         Carbon::setTestNow();
 

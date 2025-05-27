@@ -5,8 +5,10 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Руководители отдела продаж</h1>
 
-            <table class="overflow-hidden table ">
-                <thead class="thead">
+            <div v-if="error" class="mb-4 text-xl text-red-400">{{ error }}</div>
+
+            <table v-if="Object.keys(report).length != 0" class="overflow-hidden table ">
+                <thead class="thead border-b">
                     <tr>
                         <th scope="col" class="px-6 py-3 border-x">
                             Отдел
@@ -21,6 +23,9 @@
                             Выполнили план
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
+                            План отдела
+                        </th>
+                        <th scope="col" class="px-6 py-3 border-r">
                             NEW $
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
@@ -29,44 +34,60 @@
                         <th scope="col" class="px-6 py-3 border-r">
                             Б2
                         </th>
-                        <th scope="col" class="px-6 py-3 border-r">
-                            Ставка
+                        <th scope="col" class="px-6 py-3 border-x">
+                            Бонусы
                         </th>
                         <th scope="col" class="px-6 py-3 border-x">
                             Проценты
+                        </th>
+                        <th scope="col" class="px-6 py-3 border-r">
+                            Ставка
                         </th>
                         <th scope="col" class="px-6 py-3 border-x">
                             Итого ЗП
                         </th>
                     </tr>
                 </thead>
-                <!-- <tbody>
-                    <tr v-for="service in services.data" :key="service.id" class="table-row ">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                            {{ service.name }}
+                <tbody>
+                    <tr v-for="row in report" :key="row.head.id" class="table-row ">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap  border-x">
+                            {{ row.department.name }}
                         </th>
-                        <td class="px-6 py-4">
-                            <Link :href="route('admin.service.index', { serviceCategory: service.category.id })">
-                            {{ service.category.name }}
-                            </Link>
+                        <td class="px-6 py-4 border-r">
+                            {{ row.head.full_name }}
                         </td>
-                        <td class="px-6 py-4">
-                            {{ formatPrice(service.price) }}
+                        <td class="px-6 py-4 border-r">
+                            {{ row.report.usersCount }}
                         </td>
-                        <td class="px-6 py-4 text-right">
-                            <Link :href="route('admin.service.edit', { service: service.id })"
-                                class="font-medium text-blue-600  hover:underline">
-                            Редактировать
-                            </Link>
+                        <td class="px-6 py-4 border-r">
+                            {{ row.report.completed }}/{{ row.report.usersCount }} ({{ row.report.completedPercent }}%)
                         </td>
-                        <td class="px-6 py-4 text-right">
-                            <button @click="deleteService(service.id)"
-                                class="font-medium text-red-600  hover:underline">
-                                Удалить
-                            </button>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.report.generalPlan) }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.report.newMoney) }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ row.report.b1Completed ? 'Да' : 'Нет' }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ row.report.b2Completed ? 'Да' : 'Нет' }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.report.bonus) }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.report.headBonus) }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.head.calculated_salary) }}
+                        </td>
+                        <td class="px-6 py-4 border-r">
+                            {{ formatPrice(row.report.headBonus + row.head.calculated_salary + row.report.bonus) }}
                         </td>
                     </tr>
-                </tbody> -->
+                </tbody>
             </table>
         </div>
     </SaleDepartmentLayout>
@@ -75,16 +96,21 @@
 <script>
 import { Head } from '@inertiajs/vue3';
 import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
+import Error from '../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
-        SaleDepartmentLayout
+        SaleDepartmentLayout,
+        Error,
     },
     props: {
-        department: {
+        report: {
             type: Object,
         },
+        error: {
+            type: String,
+        }
     },
 }
 

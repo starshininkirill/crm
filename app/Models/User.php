@@ -52,7 +52,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = [
+        'full_name',
+        'calculated_salary',
+    ];
 
     protected function casts(): array
     {
@@ -74,7 +77,7 @@ class User extends Authenticatable
     {
         return $query->whereNull('fired_at');
     }
-    
+
 
     public function scopeFired($query)
     {
@@ -90,6 +93,13 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn() => $this->first_name . ' ' . $this->last_name,
+        );
+    }
+
+    protected function calculatedSalary(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->getSalary(),
         );
     }
 

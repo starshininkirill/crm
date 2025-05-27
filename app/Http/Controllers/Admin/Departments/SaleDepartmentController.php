@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Departments;
 
 use App\Classes\T2Api;
+use App\Exceptions\Business\InfoException;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaleWorkPlanRequest;
@@ -107,9 +108,16 @@ class SaleDepartmentController extends Controller
     {
         $date = $request->filled('date') ? Carbon::parse($request->get('date'))->endOfMonth() : Carbon::now();
 
-        $report = $reportService->generateHeadsReport($date);
+        try {
+            $report = $reportService->generateHeadsReport($date);
+        } catch (InfoException $except) {
+            $error = $except->getUserMessage();
+        }
 
-        return Inertia::render('Admin/SaleDapartment/Head');
+        return Inertia::render('Admin/SaleDapartment/Head', [
+            'error' => isset($error) ? $error : '',
+            'report' => $report,
+        ]);
     }
 
     public function plansSettings(Request $request, WorkPlanService $workPlanService)
