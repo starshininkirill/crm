@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\TimeCheck\OverworkController;
-use App\Http\Controllers\Admin\TimeCheck\TimeSheetController;
-use App\Http\Controllers\Admin\TimeCheck\TimeCheckController;
+use App\Http\Controllers\Web\Admin\TimeCheck\OverworkController;
+use App\Http\Controllers\Web\Admin\TimeCheck\TimeSheetController;
+use App\Http\Controllers\Web\Admin\TimeCheck\TimeCheckController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('time-check')->group(function () {

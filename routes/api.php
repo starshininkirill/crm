@@ -1,14 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\TestController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\DocumentGenerator\DocumentGeneratorController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::post('/generate-document', [DocumentGeneratorController::class, 'generateDocument'])->name('api.generateDocument');
 
 
-
-Route::post('/register', [RegisterController::class, 'register']);

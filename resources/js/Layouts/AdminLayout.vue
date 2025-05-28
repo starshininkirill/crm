@@ -50,13 +50,13 @@
               Time Check
               </Link>
             </li>
-            <li>
+            <!-- <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
                 :href="route('admin.department.index')">
               Отделы
               </Link>
-            </li>
+            </li> -->
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
@@ -71,6 +71,14 @@
                 :class="{ 'bg-gray-900 text-white': isActive('admin.settings.index') }"
                 :href="route('admin.settings.index')">
               Настройки
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.document-generator.index') }"
+                :href="route('admin.document-generator.index')">
+              Генератор документов
               </Link>
             </li>
 

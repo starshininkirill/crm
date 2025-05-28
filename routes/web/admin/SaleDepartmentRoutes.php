@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Departments\SaleDepartmentController;
+use App\Http\Controllers\Web\Admin\Departments\SaleDepartmentController;
 
 use Illuminate\Support\Facades\Route;
 

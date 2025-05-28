@@ -1,6 +1,6 @@
 <?php
-use App\Http\Controllers\Admin\Service\ServiceCategoryController;
-use App\Http\Controllers\Admin\Service\ServiceController;
+use App\Http\Controllers\Web\Admin\Service\ServiceCategoryController;
+use App\Http\Controllers\Web\Admin\Service\ServiceController;
 
 use Illuminate\Support\Facades\Route;
 

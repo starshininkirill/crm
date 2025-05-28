@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\Organization\DocumentSelectionRuleController;
-use App\Http\Controllers\Admin\Organization\DocumentTemplateController;
-use App\Http\Controllers\Admin\Organization\OrganizationController;
+use App\Http\Controllers\Web\Admin\Organization\DocumentSelectionRuleController;
+use App\Http\Controllers\Web\Admin\Organization\DocumentTemplateController;
+use App\Http\Controllers\Web\Admin\Organization\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
 

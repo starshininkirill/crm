@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Global\TimeCheckController;
-use App\Http\Controllers\Global\OptionController;
+use App\Http\Controllers\Web\Global\TimeCheckController;
+use App\Http\Controllers\Web\Global\OptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {

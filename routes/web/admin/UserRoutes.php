@@ -1,7 +1,7 @@
 <?php 
-use App\Http\Controllers\Admin\User\PositionController;
-use App\Http\Controllers\Admin\User\EmploymentTypeController;
-use App\Http\Controllers\Admin\User\UserController;
+use App\Http\Controllers\Web\Admin\User\PositionController;
+use App\Http\Controllers\Web\Admin\User\EmploymentTypeController;
+use App\Http\Controllers\Web\Admin\User\UserController;
 
 use Illuminate\Support\Facades\Route;
 

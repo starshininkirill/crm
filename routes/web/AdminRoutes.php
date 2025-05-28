@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\MainController;
+use App\Http\Controllers\Web\Admin\MainController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +16,5 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     include __DIR__ . '/admin/DepartmentRoutes.php';
     include __DIR__ . '/admin/SaleDepartmentRoutes.php';
     include __DIR__ . '/admin/SettingRoutes.php';
+    include __DIR__ . '/admin/DocumentGeneratorRoutes.php';
 });

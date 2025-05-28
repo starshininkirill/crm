@@ -1,5 +1,5 @@
 <?php 
-use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Web\Admin\DepartmentController;
 
 use Illuminate\Support\Facades\Route;
 

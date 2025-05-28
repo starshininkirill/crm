@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Lk\ContractGeneratorController;
-use App\Http\Controllers\Lk\MainController;
-use App\Http\Controllers\Lk\ActGeneratorController;
-use App\Http\Controllers\Lk\OverworkController;
-use App\Http\Controllers\Lk\SbpGeneratorController;
+use App\Http\Controllers\Web\Lk\ContractGeneratorController;
+use App\Http\Controllers\Web\Lk\MainController;
+use App\Http\Controllers\Web\Lk\ActGeneratorController;
+use App\Http\Controllers\Web\Lk\OverworkController;
+use App\Http\Controllers\Web\Lk\SbpGeneratorController;
 
 
 use Illuminate\Support\Facades\Route;

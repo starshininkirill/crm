@@ -2,13 +2,16 @@
 
 namespace App\Classes;
 
+use App\Exceptions\Business\BusinessException;
 use App\Models\Client;
 use App\Models\Option;
 use App\Models\Service;
 use App\Helpers\TextFormaterHelper;
+use App\Models\DocumentGeneratorTemplate;
 use App\Models\Organization;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -59,6 +62,57 @@ class DocumentGenerator
     //     return $result;
     // }
 
+    public function generateDocumentFromApi(array $data)
+    {
+
+        if (empty($data)) {
+            throw new BusinessException('Нет данных для генерации документа');
+        }
+
+        $templateId = array_key_exists('template_id', $data) ? $data['template_id'] : null;
+
+        if (!$templateId) {
+            throw new BusinessException('Нет id шаблона документа');
+        }
+
+        $formatedData = $this->formatApiData($data);
+
+        $documentTemplate = DocumentGeneratorTemplate::firstWhere('template_id', $templateId);
+
+        if (!$documentTemplate) {
+            throw new BusinessException('Шаблона с id: ' . $templateId . ' не существует');
+        }
+
+        $filePath = Storage::path('public/' . $documentTemplate->file);
+
+        if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
+            throw new BusinessException('Файла для шаблона документа не существует');
+        }
+
+        $templateProcessor = new TemplateProcessor($filePath);
+
+        foreach ($formatedData as $key => $value) {
+            $templateProcessor->setValue($key, $value);
+        }
+
+        $outputRelativePath = 'generatedDocuments/document.docx';
+
+        $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
+
+        return Storage::url($outputRelativePath);
+    }
+
+    private function formatApiData($data): Collection
+    {
+        return collect($data)->mapWithKeys(function ($value, $key) {
+            $words = collect(explode('_', $key))->map(function ($word) {
+                return ucfirst(strtolower($word));
+            });
+            return [implode('', $words->toArray()) => $value];
+        });
+    }
+
+
     public function generatePaymentDocument(array $data): string
     {
         $organisation = Organization::find($data['organization_id']);
@@ -69,7 +123,7 @@ class DocumentGenerator
         // TODO 
         // Убрать documentTemplates
         $documentTemplate = $organisation->documentTemplates()->first();
-        
+
         if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
             return '';
         }

@@ -1,5 +1,5 @@
 <?php 
-use App\Http\Controllers\admin\SettingsController;
+use App\Http\Controllers\Web\Admin\SettingsController;
 
 use Illuminate\Support\Facades\Route;
 
