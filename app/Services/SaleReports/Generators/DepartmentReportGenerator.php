@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
 use App\Services\UserServices\UserService;
+use Illuminate\Support\Facades\DB;
 
 class DepartmentReportGenerator extends BaseReportGenerator
 {
@@ -32,11 +33,15 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
 
-        $users = $department->allUsers($findUsersDate);
+        $users = $department->allUsers($findUsersDate, ['departmentHead', 'position'])->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        });
 
         if ($this->userService->getFirstWorkingDay($user)->format('Y-m') > $date->format('Y-m')) {
             throw new BusinessException('Сотрудник ещё не работал в этот месяц.');
         }
+
+
 
         $report = [
             'daylyReport' => $this->monthByDayReport($reportData, $user),
@@ -47,7 +52,9 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $pivotUsers = $this->pivotUsers($reportData, $users);
 
-        return array_merge($report, [
+
+
+        $report = array_merge($report, [
             'pivotUsers' => $pivotUsers,
             'generalPlan' => $this->generalPlan($reportData, $pivotUsers),
             'unusedPayments' => $this->unusedPayments($reportData),
@@ -141,13 +148,16 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
     protected function monthByDayReport(ReportDTO $reportData, User|null $user = null): Collection
     {
+
         if ($user != null) {
-            $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportData, $user);;
+            $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportData, $user);
         } else {
             $reportInfo = $reportData;
         }
 
+
         $report = collect();
+
         $newPaymentsGroupedByDate = $this->groupPaymentsByDate(
             $reportInfo,
             optional($reportInfo->newPayments)->isNotEmpty() ? $reportInfo->newPayments : collect()
@@ -170,9 +180,8 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $newPaymentsSum = $dayNewPayments->sum('value');
         $oldPaymentsSum = $dayOldPayments->sum('value');
-
+        
         $serviceCounts = ServiceCountHelper::calculateServiceCountsByPayments($uniqueDayNewPayments);
-
         return [
             'date' => Carbon::parse($day)->format('d.m.y'),
             'newMoney' => $newPaymentsSum,

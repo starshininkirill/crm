@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DateHelper;
 use App\Models\Traits\HasHistory;
 use App\Models\User;
 use App\Models\WorkPlan;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class Department extends Model
 {
@@ -89,15 +91,16 @@ class Department extends Model
 
     public function allUsers(?Carbon $date = null, array $relations = []): SimpleCollection
     {
-        if (!$date) {
-            $users = $this->users;
+        if (!$date || DateHelper::isCurrentMonth($date)) {
+            $users = $this->users->load($relations);
 
-            $this->childDepartments->each(function ($childDepartment) use (&$users) {
-                $users = $users->merge($childDepartment->users);
+            $this->childDepartments->each(function ($childDepartment) use (&$users, $relations) {
+                $users = $users->merge($childDepartment->users->load($relations));
             });
 
             return $users;
         }
+
         $users = $this->getUsersForDate($date, $relations);
 
         $this->childDepartments->each(function ($childDepartment) use (&$users, $date, $relations) {
@@ -110,11 +113,10 @@ class Department extends Model
     protected function getUsersForDate(?Carbon $date = null, array $relations = [],): SimpleCollection
     {
         if ($date) {
-            $allHistoricalUsers = User::getLatestHistoricalRecords($date, array_merge($relations, ['department']));
+            $allHistoricalUsersQuery = User::getLatestHistoricalRecordsQuery($date)
+                ->where('new_values->department_id', $this->id);
 
-            return $allHistoricalUsers->filter(function ($user) {
-                return $user->department_id == $this->id;
-            });
+            return User::recreateFromQuery($allHistoricalUsersQuery, array_merge($relations, ['department']), $date);
         }
 
         return $this->users()->with($relations)->get();

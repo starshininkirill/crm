@@ -18,6 +18,7 @@ use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReportDTOBuilder
 {
@@ -131,6 +132,7 @@ class ReportDTOBuilder
 
         $data->workPlans = $this->workPlanService->actualSalePlans($date, ['serviceCategory']);
 
+
         if ($data->workPlans->isEmpty()) {
             throw new BusinessException('Нет планов для рассчёта');
         }
@@ -171,10 +173,6 @@ class ReportDTOBuilder
         $subData->workPlans = $mainData->workPlans;
         $subData->workingDays = $mainData->workingDays;
 
-        // Устанавливаем пользовательские данные
-        if (!DateHelper::isCurrentMonth($subData->date)) {
-            $user = $user->getVersionAtDate($subData->date);
-        }
 
         $subData->user = $user;
         $subData->callsStat = $mainData->callsStat->get($user->phone) ?? collect();
@@ -191,7 +189,7 @@ class ReportDTOBuilder
         $subData->oldPayments = $subData->payments->where('type', Payment::TYPE_OLD);
 
         $subData->contracts = $mainData->contracts->filter(
-            fn($contract) => $contract->allUsers($subData->date)->contains('id', $user->id)
+            fn($contract) => $contract->users->contains('id', $user->id)
         );
 
         $subData->newMoney = $subData->newPayments->sum('value');
@@ -243,13 +241,14 @@ class ReportDTOBuilder
 
     private function filterPaymentsByUser(ReportDTO $mainData, User $user)
     {
-        return $mainData->payments->filter(
+
+        $test = $mainData->payments->filter(
             function ($payment) use ($user, $mainData) {
                 if (!$payment->contract) {
                     return false;
                 }
 
-                $contractUsers = $payment->contract->allUsers($mainData->date);
+                $contractUsers = $payment->contract->users;
 
                 $userInContract = $contractUsers->contains('id', $user->id);
 
@@ -264,11 +263,14 @@ class ReportDTOBuilder
                 return true;
             }
         );
+
+        return $test;
     }
 
     private function getMonthPlan(Collection $workPlans, ?User $user = null, $date, $mainDepartmentId): ?WorkPlan
     {
         $monthsWorked = $this->userService->getMonthWorked($user, $date);
+
         $userPosition = $user->position;
         $userPositionId = $userPosition?->id;
 
@@ -282,6 +284,7 @@ class ReportDTOBuilder
             if ($monthPlan) return $monthPlan;
         }
 
+
         // Поиск по количеству отработанных месяцев
         $monthPlan = $workPlans->first(
             function ($plan) use ($mainDepartmentId, $monthsWorked) {
@@ -293,6 +296,7 @@ class ReportDTOBuilder
             }
         );
         if ($monthPlan) return $monthPlan;
+
 
         // Возвращаем последний доступный план
         return $workPlans
@@ -316,7 +320,7 @@ class ReportDTOBuilder
                 })
                 ->with([
                     'contract.services.category',
-                    'contract.users'
+                    'contract.users.position'
                 ])
                 ->get();
         } else {
@@ -328,12 +332,13 @@ class ReportDTOBuilder
                     return $data['contract_id'];
                 });
 
+
             $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($date)
                 ->whereBetween('new_values->created_at', [$startOfMonth, $endOfMonth])
                 ->where('new_values->status', Payment::STATUS_CLOSE)
                 ->whereIn('new_values->contract_id', $historicalContractIds);
 
-            return Payment::recreateFromQuery($paymentsHistoryQuery, ['contract.services.category', 'contract.users']);
+            return Payment::recreateFromQuery($paymentsHistoryQuery, ['contract']);
         }
     }
 }

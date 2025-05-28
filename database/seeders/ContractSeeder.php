@@ -19,14 +19,25 @@ class ContractSeeder extends Seeder
      */
     public function run(ContractService $contractService): void
     {
-        Carbon::setTestNow('2025-05-05 10:26:39');
+        Carbon::setTestNow();
+        $startDate = Carbon::now()->subMonths(5);
+        $endDate = Carbon::now();
+
         $services = Service::query()->WhereNotNull('price')->get();
 
         $clients = Client::all();
 
-        $users = Department::getMainSaleDepartment()->allUsers();
+        $users = Department::getMainSaleDepartment()->allUsers($endDate, ['departmentHead'])->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        })->values();
 
         foreach ($clients as $key => $client) {
+
+            $totalDays = $startDate->copy()->diffInDays($endDate); // Количество дней между startDate и endDate
+            $randomDays = rand(0, $totalDays); // Случайное число дней от 0 до totalDays
+            $randomDate = $startDate->copy()->addDays($randomDays);
+            Carbon::setTestNow($randomDate);
+
             $contractData = [
                 'number' => $key + 1,
                 'phone' => '+8-(999)-999-99-99',
@@ -34,22 +45,22 @@ class ContractSeeder extends Seeder
                 'client_id' => $client->id,
             ];
 
-
             $contract = Contract::create($contractData);
 
-
             $contractServices = $services->random(rand(1, 5));
+
             foreach ($contractServices as $service) {
                 $contract->services()->attach($service->id, [
                     'price' => $service->price,
                 ]);
             }
+
             $payments = array_map(function () {
                 return rand(10000, 100000);
             }, range(1, rand(2, 5)));
 
 
-            $this->addPaymentsToContract($contract, $payments);
+            $this->addPaymentsToContract($contract, $payments, $randomDate);
 
             if ($users->count() > 0) {
                 $randomUser = $users->random();
@@ -60,11 +71,10 @@ class ContractSeeder extends Seeder
                         'performers' => [$randomUser->id]
                     ]
                 ];
+                Carbon::setTestNow('2025-01-02 10:26:39');
                 $contractService->attachPerformers($contract, $attachData);
-                // $contract->users()->attach($randomUser->id, ['role' => ContractUser::SALLER]);
             }
         }
-
 
         // TODO
         // Тестовые данные
@@ -75,38 +85,67 @@ class ContractSeeder extends Seeder
         Carbon::setTestNow();
     }
 
-    private function addPaymentsToContract(Contract $contract, array $payments, int $maxPayments = 5)
+    private function addPaymentsToContract(Contract $contract, array $payments, Carbon $startDate)
     {
+        $maxPayments = 5;
         $order = 1;
-        foreach ($payments as $key => $payment) {
-            if ($key == 0) {
-                $statuses = [Payment::STATUS_WAIT, Payment::STATUS_CLOSE];
-                $idx = array_rand($statuses);
-                $status = $statuses[$idx];
-                $status = Payment::STATUS_CLOSE;
-                $created_at = now()->addDays(rand(1, 10));
-                $type = Payment::TYPE_NEW;
-            } elseif ($key == 1) {
-                $status = Payment::STATUS_WAIT;
-                $created_at = null;
-                $created_at = now()->addDays(rand(1, 10));
-                $payment = 5000;
-            } else {
-                $status = Payment::STATUS_WAIT;
-                $created_at = null;
-                $created_at = now()->addDays(rand(1, 10));
+        $lastStatus = null;
+        $currentPaymentDate = clone $startDate;
+
+        // Получаем реальную текущую дату
+        Carbon::setTestNow();
+        $realNow = Carbon::now();
+
+        if ($currentPaymentDate->isToday()) {
+            $currentPaymentDate->addDay();
+        }
+
+        foreach ($payments as $payment) {
+            if ($order > $maxPayments) break;
+
+            if ($currentPaymentDate->greaterThan($realNow)) {
+                break;
             }
 
-            if (!empty($payment) && $order <= $maxPayments) {
+            $type = $currentPaymentDate->month === $startDate->month
+                ? Payment::TYPE_NEW
+                : Payment::TYPE_OLD;
+
+            if ($order === 1) {
+                $status = Payment::STATUS_CLOSE;
+            } else {
+                if ($lastStatus === Payment::STATUS_CLOSE) {
+                    $chance = rand(1, 100);
+                    $status = $chance <= 55 ? Payment::STATUS_CLOSE : Payment::STATUS_WAIT;
+                } else {
+                    $status = Payment::STATUS_WAIT;
+                }
+            }
+
+            if (!empty($payment)) {
+                // Устанавливаем временную дату только перед созданием записи
+                Carbon::setTestNow($currentPaymentDate);
+
                 $contract->payments()->create([
                     'value' => $payment,
                     'status' => $status,
                     'order' => $order,
-                    'created_at' => $created_at,
                     'type' => $type,
                 ]);
+
                 $order++;
+                $lastStatus = $status;
+            }
+
+            // Подготавливаем следующую дату
+            $currentPaymentDate = $currentPaymentDate->copy()->addDays(10);
+
+            if ($currentPaymentDate->isToday()) {
+                $currentPaymentDate->addDay();
             }
         }
+
+        // Сбрасываем тестовую дату после завершения
+        Carbon::setTestNow();
     }
 }

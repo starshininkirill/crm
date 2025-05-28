@@ -86,7 +86,6 @@ class UserService
         $endOfMonth = $targetDate->copy()->endOfMonth();
         $startOfMonth = $targetDate->copy()->startOfMonth();
 
-
         return $users->filter(function ($user) use ($status, $startOfMonth, $endOfMonth) {
             $firedAt = $user->fired_at;
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Client;
 use App\Models\Contract;
+use Carbon\Carbon;
 
 class ClientSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        Client::factory()->count(15)->create();
+        Carbon::setTestNow('2025-01-02 10:26:39');
+        Client::factory()->count(200)->create();
     }
 }

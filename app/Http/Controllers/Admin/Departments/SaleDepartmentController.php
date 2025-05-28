@@ -20,6 +20,7 @@ use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class SaleDepartmentController extends Controller
@@ -83,9 +84,13 @@ class SaleDepartmentController extends Controller
             $report = $reportService->generateFullReport($selectDepartment, $user, $date);
         }
 
+        $allUsers = $mainDepartment->allUsers($date, ['departmentHead'])->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        })->values();
+
         return Inertia::render('Admin/SaleDapartment/UserReport', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
-            'users' => fn() => $mainDepartment->allUsers($date),
+            'users' => fn() => $allUsers,
             'selectUser' => fn() => $user ?? null,
             'departments' => fn() => $departments ?? collect(),
             'selectedDepartment' => fn() => $selectDepartment ?? null,
@@ -99,8 +104,12 @@ class SaleDepartmentController extends Controller
         $date = $date->endOfMonth();
         $department = Department::getMainSaleDepartment();
 
+        $allUsers = $department->allUsers($date, ['departmentHead'])->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        })->values();
+
         return response()->json([
-            'users' => $department->allUsers($date),
+            'users' => $allUsers,
         ]);
     }
 
@@ -117,6 +126,7 @@ class SaleDepartmentController extends Controller
         return Inertia::render('Admin/SaleDapartment/Head', [
             'error' => isset($error) ? $error : '',
             'report' => $report,
+            'date' => $date->format('Y-m'),
         ]);
     }
 

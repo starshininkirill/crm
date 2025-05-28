@@ -12,6 +12,7 @@ use Exception;
 class DateHelper
 {
     protected static $cachedWorkingDays = [];
+    protected static $cachedWorkingMonths = [];
 
     public static function daysInMonth(Carbon $date): Collection
     {
@@ -76,21 +77,32 @@ class DateHelper
 
     public static function getWorkingDaysInMonth(Carbon $date, Collection $workingDays = null): Collection
     {
+        $monthKey = $date->format('Y-m');
+
+        if (isset(self::$cachedWorkingMonths[$monthKey])) {
+            return collect(self::$cachedWorkingMonths[$monthKey]);
+        }
+
         $start = $date->copy()->startOfMonth();
         $end = $date->copy()->endOfMonth();
-        $days = collect();
 
-        if ($workingDays == null) {
-            $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
+        if ($workingDays === null) {
+            $workingDays = WorkingDay::whereYear('date', $start->year)->get();
         }
 
         $period = CarbonPeriod::create($start, $end);
 
+        $days = collect();
+
         foreach ($period as $day) {
+            $dayStr = $day->format('Y-m-d');
             if (self::isWorkingDay($day, $workingDays)) {
-                $days[] = $day->format('Y-m-d');
+                $days[] = $dayStr;
             }
         }
+
+        // Сохраняем результат в отдельный кэш для месяцев
+        self::$cachedWorkingMonths[$monthKey] = $days->all();
 
         return $days;
     }

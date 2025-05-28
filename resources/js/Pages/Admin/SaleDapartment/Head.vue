@@ -5,6 +5,12 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Руководители отдела продаж</h1>
 
+            <div class=" max-w-40 flex flex-col mb-4">
+                <label class="label">Дата</label>
+                <VueDatePicker v-model="modelDate" model-type="yyyy-MM" :auto-apply="true" month-picker locale="ru"
+                    class="h-full" @update:modelValue="changeDate" />
+            </div>
+
             <div v-if="error" class="mb-4 text-xl text-red-400">{{ error }}</div>
 
             <table v-if="Object.keys(report).length != 0" class="overflow-hidden table ">
@@ -94,15 +100,18 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
 import Error from '../../../Components/Error.vue';
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { route } from 'ziggy-js';
 
 export default {
     components: {
         Head,
         SaleDepartmentLayout,
         Error,
+        VueDatePicker,
     },
     props: {
         report: {
@@ -110,8 +119,23 @@ export default {
         },
         error: {
             type: String,
+        },
+        date: {
+            type: String
+        },
+    },
+    data() {
+        return {
+            modelDate: this.date,
         }
     },
+    methods: {
+        changeDate() {
+            router.get(route('admin.sale-department.heads'), {
+                date: this.modelDate,
+            })
+        }
+    }
 }
 
 

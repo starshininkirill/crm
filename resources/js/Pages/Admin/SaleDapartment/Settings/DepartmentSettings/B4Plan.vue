@@ -28,7 +28,7 @@
 <script>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
-import FormInput from '../../../../Components/FormInput.vue';
+import FormInput from '../../../../../Components/FormInput.vue';
 import ServiceSelector from './ServiceSelector.vue';
 
 export default {

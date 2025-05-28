@@ -61,7 +61,6 @@ trait HasHistory
         });
     }
 
-
     public function history(): MorphMany
     {
         return $this->morphMany(History::class, 'historyable');
@@ -121,7 +120,7 @@ trait HasHistory
     protected function loadHistoricalRelation($model, $relation, $date)
     {
         $related = $model->$relation;
-
+        
         if ($related && method_exists($related, 'getVersionAtDate')) {
             $model->setRelation(
                 $relation,

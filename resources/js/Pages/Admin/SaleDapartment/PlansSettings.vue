@@ -16,7 +16,20 @@
 
         <Error />
 
-        <div class="grid grid-cols-3 gap-8 mb-4">
+        <div class="grow w-full border-y mb-6">
+            <div class="flex gap-3">
+                <div @click="isRopActive = false" :class="[{ 'text-white bg-gray-800': !isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer']">
+                    Планы отдела
+                </div>
+                <div @click="isRopActive = true" :class="[{ 'text-white bg-gray-800': isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer']">
+                    Планы РОП
+                </div>
+            </div>
+            <slot />
+        </div>
+
+
+        <div v-if="!isRopActive" class="grid grid-cols-3 gap-8 mb-4">
             <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
             <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
                 :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
@@ -50,6 +63,11 @@
             </div>
 
         </div>
+
+        <div v-if="isRopActive" class="grid grid-cols-3 gap-8 mb-4">
+
+        </div>
+
     </SaleDepartmentLayout>
 </template>
 
@@ -59,13 +77,13 @@ import SaleDepartmentLayout from '../Layouts/SaleDepartmentLayout.vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import FormInput from '../../../Components/FormInput.vue';
-import MonthPlan from './Settings/MonthPlan.vue';
-import UniversalPlan from './Settings/UniversalPlan.vue';
-import B1Plan from './Settings/B1Plan.vue';
-import B2Plan from './Settings/B2Plan.vue';
-import B3Plan from './Settings/B3Plan.vue';
-import B4Plan from './Settings/B4Plan.vue';
-import PercentLadder from './Settings/PercentLadder.vue';
+import MonthPlan from './Settings/DepartmentSettings/MonthPlan.vue';
+import UniversalPlan from './Settings/DepartmentSettings/UniversalPlan.vue';
+import B1Plan from './Settings/DepartmentSettings/B1Plan.vue';
+import B2Plan from './Settings/DepartmentSettings/B2Plan.vue';
+import B3Plan from './Settings/DepartmentSettings/B3Plan.vue';
+import B4Plan from './Settings/DepartmentSettings/B4Plan.vue';
+import PercentLadder from './Settings/DepartmentSettings/PercentLadder.vue';
 import Error from '../../../Components/Error.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
 
@@ -120,7 +138,8 @@ export default {
     },
     data() {
         return {
-            date: this.dateProp
+            date: this.dateProp,
+            isRopActive: false,
         }
     },
     methods: {

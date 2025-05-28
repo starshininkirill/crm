@@ -13,7 +13,6 @@ use App\Services\UserServices\UserService;
 
 class HeadsReportGenerator extends BaseReportGenerator
 {
-
     public function __construct(
         ReportDTOBuilder $reportDTOBuilder,
         UserService $userService,
@@ -77,7 +76,12 @@ class HeadsReportGenerator extends BaseReportGenerator
         $headBonus = $reportData->workPlans->firstWhere('type', WorkPlan::HEAD_PERCENT_BONUS)?->data['bonus'] ?? 0;
 
         $headFullBonus = ($report['newMoney'] / 100) * $headBonus;
-        $report['headBonus'] = ($headFullBonus / 100) * (100 - $report['completedPercent']);
+        if ($report['completedPercent'] > 10) {
+            $report['headBonus'] = ($headFullBonus / 100) * $report['completedPercent'];
+        } else {
+            $minimalPercent = $reportData->workPlans->firstWhere('type', WorkPlan::HEAD_MINIMAL_PERCENT)?->data['bonus'] ?? 0;
+            $report['headBonus'] = ($headFullBonus / 100) * $minimalPercent;
+        }
 
 
         $b2 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B2_PLAN);
