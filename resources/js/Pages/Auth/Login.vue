@@ -20,9 +20,9 @@
             </button>
         </div>
 
-        <div class=" mt-4">
+        <!-- <div class=" mt-4">
             Войти как <span class=" italic font-semibold cursor-pointer" @click="loginSale">sale1@mail.ru</span>
-        </div>
+        </div> -->
     </form>
 </template>
 
