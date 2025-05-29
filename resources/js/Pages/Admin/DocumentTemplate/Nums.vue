@@ -9,7 +9,9 @@
             <form @submit.prevent="submitForm()" class="max-w-80">
                 <FormInput v-model="form.value" type="number" name="value" placeholder="Последнее значение нумератора"
                     label="Последнее значение нумератора" required />
-                <button class="btn mt-3">Изменить</button>
+                <button class="btn mt-3">
+                    Изменить
+                </button>
             </form>
         </div>
     </DocumentTemplateLayout>
@@ -27,12 +29,12 @@ export default {
         FormInput
     },
     props: {
-        option: Object|null,
+        option: Object | null,
     },
     data() {
         let form = useForm({
             'name': 'document_generator_num',
-            'value': this.option.value ?? null,
+            'value': this.option?.value ?? null,
         });
         return {
             form

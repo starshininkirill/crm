@@ -41,7 +41,6 @@
                         <div class="mb-2 font-semibold">
                             Тут будет фильтр
                         </div>
-                        <Error />
                         <table class="w-full table">
                             <thead class="thead border-b">
                                 <tr>

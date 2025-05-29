@@ -14,21 +14,23 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DepartmentSeeder::class,
             PositionSeeder::class,
-            OptionSeeder::class,
+            // OptionSeeder::class,
 
-            EmploymentTypeSeeder::class,
+            // EmploymentTypeSeeder::class,
+            // UserSeeder::class,
+            // ClientSeeder::class,
+            // ServiceSeeder::class,
+            // ContractSeeder::class,
+            // WorkPlanSeeder::class,
+            // OrganizationSeeder::class,
+            // DocumentTemplateSeeder::class,
+            // DocumentSelectionRuleSeeder::class,
+            // CallHistorySeeder::class,
+            // WorkStatusSeeder::class,
+
+            // TestSeeder::class,
+
             UserSeeder::class,
-            ClientSeeder::class,
-            ServiceSeeder::class,
-            ContractSeeder::class,
-            WorkPlanSeeder::class,
-            OrganizationSeeder::class,
-            DocumentTemplateSeeder::class,
-            DocumentSelectionRuleSeeder::class,
-            CallHistorySeeder::class,
-            WorkStatusSeeder::class,
-
-            TestSeeder::class,
         ]);
     }
 }
