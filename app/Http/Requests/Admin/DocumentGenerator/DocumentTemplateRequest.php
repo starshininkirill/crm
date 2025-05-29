@@ -25,7 +25,8 @@ class DocumentTemplateRequest extends FormRequest
         $rules = [];
         if ($this->isMethod('POST')) {
             $rules = array_merge($rules, [
-                'template_id' => 'required|integer',
+                'template_id' => 'required|integer|unique:document_generator_templates,template_id',
+                'name' => 'required|min:3|max:255',
                 'file' => 'required|file',
             ]);
         }
@@ -33,7 +34,11 @@ class DocumentTemplateRequest extends FormRequest
             $documentTemplate = $this->route('documentTemplate');
 
             $rules = array_merge($rules, [
-                'template_id' => 'required|integer',
+                'template_id' => [
+                    'integer',
+                    Rule::unique('document_generator_templates', 'template_id')->ignore($documentTemplate->id),
+                ],
+                'name' => 'required|min:3|max:255',
                 'file' => 'nullable|file',
             ]);
         }

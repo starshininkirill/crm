@@ -10,6 +10,7 @@ class DocumentGeneratorTemplate extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'template_id',
         'file',
     ];

@@ -50,5 +50,9 @@ class OptionSeeder extends Seeder
             'value' => '[9, 10, 11, 12]'
         ]);
 
+        Option::create([
+            'name' => 'document_generator_num',
+            'value' => '1600'
+        ]);
     }
 }

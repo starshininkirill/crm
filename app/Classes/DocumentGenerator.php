@@ -64,6 +64,11 @@ class DocumentGenerator
 
     public function generateDocumentFromApi(array $data)
     {
+        $option = Option::query()->firstWhere('name', 'document_generator_num');
+
+        if (!$option) {
+            throw new BusinessException('Настройте нумератор');
+        }
 
         if (empty($data)) {
             throw new BusinessException('Нет данных для генерации документа');
@@ -89,27 +94,96 @@ class DocumentGenerator
             throw new BusinessException('Файла для шаблона документа не существует');
         }
 
+        $formatedData['DocumentCreateTime'] = Carbon::now()->format('d.m.Y');
+        $formatedData['DocumentNumber'] = $option->value;
+
         $templateProcessor = new TemplateProcessor($filePath);
 
         foreach ($formatedData as $key => $value) {
-            $templateProcessor->setValue($key, $value);
-        }
+            $templateKey = $this->convertToTemplateKey($key);
 
+            if ($this->isBase64Image($value)) {
+                $this->processImage($templateProcessor, $templateKey, $value);
+            } else {
+                $templateProcessor->setValue($templateKey, $value);
+            }
+        }
         $outputRelativePath = 'generatedDocuments/document.docx';
 
         $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
 
+        $option->value = intval($option->value) + 1;
+        $option->save();
+        
         return Storage::url($outputRelativePath);
     }
 
-    private function formatApiData($data): Collection
+    private function formatApiData(array $data): array
     {
-        return collect($data)->mapWithKeys(function ($value, $key) {
-            $words = collect(explode('_', $key))->map(function ($word) {
-                return ucfirst(strtolower($word));
-            });
-            return [implode('', $words->toArray()) => $value];
-        });
+        $result = [];
+        foreach ($data as $key => $value) {
+            $formattedKey = $this->convertToTemplateKey($key);
+            $result[$formattedKey] = $value;
+        }
+        return $result;
+    }
+
+    private function convertToTemplateKey(string $key): string
+    {
+        if (strpos($key, 'UF_CRM_') === 0) {
+            $parts = explode('_', $key);
+            $camelCase = '';
+            foreach ($parts as $part) {
+                $camelCase .= ucfirst(strtolower($part));
+            }
+            return $camelCase;
+        }
+        return $key;
+    }
+
+    private function isBase64Image(string|null $data): bool
+    {
+        if (!$data) {
+            return false;
+        }
+        return strpos($data, 'data:image/') === 0 && strpos($data, 'base64,') !== false;
+    }
+
+    private function processImage(TemplateProcessor $processor, string $key, string $base64): void
+    {
+        $tempImagePath = $this->saveBase64Image($base64);
+
+        try {
+            $processor->setImageValue($key, [
+                'path'    => $tempImagePath,
+                'width'   => 550,
+                'height'  => 400,
+                'ratio'   => true,
+            ]);
+        } finally {
+            if (file_exists($tempImagePath)) {
+                unlink($tempImagePath);
+            }
+        }
+    }
+
+    private function saveBase64Image(string $base64): string
+    {
+        $parts = explode(',', $base64);
+        $imageData = base64_decode($parts[1]);
+
+        $mimeType = explode(';', explode(':', $parts[0])[1])[0];
+        $extension = explode('/', $mimeType)[1];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (!in_array($extension, $allowedExtensions)) {
+            throw new BusinessException('Неподдерживаемый формат изображения');
+        }
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'img_') . '.' . $extension;
+        file_put_contents($tempPath, $imageData);
+
+        return $tempPath;
     }
 
 

@@ -5,7 +5,11 @@
 
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Шаблоны документов</h1>
-            
+
+            <Modal :open="idOpenModal" @close="idOpenModal = false">
+                <EditForm @closeModal="idOpenModal = false" :docuementTemplate="currentTemplate" />
+            </Modal>
+
             <div class="grid grid-cols-3 gap-8">
                 <form @submit.prevent="submitForm" method="POST" enctype="multipart/form-data"
                     class="flex flex-col gap-3">
@@ -14,6 +18,9 @@
                     </div>
 
                     <Error />
+
+                    <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
+                        label="Название шаблона" autocomplete="name" required />
 
                     <FormInput v-model="form.template_id" type="number" name="name" placeholder="id шаблона"
                         label="id шаблона" autocomplete="name" required />
@@ -36,21 +43,24 @@
                         </div>
                         <Error />
                         <table class="w-full table">
-                            <thead class="thead">
+                            <thead class="thead border-b">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3 border-x">
                                         id Шаблона
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3 border-r">
+                                        Название шаблона
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 border-r">
                                         Файл
                                     </th>
-                                    <th scope="col" class="px-6 py-3 ">
+                                    <th scope="col" class="px-6 py-3 border-r ">
                                         Скачать
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-right w-12">
+                                    <th scope="col" class="px-6 py-3 border-r text-right w-12">
                                         Редактировать
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-right w-12">
+                                    <th scope="col" class="px-6 py-3 border-x text-right w-12">
                                         Удалить
                                     </th>
                                 </tr>
@@ -58,27 +68,30 @@
                             <tbody>
                                 <tr v-for="documentTemplate in documentTemplates" :key="documentTemplate.id"
                                     class="table-row">
-                                    <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    <td scope="row"
+                                        class="px-6 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
                                         {{ documentTemplate.template_id }}
                                     </td>
-                                    <td class="px-6 py-4 ">
+                                    <td class="px-6 py-4 border-r ">
+                                        {{ documentTemplate.name }}
+                                    </td>
+                                    <td class="px-6 py-4 border-r ">
                                         {{ documentTemplate.file_name }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 border-r">
                                         <a download class="font-medium text-blue-600  hover:underline"
                                             :href="documentTemplate.file_path">
                                             Скачать
                                         </a>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <!-- <Link
-                                            :href="route('admin.document-template.edit', { documentTemplate: documentTemplate })"
-                                            class="font-medium text-blue-600  hover:underline">
-                                        Редактировать
-                                        </Link> -->
+                                    <td class="px-6 py-4 border-r text-right">
+                                        <div @click="openModal(documentTemplate)"
+                                            class="font-medium text-blue-600  hover:underline cursor-pointer">
+                                            Редактировать
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button @click="deleteDocumentTemplate(documentTemplate.id)"
+                                    <td class="px-6 py-4 border-x text-right">
+                                        <button @click="deleteDocumentTemplate(documentTemplate)"
                                             class="font-medium text-red-600 hover:underline">
                                             Удалить
                                         </button>
@@ -102,6 +115,8 @@ import VueSelect from 'vue-select';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import Error from '../../../Components/Error.vue'
+import Modal from '../../../Components/Modal.vue';
+import EditForm from './Components/EditForm.vue';
 
 export default {
     components: {
@@ -109,18 +124,26 @@ export default {
         FormInput,
         Error,
         DocumentTemplateLayout,
-        VueSelect
+        VueSelect,
+        Modal,
+        EditForm
     },
     props: {
         documentTemplates: {
             type: Array,
         },
     },
+    data() {
+        return {
+            idOpenModal: false,
+            currentTemplate: null,
+        }
+    },
     setup(props) {
-
         const form = useForm({
             'template_id': null,
             'file': null,
+            'name': null,
         });
 
         const submitForm = () => {
@@ -128,6 +151,7 @@ export default {
                 onSuccess: () => {
                     form.template_id = '';
                     form.file = '';
+                    form.name = '';
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {
@@ -152,10 +176,14 @@ export default {
             }
         },
         deleteDocumentTemplate(id) {
-            if (confirm('Вы уверены, что хотите удалить этот Шаблон документа?')) {                
-                router.delete(route('admin.document-generator.destroy', id ));
+            if (confirm('Вы уверены, что хотите удалить этот Шаблон документа?')) {
+                router.delete(route('admin.document-generator.destroy', id));
             }
         },
+        openModal(documentTemplate) {
+            this.idOpenModal = true;
+            this.currentTemplate = documentTemplate;
+        }
     }
 }
 

@@ -4,6 +4,9 @@
             <AdminSubnavLink :href="route('admin.document-generator.index')" :route="'admin.document-generator.index'">
                 Документы
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.document-generator.nums')" :route="'admin.document-generator.nums'">
+                Нумератор
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>
