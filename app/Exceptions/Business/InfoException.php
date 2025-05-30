@@ -10,7 +10,7 @@ class InfoException extends Exception
 
     public function __construct(string $userMessage)
     {
-        parent::__construct("Business exception");
+        parent::__construct("InfoException");
         $this->userMessage = $userMessage;
     }
 

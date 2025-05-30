@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use App\Exceptions\Api\ApiException;
 use App\Exceptions\Business\BusinessException;
 use App\Models\Client;
 use App\Models\Option;
@@ -15,6 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Symfony\Component\HttpFoundation\Response;
 
 class DocumentGenerator
 {
@@ -67,17 +69,23 @@ class DocumentGenerator
         $option = Option::query()->firstWhere('name', 'document_generator_num');
 
         if (!$option) {
-            throw new BusinessException('Настройте нумератор');
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Настройте нумератор');
         }
 
         if (empty($data)) {
-            throw new BusinessException('Нет данных для генерации документа');
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Нет данных для генерации документа');
         }
 
         $templateId = array_key_exists('template_id', $data) ? $data['template_id'] : null;
 
         if (!$templateId) {
-            throw new BusinessException('Нет id шаблона документа');
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан id шаблона документа');
+        }
+
+        $dealNumber = array_key_exists('UF_CRM_1671028945', $data) ? $data['UF_CRM_1671028945'] : null;
+
+        if (!$dealNumber) {
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан Номер договора');
         }
 
         $formatedData = $this->formatApiData($data);
@@ -85,13 +93,13 @@ class DocumentGenerator
         $documentTemplate = DocumentGeneratorTemplate::firstWhere('template_id', $templateId);
 
         if (!$documentTemplate) {
-            throw new BusinessException('Шаблона с id: ' . $templateId . ' не существует');
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Шаблона с id: ' . $templateId . ' не существует');
         }
 
         $filePath = Storage::path('public/' . $documentTemplate->file);
 
         if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
-            throw new BusinessException('Файла для шаблона документа не существует');
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Файла для шаблона документа не существует');
         }
 
         $formatedData['DocumentCreateTime'] = Carbon::now()->format('d.m.Y');
@@ -99,8 +107,11 @@ class DocumentGenerator
 
         $templateProcessor = new TemplateProcessor($filePath);
 
+        $processedKeys = [];
+
         foreach ($formatedData as $key => $value) {
             $templateKey = $this->convertToTemplateKey($key);
+            $processedKeys[] = $templateKey;
 
             if ($this->isBase64Image($value)) {
                 $this->processImage($templateProcessor, $templateKey, $value);
@@ -108,14 +119,31 @@ class DocumentGenerator
                 $templateProcessor->setValue($templateKey, $value);
             }
         }
-        $outputRelativePath = 'generatedDocuments/document.docx';
 
-        $templateProcessor->saveAs(storage_path('app/public/' . $outputRelativePath));
+        $this->removeUnusedVariables($templateProcessor, $processedKeys);
+
+        $mainService = array_key_exists('service_name', $data) ? $data['service_name'] : 'неизвестная_услуга';
+        $documentName = $dealNumber . '-' . $mainService;
+
+        $outputRelativePath = '/generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
+
+        $templateProcessor->saveAs(storage_path('app/public/' .  $outputRelativePath));
 
         $option->value = intval($option->value) + 1;
         $option->save();
-        
+
         return Storage::url($outputRelativePath);
+    }
+
+    private function removeUnusedVariables(TemplateProcessor $processor, array $processedKeys): void
+    {
+        $variables = $processor->getVariables();
+
+        foreach ($variables as $variable) {
+            if (!in_array($variable, $processedKeys)) {
+                $processor->setValue($variable, '');
+            }
+        }
     }
 
     private function formatApiData(array $data): array

@@ -48,24 +48,24 @@ class UserSeeder extends Seeder
             'surname' => 'GRAMPUS',
             'work_phone' => 89999999999,
             'bitrix_id' => 1,
-            'email' => 'grampus@mail.ru',
+            'email' => 'info@grampus-studio.ru',
             'password' => Hash::make('Goofy__741501'),
             'role' => 'admin',
         ]);
 
 
-        $admin = User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 1,
-            'email' => 'admin@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'role' => 'admin',
-            'position_id' => 6,
-            'department_id' => 4,
-        ]);
+        // $admin = User::create([
+        //     'first_name' => 'Admin',
+        //     'last_name' => 'User',
+        //     'surname' => 'Иванович',
+        //     'work_phone' => 89999999999,
+        //     'bitrix_id' => 1,
+        //     'email' => 'admin@mail.ru',
+        //     'password' => Hash::make('1409199696Rust'),
+        //     'role' => 'admin',
+        //     'position_id' => 6,
+        //     'department_id' => 4,
+        // ]);
 
         // Carbon::setTestNow();
 

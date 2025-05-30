@@ -39,6 +39,27 @@ class FileManager
         return $path;
     }
 
+    public function upload(UploadedFile $file, string $folder): string
+    {
+        try {
+            $originalName = $file->getClientOriginalName();
+            $safeName = preg_replace('/[\/\\\?%#&<>+|":*]/', '_', $originalName);
+
+            $i = 1;
+            while (Storage::disk('public')->exists($folder . '/' . $safeName)) {
+                $safeName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                    . '_' . $i . '.' . $file->getClientOriginalExtension();
+                $i++;
+            }
+
+            $path = $file->storeAs($folder, $safeName, 'public');
+        } catch (Exception $e) {
+            $path = '';
+        }
+
+        return $path;
+    }
+
     protected function replaceVariablesInDocx($filePath)
     {
         $zip = new \ZipArchive();
@@ -57,8 +78,12 @@ class FileManager
         }
     }
 
-    protected function generateUniqueFileName($baseName, $extension, $folder, $counter = 1)
+    public function generateUniqueFileName($baseName, $extension, $folder, $counter = 1)
     {
+        $baseName = preg_replace('/[\/\\\?%#&<>+|":*]/', '_', trim($baseName));
+
+        $baseName = str_replace(' ', '_', $baseName);
+
         $name = $baseName . ($counter > 1 ? '_' . $counter : '') . '.' . $extension;
 
         if (Storage::disk('public')->exists($folder . '/' . $name)) {
@@ -83,26 +108,5 @@ class FileManager
     public function checkExist(string $path): bool
     {
         return Storage::disk('public')->exists($path);
-    }
-
-    public function upload(UploadedFile $file, string $folder): string
-    {
-        try {
-            $originalName = $file->getClientOriginalName();
-            $safeName = preg_replace('/[\/\\\?%#&<>+|":*]/', '_', $originalName);
-
-            $i = 1;
-            while (Storage::disk('public')->exists($folder . '/' . $safeName)) {
-                $safeName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
-                    . '_' . $i . '.' . $file->getClientOriginalExtension();
-                $i++;
-            }
-
-            $path = $file->storeAs($folder, $safeName, 'public');
-        } catch (Exception $e) {
-            $path = '';
-        }
-
-        return $path;
     }
 }

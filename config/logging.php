@@ -52,6 +52,20 @@ return [
 
     'channels' => [
 
+        'document_generator' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/DocumentGenerator/Logs/documentGeneratorLog.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
+        'document_generator_errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/DocumentGenerator/Errors/documentGeneratorErrors.log'),
+            'level' => 'error',
+            'days' => 14,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),
@@ -89,7 +103,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
