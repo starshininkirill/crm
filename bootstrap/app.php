@@ -20,9 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            IpWhitelist::class,
+            TrustProxies::class,
+        ]);
+
+        $middleware->api(append: [
             TrustProxies::class,
             IpWhitelist::class,
         ]);
+
         $middleware->alias([
             'role' => CheckRole::class,
         ]);
@@ -47,5 +53,4 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return redirect()->back()->withErrors($e->getUserMessage());
         });
-
     })->create();

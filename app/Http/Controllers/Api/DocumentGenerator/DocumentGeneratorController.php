@@ -34,7 +34,8 @@ class DocumentGeneratorController extends Controller
             ]);
 
             return response()->json([
-                'downloadUrl' => url($downloadUrl),
+                'download_link' => url($downloadUrl),
+                'pdf_download_link' => '',
             ]);
         } catch (ApiException $apiExcept) {
 
