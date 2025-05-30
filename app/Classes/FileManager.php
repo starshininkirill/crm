@@ -68,7 +68,7 @@ class FileManager
                 $filename = $zip->getNameIndex($i);
                 if (strpos($filename, 'word/document.xml') !== false) {
                     $xmlContent = $zip->getFromIndex($i);
-                    $modifiedXml = preg_replace('/\{([^}]+)\}/', '\${\1}', $xmlContent);
+                    $modifiedXml = preg_replace('/(?<!\$)\{([^}]+)\}/', '\${\1}', $xmlContent);
                     $zip->deleteIndex($i);
                     $zip->addFromString($filename, $modifiedXml);
                     break;
