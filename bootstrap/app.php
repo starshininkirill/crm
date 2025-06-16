@@ -20,8 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,
-            // IpWhitelist::class,
             TrustProxies::class,
+            IpWhitelist::class,
         ]);
 
         $middleware->api(append: [
@@ -37,21 +37,21 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // $exceptions->render(function (BusinessException $e, Request $request) {
-        //     return response()->json(400);
-        //     if ($request->wantsJson()) {
-        //         $json = [
-        //             'success' => false,
-        //             'error' => $e->getUserMessage(),
-        //         ];
+        $exceptions->render(function (BusinessException $e, Request $request) {
+            return response()->json(400);
+            if ($request->wantsJson()) {
+                $json = [
+                    'success' => false,
+                    'error' => $e->getUserMessage(),
+                ];
 
-        //         return response()->json($json, 400);
-        //     }
+                return response()->json($json, 400);
+            }
 
-        //     if ($e->isFlash()) {
-        //         return redirect()->back()->with('flash.error', $e->getUserMessage());
-        //     }
+            if ($e->isFlash()) {
+                return redirect()->back()->with('flash.error', $e->getUserMessage());
+            }
 
-        //     return redirect()->back()->withErrors($e->getUserMessage());
-        // });
+            return redirect()->back()->withErrors($e->getUserMessage());
+        });
     })->create();

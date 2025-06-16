@@ -18,7 +18,7 @@
         </label>
 
         <button type="submit" class="btn w-full" data-ripple-light="true">
-            Создать
+            Изменить
         </button>
     </form>
 </template>
