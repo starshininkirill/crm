@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Facades\Log;
+
 class DocumentGenerator
 {
 
@@ -68,23 +70,49 @@ class DocumentGenerator
     {
         $option = Option::query()->firstWhere('name', 'document_generator_num');
 
+        $srmFielst = [];
+        $srmFiles = [];
+        // if (array_key_exists('crm_fields', $data)) {
+        //     $srmFielst = $data['crm_fields'];
+        //     unset($data['crm_fields']);
+        // }
+        // if (array_key_exists('crm_files', $data)) {
+        //     $srmFiles = $data['crm_files'];
+        //     unset($data['crm_files']);
+        // }
+
+        $data = array_merge($srmFielst, $data);
+        $data = array_merge($srmFiles, $data);
+
         if (!$option) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Настройте нумератор',
+            ]);
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Настройте нумератор');
         }
 
         if (empty($data)) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Нет данных для генерации документа',
+            ]);
             throw new ApiException(Response::HTTP_BAD_REQUEST, 'Нет данных для генерации документа');
         }
 
         $templateId = array_key_exists('template_id', $data) ? $data['template_id'] : null;
 
         if (!$templateId) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Не передан id шаблона документа',
+            ]);
             throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан id шаблона документа');
         }
 
         $dealNumber = array_key_exists('UF_CRM_1671028945', $data) ? $data['UF_CRM_1671028945'] : null;
 
         if (!$dealNumber) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Не передан Номер договора',
+            ]);
             throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан Номер договора');
         }
 
@@ -93,12 +121,18 @@ class DocumentGenerator
         $documentTemplate = DocumentGeneratorTemplate::firstWhere('template_id', $templateId);
 
         if (!$documentTemplate) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Шаблона с id: ' . $templateId . ' не существует',
+            ]);
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Шаблона с id: ' . $templateId . ' не существует');
         }
 
         $filePath = Storage::path('public/' . $documentTemplate->file);
 
         if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Файла для шаблона документа не существует',
+            ]);
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Файла для шаблона документа не существует');
         }
 
@@ -125,7 +159,7 @@ class DocumentGenerator
         $mainService = array_key_exists('service_name', $data) ? $data['service_name'] : 'неизвестная_услуга';
         $documentName = $dealNumber . '-' . $mainService;
 
-        $outputRelativePath = '/generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
+        $outputRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
 
         $templateProcessor->saveAs(storage_path('app/public/' .  $outputRelativePath));
 
@@ -205,7 +239,10 @@ class DocumentGenerator
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (!in_array($extension, $allowedExtensions)) {
-            throw new BusinessException('Неподдерживаемый формат изображения');
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Неподдерживаемый формат изображения',
+            ]);
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Неподдерживаемый формат изображения');
         }
 
         $tempPath = tempnam(sys_get_temp_dir(), 'img_') . '.' . $extension;

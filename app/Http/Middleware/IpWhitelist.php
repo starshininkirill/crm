@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IpWhitelist
 {
-    protected $allowedIps = ['127.0.0.1', 'localhost', '5.23.55.43', '192.168.1.146'];
+    protected $allowedIps = ['127.0.0.1', 'localhost', '5.23.55.43', '192.168.1.146', '192.168.0.1'];
     /**
      * Handle an incoming request.
      *

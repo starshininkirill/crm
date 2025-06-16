@@ -23,7 +23,6 @@ class DocumentGeneratorController extends Controller
     {
         $requestData = $request->all();
 
-
         Log::channel('document_generator')->info('Document generation request', $requestData);
 
         try {
@@ -38,7 +37,6 @@ class DocumentGeneratorController extends Controller
                 'pdf_download_link' => '',
             ]);
         } catch (ApiException $apiExcept) {
-
             Log::channel('document_generator_errors')->error('Document generation API error', [
                 'message' => $apiExcept->getUserMessage(),
                 'status' => $apiExcept->getStatus(),
