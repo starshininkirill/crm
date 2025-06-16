@@ -52,7 +52,7 @@ class DocumentGenerator
     //         );
 
     //         $result['link'] = $link;
-    //     } elseif ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) {
+    //     } elseif ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) { 
     //         $bitrixResponse = Bitrix::generatePaymentDocument($data);
 
     //         if(array_key_exists('download_link', $bitrixResponse) && $bitrixResponse['download_link'] != ''){
@@ -70,19 +70,15 @@ class DocumentGenerator
     {
         $option = Option::query()->firstWhere('name', 'document_generator_num');
 
-        $srmFielst = [];
-        $srmFiles = [];
-        // if (array_key_exists('crm_fields', $data)) {
-        //     $srmFielst = $data['crm_fields'];
-        //     unset($data['crm_fields']);
-        // }
-        // if (array_key_exists('crm_files', $data)) {
-        //     $srmFiles = $data['crm_files'];
-        //     unset($data['crm_files']);
-        // }
 
-        $data = array_merge($srmFielst, $data);
-        $data = array_merge($srmFiles, $data);
+        if (array_key_exists('crm_fields', $data)) {
+            $data = array_merge($data, $data['crm_fields']);
+            unset($data['crm_fields']);
+        }
+        if (array_key_exists('crm_files', $data)) {
+            $data = array_merge($data, $data['crm_files']);
+            unset($data['crm_files']);
+        }
 
         if (!$option) {
             Log::channel('document_generator_errors')->error('Document generation API error', [

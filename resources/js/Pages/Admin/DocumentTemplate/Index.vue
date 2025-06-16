@@ -74,7 +74,7 @@
                                     <td class="px-6 py-4 border-r ">
                                         {{ documentTemplate.name }}
                                     </td>
-                                    <td class="px-6 py-4 border-r ">
+                                    <td class="px-6 py-4 border-r break-all">
                                         {{ documentTemplate.file_name }}
                                     </td>
                                     <td class="px-6 py-4 border-r">
