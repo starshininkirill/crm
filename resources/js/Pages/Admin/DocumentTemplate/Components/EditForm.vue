@@ -6,8 +6,8 @@
 
         <Error />
 
-        <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона" label="Название шаблона"
-            autocomplete="name" required />
+        <FormInput v-model="form.result_name" type="text" name="name" placeholder="Разработка сайта"
+            label="Название файла после генерации" autocomplete="name" required />
 
         <FormInput v-model="form.template_id" type="number" name="name" placeholder="id шаблона" label="id шаблона"
             autocomplete="name" required readonly />
@@ -39,9 +39,9 @@ export default {
             type: Object,
         }
     },
-    setup(props, context) { 
+    setup(props, context) {
         const form = useForm({
-            'name': props.docuementTemplate.name,
+            'result_name': props.docuementTemplate.result_name,
             'template_id': props.docuementTemplate.template_id,
             'file': props.docuementTemplate.file,
             '_method': 'PATCH'
@@ -52,13 +52,13 @@ export default {
                 onSuccess: () => {
                     form.template_id = '';
                     form.file = '';
-                    form.name = '';
+                    form.result_name = '';
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {
                         fileInput.value = '';
                     }
-                    context.emit('closeModal'); 
+                    context.emit('closeModal');
                 },
             });
         };
