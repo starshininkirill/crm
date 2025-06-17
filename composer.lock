@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9fa7d9d3586cabe3dd24712ef55f2d9",
+    "content-hash": "16803a52f7161be48517336452c4e6a3",
     "packages": [
         {
             "name": "brick/math",
@@ -2054,6 +2054,55 @@
                 }
             ],
             "time": "2024-06-28T09:40:51+00:00"
+        },
+        {
+            "name": "ncjoes/office-converter",
+            "version": "v1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ncjoes/office-converter.git",
+                "reference": "aca98bafc17bc4b1e89983bc36ea413768b75198"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ncjoes/office-converter/zipball/aca98bafc17bc4b1e89983bc36ea413768b75198",
+                "reference": "aca98bafc17bc4b1e89983bc36ea413768b75198",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "phpstan/phpstan": "^0.12.11",
+                "phpunit/phpunit": "7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NcJoes\\OfficeConverter\\": "src/OfficeConverter"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chukwuemeka Nwobodo",
+                    "email": "jc.nwobodo@gmail.com"
+                }
+            ],
+            "description": "PHP Wrapper for LibreOffice",
+            "keywords": [
+                "converter",
+                "office"
+            ],
+            "support": {
+                "issues": "https://github.com/ncjoes/office-converter/issues",
+                "source": "https://github.com/ncjoes/office-converter/tree/v1.0.7"
+            },
+            "time": "2024-08-23T02:02:38+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -5709,16 +5758,16 @@
         },
         {
             "name": "tightenco/ziggy",
-            "version": "v2.4.2",
+            "version": "v2.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tighten/ziggy.git",
-                "reference": "6612c8c9b2d5b3e74fd67c58c11465df1273f384"
+                "reference": "0b3b521d2c55fbdb04b6721532f7f5f49d32f52b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tighten/ziggy/zipball/6612c8c9b2d5b3e74fd67c58c11465df1273f384",
-                "reference": "6612c8c9b2d5b3e74fd67c58c11465df1273f384",
+                "url": "https://api.github.com/repos/tighten/ziggy/zipball/0b3b521d2c55fbdb04b6721532f7f5f49d32f52b",
+                "reference": "0b3b521d2c55fbdb04b6721532f7f5f49d32f52b",
                 "shasum": ""
             },
             "require": {
@@ -5728,9 +5777,9 @@
             },
             "require-dev": {
                 "laravel/folio": "^1.1",
-                "orchestra/testbench": "^7.0 || ^8.0 || ^9.0",
-                "pestphp/pest": "^2.26",
-                "pestphp/pest-plugin-laravel": "^2.4"
+                "orchestra/testbench": "^7.0 || ^8.0 || ^9.0 || ^10.0",
+                "pestphp/pest": "^2.26|^3.0",
+                "pestphp/pest-plugin-laravel": "^2.4|^3.0"
             },
             "type": "library",
             "extra": {
@@ -5773,9 +5822,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tighten/ziggy/issues",
-                "source": "https://github.com/tighten/ziggy/tree/v2.4.2"
+                "source": "https://github.com/tighten/ziggy/tree/v2.5.3"
             },
-            "time": "2025-01-02T20:06:52+00:00"
+            "time": "2025-05-17T18:15:19+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -9209,12 +9258,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

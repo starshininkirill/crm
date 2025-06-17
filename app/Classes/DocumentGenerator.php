@@ -70,7 +70,6 @@ class DocumentGenerator
     {
         $option = Option::query()->firstWhere('name', 'document_generator_num');
 
-
         if (array_key_exists('crm_fields', $data)) {
             $data = array_merge($data, $data['crm_fields']);
             unset($data['crm_fields']);
@@ -155,14 +154,70 @@ class DocumentGenerator
         $mainService = array_key_exists('service_name', $data) ? $data['service_name'] : 'неизвестная_услуга';
         $documentName = $dealNumber . '-' . $mainService;
 
-        $outputRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
+        $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
+        $docxFullPath = storage_path('app/public/' . $docxRelativePath);
+        $templateProcessor->saveAs($docxFullPath);
 
-        $templateProcessor->saveAs(storage_path('app/public/' .  $outputRelativePath));
+        $pdfRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'pdf', 'generatedDocuments');
+        $pdfFullPath = storage_path('app/public/' . $pdfRelativePath);
+
+        try {
+            $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
+        } catch (\Exception $e) {
+            Log::channel('document_generator_errors')->error('PDF conversion failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
+        }
 
         $option->value = intval($option->value) + 1;
         $option->save();
 
-        return Storage::url($outputRelativePath);
+        return [
+            'download_link' => Storage::url($docxRelativePath),
+            'pdf_download_link' => Storage::url($pdfRelativePath)
+        ];
+    }
+
+    private function convertDocxToPdf(string $docxPath, string $pdfPath): void
+    {
+        // Проверка существования исходного файла
+        if (!file_exists($docxPath)) {
+            throw new \Exception("Исходный DOCX файл не существует: $docxPath");
+        }
+
+        // Команда для конвертации через LibreOffice
+        $command = sprintf(
+            'libreoffice --headless --convert-to pdf --outdir %s %s 2>&1',
+            escapeshellarg(dirname($pdfPath)),
+            escapeshellarg($docxPath)
+        );
+
+        // Выполнение команды
+        exec($command, $output, $returnCode);
+
+        // Проверка успешности выполнения
+        if ($returnCode !== 0) {
+            throw new \Exception(sprintf(
+                "Ошибка конвертации DOCX в PDF (код %d): %s",
+                $returnCode,
+                implode("\n", $output)
+            ));
+        }
+
+        // Формирование ожидаемого пути к PDF
+        $expectedPdfPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
+
+        // Проверка создания PDF
+        if (!file_exists($expectedPdfPath)) {
+            throw new \Exception("PDF файл не был создан: $expectedPdfPath");
+        }
+
+        // Перемещаем файл в указанное место
+        if (!rename($expectedPdfPath, $pdfPath)) {
+            throw new \Exception("Не удалось переместить PDF в указанную директорию");
+        }
     }
 
     private function removeUnusedVariables(TemplateProcessor $processor, array $processedKeys): void
@@ -215,8 +270,8 @@ class DocumentGenerator
             $processor->setImageValue($key, [
                 'path'    => $tempImagePath,
                 'width'   => 550,
-                'height'  => 400,
-                'ratio'   => true,
+                'height'  => 335,
+                'ratio'   => false,
             ]);
         } finally {
             if (file_exists($tempImagePath)) {

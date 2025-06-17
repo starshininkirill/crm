@@ -32,10 +32,7 @@ class DocumentGeneratorController extends Controller
                 'downloadUrl' => $downloadUrl
             ]);
 
-            return response()->json([
-                'download_link' => url($downloadUrl),
-                'pdf_download_link' => '',
-            ]);
+            return response()->json($downloadUrl);
         } catch (ApiException $apiExcept) {
             Log::channel('document_generator_errors')->error('Document generation API error', [
                 'message' => $apiExcept->getUserMessage(),
@@ -49,7 +46,6 @@ class DocumentGeneratorController extends Controller
                 'message' => $apiExcept->getUserMessage()
             ], $apiExcept->getStatus());
         } catch (Exception $e) {
-
             Log::channel('document_generator_errors')->error('Unknown document generation error', [
                 'message' => $e->getMessage(),
                 'exception' => get_class($e),
