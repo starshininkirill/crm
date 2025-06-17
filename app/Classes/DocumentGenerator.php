@@ -175,8 +175,8 @@ class DocumentGenerator
         $option->save();
 
         return [
-            'download_link' => Storage::url($docxRelativePath),
-            'pdf_download_link' => Storage::url($pdfRelativePath)
+            'download_link' => url(Storage::url($docxRelativePath)),
+            'pdf_download_link' => url(Storage::url($pdfRelativePath))
         ];
     }
 
