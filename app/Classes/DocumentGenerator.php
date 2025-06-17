@@ -255,9 +255,9 @@ class DocumentGenerator
         return $key;
     }
 
-    private function isBase64Image(string|null $data): bool
+    private function isBase64Image($data): bool
     {
-        if (!$data) {
+        if (!$data || is_array($data) || !is_string($data)) {
             return false;
         }
         return strpos($data, 'data:image/') === 0 && strpos($data, 'base64,') !== false;
