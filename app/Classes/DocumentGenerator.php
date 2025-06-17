@@ -19,6 +19,8 @@ use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\Shared\Html;
 
 class DocumentGenerator
 {
@@ -77,6 +79,9 @@ class DocumentGenerator
         if (array_key_exists('crm_files', $data)) {
             $data = array_merge($data, $data['crm_files']);
             unset($data['crm_files']);
+        }
+        if (array_key_exists('deal_meta', $data)) {
+            unset($data['deal_meta']);
         }
 
         if (!$option) {
@@ -139,16 +144,16 @@ class DocumentGenerator
         $processedKeys = [];
 
         foreach ($formatedData as $key => $value) {
-            if(is_array($value)){
-                continue;
-            }
             $templateKey = $this->convertToTemplateKey($key);
             $processedKeys[] = $templateKey;
 
             if ($this->isBase64Image($value)) {
                 $this->processImage($templateProcessor, $templateKey, $value);
             } else {
-                $templateProcessor->setValue($templateKey, $value);
+                $textRun = new TextRun();
+                Html::addHtml($textRun, $value);
+
+                $template->setComplexValue($key, $textRun);
             }
         }
 
