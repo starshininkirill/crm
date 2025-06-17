@@ -61,7 +61,7 @@ class DocumentGeneratorController extends Controller
     {
         $validated = $request->validated();
 
-        $documentTemplate->name = $validated['name'];
+        $documentTemplate->result_name = $validated['result_name'];
         $documentTemplate->template_id = $validated['template_id'];
 
         if ($request->hasFile('file')) {
