@@ -152,7 +152,7 @@ class DocumentGenerator
         $this->removeUnusedVariables($templateProcessor, $processedKeys);
 
         $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
-        $documentName = $dealNumber . '-' . $resultName;
+        $documentName = $resultName . '_по_договору№' . $dealNumber;
 
         $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
         $docxFullPath = storage_path('app/public/' . $docxRelativePath);

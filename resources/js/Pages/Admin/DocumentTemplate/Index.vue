@@ -19,9 +19,20 @@
 
                     <Error />
 
-                    <FormInput v-model="form.result_name" type="text" name="name"
-                        placeholder="Название файла после генерации" label="Название файла после генерации"
-                        autocomplete="name" required />
+                    <!-- Добавленные строки для быстрого заполнения -->
+                    <div class="flex flex-col gap-2">
+                        <div class="text-sm font-medium text-gray-900">Быстрый выбор:</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span v-for="template in quickTemplates" :key="template"
+                                @click="form.result_name = template"
+                                class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer text-sm">
+                                {{ template }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <FormInput v-model="form.result_name" type="text" name="name" placeholder="Разработка сайта"
+                        label="Название файла после генерации" autocomplete="name" required />
 
                     <FormInput v-model="form.template_id" type="number" name="name" placeholder="id шаблона"
                         label="id шаблона" autocomplete="name" required />
@@ -120,6 +131,7 @@ import Error from '../../../Components/Error.vue'
 import Modal from '../../../Components/Modal.vue';
 import EditForm from './Components/EditForm.vue';
 import Pagination from '../../../Components/Pagination.vue';
+
 export default {
     components: {
         Head,
@@ -145,6 +157,11 @@ export default {
             idOpenModal: false,
             currentTemplate: null,
             search: this.filters.template_id || '',
+            quickTemplates: [
+                "Разработка сайта",
+                "Настройка контекстной рекламы",
+                "SEO оптимизация"
+            ]
         }
     },
     setup(props) {
@@ -217,6 +234,4 @@ export default {
         }
     },
 }
-
-
 </script>
