@@ -151,8 +151,8 @@ class DocumentGenerator
 
         $this->removeUnusedVariables($templateProcessor, $processedKeys);
 
-        $mainService = array_key_exists('service_name', $data) ? $data['service_name'] : 'неизвестная_услуга';
-        $documentName = $dealNumber . '-' . $mainService;
+        $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
+        $documentName = $dealNumber . '-' . $resultName;
 
         $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
         $docxFullPath = storage_path('app/public/' . $docxRelativePath);
@@ -161,22 +161,23 @@ class DocumentGenerator
         $pdfRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'pdf', 'generatedDocuments');
         $pdfFullPath = storage_path('app/public/' . $pdfRelativePath);
 
-        try {
-            $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
-        } catch (\Exception $e) {
-            Log::channel('document_generator_errors')->error('PDF conversion failed', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
-        }
+        // try {
+        //     $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
+        // } catch (\Exception $e) {
+        //     Log::channel('document_generator_errors')->error('PDF conversion failed', [
+        //         'message' => $e->getMessage(),
+        //         'trace' => $e->getTraceAsString()
+        //     ]);
+        //     throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
+        // }
 
         $option->value = intval($option->value) + 1;
         $option->save();
 
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
-            'pdf_download_link' => url(Storage::url($pdfRelativePath))
+            'pdf_download_link' => '',
+            // 'pdf_download_link' => url(Storage::url($pdfRelativePath))
         ];
     }
 

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class DocumentGeneratorController extends Controller
 {
 
-    public function test()
+    public function test() 
     {
         return response()->json([
             'message' => 'Доброе утро страна!',

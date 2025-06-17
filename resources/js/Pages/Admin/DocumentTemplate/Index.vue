@@ -19,8 +19,9 @@
 
                     <Error />
 
-                    <FormInput v-model="form.name" type="text" name="name" placeholder="Название шаблона"
-                        label="Название шаблона" autocomplete="name" required />
+                    <FormInput v-model="form.result_name" type="text" name="name"
+                        placeholder="Название файла после генерации" label="Название файла после генерации"
+                        autocomplete="name" required />
 
                     <FormInput v-model="form.template_id" type="number" name="name" placeholder="id шаблона"
                         label="id шаблона" autocomplete="name" required />
@@ -36,11 +37,11 @@
                     </button>
                 </form>
                 <div class="col-span-2">
-                    <h2 v-if="!documentTemplates.length" class="text-xl">Шаблонов документов не найдено</h2>
-                    <div v-if="documentTemplates.length" class="relative">
-                        <div class="mb-2 font-semibold">
-                            Тут будет фильтр
-                        </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <input v-model="search" type="text" class="input max-w-[300px]" placeholder="Поиск...">
+                    </div>
+                    <h2 v-if="!documentTemplates.data.length" class="text-xl">Шаблонов документов не найдено</h2>
+                    <div v-if="documentTemplates.data.length" class="relative">
                         <table class="w-full table">
                             <thead class="thead border-b">
                                 <tr>
@@ -48,7 +49,7 @@
                                         id Шаблона
                                     </th>
                                     <th scope="col" class="px-6 py-3 border-r">
-                                        Название шаблона
+                                        Название файла после генерации
                                     </th>
                                     <th scope="col" class="px-6 py-3 border-r">
                                         Файл
@@ -65,14 +66,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="documentTemplate in documentTemplates" :key="documentTemplate.id"
+                                <tr v-for="documentTemplate in documentTemplates.data" :key="documentTemplate.id"
                                     class="table-row">
                                     <td scope="row"
                                         class="px-6 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
                                         {{ documentTemplate.template_id }}
                                     </td>
                                     <td class="px-6 py-4 border-r ">
-                                        {{ documentTemplate.name }}
+                                        {{ documentTemplate.result_name }}
                                     </td>
                                     <td class="px-6 py-4 border-r break-all">
                                         {{ documentTemplate.file_name }}
@@ -98,6 +99,8 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <Pagination :links="documentTemplates.links" />
                     </div>
                 </div>
             </div>
@@ -116,7 +119,7 @@ import { router } from '@inertiajs/vue3';
 import Error from '../../../Components/Error.vue'
 import Modal from '../../../Components/Modal.vue';
 import EditForm from './Components/EditForm.vue';
-
+import Pagination from '../../../Components/Pagination.vue';
 export default {
     components: {
         Head,
@@ -125,24 +128,30 @@ export default {
         DocumentTemplateLayout,
         VueSelect,
         Modal,
-        EditForm
+        EditForm,
+        Pagination
     },
     props: {
         documentTemplates: {
-            type: Array,
+            type: Object,
         },
+        filters: {
+            type: Object,
+            default: () => ({})
+        }
     },
     data() {
         return {
             idOpenModal: false,
             currentTemplate: null,
+            search: this.filters.template_id || '',
         }
     },
     setup(props) {
         const form = useForm({
             'template_id': null,
             'file': null,
-            'name': null,
+            'result_name': null,
         });
 
         const submitForm = () => {
@@ -150,7 +159,7 @@ export default {
                 onSuccess: () => {
                     form.template_id = '';
                     form.file = '';
-                    form.name = '';
+                    form.result_name = '';
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {
@@ -182,8 +191,31 @@ export default {
         openModal(documentTemplate) {
             this.idOpenModal = true;
             this.currentTemplate = documentTemplate;
+        },
+        updateDocuments() {
+            const params = {};
+            if (this.search !== null) params.template_id = this.search;
+
+            router.get(route('admin.document-generator.index'), params, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        },
+        handleSearchInput() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.updateDocuments();
+            }, 300);
+        },
+    },
+    watch: {
+        search(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.handleSearchInput();
+            }
         }
-    }
+    },
 }
 
 

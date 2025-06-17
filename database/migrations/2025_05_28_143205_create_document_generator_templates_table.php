@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('document_generator_templates', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('result_name');
             $table->bigInteger('template_id')->unique();
             $table->string('file');
         });

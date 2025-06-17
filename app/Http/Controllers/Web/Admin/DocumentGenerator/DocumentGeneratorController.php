@@ -4,30 +4,35 @@ namespace App\Http\Controllers\Web\Admin\DocumentGenerator;
 
 use App\Classes\FileManager;
 use App\Http\Controllers\Controller;
+use App\Http\Filters\Models\DocumentTemplateFilter;
 use App\Http\Requests\Admin\DocumentGenerator\DocumentTemplateRequest;
 use App\Models\DocumentGeneratorTemplate;
 use App\Models\Option;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class DocumentGeneratorController extends Controller
 {
-    public function index()
+    public function index(DocumentTemplateFilter $filter,Request $request )
     {
-        $documentTemplates = DocumentGeneratorTemplate::all();
-
-        $documentTemplates = $documentTemplates->map(function ($document) {
-            return [
-                'id' => $document->id,
-                'name' => $document->name,
-                'template_id' => $document->template_id,
-                'file_path' => Storage::url($document->file),
-                'file_name' => basename($document->file),
-            ];
-        });
+        $documentTemplates = DocumentGeneratorTemplate::filter($filter)
+            ->orderBy('template_id')
+            ->paginate(30)
+            ->withQueryString()
+            ->through(function ($document) {
+                return [
+                    'id' => $document->id,
+                    'result_name' => $document->result_name,
+                    'template_id' => $document->template_id,
+                    'file_path' => Storage::url($document->file),
+                    'file_name' => basename($document->file),
+                ];
+            });
 
         return Inertia::render('Admin/DocumentTemplate/Index', [
             'documentTemplates' => $documentTemplates,
+            'filters' => $request->all(),
         ]);
     }
 
@@ -45,7 +50,7 @@ class DocumentGeneratorController extends Controller
 
         DocumentGeneratorTemplate::create([
             'template_id' => $validated['template_id'],
-            'name' => $validated['name'],
+            'result_name' => $validated['result_name'],
             'file' => $path,
         ]);
 
