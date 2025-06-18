@@ -63,6 +63,10 @@ class DocumentGenerator
         $dealNumber = array_key_exists('UF_CRM_1671028945', $data) ? $data['UF_CRM_1671028945'] : null;
 
         if (!$dealNumber) {
+            $dealNumber = array_key_exists('deal_number', $data) ? $data['deal_number'] : null;
+        }
+
+        if (!$dealNumber) {
             Log::channel('document_generator_errors')->error('Document generation API error', [
                 'message' => 'Не передан Номер договора',
             ]);
