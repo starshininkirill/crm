@@ -101,7 +101,7 @@ class DocumentGenerator
         $processedKeys = [];
 
         foreach ($formatedData as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 continue;
             }
             $templateKey = $this->convertToTemplateKey($key);
@@ -131,23 +131,26 @@ class DocumentGenerator
         $pdfRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'pdf', 'generatedDocuments');
         $pdfFullPath = storage_path('app/public/' . $pdfRelativePath);
 
-        // try {
-        //     $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
-        // } catch (\Exception $e) {
-        //     Log::channel('document_generator_errors')->error('PDF conversion failed', [
-        //         'message' => $e->getMessage(),
-        //         'trace' => $e->getTraceAsString()
-        //     ]);
-        //     throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
-        // }
+        $withPdf = array_key_exists('with_pdf', $data) ? boolval($data['with_pdf']) : false;
+
+        if ($withPdf) {
+            try {
+                $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
+            } catch (\Exception $e) {
+                Log::channel('document_generator_errors')->error('PDF conversion failed', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
+            }
+        }
 
         $option->value = intval($option->value) + 1;
         $option->save();
 
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
-            'pdf_download_link' => '',
-            // 'pdf_download_link' => url(Storage::url($pdfRelativePath))
+            'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
         ];
     }
 
