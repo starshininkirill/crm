@@ -19,7 +19,7 @@ class LoginController extends Controller
     {
         $user_data = $request->only('email', 'password');
 
-        if (Auth::attempt($user_data)) {
+        if (Auth::attempt($user_data, true)) {
             $request->session()->regenerate();
 
             return redirect()->route('home');

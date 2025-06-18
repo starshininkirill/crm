@@ -3,24 +3,16 @@
 namespace App\Classes;
 
 use App\Exceptions\Api\ApiException;
-use App\Exceptions\Business\BusinessException;
-use App\Models\Client;
 use App\Models\Option;
-use App\Models\Service;
-use App\Helpers\TextFormaterHelper;
 use App\Models\DocumentGeneratorTemplate;
 use App\Models\Organization;
-use App\Models\ServiceCategory;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\Element\TextRun;
-use PhpOffice\PhpWord\Shared\Html;
 
 class DocumentGenerator
 {
@@ -28,45 +20,6 @@ class DocumentGenerator
     public function __construct(
         protected FileManager $fileManager
     ) {}
-    // public static function generatePaymentDocument(array $data)
-    // {
-    //     $result = [
-    //         'link' => '',
-    //         'download_link' => '',
-    //         'pdf_download_link' => '',
-    //     ];
-
-    //     if ($data['client_type'] == Client::TYPE_INDIVIDUAL) {
-    //         $paymentDirection = $data['payment_direction'];
-
-    //         if ($paymentDirection == 0) {
-    //             $terminal = Organization::where('nds', Organization::WITH_NDS)->first()->terminal;
-    //         } else {
-    //             $terminal = 1;
-    //         }
-
-    //         $link = self::generatePaymentLink(
-    //             $data['amount_summ'],
-    //             $data['client_fio'],
-    //             $data['number'],
-    //             $data['phone'],
-    //             $terminal
-    //         );
-
-    //         $result['link'] = $link;
-    //     } elseif ($data['client_type'] == Client::TYPE_LEGAL_ENTITY) { 
-    //         $bitrixResponse = Bitrix::generatePaymentDocument($data);
-
-    //         if(array_key_exists('download_link', $bitrixResponse) && $bitrixResponse['download_link'] != ''){
-    //             $result['download_link'] = $bitrixResponse['download_link'];
-    //         }
-    //         if(array_key_exists('pdf_download_link', $bitrixResponse) && $bitrixResponse['pdf_download_link'] != ''){
-    //             $result['pdf_download_link'] = $bitrixResponse['pdf_download_link'];
-    //         }
-    //     }
-
-    //     return $result;
-    // }
 
     public function generateDocumentFromApi(array $data)
     {
@@ -150,12 +103,14 @@ class DocumentGenerator
             if ($this->isBase64Image($value)) {
                 $this->processImage($templateProcessor, $templateKey, $value);
             } else {
-                $textRun = new TextRun();
-                Html::addHtml($textRun, $value);
-
-                $template->setComplexValue($key, $textRun);
+                if ($templateKey == 'UfCrm1671029036' && $value != '') {
+                    $this->insertFormattedHtml($templateProcessor, $templateKey, $value);
+                } else {
+                    $templateProcessor->setValue($templateKey, $value);
+                }
             }
         }
+
 
         $this->removeUnusedVariables($templateProcessor, $processedKeys);
 
@@ -188,6 +143,54 @@ class DocumentGenerator
             // 'pdf_download_link' => url(Storage::url($pdfRelativePath))
         ];
     }
+
+    private function insertFormattedHtml(TemplateProcessor $templateProcessor, string $placeholder, string $html)
+    {
+        // Удаляем <p>, преобразуем <br> в переносы строк, обрабатываем <strong>
+        $doc = new \DOMDocument();
+        // Для загрузки HTML без ошибок
+        libxml_use_internal_errors(true);
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+        libxml_clear_errors();
+
+        $body = $doc->getElementsByTagName('body')->item(0);
+
+        $textRun = new TextRun();
+
+        // Рекурсивно обходим DOM и строим текст с форматированием
+        $this->parseNode($body, $textRun);
+
+        // Заменяем в шаблоне сложным блоком
+        $templateProcessor->setComplexBlock($placeholder, $textRun);
+    }
+
+    private function parseNode(\DOMNode $node, TextRun $textRun)
+    {
+        foreach ($node->childNodes as $child) {
+            if ($child->nodeType == XML_TEXT_NODE) {
+                // Обычный текст
+                $textRun->addText($child->textContent, ['name' => 'Times New Roman', 'size' => 10]);
+            } elseif ($child->nodeType == XML_ELEMENT_NODE) {
+                $tag = strtolower($child->nodeName);
+
+                if ($tag === 'strong' || $tag === 'b') {
+                    // Добавляем жирный текст
+                    $textRun->addText($child->textContent, ['bold' => true, 'name' => 'Times New Roman', 'size' => 10]);
+                } elseif ($tag === 'br') {
+                    // Перенос строки
+                    $textRun->addTextBreak();
+                } elseif ($tag === 'p') {
+                    // Параграф: рекурсивно обрабатываем содержимое и добавляем перенос в конце
+                    $this->parseNode($child, $textRun);
+                    $textRun->addTextBreak();
+                } else {
+                    // Другие теги: рекурсивно
+                    $this->parseNode($child, $textRun);
+                }
+            }
+        }
+    }
+
 
     private function convertDocxToPdf(string $docxPath, string $pdfPath): void
     {
