@@ -101,6 +101,9 @@ class DocumentGenerator
         $processedKeys = [];
 
         foreach ($formatedData as $key => $value) {
+            if(is_array($value)){
+                continue;
+            }
             $templateKey = $this->convertToTemplateKey($key);
             $processedKeys[] = $templateKey;
 
