@@ -228,7 +228,7 @@ class DocumentGenerator
         $dealNumber = $this->getDealNumber($data);
         $documentType = $this->getDocumentType($data);
         $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
-        $documentName = $resultName . '_по_договору№' . $dealNumber;
+        $documentName = $resultName . ' по договору№' . $dealNumber;
 
         if ($documentType == GeneratedDocument::TYPE_ACT) {
             $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
