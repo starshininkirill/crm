@@ -11,7 +11,7 @@
                     <VueSelect v-model="selectedType" :options="typeOptions" :reduce="type => type.id" label="name"
                         class="full-vue-select max-w-[200px] w-full" />
                     <input v-model="search" type="text" class="input max-w-[300px]" placeholder="Поиск...">
-                    <VueDatePicker v-model="selectedDate" class="w-[200px] ml-auto" :auto-apply="true"
+                    <VueDatePicker v-model="selectedDate" class="max-w-[200px] w-full ml-auto" :auto-apply="true"
                         format="yyyy-MM-dd" model-type="yyyy-MM-dd" placeholder="Дата" locale="ru"
                         @update:model-value="updateDocuments" />
                 </div>
