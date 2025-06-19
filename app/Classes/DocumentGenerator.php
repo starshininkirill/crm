@@ -212,11 +212,11 @@ class DocumentGenerator
     {
         $documentType = GeneratedDocument::TYPE_PAY;
 
-        if (array_key_exists('action', $data)) {
-            if ($data['action'] == 'gft_generate_new_deal_document') {
-                $documentType = GeneratedDocument::TYPE_DEAL;
-            } else if ($data['action'] == 'act') {
-                $documentType = GeneratedDocument::TYPE_ACT;
+        if (array_key_exists('generator_action', $data)) {
+            if ($data['generator_action'] == 'deal') {
+                return GeneratedDocument::TYPE_DEAL;
+            } else if ($data['generator_action'] == 'act') {
+                return GeneratedDocument::TYPE_ACT;
             }
         }
 
