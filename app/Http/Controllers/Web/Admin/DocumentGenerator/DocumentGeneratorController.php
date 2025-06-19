@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Web\Admin\DocumentGenerator;
 use App\Classes\FileManager;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Models\DocumentTemplateFilter;
+use App\Http\Filters\Models\GeneratedDocumentFilter;
 use App\Http\Requests\Admin\DocumentGenerator\DocumentTemplateRequest;
 use App\Models\DocumentGeneratorTemplate;
+use App\Models\GeneratedDocument;
 use App\Models\Option;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -14,7 +16,32 @@ use Illuminate\Http\Request;
 
 class DocumentGeneratorController extends Controller
 {
-    public function index(DocumentTemplateFilter $filter,Request $request )
+
+    public function generatedDocuments(Request $request, GeneratedDocumentFilter $filter)
+    {
+        $documents = GeneratedDocument::filter($filter)
+            ->latest()
+            ->paginate(30)
+            ->withQueryString()
+            ->through(function ($document) {
+                return [
+                    'id' => $document->id,
+                    'type' => $document->formatedType(),
+                    'deal' => $document->deal,
+                    'file_name' => $document->file_name,
+                    'word_file' => Storage::url($document->word_file),
+                    'pdf_file' => $document->pdf_file  ? Storage::url($document->pdf_file) : null,
+                    'date' => $document->created_at->format('d.m.Y H:i')
+                ];
+            });
+
+        return Inertia::render('Admin/DocumentTemplate/GeneratedDocuments', [
+            'documents' => $documents,
+            'filters' => $request->all(),
+        ]);
+    }
+
+    public function index(DocumentTemplateFilter $filter, Request $request)
     {
         $documentTemplates = DocumentGeneratorTemplate::filter($filter)
             ->orderBy('template_id')

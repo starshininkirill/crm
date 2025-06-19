@@ -5,6 +5,7 @@ namespace App\Classes;
 use App\Exceptions\Api\ApiException;
 use App\Models\Option;
 use App\Models\DocumentGeneratorTemplate;
+use App\Models\GeneratedDocument;
 use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -118,11 +119,26 @@ class DocumentGenerator
             }
         }
 
-
         $this->removeUnusedVariables($templateProcessor, $processedKeys);
+
+
+        $documentType = GeneratedDocument::TYPE_PAY;
+
+        if (array_key_exists('action', $data)) {
+            if ($data['action'] == 'gft_generate_new_deal_document') {
+                $documentType = GeneratedDocument::TYPE_DEAL;
+            } else if ($data['action'] == 'act') {
+                $documentType = GeneratedDocument::TYPE_ACT;
+            }
+        }
 
         $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
         $documentName = $resultName . '_по_договору№' . $dealNumber;
+
+        if ($documentType == GeneratedDocument::TYPE_ACT) {
+            $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
+            $documentName = $dealNumber . $resultName;
+        }
 
         $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
         $docxFullPath = storage_path('app/public/' . $docxRelativePath);
@@ -147,7 +163,19 @@ class DocumentGenerator
 
         $option->value = intval($option->value) + 1;
         $option->save();
-        
+
+        $generatedDocument = GeneratedDocument::create([
+            'type' => $documentType,
+            'deal' => $dealNumber,
+            'file_name' => $documentName,
+            'word_file' => $docxRelativePath,
+            'pdf_file' => $withPdf ? $pdfRelativePath : null,
+        ]);
+
+        if (!$generatedDocument) {
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');
+        }
+
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',

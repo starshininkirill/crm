@@ -2,7 +2,10 @@
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
             <AdminSubnavLink :href="route('admin.document-generator.index')" :route="'admin.document-generator.index'">
-                Документы
+                Шаблоны Документов
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.document-generator.generated-documents')" :route="'admin.document-generator.generated-documents'">
+                Сгенерированные Документы
             </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.document-generator.nums')" :route="'admin.document-generator.nums'">
                 Нумератор

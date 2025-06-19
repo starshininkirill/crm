@@ -10,4 +10,5 @@ Route::prefix('document-generator')->group(function () {
     Route::patch('/{documentTemplate}', [DocumentGeneratorController::class, 'update'])->name('admin.document-generator.update');
 
     Route::get('/nums', [DocumentGeneratorController::class, 'nums'])->name('admin.document-generator.nums');
+    Route::get('/generated-documents', [DocumentGeneratorController::class, 'generatedDocuments'])->name('admin.document-generator.generated-documents');
 });

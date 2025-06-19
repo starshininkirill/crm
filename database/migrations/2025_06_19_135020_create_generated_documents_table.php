@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('generated_documents', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->string('type')->index();
             $table->string('deal');
             $table->string('file_name');
             $table->string('word_file');
-            $table->string('pdf_file');
+            $table->string('pdf_file')->nullable();
             $table->timestamps();
         });
     }
