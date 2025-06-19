@@ -5,6 +5,7 @@ namespace App\Classes;
 use App\Exceptions\Api\ApiException;
 use App\Models\Option;
 use App\Models\DocumentGeneratorTemplate;
+use App\Models\DocumentTemplate;
 use App\Models\GeneratedDocument;
 use App\Models\Organization;
 use Carbon\Carbon;
@@ -24,70 +25,21 @@ class DocumentGenerator
 
     public function generateDocumentFromApi(array $data)
     {
-        $option = Option::query()->firstWhere('name', 'document_generator_num');
+        $option = $this->getOption();
 
-        if (array_key_exists('crm_fields', $data)) {
-            $data = array_merge($data, $data['crm_fields']);
-            unset($data['crm_fields']);
-        }
-        if (array_key_exists('crm_files', $data)) {
-            $data = array_merge($data, $data['crm_files']);
-            unset($data['crm_files']);
-        }
-        if (array_key_exists('deal_meta', $data)) {
-            unset($data['deal_meta']);
-        }
+        $data = $this->formatSourceData($data);
 
-        if (!$option) {
-            Log::channel('document_generator_errors')->error('Document generation API error', [
-                'message' => 'Настройте нумератор',
-            ]);
-            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Настройте нумератор');
-        }
+        $templateId = $this->getTemplateId($data);
 
-        if (empty($data)) {
-            Log::channel('document_generator_errors')->error('Document generation API error', [
-                'message' => 'Нет данных для генерации документа',
-            ]);
-            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Нет данных для генерации документа');
-        }
-
-        $templateId = array_key_exists('template_id', $data) ? $data['template_id'] : null;
-
-        if (!$templateId) {
-            Log::channel('document_generator_errors')->error('Document generation API error', [
-                'message' => 'Не передан id шаблона документа',
-            ]);
-            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан id шаблона документа');
-        }
-
-        $dealNumber = array_key_exists('UF_CRM_1671028945', $data) ? $data['UF_CRM_1671028945'] : null;
-
-        if (!$dealNumber) {
-            $dealNumber = array_key_exists('deal_number', $data) ? $data['deal_number'] : null;
-        }
-
-        if (!$dealNumber) {
-            Log::channel('document_generator_errors')->error('Document generation API error', [
-                'message' => 'Не передан Номер договора',
-            ]);
-            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан Номер договора');
-        }
+        $dealNumber = $this->getDealNumber($data);
 
         $formatedData = $this->formatApiData($data);
 
-        $documentTemplate = DocumentGeneratorTemplate::firstWhere('template_id', $templateId);
-
-        if (!$documentTemplate) {
-            Log::channel('document_generator_errors')->error('Document generation API error', [
-                'message' => 'Шаблона с id: ' . $templateId . ' не существует',
-            ]);
-            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Шаблона с id: ' . $templateId . ' не существует');
-        }
+        $documentTemplate = $this->getDocumentTemplate($templateId);
 
         $filePath = Storage::path('public/' . $documentTemplate->file);
 
-        if (!$documentTemplate || !$this->fileManager->checkExist($documentTemplate->file)) {
+        if (!$this->fileManager->checkExist($documentTemplate->file)) {
             Log::channel('document_generator_errors')->error('Document generation API error', [
                 'message' => 'Файла для шаблона документа не существует',
             ]);
@@ -121,24 +73,9 @@ class DocumentGenerator
 
         $this->removeUnusedVariables($templateProcessor, $processedKeys);
 
+        $documentType = $this->getDocumentType($data);
 
-        $documentType = GeneratedDocument::TYPE_PAY;
-
-        if (array_key_exists('action', $data)) {
-            if ($data['action'] == 'gft_generate_new_deal_document') {
-                $documentType = GeneratedDocument::TYPE_DEAL;
-            } else if ($data['action'] == 'act') {
-                $documentType = GeneratedDocument::TYPE_ACT;
-            }
-        }
-
-        $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
-        $documentName = $resultName . '_по_договору№' . $dealNumber;
-
-        if ($documentType == GeneratedDocument::TYPE_ACT) {
-            $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
-            $documentName = $dealNumber . '_' . $resultName;
-        }
+        $documentName = $this->getDocumentName($documentTemplate, $data);
 
         $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
         $docxFullPath = storage_path('app/public/' . $docxRelativePath);
@@ -161,8 +98,7 @@ class DocumentGenerator
             }
         }
 
-        $option->value = intval($option->value) + 1;
-        $option->save();
+        $this->incrementOption($option);
 
         $generatedDocument = GeneratedDocument::create([
             'type' => $documentType,
@@ -180,6 +116,135 @@ class DocumentGenerator
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
         ];
+    }
+
+    private function getOption(): Option
+    {
+        $option = Option::query()->firstWhere('name', 'document_generator_num');
+
+        if (!$option) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Настройте нумератор',
+            ]);
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Настройте нумератор');
+        }
+
+        return $option;
+    }
+
+    private function incrementOption(Option $option): void
+    {
+        $option->value = intval($option->value) + 1;
+        $option->save();
+    }
+
+    private function formatSourceData(array $data): array
+    {
+        if (empty($data)) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Нет данных для генерации документа',
+            ]);
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Нет данных для генерации документа');
+        }
+
+        if (array_key_exists('crm_fields', $data)) {
+            $data = array_merge($data, $data['crm_fields']);
+            unset($data['crm_fields']);
+        }
+        if (array_key_exists('crm_files', $data)) {
+            $data = array_merge($data, $data['crm_files']);
+            unset($data['crm_files']);
+        }
+        if (array_key_exists('deal_meta', $data)) {
+            unset($data['deal_meta']);
+        }
+
+        return $data;
+    }
+
+    private function getTemplateId($data): int|string
+    {
+        $templateId = array_key_exists('template_id', $data) ? $data['template_id'] : null;
+
+        if (!$templateId) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Не передан id шаблона документа',
+            ]);
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан id шаблона документа');
+        }
+
+        return $templateId;
+    }
+
+    private function getDealNumber($data): string|int
+    {
+        $dealNumber = array_key_exists('UF_CRM_1671028945', $data) ? $data['UF_CRM_1671028945'] : null;
+
+        if (!$dealNumber) {
+            $dealNumber = array_key_exists('deal_number', $data) ? $data['deal_number'] : null;
+        }
+
+        if (!$dealNumber) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Не передан Номер договора',
+            ]);
+            throw new ApiException(Response::HTTP_BAD_REQUEST, 'Не передан Номер договора');
+        }
+
+        return $dealNumber;
+    }
+
+    private function getDocumentTemplate($templateId): DocumentGeneratorTemplate
+    {
+        $documentTemplate = DocumentGeneratorTemplate::firstWhere('template_id', $templateId);
+
+        if (!$documentTemplate) {
+            Log::channel('document_generator_errors')->error('Document generation API error', [
+                'message' => 'Шаблона с id: ' . $templateId . ' не существует',
+            ]);
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Шаблона с id: ' . $templateId . ' не существует');
+        }
+
+        return $documentTemplate;
+    }
+
+    private function getDocumentType($data): string|int
+    {
+        $documentType = GeneratedDocument::TYPE_PAY;
+
+        if (array_key_exists('action', $data)) {
+            if ($data['action'] == 'gft_generate_new_deal_document') {
+                $documentType = GeneratedDocument::TYPE_DEAL;
+            } else if ($data['action'] == 'act') {
+                $documentType = GeneratedDocument::TYPE_ACT;
+            }
+        }
+
+        return $documentType;
+    }
+
+    private function getDocumentName(DocumentGeneratorTemplate $documentTemplate, $data): string
+    {
+        $dealNumber = $this->getDealNumber($data);
+        $documentType = $this->getDocumentType($data);
+        $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
+        $documentName = $resultName . '_по_договору№' . $dealNumber;
+
+        if ($documentType == GeneratedDocument::TYPE_ACT) {
+            $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
+            $documentName = $dealNumber . '_' . $resultName;
+        }
+
+        return $documentName;
+    }
+
+    private function saveDOXC(TemplateProcessor $templateProcessor, string $documentName): string
+    {
+        $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
+        $docxFullPath = storage_path('app/public/' . $docxRelativePath);
+        $templateProcessor->saveAs($docxFullPath);
+
+        return $docxFullPath;
     }
 
     private function insertFormattedHtml(TemplateProcessor $templateProcessor, string $placeholder, string $html)
@@ -351,7 +416,6 @@ class DocumentGenerator
 
         return $tempPath;
     }
-
 
     public function generatePaymentDocument(array $data): string
     {
