@@ -137,7 +137,7 @@ class DocumentGenerator
 
         if ($documentType == GeneratedDocument::TYPE_ACT) {
             $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
-            $documentName = $dealNumber . $resultName;
+            $documentName = $dealNumber . '_' . $resultName;
         }
 
         $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');

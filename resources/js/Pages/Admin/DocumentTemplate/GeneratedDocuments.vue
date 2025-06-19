@@ -15,7 +15,7 @@
                         format="yyyy-MM-dd" model-type="yyyy-MM-dd" placeholder="Дата" locale="ru"
                         @update:model-value="updateDocuments" />
                 </div>
-                <h2 v-if="!documents.data.length" class="text-xl">Шаблонов документов не найдено</h2>
+                <h2 v-if="!documents.data.length" class="text-xl">Сгенерированных документов не найдено</h2>
                 <div v-if="documents.data.length" class="relative">
                     <table class="w-full table">
                         <thead class="thead border-b">
