@@ -147,7 +147,7 @@ class DocumentGenerator
 
         $option->value = intval($option->value) + 1;
         $option->save();
-
+        
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
