@@ -38,11 +38,6 @@ class HandleInertiaRequests extends Middleware
     {
         $sessionData = session()->all();
 
-        $user = auth()->user();
-        if ($user) {
-            $user->lastAction = $user->getLastAction();
-        }
-
         $filteredSessionData = array_filter($sessionData, function ($key) {
             return !in_array($key, ['_token', '_previous', '_flash']);
         }, ARRAY_FILTER_USE_KEY);
@@ -53,7 +48,10 @@ class HandleInertiaRequests extends Middleware
             'errors' => function () {
                 return session()->get('errors') ? session()->get('errors')->getBag('default')->getMessages() : (object) [];
             },
-            'user' => auth()->user(),
+            'user' => auth()->user() ? [
+                ...auth()->user()->toArray(),
+                'lastAction' => auth()->user()->getLastAction(),
+            ] : null,
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(), // Добавляем текущий URL

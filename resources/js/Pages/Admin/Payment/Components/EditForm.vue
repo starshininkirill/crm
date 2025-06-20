@@ -115,7 +115,7 @@ export default {
             'value': this.payment.value,
             'inn': this.payment.inn || '',
             'status': this.payment.status,
-            'type': this.payment.type,
+            'type': this.payment.row_type,
             'is_technical': this.payment.is_technical,
             'confirmed_at': this.payment.confirmed_at,
             'created_at': this.payment.created_at,

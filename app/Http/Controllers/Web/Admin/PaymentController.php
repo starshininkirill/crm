@@ -47,6 +47,7 @@ class PaymentController extends Controller
                 'status' => $payment->status,
                 'formatStatus' => $payment->getStatusNameAttribute(),
                 'inn' => $payment->inn,
+                'row_type' => $payment->type,
                 'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
                 'is_technical' => $payment->is_technical,
                 'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('Y-m-d\TH:i') : 'Не подтвержён',
