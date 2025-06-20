@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
- 
-class DocumentGeneratorController extends Controller
-{ 
 
-    public function test() 
+class DocumentGeneratorController extends Controller
+{
+
+    public function test()
     {
         return response()->json([
             'message' => 'Доброе утро страна!',
@@ -23,14 +23,16 @@ class DocumentGeneratorController extends Controller
     {
         $requestData = $request->all();
 
-        Log::channel('document_generator')->info('Document generation request', $requestData);
+        Log::channel('document_generator')->info(
+            'Запрос на генерацию документа: ' . var_export($requestData, true)
+        );
 
         try {
             $downloadUrl = $documentGenerator->generateDocumentFromApi($requestData);
 
-            Log::channel('document_generator')->info('Document generated successfully', [
-                'downloadUrl' => $downloadUrl
-            ]);
+            Log::channel('document_generator')->info(
+                'Документ успешно сгенерирован: ' . var_export($downloadUrl, true)
+            );
 
             return response()->json($downloadUrl);
         } catch (ApiException $apiExcept) {
