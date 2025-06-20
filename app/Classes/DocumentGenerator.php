@@ -25,7 +25,7 @@ class DocumentGenerator
 
     public function generateDocumentFromApi(array $data)
     {
-        Log::channel('document_generator')->info('Document start generation' . Carbon::now()->format('d.m.Y H:i'));
+        Log::channel('document_generator')->info('Начало генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
         $option = $this->getOption();
 
         $data = $this->formatSourceData($data);
@@ -112,7 +112,7 @@ class DocumentGenerator
         if (!$generatedDocument) {
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');
         }
-        Log::channel('document_generator')->info('Document end generation' . Carbon::now()->format('d.m.Y H:i'));
+        Log::channel('document_generator')->info('Конец генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
