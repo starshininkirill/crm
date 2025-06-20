@@ -5,7 +5,7 @@
         <nav class="">
           <ul class="space-y-1 p-4">
 
-            <!-- <li>
+            <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
                 :href="route('admin.contract.index')">
@@ -49,16 +49,16 @@
                 :href="route('admin.time-check.index')">
               Time Check
               </Link>
-            </li> -->
-            <!-- <li>
+            </li>
+            <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
                 :href="route('admin.department.index')">
               Отделы
               </Link>
-            </li> -->
+            </li>
 
-            <!-- <li>
+            <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.index') }"
                 :href="route('admin.sale-department.index')">
@@ -72,7 +72,7 @@
                 :href="route('admin.settings.index')">
               Настройки
               </Link>
-            </li> -->
+            </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"

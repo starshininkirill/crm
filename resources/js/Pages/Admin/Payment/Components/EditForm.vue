@@ -33,7 +33,7 @@
             <div class="label">
                 Тип (Новые/Старые)
             </div>
-            <VueSelect v-model="form.type" :reduce="status => status.id" label="name" :options="formattedPaymentTypes">
+            <VueSelect v-model="form.type" :reduce="type => type.id" label="name" :options="formattedPaymentTypes">
             </VueSelect>
         </div>
 
@@ -145,14 +145,14 @@ export default {
     },
     computed: {
         formattedPaymentStatuses() {
-            return Object.keys(this.paymentStatuses).map(key => ({
-                id: parseInt(key),
-                name: this.paymentStatuses[key],
+            return Object.entries(this.paymentStatuses).map(([id, name]) => ({
+                id: Number(id), 
+                name: name    
             }));
         },
         formattedPaymentTypes() {
             return Object.keys(this.paymentTypes).map(key => ({
-                id: parseInt(key),
+                id: Number(key),
                 name: this.paymentTypes[key],
             }));
         },

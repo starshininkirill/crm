@@ -12,25 +12,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // DepartmentSeeder::class,
-            // PositionSeeder::class,
-            // OptionSeeder::class,
+            DepartmentSeeder::class,
+            PositionSeeder::class,
+            OptionSeeder::class,
 
-            // EmploymentTypeSeeder::class,
-            // UserSeeder::class,
-            // ClientSeeder::class,
-            // ServiceSeeder::class,
-            // ContractSeeder::class,
-            // WorkPlanSeeder::class,
-            // OrganizationSeeder::class,
-            // DocumentTemplateSeeder::class,
-            // DocumentSelectionRuleSeeder::class,
-            // CallHistorySeeder::class,
-            // WorkStatusSeeder::class,
-
-            // TestSeeder::class,
-
+            EmploymentTypeSeeder::class,
             UserSeeder::class,
+            ClientSeeder::class,
+            ServiceSeeder::class,
+            ContractSeeder::class,
+            WorkPlanSeeder::class,
+            OrganizationSeeder::class,
+            DocumentTemplateSeeder::class,
+            DocumentSelectionRuleSeeder::class,
+            CallHistorySeeder::class,
+            WorkStatusSeeder::class,
+
+            TestSeeder::class,
+
+            // UserSeeder::class,
         ]);
     }
 }

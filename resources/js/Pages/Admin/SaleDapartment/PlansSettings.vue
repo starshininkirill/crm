@@ -16,12 +16,14 @@
 
         <Error />
 
-        <div class="grow w-full border-y mb-6">
+        <div class="grow w-full border-b mb-6">
             <div class="flex gap-3">
-                <div @click="isRopActive = false" :class="[{ 'text-white bg-gray-800': !isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer']">
+                <div @click="isRopActive = false"
+                    :class="[{ 'text-white bg-gray-800': !isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer border-t']">
                     Планы отдела
                 </div>
-                <div @click="isRopActive = true" :class="[{ 'text-white bg-gray-800': isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer']">
+                <div @click="isRopActive = true"
+                    :class="[{ 'text-white bg-gray-800': isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer border-t']">
                     Планы РОП
                 </div>
             </div>
@@ -65,7 +67,16 @@
         </div>
 
         <div v-if="isRopActive" class="grid grid-cols-3 gap-8 mb-4">
-
+            <div class="flex flex-col gap-4">
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б1 План'"
+                    :planType="'headB1Plan'" :plans="plans.headB1Plan" :hasGoalField="true" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б2 План'"
+                    :planType="'headB2Plan'" :plans="plans.headB2Plan" :hasGoalField="true" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Процент с продаж'"
+                    :planType="'headPercentBonus'" :plans="plans.headPercentBonus" :hasGoalField="false" />
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Минимальный бонус'"
+                    :planType="'headMinimalBonus'" :plans="plans.headMinimalBonus" :hasGoalField="false" />
+            </div>
         </div>
 
     </SaleDepartmentLayout>

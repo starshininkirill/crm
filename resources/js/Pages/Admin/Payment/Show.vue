@@ -9,9 +9,9 @@
                     {{ showMode ? 'Редактировать' : 'Назад' }}
                 </div>
             </div>
-            <ShowForm v-if="showMode" :payment="payment" :paymentStatuses="paymentStatuses" />
-            <EditForm v-if="!showMode" :payment="payment" :paymentStatuses="paymentStatuses" :paymentTypes="paymentTypes"
-                :organizations="organizations" :users="users"/>
+            <ShowForm v-if="showMode" :payment="payment" :paymentStatuses="paymentVueStatuses" />
+            <EditForm v-if="!showMode" :payment="payment" :paymentStatuses="paymentStatuses"
+                :paymentTypes="paymentTypes" :organizations="organizations" :users="users" />
         </div>
     </PaymentLayout>
 </template>
@@ -35,6 +35,9 @@ export default {
             type: Object
         },
         paymentStatuses: {
+            type: Object
+        },
+        paymentVueStatuses: {
             type: Object
         },
         paymentTypes: {

@@ -15,7 +15,7 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        Carbon::setTestNow('2025-01-02 10:26:39');
-        Client::factory()->count(200)->create();
+        Carbon::setTestNow('2025-02-02 10:26:39');
+        Client::factory()->count(60)->create();
     }
 }
