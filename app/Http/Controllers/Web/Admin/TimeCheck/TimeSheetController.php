@@ -46,7 +46,8 @@ class TimeSheetController extends Controller
             'usersReport' => collect(),
         ]; 
         if ($targetDate <= Carbon::now()->endOfMonth()) {
-            $info['usersReport'] =  $service->generateUsersReport($users, $targetDate);
+            $info['usersReport'] =  $service->generateUsersReport($users, $targetDate)
+                ->groupBy('department.name');
         }
 
         return Inertia::render('Admin/TimeCheck/TimeSheet/Index', $info);
@@ -55,7 +56,7 @@ class TimeSheetController extends Controller
     protected function getUsersCollection(?Department $department, Carbon $targetDate): Collection
     {
         $isCurrentMonth = DateHelper::isCurrentMonth($targetDate);
-        $relations = ['position'];
+        $relations = ['position', 'department'];
 
         if ($department) {
             return $isCurrentMonth

@@ -238,15 +238,6 @@ class DocumentGenerator
         return $documentName;
     }
 
-    private function saveDOXC(TemplateProcessor $templateProcessor, string $documentName): string
-    {
-        $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
-        $docxFullPath = storage_path('app/public/' . $docxRelativePath);
-        $templateProcessor->saveAs($docxFullPath);
-
-        return $docxFullPath;
-    }
-
     private function insertFormattedHtml(TemplateProcessor $templateProcessor, string $placeholder, string $html)
     {
         // Удаляем <p>, преобразуем <br> в переносы строк, обрабатываем <strong>

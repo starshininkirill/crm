@@ -38,7 +38,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (BusinessException $e, Request $request) {
-            return response()->json(400);
             if ($request->wantsJson()) {
                 $json = [
                     'success' => false,

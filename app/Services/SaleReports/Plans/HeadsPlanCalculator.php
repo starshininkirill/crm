@@ -37,6 +37,8 @@ class HeadsPlanCalculator
         return collect([
             'completed' => $isAchieved,
             'bonus' => $isAchieved ? $bonus : 0,
+            'goal' => $totalRequired,
+            'remainingAmount' => $totalRequired - $newMoney,
         ]);
     }
 }

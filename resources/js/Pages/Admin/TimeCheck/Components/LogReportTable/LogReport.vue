@@ -3,12 +3,19 @@
         Информации не найдено
     </div>
     <div v-else class="flex flex-col gap-3">
-        <div class="text-xl font-semibold">
-            Лог сотрудников
+        <div class="text-xl font-semibold cursor-pointer flex items-center gap-2" @click="toggleTableVisibility">
+            <span>Лог сотрудников</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
+                :class="{ 'rotate-180': isTableVisible }" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+            </svg>
         </div>
-        <table
-            class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="thead  ">
+        <table v-show="isTableVisible"
+            class="shadow-md overflow-hidden rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 "
+            :class="{ 'opacity-0 h-0': !isTableVisible, 'opacity-100': isTableVisible }">
+            <thead class="thead">
                 <tr>
                     <th scope="col" class="px-6 py-3">Сотрудник</th>
                     <th scope="col" class="px-6 py-3">Дата действия</th>
@@ -71,6 +78,11 @@ export default {
             required: true,
         }
     },
+    data() {
+        return {
+            isTableVisible: false,
+        }
+    },
     methods: {
         translateAction(action) {
             let translations = {
@@ -80,6 +92,9 @@ export default {
                 'continue': 'Конец перерыва',
             };
             return translations[action];
+        },
+        toggleTableVisibility() {
+            this.isTableVisible = !this.isTableVisible;
         }
     }
 }

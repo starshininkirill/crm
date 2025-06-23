@@ -84,18 +84,19 @@ class HeadsReportGenerator extends BaseReportGenerator
         }
 
 
+        $b1 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B1_PLAN);
         $b2 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B2_PLAN);
 
+        $report['b1'] = $b1;
+        $report['b2'] = $b2;
+
         if ($b2['completed']) {
-            $report['b1Completed'] = true;
-            $report['b2Completed'] = true;
             $report['bonus'] = $b2['bonus'];
         } else {
-            $b1 = $this->headsPlanCalculator->percentPlan($reportData, $report['generalPlan'], WorkPlan::HEAD_B1_PLAN);
-            $report['b2Completed'] = false;
-            $report['b1Completed'] = $b1['completed'] ? true : false;
             $report['bonus'] = $b1['completed'] ? $b1['bonus'] : 0;
         }
+
+        $report['remainingAmount'] = $report['generalPlan'] - $report['newMoney'];
 
         return $report;
     }

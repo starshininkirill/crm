@@ -5,7 +5,7 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Кадровый табель</h1>
         </div>
- 
+
         <div class="flex gap-3 max-w-3xl mb-4">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <table v-if="usersReport.length"
+        <table v-if="Object.keys(usersReport).length"
             class="shadow-md border-collapse rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
             <thead class="thead ">
                 <tr>
@@ -51,8 +51,13 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
-                <tr v-for="user in usersReport" :key="user.id" class="table-row ">
+            <tbody v-for="department, key in usersReport">
+                <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50">
+                    <td colspan="100%" class="px-2 py-2 bg-gray-800 text-white font-semibold">
+                        {{ key == '' ? 'Без отдела' : key }}
+                    </td>
+                </tr>
+                <tr v-if="department.length" v-for="user in department" :key="user.id" class="table-row ">
                     <td class="px-2 py-3 border-r">
                         {{ formatPrice(user.salary) }}
                     </td>
@@ -104,6 +109,8 @@
         <h1 v-else class="text-4xl font-semibold mb-6">
             Нет данных для расчёта
         </h1>
+
+        <HelpStatusLegend />
     </TimeCheckLayout>
 </template>
 
@@ -113,13 +120,15 @@ import TimeCheckLayout from '../../Layouts/TimeCheckLayout.vue';
 import VueSelect from 'vue-select';
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { route } from 'ziggy-js';
+import HelpStatusLegend from './HelpStatusLegend.vue';
 
 export default {
     components: {
         Head,
         TimeCheckLayout,
         VueSelect,
-        VueDatePicker
+        VueDatePicker,
+        HelpStatusLegend
     },
     props: {
         days: {
@@ -138,7 +147,7 @@ export default {
             required: true,
         },
         usersReport: {
-            type: Array,
+            type: Object,
             required: true,
         },
         status: {
@@ -191,7 +200,7 @@ export default {
                 }
 
                 if (day.status.work_status?.type == "vacation") {
-                    colors.push('bg-stone-400')
+                    colors.push('bg-cyan-500')
                 }
             }
 

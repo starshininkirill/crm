@@ -22,17 +22,17 @@
                         <th scope="col" class="px-6 py-3 border-r">
                             Руководитель
                         </th>
-                        <th scope="col" class="px-6 py-3 border-r">
+                        <th scope="col" class="px-6 py-3 border-r max-w-36">
                             Сотрудников в отделе
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
                             Выполнили план
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
-                            План отдела
+                            NEW $
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
-                            NEW $
+                            План отдела
                         </th>
                         <th scope="col" class="px-6 py-3 border-r">
                             Б1
@@ -56,40 +56,44 @@
                 </thead>
                 <tbody>
                     <tr v-for="row in report" :key="row.head.id" class="table-row ">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap  border-x">
+                        <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap  border-x">
                             {{ row.department.name }}
                         </th>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r">
                             {{ row.head.full_name }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r">
                             {{ row.report.usersCount }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r">
                             {{ row.report.completed }}/{{ row.report.usersCount }} ({{ row.report.completedPercent }}%)
                         </td>
-                        <td class="px-6 py-4 border-r">
-                            {{ formatPrice(row.report.generalPlan) }}
-                        </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r whitespace-nowrap">
                             {{ formatPrice(row.report.newMoney) }}
                         </td>
-                        <td class="px-6 py-4 border-r">
-                            {{ row.report.b1Completed ? 'Да' : 'Нет' }}
+                        <td class="px-4 py-3 border-r">
+                            {{ formatPrice(row.report.generalPlan, '') }} / {{ formatPrice(row.report.remainingAmount, '') }}
                         </td>
-                        <td class="px-6 py-4 border-r">
-                            {{ row.report.b2Completed ? 'Да' : 'Нет' }}
+                        <td class="px-4 py-3 border-r whitespace-nowrap"
+                            :class="row.report.b1.completed ? ' bg-green-500 text-white' : ''">
+                            {{ formatPrice(row.report.b1.goal, '') }} / {{ formatPrice(row.report.b1.remainingAmount,
+                                '') }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r whitespace-nowrap"
+                            :class="row.report.b2.completed ? ' bg-green-500 text-white' : ''">
+                            {{ formatPrice(row.report.b2.goal, '') }} / {{ formatPrice(row.report.b2.remainingAmount,
+                                '') }}
+                        </td>
+                        <td class="px-4 py-3 border-r">
                             {{ formatPrice(row.report.bonus) }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r">
                             {{ formatPrice(row.report.headBonus) }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r whitespace-nowrap">
                             {{ formatPrice(row.head.calculated_salary) }}
                         </td>
-                        <td class="px-6 py-4 border-r">
+                        <td class="px-4 py-3 border-r whitespace-nowrap">
                             {{ formatPrice(row.report.headBonus + row.head.calculated_salary + row.report.bonus) }}
                         </td>
                     </tr>
