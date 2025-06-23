@@ -9,6 +9,8 @@ use App\Models\DocumentTemplate;
 use App\Models\GeneratedDocument;
 use App\Models\Organization;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,12 +25,16 @@ class DocumentGenerator
         protected FileManager $fileManager
     ) {}
 
-    public function generateDocumentFromApi(array $data)
+    public function generateDocumentFromApi(array $requestData)
     {
         Log::channel('document_generator')->info('Начало генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
         $option = $this->getOption();
 
-        $data = $this->formatSourceData($data);
+        $data = $this->formatSourceData($requestData);
+
+        Log::channel('document_generator')->info(
+            'Отформатированный запрос на генерацию документа: ' . var_export($data, true)
+        );
 
         $templateId = $this->getTemplateId($data);
 
@@ -49,6 +55,8 @@ class DocumentGenerator
 
         $formatedData['DocumentCreateTime'] = Carbon::now()->format('d.m.Y');
         $formatedData['DocumentNumber'] = $option->value;
+
+        dd($formatedData);
 
         $templateProcessor = new TemplateProcessor($filePath);
 
@@ -91,7 +99,7 @@ class DocumentGenerator
             try {
                 $this->convertDocxToPdf($docxFullPath, $pdfFullPath);
             } catch (\Exception $e) {
-                Log::channel('document_generator_errors')->error('PDF conversion failed', [
+                Log::channel('document_generator_errors')->error('Ошибка создания PDF', [
                     'message' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -113,10 +121,79 @@ class DocumentGenerator
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');
         }
         Log::channel('document_generator')->info('Конец генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
+
+        // $this->sendDataToBitrix($docxRelativePath, $pdfRelativePath, $requestData);
+
+        Log::channel('document_generator')->info('Конец генерации документа вместе с Битрикс' . Carbon::now()->format('d.m.Y H:i:s'));
+
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
         ];
+    }
+
+    public function sendDataToBitrix($docxRelativePath, $pdfRelativePath, $requestData)
+    {
+        // $docxContent = Storage::get('public/' . $docxRelativePath);
+        // $docxBase64 = base64_encode($docxContent);
+
+        // if ($this->fileManager->checkExist($pdfRelativePath)) {
+        //     $pdfContent = Storage::get('public/' . $pdfRelativePath);
+        //     $pdfBase64 = base64_encode($pdfContent);
+        //     $pdfFileName = basename($pdfRelativePath);
+        // } else {
+        //     $pdfBase64 = '';
+        //     $pdfFileName = '';
+        // }
+
+        // $postData = array_merge($requestData, [
+        //     'word_file' => $docxBase64,
+        //     'word_filename' => basename($docxRelativePath),
+        //     'pdf_file' => $pdfBase64,
+        //     'pdf_filename' => $pdfFileName
+        // ]);
+
+        $postData = $requestData;
+
+        if (array_key_exists('crm_files', $postData)) {
+            unset($postData['crm_files']);
+        }
+
+        try {
+            $response = Http::withOptions(['verify' => false])
+                ->asForm()
+                ->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/indexWithoutGenerate.php',  $postData);
+
+            if ($response->status() != 200) {
+
+                if ($response->status() == 403) {
+                    $errorData = $response->json();
+                    $errorMessage = $errorData['message'] ?? 'Неизвестная ошибка (403 Forbidden)';
+
+                    Log::channel('document_generator_errors')->error('Ошибка 403 при отправке данных в Битрикс', [
+                        'message' => $errorMessage,
+                        'request_data' => $requestData
+                    ]);
+
+                    throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, "Ошибка Битрикс: $errorMessage");
+                }
+
+                Log::channel('document_generator_errors')->error('Ошибка при отправке данных на Битрикс', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'request_data' => $requestData
+                ]);
+
+                throw new ApiException(400, 'Ошибка при отправке данных на Битрикс');
+            }
+        } catch (\Exception $e) {
+            Log::channel('document_generator_errors')->error('Ошибка соединения при отправке данных в Битрикс', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
     }
 
     private function getOption(): Option
@@ -359,7 +436,7 @@ class DocumentGenerator
 
     private function convertToTemplateKey(string $key): string
     {
-        if (strpos($key, 'UF_CRM_') === 0) {
+        if (strpos($key, 'UF_CRM_') === 0 || strpos($key, 'PAY_PURPOSE_') === 0) {
             $parts = explode('_', $key);
             $camelCase = '';
             foreach ($parts as $part) {

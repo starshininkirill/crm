@@ -91,9 +91,10 @@ class DocumentGeneratorController extends Controller
         $documentTemplate->result_name = $validated['result_name'];
         $documentTemplate->template_id = $validated['template_id'];
 
+        
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-
+            
             if ($documentTemplate->file) {
                 $fileManager->delete($documentTemplate->file);
             }
