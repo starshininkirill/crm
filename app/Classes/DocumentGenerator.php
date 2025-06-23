@@ -56,8 +56,6 @@ class DocumentGenerator
         $formatedData['DocumentCreateTime'] = Carbon::now()->format('d.m.Y');
         $formatedData['DocumentNumber'] = $option->value;
 
-        dd($formatedData);
-
         $templateProcessor = new TemplateProcessor($filePath);
 
         $processedKeys = [];
@@ -122,78 +120,10 @@ class DocumentGenerator
         }
         Log::channel('document_generator')->info('Конец генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
 
-        // $this->sendDataToBitrix($docxRelativePath, $pdfRelativePath, $requestData);
-
-        Log::channel('document_generator')->info('Конец генерации документа вместе с Битрикс' . Carbon::now()->format('d.m.Y H:i:s'));
-
         return [
             'download_link' => url(Storage::url($docxRelativePath)),
             'pdf_download_link' => $withPdf ? url(Storage::url($pdfRelativePath)) : '',
         ];
-    }
-
-    public function sendDataToBitrix($docxRelativePath, $pdfRelativePath, $requestData)
-    {
-        // $docxContent = Storage::get('public/' . $docxRelativePath);
-        // $docxBase64 = base64_encode($docxContent);
-
-        // if ($this->fileManager->checkExist($pdfRelativePath)) {
-        //     $pdfContent = Storage::get('public/' . $pdfRelativePath);
-        //     $pdfBase64 = base64_encode($pdfContent);
-        //     $pdfFileName = basename($pdfRelativePath);
-        // } else {
-        //     $pdfBase64 = '';
-        //     $pdfFileName = '';
-        // }
-
-        // $postData = array_merge($requestData, [
-        //     'word_file' => $docxBase64,
-        //     'word_filename' => basename($docxRelativePath),
-        //     'pdf_file' => $pdfBase64,
-        //     'pdf_filename' => $pdfFileName
-        // ]);
-
-        $postData = $requestData;
-
-        if (array_key_exists('crm_files', $postData)) {
-            unset($postData['crm_files']);
-        }
-
-        try {
-            $response = Http::withOptions(['verify' => false])
-                ->asForm()
-                ->post('https://automatization.grampus-server.ru/actions/wiki/generateDocument/indexWithoutGenerate.php',  $postData);
-
-            if ($response->status() != 200) {
-
-                if ($response->status() == 403) {
-                    $errorData = $response->json();
-                    $errorMessage = $errorData['message'] ?? 'Неизвестная ошибка (403 Forbidden)';
-
-                    Log::channel('document_generator_errors')->error('Ошибка 403 при отправке данных в Битрикс', [
-                        'message' => $errorMessage,
-                        'request_data' => $requestData
-                    ]);
-
-                    throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, "Ошибка Битрикс: $errorMessage");
-                }
-
-                Log::channel('document_generator_errors')->error('Ошибка при отправке данных на Битрикс', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                    'request_data' => $requestData
-                ]);
-
-                throw new ApiException(400, 'Ошибка при отправке данных на Битрикс');
-            }
-        } catch (\Exception $e) {
-            Log::channel('document_generator_errors')->error('Ошибка соединения при отправке данных в Битрикс', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
-        }
     }
 
     private function getOption(): Option
