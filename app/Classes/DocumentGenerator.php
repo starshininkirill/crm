@@ -366,12 +366,15 @@ class DocumentGenerator
 
     private function convertToTemplateKey(string $key): string
     {
-        $parts = explode('_', $key);
-        $camelCase = '';
-        foreach ($parts as $part) {
-            $camelCase .= ucfirst(strtolower($part));
+        if (strpos($key, 'UF_CRM_') === 0 || strpos($key, 'PAY_PURPOSE_') === 0) {
+            $parts = explode('_', $key);
+            $camelCase = '';
+            foreach ($parts as $part) {
+                $camelCase .= ucfirst(strtolower($part));
+            }
+            return $camelCase;
         }
-        return $camelCase;
+        return $key;
     }
 
     private function isBase64Image($data): bool
