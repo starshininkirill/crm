@@ -366,7 +366,7 @@ class DocumentGenerator
 
     private function convertToTemplateKey(string $key): string
     {
-        if (strpos($key, 'UF_CRM_') === 0 || strpos($key, 'PAY_PURPOSE_') === 0) {
+        if (strpos($key, 'UF_CRM_') === 0 || strpos($key, 'PAY_PURPOSE_') === 0 || strpos($key, 'FORMAT') === 0) {
             $parts = explode('_', $key);
             $camelCase = '';
             foreach ($parts as $part) {
