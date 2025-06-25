@@ -29,86 +29,169 @@
                 Выбрать
             </div>
         </div>
+        <div class="overflow-x-auto w-full max-w-[1660px] bg-white rounded-lg shadow-md">
+            <table v-if="Object.keys(usersReport).length"
+                class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full">
+                <thead class="thead ">
+                    <tr>
+                        <th class="px-2 py-2 border-r w-20">
+                            Ставка
+                        </th>
+                        <th class="px-2 py-2 border-r w-16">
+                            Час
+                        </th>
+                        <th class="px-2 py-2 border-r w-60">
+                            Должность
+                        </th>
+                        <th class="px-2 py-2 border-r w-60">
+                            ФИО
+                        </th>
+                        <th v-for="(day, idx) in days" v-show="idx == 1 || showAllDates" :key="idx"
+                            class="px-1 py-2 border-r text-center w-8" :class="{ 'cursor-pointer': idx == 1 }"
+                            @click="idx == 1 ? toggleDates() : null">
+                            <span>
+                                {{ idx }}
+                            </span>
+                            <span v-if="idx == 1" class="w-fit ml-1">
+                                {{ showAllDates ? '▼' : '▲' }}
+                            </span>
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Ставка
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Премия
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Доп часы
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Часы
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Доп + и лишения
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Итого к выплате
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Ставка
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Премия
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Доп часы
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Часы
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Доп + и лишения
+                        </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                            Итого к выплате
+                        </th>
+                    </tr>
+                </thead>
+                <tbody v-for="department, key in usersReport">
+                    <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50">
+                        <td colspan="100%" class="px-2 py-2 bg-gray-800 text-white font-semibold">
+                            {{ key == '' ? 'Без отдела' : key }}
+                        </td>
+                    </tr>
+                    <tr v-if="department.length" v-for="user in department" :key="user.id" class="table-row ">
+                        <td class="px-2 py-3 border-r">
+                            {{ formatPrice(user.salary) }}
+                        </td>
+                        <td class="px-2 py-3 border-r">
+                            {{ formatPrice(user.hour_salary) }}
+                        </td>
+                        <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
+                            {{ user.position?.name ?? 'Не указана' }}
+                        </th>
+                        <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
+                            {{ user.full_name }}
+                        </th>
+                        <td v-for="(day, index) in user.days"
+                            class="px-2 py-3 border-r text-center cursor-pointer relative group"
+                            v-show="showAllDates || index == 1">
+                            <div class="absolute inset-0 flex z-0">
+                                <div v-for="color in getActionColor(day)" :class="color" class="h-full"></div>
+                            </div>
+                            <span class=" relative z-10" :class="getActionColor(day).length ? 'text-white' : ''">
+                                {{ day.hours == 0 ? '' : day.hours }}
+                                {{ day.date == user.fired_at ? 'Уволен' : '' }}
+                            </span>
 
-        <table v-if="Object.keys(usersReport).length"
-            class="shadow-md border-collapse rounded-md sm:rounded-lg w-full text-sm text-left rtl:text-right text-gray-500 ">
-            <thead class="thead ">
-                <tr>
-                    <th scope="col" class="px-2 py-2 border-r">
-                        Ставка
-                    </th>
-                    <th scope="col" class="px-2 py-2 border-r">
-                        Час
-                    </th>
-                    <th scope="col" class="px-2 py-2 border-r">
-                        Должность
-                    </th>
-                    <th scope="col" class="px-2 py-2 border-r">
-                        ФИО
-                    </th>
-                    <th v-for="(day, idx) in days" scope="col" class="px-1 py-2 border-r text-center">
-                        {{ idx }}
-                    </th>
-                </tr>
-            </thead>
-            <tbody v-for="department, key in usersReport">
-                <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50">
-                    <td colspan="100%" class="px-2 py-2 bg-gray-800 text-white font-semibold">
-                        {{ key == '' ? 'Без отдела' : key }}
-                    </td>
-                </tr>
-                <tr v-if="department.length" v-for="user in department" :key="user.id" class="table-row ">
-                    <td class="px-2 py-3 border-r">
-                        {{ formatPrice(user.salary) }}
-                    </td>
-                    <td class="px-2 py-3 border-r">
-                        {{ formatPrice(user.hour_salary) }}
-                    </td>
-                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
-                        {{ user.position?.name ?? 'Не указана' }}
-                    </th>
-                    <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
-                        {{ user.full_name }}
-                    </th>
-                    <td v-for="day in user.days" class="px-2 py-3 border-r text-center cursor-pointer relative group">
-                        <div class="absolute inset-0 flex z-0">
-                            <div v-for="color in getActionColor(day)" :class="color" class="h-full"></div>
-                        </div>
-                        <span class=" relative z-10" :class="getActionColor(day).length ? 'text-white' : ''">
-                            {{ day.hours == 0 ? '' : day.hours }}
-                            {{ day.date == user.fired_at ? 'Уволен' : '' }}
-                        </span>
-
-                        <div v-if="day.statuses.length || day.timeCheckHours != null"
-                            class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[200px] left-2/4 transform -translate-x-full mt-2 pointer-events-none">
-                            <div class="flex flex-col gap-1">
-                                <div v-if="day.timeCheckHours != null" class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-600">Отработно часов: </span>
-                                    <span class="text-gray-600">
-                                        {{ day.timeCheckHours }} ч
-                                    </span>
-                                </div>
-                                <div v-for="status in day.statuses" class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-600">{{ status.work_status.name }}:</span>
-                                    <span v-if="status.work_status.type != 'late'" class="text-gray-600">
-                                        <span v-if="status.status == 'approved'">
-                                            {{ status.hours ?? 0 }}
+                            <div v-if="day.statuses.length || day.timeCheckHours != null"
+                                class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[200px] left-2/4 transform -translate-x-full mt-2 pointer-events-none">
+                                <div class="flex flex-col gap-1">
+                                    <div v-if="day.timeCheckHours != null" class="flex justify-between items-center">
+                                        <span class="font-medium text-gray-600">Отработно часов: </span>
+                                        <span class="text-gray-600">
+                                            {{ day.timeCheckHours }} ч
                                         </span>
-                                        <span v-else>
-                                            0
+                                    </div>
+                                    <div v-for="status in day.statuses" class="flex justify-between items-center">
+                                        <span class="font-medium text-gray-600">{{ status.work_status.name }}:</span>
+                                        <span v-if="status.work_status.type != 'late'" class="text-gray-600">
+                                            <span v-if="status.status == 'approved'">
+                                                {{ status.hours ?? 0 }}
+                                            </span>
+                                            <span v-else>
+                                                0
+                                            </span>
+                                            ч
                                         </span>
-                                        ч
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <h1 v-else class="text-4xl font-semibold mb-6">
-            Нет данных для расчёта
-        </h1>
+                        </td>
+
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            {{ formatPrice(user.part_salary) }}
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            {{ formatPrice(user.part_salary) }}
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h1 v-else class="text-4xl font-semibold mb-6">
+                Нет данных для расчёта
+            </h1>
+        </div>
 
         <HelpStatusLegend />
     </TimeCheckLayout>
@@ -180,6 +263,7 @@ export default {
             selectedStatus: this.status ?? statuses[0],
             selectedDate: this.date,
             selectedDepartment: this.department?.id ?? null,
+            showAllDates: false,
         }
     },
     methods: {
@@ -223,9 +307,9 @@ export default {
                 status: this.selectedStatus,
             })
         },
-        getDailyStatusName(statusId) {
-
-        }
+        toggleDates() {
+            this.showAllDates = !this.showAllDates;
+        },
     }
 }
 

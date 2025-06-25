@@ -4,8 +4,11 @@ namespace App\Services\UserServices;
 
 use App\Helpers\DateHelper;
 use App\Models\DailyWorkStatus;
+use App\Models\Department;
 use App\Models\User;
 use App\Models\WorkStatus;
+use App\Services\SaleReports\Builders\ReportDTOBuilder;
+use App\Services\SaleReports\Generators\DepartmentReportGenerator;
 use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -14,22 +17,69 @@ use Illuminate\Support\Collection;
 class TimeSheetService
 {
     public function __construct(
-        private WorkTimeService $service
+        private ReportDTOBuilder $reportDTOBuilder,
+        private WorkTimeService $service,
+        private DepartmentReportGenerator $serviceReportGenerator,
     ) {}
 
-    public function generateUsersReport(Collection $users, Carbon $date)
+    public function newGenerateUsersReport(Collection $departments, Carbon $date)
     {
-        $this->loadRelation($users, $date);
+        $departments->each(function ($department) use ($date) {
+            $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
+            $users = $department->allUsers($findUsersDate, ['departmentHead', 'position'])->filter(function ($user) {
+                return $user->departmentHead->isEmpty();
+            });
 
-        $usersReport = $users->map(function ($user) use ($date) {
-            $user['days'] = $this->userMonthReport($user, $date);
-            $user['salary'] = $user->getSalary();
-            $user['hour_salary'] = round($user['salary'] / count(DateHelper::getWorkingDaysInMonth($date)) / 9);
-            return $user;
+            $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
+
+            $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users);
+            
+        });
+    }
+
+    public function generateUsersReport(Collection $departmentsWithUsers, Carbon $date)
+    {
+        // dd($departmentsWithUsers);
+
+        $usersReport = $departmentsWithUsers->map(function ($users, $departmentId) use ($date) {
+            $this->loadRelation($users, $date);
+
+            $this->calculateSalary($users, $departmentId, $date);
+
+            $usersReport = $users->map(function ($user) use ($date) {
+                $user['days'] = $this->userMonthReport($user, $date);
+                $user['salary'] = $user->getSalary();
+                $user['part_salary'] = $user['salary'] / 2;
+                $user['hour_salary'] = round($user['salary'] / count(DateHelper::getWorkingDaysInMonth($date)) / 9);
+                return $user;
+            });
+
+            return $usersReport;
         });
 
         return $usersReport;
     }
+
+    private function calculateSalary(Collection $users, int|string $departmentId, Carbon $date)
+    {
+        if ($departmentId) {
+            $department = $users[0]->department;
+
+            if ($department->type == Department::SALE_DEPARTMENT) {
+                $this->calculateSaleDepartmentSalary();
+            }
+        }
+
+        return [
+            'first_bonus' => 0,
+            'amount_first_salary' => 0,
+            'second_bonus' => 0,
+            'amount_second_salary' => 0,
+        ];
+    }
+
+    private function calculateSaleDepartmentSalary() {}
+
     public function userMonthReport(User $user, Carbon $date)
     {
         $days = DateHelper::daysInMonth($date);
@@ -56,7 +106,7 @@ class TimeSheetService
                     return false;
                 }
             }
-            if($status->workStatus->type == WorkStatus::TYPE_PART_TIME_DAY){
+            if ($status->workStatus->type == WorkStatus::TYPE_PART_TIME_DAY) {
                 if ($status->hours > $day['timeCheckHours'] && $day['timeCheckHours'] != null) {
                     return false;
                 }

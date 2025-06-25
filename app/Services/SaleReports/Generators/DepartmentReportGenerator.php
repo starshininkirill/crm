@@ -41,8 +41,6 @@ class DepartmentReportGenerator extends BaseReportGenerator
             throw new BusinessException('Сотрудник ещё не работал в этот месяц.');
         }
 
-
-
         $report = [
             'daylyReport' => $this->monthByDayReport($reportData, $user),
             'motivationReport' => $this->motivationReport($reportData, $user),
@@ -99,7 +97,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
         return $res;
     }
 
-    protected function pivotUsers(ReportDTO $reportData, Collection $users): Collection
+    public function pivotUsers(ReportDTO $reportData, Collection $users): Collection
     {
         $report = collect();
 
