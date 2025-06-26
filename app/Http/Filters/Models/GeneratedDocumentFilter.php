@@ -9,7 +9,9 @@ class GeneratedDocumentFilter extends Filter
 {
     protected function name(string $value): Builder
     {
-        return $this->builder->where('file_name', 'like', '%' . $value . '%');
+        return $this->builder->where('file_name', 'like', '%' . $value . '%')
+            ->orWhere('act_number', 'like', '%' . $value . '%')
+            ->orWhere('creater', 'like', '%' . $value . '%');
     }
 
     protected function type(string $value): Builder

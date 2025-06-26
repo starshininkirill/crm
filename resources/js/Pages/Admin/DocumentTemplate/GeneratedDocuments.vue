@@ -21,11 +21,18 @@
                         <thead class="thead border-b">
                             <tr>
                                 <th scope="col" class="px-6 py-3 border-x">
+                                    Дата
+                                </th>
+                                <th scope="col" class="px-6 py-3 border-x">
+                                    Сотрудник
+                                </th>
+                                <th scope="col" class="px-6 py-3 border-x">
                                     Сделка
                                 </th>
                                 <th scope="col" class="px-6 py-3 border-x">
-                                    Дата
+                                    Номер счета
                                 </th>
+
                                 <th scope="col" class="px-6 py-3 border-x">
                                     Тип документа
                                 </th>
@@ -42,11 +49,17 @@
                         </thead>
                         <tbody>
                             <tr v-for="document in documents.data" :key="document.id" class="table-row">
-                                <td scope="row" class="px-6 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
+                                <td class="px-6 py-4 border-x font-medium text-gray-900 whitespace-nowrap ">
+                                    {{ document.date }}
+                                </td>
+                                <td scope="row" class="px-6 py-4 border-r whitespace-nowrap">
+                                    {{ document.creater }}
+                                </td>
+                                <td scope="row" class="px-6 py-4 border-r">
                                     {{ document.deal }}
                                 </td>
-                                <td class="px-6 py-4 border-r ">
-                                    {{ document.date }}
+                                <td scope="row" class="px-6 py-4 border-r">
+                                    {{ document.act_number }}
                                 </td>
                                 <td class="px-6 py-4 border-r ">
                                     {{ document.type }}

@@ -31,7 +31,9 @@ class DocumentGeneratorController extends Controller
                     'file_name' => $document->file_name,
                     'word_file' => Storage::url($document->word_file),
                     'pdf_file' => $document->pdf_file  ? Storage::url($document->pdf_file) : null,
-                    'date' => $document->created_at->format('d.m.Y H:i')
+                    'date' => $document->created_at->format('d.m.Y H:i'),
+                    'creater' => $document->creater,
+                    'act_number' => $document->act_number,
                 ];
             });
 

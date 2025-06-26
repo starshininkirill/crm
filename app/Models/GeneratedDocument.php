@@ -10,7 +10,7 @@ class GeneratedDocument extends Model
 {
     use HasFactory, HasFilter;
 
-    protected $fillable = ['type', 'deal', 'file_name', 'word_file', 'pdf_file'];
+    protected $fillable = ['type', 'deal', 'file_name', 'word_file', 'pdf_file', 'act_number', 'creater'];
 
     const TYPE_DEAL = 'deal';
     const TYPE_PAY = 'pay';

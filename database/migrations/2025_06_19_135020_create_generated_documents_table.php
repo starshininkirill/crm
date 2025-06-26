@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('file_name');
             $table->string('word_file');
             $table->string('pdf_file')->nullable();
+            $table->string('act_number')->nullable();
+            $table->string('creater')->nullable();
             $table->timestamps();
         });
     }

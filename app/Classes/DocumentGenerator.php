@@ -113,6 +113,8 @@ class DocumentGenerator
             'file_name' => $documentName,
             'word_file' => $docxRelativePath,
             'pdf_file' => $withPdf ? $pdfRelativePath : null,
+            'act_number' => $option->value,
+            'creater' => $formatedData['GENERATED_BY']
         ]);
 
         if (!$generatedDocument) {
