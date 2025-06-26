@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Department;
+use App\Models\TimeCheck;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -10,9 +11,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $realManagersNumbers = [
@@ -38,27 +36,39 @@ class UserSeeder extends Seeder
             79922851746,
         ];
 
+        // Создаем тестовых администраторов
+        $this->createAdmins();
 
+        // Создаем тестовых продажников
+        $this->createSalesTeam();
 
+        // Создаем случайных пользователей через фабрику
+        // $this->createFactoryUsers(50); // 50 пользователей для каждого отдела
+
+        // Создаем записи о рабочем времени
+        $this->generateTimeChecks();
+    }
+
+    protected function createAdmins(): void
+    {
         Carbon::setTestNow('2025-01-02 10:26:39');
 
-        $admin = User::create([
+        User::create([
             'first_name' => 'GRAMPUS',
             'last_name' => 'GRAMPUS',
             'surname' => 'GRAMPUS',
-            'work_phone' => 89999999999,
+            'work_phone' => '89999999999',
             'bitrix_id' => 1,
             'email' => 'info@grampus-studio.ru',
             'password' => Hash::make('Goofy__741501'),
             'role' => 'admin',
         ]);
 
-
         $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'User',
             'surname' => 'Иванович',
-            'work_phone' => 89999999999,
+            'work_phone' => '89999999999',
             'bitrix_id' => 1,
             'email' => 'admin@mail.ru',
             'password' => Hash::make('1409199696Rust'),
@@ -67,94 +77,75 @@ class UserSeeder extends Seeder
             'department_id' => 4,
         ]);
 
-        Carbon::setTestNow();
-
         Carbon::setTestNow('2025-03-02 10:26:39');
-        $admin->position_id = 7;
-        $admin->department_id = 4;
-        $admin->save();
+        $admin->update([
+            'position_id' => 7,
+            'department_id' => 4
+        ]);
         Carbon::setTestNow();
+    }
 
+    protected function createSalesTeam(): void
+    {
         Carbon::setTestNow('2025-01-02 10:26:39');
-        $sale1 = User::create([
-            'first_name' => 'Кирилл',
-            'last_name' => 'Продажник 1',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 2,
-            'email' => 'sale1@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 4,
-            'department_id' => 2,
-            'phone' => 79535175470
-        ]);
-        $sale2 = User::create([
-            'first_name' => 'Илья',
-            'last_name' => 'Продажник 1',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 3,
-            'email' => 'sale2@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 4,
-            'department_id' => 2,
-            'phone' => 79922851746
-        ]);
 
-        $sale2 = User::create([
-            'first_name' => 'Игорь',
-            'last_name' => 'Продажник 1',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 4,
-            'email' => 'sale3@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 2,
-            'department_id' => 2,
-            'phone' => 79922857462
-        ]);
+        // Продажники отдела 2
+        $salesDept2 = [
+            ['Кирилл', 'Продажник 1', 'sale1@mail.ru', 79535175470, 4],
+            ['Илья', 'Продажник 1', 'sale2@mail.ru', 79922851746, 4],
+            ['Игорь', 'Продажник 1', 'sale3@mail.ru', 79922857462, 2]
+        ];
 
+        foreach ($salesDept2 as $sale) {
+            User::create([
+                'first_name' => $sale[0],
+                'last_name' => $sale[1],
+                'surname' => 'Иванович',
+                'work_phone' => '89999999999',
+                'bitrix_id' => rand(2, 100),
+                'email' => $sale[2],
+                'password' => Hash::make('1409199696Rust'),
+                'position_id' => $sale[4],
+                'department_id' => 2,
+                'phone' => $sale[3]
+            ]);
+        }
 
-        $sale1 = User::create([
-            'first_name' => 'Вася',
-            'last_name' => 'Продажник 2',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 2,
-            'email' => 'sale4@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 4,
-            'department_id' => 3,
-        ]);
-        $sale2 = User::create([
-            'first_name' => 'Костя',
-            'last_name' => 'Продажник 2',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 3,
-            'email' => 'sale5@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 2,
-            'department_id' => 3,
-        ]);
+        // Продажники отдела 3
+        $salesDept3 = [
+            ['Вася', 'Продажник 2', 'sale4@mail.ru', null, 4],
+            ['Костя', 'Продажник 2', 'sale5@mail.ru', null, 2],
+            ['Евгений', 'Продажник 2', 'sale6@mail.ru', null, 3]
+        ];
 
-        $sale2 = User::create([
-            'first_name' => 'Евгений',
-            'last_name' => 'Продажник 2',
-            'surname' => 'Иванович',
-            'work_phone' => 89999999999,
-            'bitrix_id' => 4,
-            'email' => 'sale6@mail.ru',
-            'password' => Hash::make('1409199696Rust'),
-            'position_id' => 3,
-            'department_id' => 3,
-        ]);
+        foreach ($salesDept3 as $sale) {
+            User::create([
+                'first_name' => $sale[0],
+                'last_name' => $sale[1],
+                'surname' => 'Иванович',
+                'work_phone' => '89999999999',
+                'bitrix_id' => rand(2, 100),
+                'email' => $sale[2],
+                'password' => Hash::make('1409199696Rust'),
+                'position_id' => $sale[4],
+                'department_id' => 3,
+                'phone' => $sale[3]
+            ]);
+        }
 
+        // Руководители отделов
+        $this->createDepartmentHeads();
+
+        Carbon::setTestNow();
+    }
+
+    protected function createDepartmentHeads(): void
+    {
         $sale1Head = User::create([
             'first_name' => 'Руководитель',
-            'last_name' => 'Sale 2',
+            'last_name' => 'Sale 1',
             'surname' => 'продажнивич',
-            'work_phone' => 89999999999,
+            'work_phone' => '89999999999',
             'bitrix_id' => 10,
             'email' => 'sale-head@mail.ru',
             'password' => Hash::make('1409199696Rust'),
@@ -162,17 +153,13 @@ class UserSeeder extends Seeder
             'department_id' => 2,
         ]);
 
-        $sale1Department = Department::find(2);
-
-        $sale1Department->head_id = $sale1Head->id;
-        $sale1Department->save();
-
+        Department::find(2)->update(['head_id' => $sale1Head->id]);
 
         $sale2Head = User::create([
             'first_name' => 'Руководитель',
-            'last_name' => 'Sale 1',
+            'last_name' => 'Sale 2',
             'surname' => 'продажнивич',
-            'work_phone' => 89999999999,
+            'work_phone' => '89999999999',
             'bitrix_id' => 10,
             'email' => 'sale2-head@mail.ru',
             'password' => Hash::make('1409199696Rust'),
@@ -180,25 +167,54 @@ class UserSeeder extends Seeder
             'department_id' => 3,
         ]);
 
-        $sale1Department = Department::find(3);
+        Department::find(3)->update(['head_id' => $sale2Head->id]);
+    }
 
-        $sale1Department->head_id = $sale2Head->id;
-        $sale1Department->save();
-        Carbon::setTestNow();
-
+    protected function createFactoryUsers(int $countPerDepartment): void
+    {
         Carbon::setTestNow('2025-01-02 10:26:39');
+        // Создаем пользователей для отдела 2
+        User::factory()->count($countPerDepartment)->create([
+            'department_id' => 2,
+            'surname' => 'Иванович',
+            'position_id' => rand(2, 4), // случайная позиция из доступных для продажников
+            'role' => 'user'
+        ]);
 
+        // Создаем пользователей для отдела 3
+        User::factory()->count($countPerDepartment)->create([
+            'department_id' => 3,
+            'surname' => 'Иванович',
+            'position_id' => rand(2, 4),
+            'role' => 'user'
+        ]);
+
+        // Создаем пользователей с реальными номерами
         // foreach ($realManagersNumbers as $number) {
-        //     User::create([
-        //         'first_name' => fake()->firstName(),
-        //         'last_name' => fake()->lastName(),
-        //         'email' => fake()->unique()->safeEmail(),
-        //         'password' => Hash::make('password'), // Установите временный пароль
-        //         'role' => 'user', // Роль по умолчанию
-        //         'position_id' => null, // Можно установить позже
-        //         'department_id' => 3, // Можно установить позже
-        //         'phone' => $number, // Задаем номер телефона
+        //     User::factory()->create([
+        //         'phone' => $number,
+        //         'department_id' => rand(2, 3),
+        //         'position_id' => rand(2, 4),
         //     ]);
         // }
+    }
+
+    protected function generateTimeChecks(): void
+    {
+        Carbon::setTestNow();
+        $users = User::all();
+        $startDate = Carbon::now()->subMonths(3)->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
+
+        foreach ($users as $user) {
+            for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+                if ($date->isWeekend()) continue;
+
+                $user->timeChecks()->createMany([
+                    ['date' => $date->copy()->setTime(9, 0), 'action' => TimeCheck::ACTION_START],
+                    ['date' => $date->copy()->setTime(18, 0), 'action' => TimeCheck::ACTION_END],
+                ]);
+            }
+        }
     }
 }

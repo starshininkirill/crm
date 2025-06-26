@@ -14,7 +14,6 @@ use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
 use App\Services\UserServices\UserService;
-use Illuminate\Support\Facades\DB;
 
 class DepartmentReportGenerator extends BaseReportGenerator
 {
@@ -104,6 +103,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
         foreach ($users as $user) {
             $res = $this->motivationReport($reportData, $user);
             $res['name'] = $user->first_name . ' ' . $user->last_name;
+            $res['user'] = $user;
             $report[] = $res;
         }
 
@@ -178,7 +178,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $newPaymentsSum = $dayNewPayments->sum('value');
         $oldPaymentsSum = $dayOldPayments->sum('value');
-        
+
         $serviceCounts = ServiceCountHelper::calculateServiceCountsByPayments($uniqueDayNewPayments);
         return [
             'date' => Carbon::parse($day)->format('d.m.y'),

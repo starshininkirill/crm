@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_status_id')->constrained()->onDelete('cascade');
-            $table->date('date');
-            $table->string('status')->default('pending');
+            $table->date('date')->index();
+            $table->string('status')->default('pending')->index();
             $table->float('hours')->nullable()->default(null);
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();

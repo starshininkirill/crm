@@ -11,6 +11,7 @@ use App\Services\UserServices\TimeSheetService;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TimeSheetController extends Controller
@@ -21,11 +22,12 @@ class TimeSheetController extends Controller
 
     public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
+        $startTime = microtime(true);
         $status = $request->input('status', 'all');
 
         $departments = $request->filled('department_id')
             ? collect([Department::findOrFail($request->input('department_id'))])
-            : collect();
+            : Department::whereDoesntHave('childDepartments')->get();
 
         $targetDate = $request->filled('date')
             ? Carbon::parse($request->input('date'))->endOfMonth()
@@ -34,17 +36,26 @@ class TimeSheetController extends Controller
         $info = [
             'days' => DateHelper::daysInMonth($targetDate),
             'departments' => Department::all(),
-            'department' => $departments->first() ?? null,
+            'department' => $request->filled('department_id') ? Department::findOrFail($request->input('department_id')) : null,
             'status' => $status,
             'date' => $targetDate->format('Y-m'),
             'usersReport' => collect(),
         ];
 
-        if ($departments->isEmpty() || $targetDate <= Carbon::now()->endOfMonth()) {
+        if ($departments->isEmpty() || $targetDate > Carbon::now()->endOfMonth()) {
             return Inertia::render('Admin/TimeCheck/TimeSheet/Index', $info);
         }
 
+        $service->status = $request->filled('status')
+            ? $request->input('status')
+            : 'active';
+
+        $executionTime = round(microtime(true) - $startTime, 3);
+
+        
         $info['usersReport'] = $service->newGenerateUsersReport($departments, $targetDate);
+
+        // dump($executionTime);
 
         return Inertia::render('Admin/TimeCheck/TimeSheet/Index', $info);
     }
@@ -81,21 +92,21 @@ class TimeSheetController extends Controller
     //     return Inertia::render('Admin/TimeCheck/TimeSheet/Index', $info);
     // }
 
-    protected function getUsersCollection(?Department $department, Carbon $targetDate): Collection
-    {
-        $isCurrentMonth = DateHelper::isCurrentMonth($targetDate);
-        $relations = ['position', 'department'];
+    // protected function getUsersCollection(?Department $department, Carbon $targetDate): Collection
+    // {
+    //     $isCurrentMonth = DateHelper::isCurrentMonth($targetDate);
+    //     $relations = ['position', 'department'];
 
-        if ($department) {
-            return $isCurrentMonth
-                ? $department->allUsers()->loadMissing($relations)
-                : $department->allUsers($targetDate, $relations);
-        }
+    //     if ($department) {
+    //         return $isCurrentMonth
+    //             ? $department->allUsers()->loadMissing($relations)
+    //             : $department->allUsers($targetDate, $relations);
+    //     }
 
-        // TODO
-        // Пофиксить след месяца
-        return $isCurrentMonth
-            ? User::with($relations)->get()
-            : User::getLatestHistoricalRecords($targetDate, $relations);
-    }
+    //     // TODO
+    //     // Пофиксить след месяца
+    //     return $isCurrentMonth
+    //         ? User::with($relations)->get()
+    //         : User::getLatestHistoricalRecords($targetDate, $relations);
+    // }
 }

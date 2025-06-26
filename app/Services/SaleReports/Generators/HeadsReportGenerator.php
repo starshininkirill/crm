@@ -31,16 +31,21 @@ class HeadsReportGenerator extends BaseReportGenerator
         if ($departments->isEmpty()) return collect();
 
         $report = $departments->map(function ($department) use ($date) {
-            $reportData = $this->reportDTOBuilder->buildHeadReport($date, $department);
-
-            return [
-                'department' => $department->only('name', 'id'),
-                'head' => $department->head->only('id', 'full_name', 'calculated_salary'),
-                'report' => $this->headReport($department, $date, $reportData),
-            ];
+            return $this->generateHeadReport($department, $date);
         });
 
         return $report;
+    }
+
+    public function generateHeadReport(Department $department, Carbon|null $date)
+    {
+        $reportData = $this->reportDTOBuilder->buildHeadReport($date, $department);
+
+        return [
+            'department' => $department->only('name', 'id'),
+            'head' => $department->head->only('id', 'full_name', 'calculated_salary'),
+            'report' => $this->headReport($department, $date, $reportData),
+        ];
     }
 
     protected function headReport(Department $department, Carbon|null $date, ReportDTO $reportData)

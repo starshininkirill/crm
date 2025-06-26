@@ -100,7 +100,7 @@
                             {{ key == '' ? 'Без отдела' : key }}
                         </td>
                     </tr>
-                    <tr v-if="department.length" v-for="user in department" :key="user.id" class="table-row ">
+                    <tr v-for="user in department" :key="user.id" class="table-row ">
                         <td class="px-2 py-3 border-r">
                             {{ formatPrice(user.salary) }}
                         </td>
@@ -117,14 +117,14 @@
                             class="px-2 py-3 border-r text-center cursor-pointer relative group"
                             v-show="showAllDates || index == 1">
                             <div class="absolute inset-0 flex z-0">
-                                <div v-for="color in getActionColor(day)" :class="color" class="h-full"></div>
+                                <div v-for="color in getActionColor(day, user)" :class="color" class="h-full"></div>
                             </div>
-                            <span class=" relative z-10" :class="getActionColor(day).length ? 'text-white' : ''">
+                            <span class=" relative z-10" :class="getActionColor(day, user).length ? 'text-white' : ''">
                                 {{ day.hours == 0 ? '' : day.hours }}
-                                {{ day.date == user.fired_at ? 'Уволен' : '' }}
+                                {{ day.date == user.fired_at ? 'Ув' : '' }}
                             </span>
 
-                            <div v-if="day.statuses.length || day.timeCheckHours != null"
+                            <div v-if="day.statuses.length || day.timeCheckHours != null || day.date == user.fired_at"
                                 class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[200px] left-2/4 transform -translate-x-full mt-2 pointer-events-none">
                                 <div class="flex flex-col gap-1">
                                     <div v-if="day.timeCheckHours != null" class="flex justify-between items-center">
@@ -132,6 +132,9 @@
                                         <span class="text-gray-600">
                                             {{ day.timeCheckHours }} ч
                                         </span>
+                                    </div>
+                                    <div v-if="day.date == user.fired_at" class="flex justify-between items-center">
+                                        <span class="font-medium text-gray-600">Уволен </span>
                                     </div>
                                     <div v-for="status in day.statuses" class="flex justify-between items-center">
                                         <span class="font-medium text-gray-600">{{ status.work_status.name }}:</span>
@@ -153,37 +156,37 @@
                             {{ formatPrice(user.part_salary) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ formatPrice(user.bonuses) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ formatPrice(user.first_half_hours_money) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ user.first_half_hours }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ formatPrice(user.amount_first_half_salary) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.part_salary) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            0 ₽
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ formatPrice(user.second_half_hours_money) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ user.second_half_hours }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            
+                            {{ formatPrice(user.amount_second_half_salary) }}
                         </td>
                     </tr>
                 </tbody>
@@ -267,7 +270,7 @@ export default {
         }
     },
     methods: {
-        getActionColor(day) {
+        getActionColor(day, user) {
             let colors = [];
 
             if (day.status) {
@@ -292,9 +295,16 @@ export default {
                 colors.push('bg-gray-400')
             }
 
+            if (user && day.date >= user.fired_at &&  day.isWorkingDay) {
+                console.log('test');
+                
+                colors.push('bg-red-700');
+            }
+
             if (day.isLate) {
                 colors.push('bg-red-500');
             }
+            
 
             colors = [...new Set(colors)];
 

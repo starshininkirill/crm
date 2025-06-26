@@ -126,7 +126,7 @@ class TestSeeder extends Seeder
         $last->type = Payment::TYPE_OLD;
         $last->save();
 
-        Carbon::setTestNow('2025-02-15 10:26:39');
+        Carbon::setTestNow('2025-02-14 10:26:39');
 
         $user->fire();
         // dd($user);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('type')->nullable();
+            $table->integer('type')->index()->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('departments')->references('id')->onDelete('set null');
             $table->timestamps();
         });

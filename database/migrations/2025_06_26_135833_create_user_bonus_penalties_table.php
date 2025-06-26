@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('work_plans', function (Blueprint $table) {
+        Schema::create('user_bonus_penalties', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users');
             $table->string('type')->index();
-            $table->json('data')->nullable();
-            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
-            $table->foreignId('position_id')->nullable()->constrained('positions')->onDelete('set null');
-            $table->timestamps();
+            $table->string('period')->index();
+            $table->decimal('value', 10);
+            $table->text('description')->nullable();
+            $table->date('date');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('work_plans');
+        Schema::dropIfExists('user_bonus_penalties');
     }
 };

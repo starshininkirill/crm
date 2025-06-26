@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\WorkStatus;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use App\Services\SaleReports\Generators\DepartmentReportGenerator;
+use App\Services\SaleReports\Generators\HeadsReportGenerator;
 use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -16,75 +17,163 @@ use Illuminate\Support\Collection;
 
 class TimeSheetService
 {
+    public $status = 'active';
+
     public function __construct(
         private ReportDTOBuilder $reportDTOBuilder,
         private WorkTimeService $service,
         private DepartmentReportGenerator $serviceReportGenerator,
+        private HeadsReportGenerator $saleHeadsReportGenerator,
+        private UserService $userService,
     ) {}
 
     public function newGenerateUsersReport(Collection $departments, Carbon $date)
     {
-        $departments->each(function ($department) use ($date) {
-            $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
-            $users = $department->allUsers($findUsersDate, ['departmentHead', 'position'])->filter(function ($user) {
-                return $user->departmentHead->isEmpty();
-            });
+        $result = $departments->mapWithKeys(function ($department) use ($date) {
+            $users = $this->calculateSalary($department, $date);
 
-            $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
-
-            $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users);
-            
-        });
-    }
-
-    public function generateUsersReport(Collection $departmentsWithUsers, Carbon $date)
-    {
-        // dd($departmentsWithUsers);
-
-        $usersReport = $departmentsWithUsers->map(function ($users, $departmentId) use ($date) {
             $this->loadRelation($users, $date);
 
-            $this->calculateSalary($users, $departmentId, $date);
+            $users = $this->calculateGeneralData($users, $date)
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'full_name' => $user->full_name,
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'fired_at' => $user->fired_at,
+                        'days' => $user->days,
+                        'salary' => $user->salary,
+                        'bonuses' => $user->bonuses,
+                        'part_salary' => $user->part_salary,
+                        'hour_salary' => $user->hour_salary,
+                        'first_half_hours' => $user->first_half_hours,
+                        'second_half_hours' => $user->second_half_hours,
+                        'first_half_hours_money' => $user->first_half_hours_money,
+                        'second_half_hours_money' => $user->second_half_hours_money,
+                        'amount_first_half_salary' => $user->amount_first_half_salary,
+                        'amount_second_half_salary' => $user->amount_second_half_salary,
+                        'position' => $user->position,
+                    ];
+                });
 
-            $usersReport = $users->map(function ($user) use ($date) {
-                $user['days'] = $this->userMonthReport($user, $date);
-                $user['salary'] = $user->getSalary();
-                $user['part_salary'] = $user['salary'] / 2;
-                $user['hour_salary'] = round($user['salary'] / count(DateHelper::getWorkingDaysInMonth($date)) / 9);
-                return $user;
-            });
-
-            return $usersReport;
+            return [$department->name => $users];
         });
 
-        return $usersReport;
+        return $result;
     }
 
-    private function calculateSalary(Collection $users, int|string $departmentId, Carbon $date)
+    private function calculateGeneralData(Collection|EloquentCollection $users, Carbon $date)
     {
-        if ($departmentId) {
-            $department = $users[0]->department;
+        $users = $users->map(function ($user) use ($date) {
+            $daysReport = $this->userMonthReport($user, $date);
+            $workingDays = DateHelper::getWorkingDaysInMonth($date);
+            $salary = $user->getSalary();
+            $hourSalary = $salary / (count(DateHelper::getWorkingDaysInMonth($date)) * 9);
 
-            if ($department->type == Department::SALE_DEPARTMENT) {
-                $this->calculateSaleDepartmentSalary();
+            $firstHalfAmountHours = $workingDays->filter(function ($date) {
+                return Carbon::parse($date)->day <= 14;
+            })->count() * 9;
+
+            $secondHalfAmountHours = $workingDays->filter(function ($date) {
+                return Carbon::parse($date)->day > 14;
+            })->count() * 9;
+
+            $firstHalfUserWorkingHours = $daysReport->filter(function ($day) {
+                return $day['date']->day <= 14;
+            })->sum('hours');
+
+            $secondHalfUserWorkingHours = $daysReport->filter(function ($day) {
+                return $day['date']->day > 14;
+            })->sum('hours');
+
+            $firstHalfUserDiffHours = $firstHalfUserWorkingHours - $firstHalfAmountHours;
+            $secondHalfUserDiffHours = $secondHalfUserWorkingHours - $secondHalfAmountHours;
+
+
+            if ($firstHalfUserWorkingHours == 0) {
+                $firstHalfHoursMoney = 0;
+                $amountFirstHalfSalary = $user->bonuses;
+            } else {
+                $firstHalfHoursMoney = $firstHalfUserDiffHours * $hourSalary;
+                $amountFirstHalfSalary = $user->bonuses + ($salary / 2) + $firstHalfHoursMoney;
             }
+
+            if ($secondHalfUserWorkingHours == 0) {
+                $secondHalfHoursMoney = 0;
+                $amountSecondHalfSalary = 0;
+            } else {
+                $secondHalfHoursMoney = $secondHalfUserDiffHours * $hourSalary;
+                $amountSecondHalfSalary = ($salary / 2) + $secondHalfHoursMoney;
+            }
+
+            $user->days = $daysReport;
+            $user->salary = $salary;
+            $user->part_salary = $user->salary / 2;
+            $user->hour_salary = $hourSalary;
+            $user->first_half_hours = $firstHalfUserDiffHours;
+            $user->second_half_hours = $secondHalfUserDiffHours;
+            $user->first_half_hours_money = $firstHalfHoursMoney;
+            $user->second_half_hours_money = $secondHalfHoursMoney;
+            $user->amount_first_half_salary = $amountFirstHalfSalary;
+            $user->amount_second_half_salary = $amountSecondHalfSalary;
+            return $user;
+        });
+
+        return $users;
+    }
+
+    private function calculateSalary(Department $department, Carbon $date)
+    {
+        if ($department->type == Department::SALE_DEPARTMENT) {
+            return $this->calculateSaleDepartmentSalary($department, $date);
         }
 
-        return [
-            'first_bonus' => 0,
-            'amount_first_salary' => 0,
-            'second_bonus' => 0,
-            'amount_second_salary' => 0,
-        ];
+        return $department->users;
     }
 
-    private function calculateSaleDepartmentSalary() {}
+    private function calculateSaleDepartmentSalary(Department $department, Carbon $date): EloquentCollection
+    {
+        $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
+
+        $departmentUsers = $this->userService->filterUsersByStatus($department->allUsers($findUsersDate, ['departmentHead', 'position']), $this->status, $date);
+
+        $head = $department->head;
+
+        if ($head) {
+            $headReport = $this->saleHeadsReportGenerator->generateHeadReport($department, $date);
+
+            $head->bonuses = $headReport['report']['headBonus'] + $headReport['report']['bonus'];
+        }
+
+        $users = $departmentUsers->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        });
+
+        $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
+
+        $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users);
+
+        $users = $pivotUsers->map(function ($userReport) use ($date) {
+            $user = $userReport['user'];
+            $user->bonuses = $userReport['salary']['amount'];
+            return $user;
+        })
+            ->sortBy('full_name')
+            ->values();
+
+        $users = new EloquentCollection($users);
+
+        if ($head) {
+            $users = $users->prepend($head);
+        }
+
+        return $users;
+    }
 
     public function userMonthReport(User $user, Carbon $date)
     {
         $days = DateHelper::daysInMonth($date);
-
-        $this->loadRelation($user, $date);
 
         $days = $days->map(function ($day) use ($user) {
             return $this->userDayReport($user, $day);
@@ -125,30 +214,21 @@ class TimeSheetService
 
     private function loadRelation($users, Carbon $date): bool
     {
-        $needsLoad = false;
+        $dateStart = $date->copy()->startOfMonth();
+        $dateEnd = $date->copy()->endOfMonth();
 
-        if ($users instanceof User) {
-            $needsLoad = !$users->relationLoaded('dailyWorkStatuses');
-            $users = collect([$users]);
-        } elseif ($users instanceof EloquentCollection) {
-            $needsLoad = $users->contains(function ($user) {
-                return !$user->relationLoaded('dailyWorkStatuses');
-            });
-        } else {
-            return false;
-        }
-
-        if ($needsLoad) {
-            $dateStart = $date->copy()->startOfMonth();
-            $dateEnd = $date->copy()->endOfMonth();
-
-            $users->load(['dailyWorkStatuses' => function ($query) use ($dateStart, $dateEnd) {
-                $query->whereBetween('date', [$dateStart, $dateEnd])
-                    ->with(['workStatus']);
-            }]);
-
-            return true;
-        }
+        $users->loadMissing(
+            [
+                'departmentHead',
+                'dailyWorkStatuses' => function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('date', [$dateStart, $dateEnd])
+                        ->with(['workStatus']);
+                },
+                'timeChecks' => function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('date', [$dateStart, $dateEnd]);
+                },
+            ]
+        );
 
         return false;
     }

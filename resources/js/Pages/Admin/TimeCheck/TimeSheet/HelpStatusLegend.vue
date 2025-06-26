@@ -26,10 +26,6 @@
 
             <div class="space-y-2">
                 <div class="flex items-center">
-                    <div class="w-4 h-4 rounded-full bg-red-500 mr-2 flex-shrink-0"></div>
-                    <span>Опоздание</span>
-                </div>
-                <div class="flex items-center">
                     <div class="w-4 h-4 rounded-full bg-cyan-400 mr-2 flex-shrink-0"></div>
                     <span>Больничный/ВЗС</span>
                 </div>
@@ -40,6 +36,14 @@
                 <div class="flex items-center">
                     <div class="w-4 h-4 rounded-full bg-orange-400 mr-2 flex-shrink-0"></div>
                     <span>Работа из дома/неполный день</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 rounded-full bg-red-500 mr-2 flex-shrink-0"></div>
+                    <span>Опоздание</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 rounded-full bg-red-700 mr-2 flex-shrink-0"></div>
+                    <span>Уволен</span>
                 </div>
                 <div class="flex items-center">
                     <div class="w-4 h-4 rounded-full bg-gray-400 mr-2 flex-shrink-0"></div>

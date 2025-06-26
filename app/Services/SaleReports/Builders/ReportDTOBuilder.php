@@ -24,6 +24,7 @@ class ReportDTOBuilder
 {
     private UserService $userService;
     private WorkPlanService $workPlanService;
+    private $userRelations = [];
 
     public function __construct(
         UserService $userService,
@@ -31,6 +32,11 @@ class ReportDTOBuilder
     ) {
         $this->userService = $userService;
         $this->workPlanService = $workPlanService;
+    }
+
+    public function setUserRelations(array $relations = [])
+    {
+        $this->userRelations = $relations;
     }
 
     public function buildHeadReport(Carbon $date, ?Department $department = null): ReportDTO
@@ -66,7 +72,7 @@ class ReportDTOBuilder
 
         $data->workPlans = $this->workPlanService->actualSalePlans($date);
 
-        $activeUsers = $this->userService->filterUsersByStatus($data->department->allUsers($data->date), 'active', $data->date)
+        $activeUsers = $this->userService->filterUsersByStatus($data->department->allUsers($data->date, $this->userRelations), 'active', $data->date)
             ->where('id', '!=', $department->head?->id);
 
         $data->payments = $this->monthlyClosePaymentsForRoleGroup(

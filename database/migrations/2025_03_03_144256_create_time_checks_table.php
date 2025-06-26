@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('date');
             $table->foreignId('user_id')->onDelete('cascade');
-            $table->enum('action', TimeCheck::ACTIONS);
+            $table->enum('action', TimeCheck::ACTIONS)->index();
         });
     }
 
