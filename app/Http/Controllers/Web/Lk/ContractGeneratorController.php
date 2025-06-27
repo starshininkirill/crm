@@ -98,7 +98,7 @@ class ContractGeneratorController extends Controller
             $contract = $client->contracts()->create($request->storeContract());
 
             $contract->addPayments($request->payments());
-            $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
+            $contract->attachPerformer($request->user()->id, ContractUser::SELLER);
             $contract->services()->attach($request->services());
 
             DB::commit();

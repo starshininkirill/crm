@@ -21,7 +21,7 @@ class ContractUser extends Pivot
         'role'
     ];
 
-    public const SALLER = 0;
+    public const SELLER = 0;
     public const PROJECT = 1;
     public const DESIGNER = 2;
     public const PROGRAMMER = 3;
@@ -33,7 +33,7 @@ class ContractUser extends Pivot
     public static function getRoles(): Collection
     {
         return collect([
-            self::SALLER,
+            self::SELLER,
             self::PROJECT,
             self::DESIGNER,
             self::PROGRAMMER,
@@ -47,7 +47,7 @@ class ContractUser extends Pivot
     public static function roleName(int $role): string
     {
         $roles = [
-            self::SALLER => 'Продажник',
+            self::SELLER => 'Продажник',
             self::PROJECT => 'Проект Менеджер',
             self::DESIGNER => 'Дизайнер',
             self::PROGRAMMER => 'Програмист',

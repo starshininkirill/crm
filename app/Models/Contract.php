@@ -87,9 +87,9 @@ class Contract extends Model
         return $this->belongsToMany(Service::class)->withPivot('price');
     }
 
-    public function saller()
+    public function SELLER()
     {
-        return $this->users()->wherePivot('role', ContractUser::SALLER)->first();
+        return $this->users()->wherePivot('role', ContractUser::SELLER)->first();
     }
 
     public function contractUsers()

@@ -6,6 +6,7 @@ use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ContractRequest;
 use App\Models\Contract;
+use App\Models\ContractUser;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\User;
@@ -15,17 +16,16 @@ use Inertia\Inertia;
 
 class ContractController extends Controller
 {
-
     public function index()
     {
-        $contracts = Contract::orderByDesc('created_at')->get();
+        $contracts = Contract::with('payments')->orderByDesc('created_at')->get();
 
         $contracts = $contracts->map(function ($contract) {
             return [
                 'id' => $contract->id,
                 'number' => $contract->number,
                 'created_at' => $contract->created_at->format('d.m.Y'),
-                'saller' => $contract->saller() ?? [],
+                'SELLER' => $contract->SELLER() ?? [],
                 'parent' => $contract->parent ?? [],
                 'client' => $contract->client ?? [],
                 'phone' => $contract->phone ?? '',
@@ -82,6 +82,54 @@ class ContractController extends Controller
         return Inertia::render('Admin/Contract/Show', [
             'contract' => $contractData,
             'users' => $users,
+        ]);
+    }
+
+    public function unallocatedContracts()
+    {
+        $contracts = Contract::with(['contractUsers.user', 'payments' => function ($query) {
+            $query->orderBy('order');
+        }])
+            ->where(function ($query) {
+                $query->whereDoesntHave('contractUsers', function ($q) {
+                    $q->where('role', ContractUser::SELLER);
+                })
+                    ->orWhereHas('contractUsers', function ($q) {
+                        $q->where('role', ContractUser::SELLER)
+                            ->whereHas('user', function ($q) {
+                                $q->whereNotNull('fired_at');
+                            });
+                    });
+            })
+            ->whereHas('payments', function ($q) {
+                $q->where('order', 1)
+                    ->where('status', '!=', Payment::STATUS_CLOSE);
+            })
+            ->get()
+            ->map(function ($contract) {
+                return [
+                    'id' => $contract->id,
+                    'number' => $contract->number,
+                    'created_at' => $contract->created_at->format('d.m.Y'),
+                    'SELLER' => $contract->SELLER() ?? [],
+                    'parent' => $contract->parent ?? [],
+                    'client' => $contract->client ?? [],
+                    'phone' => $contract->phone ?? '',
+                    'services' => $contract->services ?? [],
+                    'price' => $contract->amount_price,
+                    'payments' => $contract->payments->map(function ($payment) {
+                        return [
+                            'id' => $payment->id,
+                            'value' => $payment->value,
+                            'status' => $payment->status
+                        ];
+                    }),
+                ];
+            })->toArray();
+
+        return Inertia::render('Admin/Contract/Unallocated', [
+            'contracts' => $contracts,
+            'paymentStatuses' => Payment::vueStatuses(),
         ]);
     }
 

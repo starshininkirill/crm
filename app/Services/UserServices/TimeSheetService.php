@@ -15,7 +15,6 @@ use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class TimeSheetService
 {
@@ -126,7 +125,7 @@ class TimeSheetService
                 'fired_at' => $user->fired_at,
                 'days' => $daysReport,
                 'salary' => $salary,
-                'part_salary' => $user->salary / 2,
+                'part_salary' => $salary / 2,
                 'hour_salary' => $hourSalary,
                 'bonuses' => $user->bonuses,
                 'first_half_hours' => $firstHalfUserDiffHours,

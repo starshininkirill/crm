@@ -4,6 +4,10 @@
             <AdminSubnavLink :href="route('admin.contract.index')" :route="'admin.contract.index'">
                 Все Договоры
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.contract.unallocated-contracts')"
+                :route="'admin.contract.unallocated-contracts'">
+                Договоры на распределение
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>

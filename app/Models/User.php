@@ -26,7 +26,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasHistory, HasFilter;
 
     const ROLE_ADMIN = 'admin';
-    const ROLE_SALLER = 'saller';
+    const ROLE_SELLER = 'SELLER';
     const ROLE_USER = 'user';
 
     protected $fillable = [

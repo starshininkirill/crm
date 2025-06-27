@@ -58,7 +58,7 @@ class ActGeneratorController extends Controller
         $contract->payments()->create($request->paymentData());
 
         $contract->users()->attach(auth()->user()->id, [
-            'role' => ContractUser::SALLER,
+            'role' => ContractUser::SELLER,
         ]);
 
         $organisation = Organization::find($validated['organization_id']);

@@ -78,7 +78,7 @@ class ReportDTOBuilder
         $data->payments = $this->monthlyClosePaymentsForRoleGroup(
             $date,
             $activeUsers->pluck('id'),
-            ContractUser::SALLER
+            ContractUser::SELLER
         );
 
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
@@ -151,7 +151,7 @@ class ReportDTOBuilder
         $data->payments = $this->monthlyClosePaymentsForRoleGroup(
             $date,
             $activeUsers->pluck('id'),
-            ContractUser::SALLER
+            ContractUser::SELLER
         );
 
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
@@ -233,7 +233,7 @@ class ReportDTOBuilder
         $data->monthWorkPlan = $this->getMonthPlan($data->workPlans, $user, $data->date, $data->mainDepartmentId);
         $data->monthWorkPlanGoal = $data->monthWorkPlan->data['goal'];
 
-        $data->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SALLER);
+        $data->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SELLER);
 
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
         $data->oldPayments = $data->payments->where('type', Payment::TYPE_OLD);

@@ -6,8 +6,7 @@
             <h1 class="text-4xl font-semibold mb-6">Договоры</h1>
             <h2 v-if="!contracts.length">Договоров не найдено</h2>
             <div v-if="contracts.length" class="overflow-x-auto">
-                <table
-                    class="table">
+                <table class="table">
                     <thead class="thead">
                         <tr>
                             <th scope="col" class="px-2 py-2 border-x">
@@ -50,8 +49,7 @@
                     </thead>
                     <tbody>
 
-                        <tr v-for="contract in contracts" :key="contract.id"
-                            class="table-row ">
+                        <tr v-for="contract in contracts" :key="contract.id" class="table-row ">
                             <th scope="row" class="px-2 border-x py-4 font-medium text-gray-900 whitespace-nowrap ">
                                 {{ contract.created_at }}
                             </th>
@@ -108,7 +106,8 @@
                                 {{ formatPrice(payment.value) }}
                                 </Link>
                             </td>
-                            <td v-for="i in 5 - contract.payments.length" :key="'empty-' + i" class="px-2 border-r py-4">
+                            <td v-for="i in 5 - contract.payments.length" :key="'empty-' + i"
+                                class="px-2 border-r py-4">
 
                             </td>
                         </tr>
