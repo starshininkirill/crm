@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('time-check')->group(function () {
     Route::get('/time-sheet', [TimeSheetController::class, 'index'])->name('admin.time-sheet');
-    
-    Route::prefix('/overworks')->group(function(){
+    Route::post('/time-sheet/user-adjustment', [TimeSheetController::class, 'userAdjustmentStore'])->name('admin.time-sheet.user-adjustment.store');
+    Route::delete('/time-sheet/user-adjustment/{adjustment}', [TimeSheetController::class, 'userAdjustmentDestroy'])->name('admin.time-sheet.user-adjustment.destroy');
+
+    Route::prefix('/overworks')->group(function () {
         Route::get('/', [OverworkController::class, 'index'])->name('admin.time-check.overwork');
         Route::post('/{overwork}/acept', [OverworkController::class, 'accept'])->name('admin.time-check.overwork.accept');
         Route::post('/{overwork}/reject', [OverworkController::class, 'reject'])->name('admin.time-check.overwork.reject');

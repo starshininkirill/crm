@@ -1,6 +1,6 @@
 <template>
     <div class="modal-wrapper" v-if="open" @click.self="closeModal">
-        <div class="modal">
+        <div class="modal overflow-y-auto">
             <slot></slot>
             <button class="close-modal" @click="closeModal">
                 x

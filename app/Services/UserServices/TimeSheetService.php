@@ -6,6 +6,7 @@ use App\Helpers\DateHelper;
 use App\Models\DailyWorkStatus;
 use App\Models\Department;
 use App\Models\User;
+use App\Models\UserAdjustment;
 use App\Models\WorkStatus;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use App\Services\SaleReports\Generators\DepartmentReportGenerator;
@@ -14,6 +15,7 @@ use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TimeSheetService
 {
@@ -30,37 +32,39 @@ class TimeSheetService
     public function newGenerateUsersReport(Collection $departments, Carbon $date)
     {
         $result = $departments->mapWithKeys(function ($department) use ($date) {
-            $users = $this->calculateSalary($department, $date);
-
-            $this->loadRelation($users, $date);
-
-            $users = $this->calculateGeneralData($users, $date)
-                ->map(function ($user) {
-                    return [
-                        'id' => $user->id,
-                        'full_name' => $user->full_name,
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'fired_at' => $user->fired_at,
-                        'days' => $user->days,
-                        'salary' => $user->salary,
-                        'bonuses' => $user->bonuses,
-                        'part_salary' => $user->part_salary,
-                        'hour_salary' => $user->hour_salary,
-                        'first_half_hours' => $user->first_half_hours,
-                        'second_half_hours' => $user->second_half_hours,
-                        'first_half_hours_money' => $user->first_half_hours_money,
-                        'second_half_hours_money' => $user->second_half_hours_money,
-                        'amount_first_half_salary' => $user->amount_first_half_salary,
-                        'amount_second_half_salary' => $user->amount_second_half_salary,
-                        'position' => $user->position,
-                    ];
-                });
-
+            $users = $this->processDepartmentUsers($department, $date);
             return [$department->name => $users];
         });
 
-        return $result;
+        $usersWithoutDepartment = $this->getUsersWithoutDepartment($date);
+        $result['Без отдела'] = $usersWithoutDepartment;
+
+        return $result->filter(function ($department) {
+            return !$department->isEmpty();
+        });
+    }
+
+    private function processDepartmentUsers(Department $department, Carbon $date): Collection
+    {
+        $users = $this->calculateSalary($department, $date);
+        $this->loadRelation($users, $date);
+        return $this->calculateGeneralData($users, $date);
+    }
+
+    private function getUsersWithoutDepartment(Carbon $date): Collection
+    {
+        if (!$date || DateHelper::isCurrentMonth($date)) {
+            $users = User::whereNull('department_id')->get();
+        } else {
+            $query = User::getLatestHistoricalRecordsQuery($date)
+                ->whereNull('new_values->department_id');
+            $users = User::recreateFromQuery($query);
+        }
+
+        $users = $this->userService->filterUsersByStatus($users, $this->status, $date);
+
+        $this->loadRelation($users, $date);
+        return $this->calculateGeneralData($users, $date);
     }
 
     private function calculateGeneralData(Collection|EloquentCollection $users, Carbon $date)
@@ -70,6 +74,14 @@ class TimeSheetService
             $workingDays = DateHelper::getWorkingDaysInMonth($date);
             $salary = $user->getSalary();
             $hourSalary = $salary / (count(DateHelper::getWorkingDaysInMonth($date)) * 9);
+
+            $fistHalf =  $user->adjustments->where('period', UserAdjustment::PERIOD_FIRST_HALF);
+            $secondHalf = $user->adjustments->where('period', UserAdjustment::PERIOD_SECOND_HALF);
+            
+            $latesPenalty = $this->calculateLatesPenalty($user);
+
+            $firtHalfAdjustments = $this->calculateAdjustments($fistHalf) - $latesPenalty;
+            $secondHalfAdjustments = $this->calculateAdjustments($secondHalf);
 
             $firstHalfAmountHours = $workingDays->filter(function ($date) {
                 return Carbon::parse($date)->day <= 14;
@@ -90,7 +102,6 @@ class TimeSheetService
             $firstHalfUserDiffHours = $firstHalfUserWorkingHours - $firstHalfAmountHours;
             $secondHalfUserDiffHours = $secondHalfUserWorkingHours - $secondHalfAmountHours;
 
-
             if ($firstHalfUserWorkingHours == 0) {
                 $firstHalfHoursMoney = 0;
                 $amountFirstHalfSalary = $user->bonuses;
@@ -107,20 +118,62 @@ class TimeSheetService
                 $amountSecondHalfSalary = ($salary / 2) + $secondHalfHoursMoney;
             }
 
-            $user->days = $daysReport;
-            $user->salary = $salary;
-            $user->part_salary = $user->salary / 2;
-            $user->hour_salary = $hourSalary;
-            $user->first_half_hours = $firstHalfUserDiffHours;
-            $user->second_half_hours = $secondHalfUserDiffHours;
-            $user->first_half_hours_money = $firstHalfHoursMoney;
-            $user->second_half_hours_money = $secondHalfHoursMoney;
-            $user->amount_first_half_salary = $amountFirstHalfSalary;
-            $user->amount_second_half_salary = $amountSecondHalfSalary;
-            return $user;
+            return [
+                'id' => $user->id,
+                'full_name' => $user->full_name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'fired_at' => $user->fired_at,
+                'days' => $daysReport,
+                'salary' => $salary,
+                'part_salary' => $user->salary / 2,
+                'hour_salary' => $hourSalary,
+                'bonuses' => $user->bonuses,
+                'first_half_hours' => $firstHalfUserDiffHours,
+                'second_half_hours' => $secondHalfUserDiffHours,
+                'first_half_hours_money' => $firstHalfHoursMoney,
+                'second_half_hours_money' => $secondHalfHoursMoney,
+                'amount_first_half_salary' => $amountFirstHalfSalary + $firtHalfAdjustments,
+                'amount_second_half_salary' => $amountSecondHalfSalary + $secondHalfAdjustments,
+                'first_half' => $fistHalf,
+                'second_half' => $secondHalf,
+                'first_half_adjustments' => $firtHalfAdjustments,
+                'second_half_adjustments' => $secondHalfAdjustments,
+                'position' => $user->position,
+                'lates_penalty' => $latesPenalty,
+            ];
         });
 
         return $users;
+    }
+
+    private function calculateLatesPenalty(User $user): int
+    {
+        $lates = $user->dailyWorkStatuses
+            ->where('status', DailyWorkStatus::STATUS_APPROVED)
+            ->filter(function ($dailyStatus) {
+                return $dailyStatus->workStatus &&
+                    $dailyStatus->workStatus->type === WorkStatus::TYPE_LATE;
+            });
+
+        if ($lates->isEmpty()) {
+            return 0;
+        } else {
+            return ($lates->count() - 1) * 300;
+        }
+    }
+
+    private function calculateAdjustments($adjustments)
+    {
+        $bonuses = $adjustments
+            ->where('type', UserAdjustment::TYPE_BONUS)
+            ->sum('value');
+
+        $penalties = $adjustments
+            ->where('type', UserAdjustment::TYPE_PENALTY)
+            ->sum('value');
+
+        return $bonuses - $penalties;
     }
 
     private function calculateSalary(Department $department, Carbon $date)
@@ -138,7 +191,7 @@ class TimeSheetService
 
         $departmentUsers = $this->userService->filterUsersByStatus($department->allUsers($findUsersDate, ['departmentHead', 'position']), $this->status, $date);
 
-        $head = $department->head;
+        $head = $this->userService->filterUsersByStatus(collect([$department->head]), $this->status, $date)->first();
 
         if ($head) {
             $headReport = $this->saleHeadsReportGenerator->generateHeadReport($department, $date);
@@ -225,6 +278,9 @@ class TimeSheetService
                         ->with(['workStatus']);
                 },
                 'timeChecks' => function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('date', [$dateStart, $dateEnd]);
+                },
+                'adjustments' => function ($query) use ($dateStart, $dateEnd) {
                     $query->whereBetween('date', [$dateStart, $dateEnd]);
                 },
             ]

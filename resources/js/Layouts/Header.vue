@@ -48,7 +48,7 @@ export default {
         logout() {
             router.post(`/logout`, {
                 onSuccess: () => {
-                    console.log('test');
+
                 },
                 onError: () => {
                     alert('При попытке выхода возникла ошибка');

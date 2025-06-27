@@ -6,6 +6,10 @@
             <h1 class="text-4xl font-semibold mb-6">Кадровый табель</h1>
         </div>
 
+        <Modal :open="isOpenModal" @close="closeModal()">
+            <UserAdjustment :user="activeUser" :half="activeHalf" :date="selectedDate" @closeModal="closeModal" />
+        </Modal>
+
         <div class="flex gap-3 max-w-3xl mb-4">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
@@ -29,7 +33,7 @@
                 Выбрать
             </div>
         </div>
-        <div class="overflow-x-auto w-full max-w-[1660px] bg-white rounded-lg shadow-md">
+        <div class="overflow-x-auto w-[calc(100vw-260px)] bg-white rounded-lg shadow-md">
             <table v-if="Object.keys(usersReport).length"
                 class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full">
                 <thead class="thead ">
@@ -164,8 +168,9 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ user.first_half_hours }}
                         </td>
-                        <td class="px-2 py-2 border-r w-20 text-center">
-
+                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer"
+                            @click="openModal(user, 'first_half')">
+                            {{ formatPrice(user.first_half_adjustments) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_first_half_salary) }}
@@ -182,8 +187,9 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ user.second_half_hours }}
                         </td>
-                        <td class="px-2 py-2 border-r w-20 text-center">
-
+                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer"
+                            @click="openModal(user, 'first_half')">
+                            {{ formatPrice(user.second_half_adjustments) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_second_half_salary) }}
@@ -207,6 +213,8 @@ import VueSelect from 'vue-select';
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { route } from 'ziggy-js';
 import HelpStatusLegend from './HelpStatusLegend.vue';
+import Modal from '../../../../Components/Modal.vue';
+import UserAdjustment from './UserAdjustment.vue';
 
 export default {
     components: {
@@ -214,7 +222,9 @@ export default {
         TimeCheckLayout,
         VueSelect,
         VueDatePicker,
-        HelpStatusLegend
+        HelpStatusLegend,
+        Modal,
+        UserAdjustment
     },
     props: {
         days: {
@@ -256,7 +266,7 @@ export default {
                 'value': 'fired'
             }
         ]
-
+        
         return {
             departmentOptions: [
                 { id: null, name: 'Все' },
@@ -267,6 +277,9 @@ export default {
             selectedDate: this.date,
             selectedDepartment: this.department?.id ?? null,
             showAllDates: false,
+            isOpenModal: false,
+            activeUser: null,
+            activeHalf: null,
         }
     },
     methods: {
@@ -295,16 +308,14 @@ export default {
                 colors.push('bg-gray-400')
             }
 
-            if (user && day.date >= user.fired_at &&  day.isWorkingDay) {
-                console.log('test');
-                
+            if (user && day.date >= user.fired_at && day.isWorkingDay) {
                 colors.push('bg-red-700');
             }
 
             if (day.isLate) {
                 colors.push('bg-red-500');
             }
-            
+
 
             colors = [...new Set(colors)];
 
@@ -320,6 +331,16 @@ export default {
         toggleDates() {
             this.showAllDates = !this.showAllDates;
         },
+        openModal(user, half) {
+            this.isOpenModal = true;
+            this.activeUser = user;
+            this.activeHalf = half;
+        },
+        closeModal() {
+            this.isOpenModal = false;
+            this.activeUser = null;
+            this.activeHalf = null;
+        }
     }
 }
 

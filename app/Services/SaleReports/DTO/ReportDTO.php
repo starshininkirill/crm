@@ -30,5 +30,6 @@ class ReportDTO
         public bool $isUserData = false,
         public Collection $callsStat = new Collection(),
         public Collection $usedPayments = new Collection(),
+        public Collection $financeWeeks = new COllection(),
     ) {}
 }

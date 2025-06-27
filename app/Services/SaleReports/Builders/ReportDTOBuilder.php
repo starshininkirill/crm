@@ -163,6 +163,7 @@ class ReportDTOBuilder
         $data->oldMoney = $data->oldPayments->sum('value');
 
         $data->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($data->contracts);
+        $data->financeWeeks = DateHelper::splitMonthIntoWeek($date);
     }
 
     public function getUserSubdata(ReportDTO $mainData, User $user): ?ReportDTO
@@ -202,6 +203,7 @@ class ReportDTOBuilder
         $subData->oldMoney = $subData->oldPayments->sum('value');
 
         $subData->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($subData->contracts);
+        $subData->financeWeeks = $mainData->financeWeeks;
         $subData->isUserData = true;
 
         return $subData;

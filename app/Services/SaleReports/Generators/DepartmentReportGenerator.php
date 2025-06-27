@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
 use App\Services\UserServices\UserService;
+use Illuminate\Support\Facades\DB;
 
 class DepartmentReportGenerator extends BaseReportGenerator
 {

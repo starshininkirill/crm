@@ -56,7 +56,9 @@ class HeadsReportGenerator extends BaseReportGenerator
             return $user->id != $department->head->id;
         });
 
-        $userPercentageWeight = 100 / $users->count();
+        $users->count() != 0 
+            ? $userPercentageWeight = 100 / $users->count()
+            : $userPercentageWeight = 100;
 
         $report['generalPlan'] = 0;
         $report['completed'] = 0;

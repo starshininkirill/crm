@@ -76,8 +76,6 @@ export default {
         submitForm() {
             this.form.post(route('lk.overwork.store'), {
                 onSuccess: () => {
-                    console.log(this.form.date);
-
                     this.form.hours = null;
                     this.form.date = null;
                     this.form.report = null;

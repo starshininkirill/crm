@@ -47,6 +47,28 @@ class UserController
 
     public function show(User $user)
     {
+        $user->load(['position', 'department', 'employmentDetail.employmentType']);
+        $user = $user->only([
+            'id',
+            'created_at',
+            'first_name',
+            'last_name',
+            'surname',
+            'full_name',
+            'email',
+            'phone',
+            'work_phone',
+            'bitrix_id',
+            'position',
+            'department',
+            'employmentDetail',
+            'created_at',
+            'fired_at',
+        ]);
+        
+        // dd($user);
+        $user['created_at'] = $user['created_at']->format('d.m.Y');
+
         return Inertia::render('Admin/User/Show', [
             'user' => $user,
         ]);

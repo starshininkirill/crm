@@ -174,6 +174,7 @@ class DateHelper
         $financeWeeks = FinanceWeek::where('date_start', '>=',  $startOfMonth)
             ->where('date_end', '<=', $endOfMonth)
             ->get();
+            
         if (!$financeWeeks->isEmpty()) {
             $financeWeeks->map(function ($week) {
                 $week->date_start = Carbon::parse($week->date_start);

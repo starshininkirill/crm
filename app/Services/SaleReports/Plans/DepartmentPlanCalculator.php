@@ -106,7 +106,7 @@ class DepartmentPlanCalculator
     {
         $res = collect();
         $weekPlan = $reportInfo->monthWorkPlanGoal / 4;
-        $weeks = DateHelper::splitMonthIntoWeek($reportInfo->date);
+        $weeks = $reportInfo->financeWeeks;
         $trackedContractsIds = collect();
 
         foreach ($weeks as $week) {

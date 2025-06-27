@@ -80,7 +80,6 @@ export default {
                     { action: 'start' },
                     { withCredentials: true }
                 );
-                console.log(response);
                 
                 this.currentAction = 'start';
                 this.stopBreakTimer();

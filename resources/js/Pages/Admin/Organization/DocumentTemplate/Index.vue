@@ -143,7 +143,6 @@ export default {
         });
 
         const submitForm = () => {
-            console.log(form);
             
             form.post(route('admin.document-template.store'), {
                 onSuccess: () => {

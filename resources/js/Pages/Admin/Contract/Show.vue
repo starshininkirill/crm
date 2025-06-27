@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import ContractLayout from '../Layouts/ContractLayout.vue';
 import VueSelect from 'vue-select';
 import Performers from './Components/Performers.vue';

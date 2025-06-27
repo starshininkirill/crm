@@ -103,6 +103,11 @@ class User extends Authenticatable
         );
     }
 
+    public function adjustments(): HasMany
+    {
+        return $this->hasMany(UserAdjustment::class);
+    }
+
     public function departmentHead(): HasMany
     {
         return $this->hasMany(Department::class, 'head_id');

@@ -30,7 +30,6 @@ export default {
             this.isActive = !this.isActive;
         },
         handleClose() {
-            console.log('handle');
             
             this.isActive = false
         }
