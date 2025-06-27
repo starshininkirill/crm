@@ -1,9 +1,9 @@
 <template>
     <ContractLayout>
 
-        <Head title="Договоры" />
+        <Head title="Договоры на распределение" />
         <div class="contract-page-wrapper flex flex-col">
-            <h1 class="text-4xl font-semibold mb-6">Договоры</h1>
+            <h1 class="text-4xl font-semibold mb-6">Договоры на распределение</h1>
             <h2 v-if="!contracts.length">Договоров не найдено</h2>
             <div v-if="contracts.length" class="overflow-x-auto">
                 <table class="table">
