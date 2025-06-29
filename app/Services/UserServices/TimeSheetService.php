@@ -46,7 +46,7 @@ class TimeSheetService
     private function processDepartmentUsers(Department $department, Carbon $date): Collection
     {
         $users = $this->calculateSalary($department, $date);
-        $this->loadRelation($users, $date);
+        $this->loadRelationsForUsers($users, $date);
         return $this->calculateGeneralData($users, $date);
     }
 
@@ -62,7 +62,7 @@ class TimeSheetService
 
         $users = $this->userService->filterUsersByStatus($users, $this->status, $date);
 
-        $this->loadRelation($users, $date);
+        $this->loadRelationsForUsers($users, $date);
         return $this->calculateGeneralData($users, $date);
     }
 
@@ -264,8 +264,12 @@ class TimeSheetService
         return $day;
     }
 
-    private function loadRelation($users, Carbon $date): bool
+    private function loadRelationsForUsers(Collection|EloquentCollection $users, Carbon $date): void
     {
+        if ($users->isEmpty()) {
+            return;
+        }
+
         $dateStart = $date->copy()->startOfMonth();
         $dateEnd = $date->copy()->endOfMonth();
 
