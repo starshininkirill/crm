@@ -27,8 +27,8 @@ class TimeSheetController extends Controller
         $status = $request->input('status', 'active');
 
         $departments = $request->filled('department_id')
-            ? collect([Department::findOrFail($request->input('department_id'))])
-            : Department::whereDoesntHave('childDepartments')->get();
+            ? collect([Department::with(['head', 'users.position'])->findOrFail($request->input('department_id'))])
+            : Department::whereDoesntHave('childDepartments')->with(['head', 'users.position'])->get();
 
         $targetDate = $request->filled('date')
             ? Carbon::parse($request->input('date'))->endOfMonth()
@@ -52,8 +52,6 @@ class TimeSheetController extends Controller
             : 'active';
 
         $info['usersReport'] = $service->newGenerateUsersReport($departments, $targetDate);
-
-        $executionTime = round(microtime(true) - $startTime, 3);
 
         return Inertia::render('Admin/TimeCheck/TimeSheet/Index', $info);
     }

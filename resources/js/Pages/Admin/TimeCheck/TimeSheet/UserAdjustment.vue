@@ -1,6 +1,6 @@
 <template>
     <h1 class="text-2xl font-semibold mb-6">
-        Бонусы и лишения
+        Компенсации и лишения
     </h1>
     <div class="flex flex-col gap-4">
         <table class="table" v-if="bonuses.length || (user.lates_penalty != 0 && half == 'first_half')">
@@ -50,9 +50,11 @@
                         </button>
                     </td>
                 </tr>
-                <td colspan="4" class="px-2 border-r py-2 text-gray-900">
-                    Итого: {{ formatPrice(adjustments) }}
-                </td>
+                <tr class="table-row">
+                    <td colspan="4" class="px-2 border-r py-2 text-gray-900">
+                        Итого: {{ formatPrice(adjustments) }}
+                    </td>
+                </tr>
             </tbody>
         </table>
 
@@ -104,7 +106,7 @@ export default {
 
         let types = [
             {
-                'name': 'Бонус',
+                'name': 'Компенсация',
                 'value': 'bonus'
             },
             {

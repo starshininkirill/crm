@@ -33,9 +33,9 @@
                 Выбрать
             </div>
         </div>
-        <div class="overflow-x-auto w-[calc(100vw-260px)] bg-white rounded-lg shadow-md">
+        <div class="overflow-x-auto w-[calc(100vw-260px)] bg-white rounded-lg  pt-16">
             <table v-if="Object.keys(usersReport).length"
-                class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full">
+                class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full border">
                 <thead class="thead ">
                     <tr>
                         <th class="px-2 py-2 border-r w-20">
@@ -60,14 +60,20 @@
                                 {{ showAllDates ? '▼' : '▲' }}
                             </span>
                         </th>
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+
+                        </td>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Ставка
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Премия
                         </th>
-                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                        <th class="px-2 py-2 border-r whitespace-normal w-20 relative">
                             Доп часы
+                            <span class=" absolute text-xl font-semibold text-black -left-8 -top-10 whitespace-nowrap">
+                                выплаты за 1-14
+                            </span>
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Часы
@@ -78,14 +84,20 @@
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Итого к выплате
                         </th>
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+
+                        </td>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Ставка
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Премия
                         </th>
-                        <th class="px-2 py-2 border-r whitespace-normal w-20">
+                        <th class="px-2 py-2 border-r whitespace-normal w-20 relative">
                             Доп часы
+                            <span class=" absolute text-xl font-semibold text-black -left-8 -top-10 whitespace-nowrap">
+                                выплаты за 15-31
+                            </span>
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Часы
@@ -155,7 +167,9 @@
                                 </div>
                             </div>
                         </td>
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
 
+                        </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.part_salary) }}
                         </td>
@@ -174,6 +188,9 @@
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_first_half_salary) }}
+                        </td>
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.part_salary) }}
@@ -266,7 +283,7 @@ export default {
                 'value': 'fired'
             }
         ]
-        
+
         return {
             departmentOptions: [
                 { id: null, name: 'Все' },

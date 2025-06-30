@@ -60,7 +60,7 @@ class ReportDTOBuilder
         return $data;
     }
 
-    private function prepareHeadData(ReportDTO $data, Carbon $date, ?Department $department): void
+    private function prepareHeadData(ReportDTO $data, Carbon $date, ?Department $department, ?Collection $users = null): void
     {
         $startDate = $date->copy()->startOfMonth();
         $endDate = $date->copy()->endOfMonth();
@@ -72,8 +72,9 @@ class ReportDTOBuilder
 
         $data->workPlans = $this->workPlanService->actualSalePlans($date);
 
-        $activeUsers = $this->userService->filterUsersByStatus($data->department->allUsers($data->date, $this->userRelations), 'active', $data->date)
-            ->where('id', '!=', $department->head?->id);
+        $activeUsers = $users ?? $this->userService->filterUsersByStatus($data->department->allUsers($data->date, $this->userRelations), 'active', $data->date);
+        
+        $activeUsers = $activeUsers->where('id', '!=', $department->head?->id);
 
         $data->payments = $this->monthlyClosePaymentsForRoleGroup(
             $date,
@@ -83,6 +84,8 @@ class ReportDTOBuilder
 
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
         $data->oldPayments = $data->payments->where('type', Payment::TYPE_OLD);
+
+        $data->contracts = $data->newPayments->pluck('contract')->filter()->unique('id');
 
         $data->newMoney = $data->newPayments->sum('value');
         $data->oldMoney = $data->oldPayments->sum('value');
@@ -157,7 +160,7 @@ class ReportDTOBuilder
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
         $data->oldPayments = $data->payments->where('type', Payment::TYPE_OLD);
 
-        $data->contracts = Payment::getContractsByPaymentsWithRelations($data->newPayments);
+        $data->contracts = $data->newPayments->pluck('contract')->filter()->unique('id');
 
         $data->newMoney = $data->newPayments->sum('value');
         $data->oldMoney = $data->oldPayments->sum('value');
@@ -238,7 +241,7 @@ class ReportDTOBuilder
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
         $data->oldPayments = $data->payments->where('type', Payment::TYPE_OLD);
 
-        $data->contracts = Payment::getContractsByPaymentsWithRelations($data->newPayments);
+        $data->contracts = $data->newPayments->pluck('contract')->filter()->unique('id');
 
         $data->newMoney = $data->newPayments->sum('value');
         $data->oldMoney = $data->oldPayments->sum('value');
@@ -318,6 +321,10 @@ class ReportDTOBuilder
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
 
+        $relations = [
+            'contract.services.category',
+            'contract.users.position'
+        ];
 
         if (DateHelper::isCurrentMonth($date)) {
             return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
@@ -326,10 +333,7 @@ class ReportDTOBuilder
                     $query->where('role', $role)
                         ->whereIn('user_id', $userIds);
                 })
-                ->with([
-                    'contract.services.category',
-                    'contract.users.position'
-                ])
+                ->with($relations)
                 ->get();
         } else {
             $historicalContractIds = ContractUser::getLatestHistoricalRecordsQuery($date)
@@ -346,7 +350,7 @@ class ReportDTOBuilder
                 ->where('new_values->status', Payment::STATUS_CLOSE)
                 ->whereIn('new_values->contract_id', $historicalContractIds);
 
-            return Payment::recreateFromQuery($paymentsHistoryQuery, ['contract']);
+            return Payment::recreateFromQuery($paymentsHistoryQuery, $relations);
         }
     }
 }

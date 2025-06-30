@@ -73,9 +73,21 @@ trait HasHistory
 
     public static function recreateFromQuery($histories, array $withRelations = [], $date = null)
     {
-        return $histories->get()->map(function ($history) use ($withRelations, $date) {
-            return self::recreateModelWithRelations($history, $withRelations, $date);
+        $historyCollection = $histories->get();
+
+        if ($historyCollection->isEmpty()) {
+            return collect();
+        }
+
+        $models = $historyCollection->mapWithKeys(function ($history) {
+            $model = self::recreateFromHistory($history);
+            $model->setRelation('latestHistory', $history);
+            return [$model->getKey() => $model];
         });
+
+        self::loadHistoricalRelationsForCollection($models, $withRelations, $date);
+
+        return $models->values();
     }
 
     public function history(): MorphMany
@@ -149,9 +161,21 @@ trait HasHistory
             return;
         }
 
+        $parsedRelations = [];
+        foreach ($relations as $relation) {
+            $parts = explode('.', $relation);
+            $baseRelation = array_shift($parts);
+            if (!isset($parsedRelations[$baseRelation])) {
+                $parsedRelations[$baseRelation] = [];
+            }
+            if (!empty($parts)) {
+                $parsedRelations[$baseRelation][] = implode('.', $parts);
+            }
+        }
+
         $modelInstance = $models->first();
 
-        foreach ($relations as $relationName) {
+        foreach ($parsedRelations as $relationName => $nestedRelations) {
             if (!$modelInstance->isValidRelation($relationName)) {
                 continue;
             }
@@ -159,29 +183,57 @@ trait HasHistory
             /** @var Relation $relation */
             $relation = $modelInstance->$relationName();
             $relatedModelClass = get_class($relation->getRelated());
-            
-            if (!$relation instanceof BelongsTo) {
-                // This optimization currently supports BelongsTo.
-                // Add logic for other relation types if needed.
-                continue;
+
+            $usesHistoryTrait = in_array(HasHistory::class, class_uses_recursive($relatedModelClass));
+
+            if ($relation instanceof BelongsTo) {
+                $foreignKey = $relation->getForeignKeyName();
+                $ownerKey = $relation->getOwnerKeyName();
+
+                $foreignKeyValues = $models->pluck($foreignKey)->filter()->unique()->values();
+
+                if ($foreignKeyValues->isEmpty()) {
+                    continue;
+                }
+
+                $relatedModels = $usesHistoryTrait
+                    ? $relatedModelClass::getLatestHistoricalRecords($date, $nestedRelations)->keyBy($ownerKey)
+                    : $relatedModelClass::whereIn($ownerKey, $foreignKeyValues)->with($nestedRelations)->get()->keyBy($ownerKey);
+
+                $models->each(function ($model) use ($relationName, $foreignKey, $relatedModels) {
+                    $relatedModel = $relatedModels->get($model->{$foreignKey});
+                    $model->setRelation($relationName, $relatedModel);
+                });
+            } elseif ($relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany) {
+                $foreignKey = $relation->getForeignKeyName();
+                $localKey = $relation->getLocalKeyName();
+
+                $localKeyValues = $models->pluck($localKey)->filter()->unique()->values();
+
+                if ($localKeyValues->isEmpty()) {
+                    $models->each(function ($model) use ($relationName) {
+                        $model->setRelation($relationName, collect());
+                    });
+                    continue;
+                }
+
+                if ($usesHistoryTrait) {
+                    $query = $relatedModelClass::getLatestHistoricalRecordsQuery($date);
+                    $query->whereIn(DB::raw("CAST(JSON_UNQUOTE(JSON_EXTRACT(new_values, '$.$foreignKey')) AS UNSIGNED)"), $localKeyValues->toArray());
+                    $relatedModels = $relatedModelClass::recreateFromQuery($query, $nestedRelations, $date)
+                        ->groupBy(fn($item) => $item->{$foreignKey});
+                } else {
+                    $relatedModels = $relatedModelClass::whereIn($foreignKey, $localKeyValues)
+                        ->with($nestedRelations)
+                        ->get()
+                        ->groupBy($foreignKey);
+                }
+
+                $models->each(function ($model) use ($relationName, $localKey, $relatedModels) {
+                    $relatedCollection = $relatedModels->get($model->{$localKey}, collect());
+                    $model->setRelation($relationName, $relatedCollection);
+                });
             }
-
-            $foreignKey = $relation->getForeignKeyName();
-            $ownerKey = $relation->getOwnerKeyName();
-
-            $foreignKeyValues = $models->pluck($foreignKey)->filter()->unique()->values();
-
-            if ($foreignKeyValues->isEmpty()) {
-                continue;
-            }
-            
-            $relatedHistoricalModels = $relatedModelClass::getLatestHistoricalRecords($date)
-                ->keyBy($ownerKey);
-            
-            $models->each(function ($model) use ($relationName, $foreignKey, $relatedHistoricalModels) {
-                $relatedModel = $relatedHistoricalModels->get($model->{$foreignKey});
-                $model->setRelation($relationName, $relatedModel);
-            });
         }
     }
 

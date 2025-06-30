@@ -10,6 +10,7 @@ use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
 use App\Services\SaleReports\Plans\HeadsPlanCalculator;
 use App\Services\UserServices\UserService;
+use Illuminate\Database\Eloquent\Collection;
 
 class HeadsReportGenerator extends BaseReportGenerator
 {
@@ -39,33 +40,33 @@ class HeadsReportGenerator extends BaseReportGenerator
 
     public function generateHeadReport(Department $department, Carbon|null $date)
     {
-        $reportData = $this->reportDTOBuilder->buildHeadReport($date, $department);
+        $users = $department->allUsers($date, ['position']);
+        $reportData = $this->reportDTOBuilder->buildHeadReport($date, $department, $users);
 
         return [
             'department' => $department->only('name', 'id'),
             'head' => $department->head->only('id', 'full_name', 'calculated_salary'),
-            'report' => $this->headReport($department, $date, $reportData),
+            'report' => $this->headReport($department, $date, $reportData, $users),
         ];
     }
 
-    protected function headReport(Department $department, Carbon|null $date, ReportDTO $reportData)
+    protected function headReport(Department $department, Carbon|null $date, ReportDTO $reportData, Collection $users)
     {
         $report = collect();
 
-        $users = $department->allUsers($date)->filter(function ($user) use ($department, $reportData) {
-            return $user->id != $department->head->id;
-        });
+        $activeUsers = $this->userService->filterUsersByStatus($users, 'active', $date)
+            ->where('id', '!=', $department->head->id);
 
-        $users->count() != 0 
-            ? $userPercentageWeight = 100 / $users->count()
+        $activeUsers->count() != 0 
+            ? $userPercentageWeight = 100 / $activeUsers->count()
             : $userPercentageWeight = 100;
 
         $report['generalPlan'] = 0;
         $report['completed'] = 0;
-        $report['usersCount'] = $users->count();
+        $report['usersCount'] = $activeUsers->count();
         $report['newMoney'] = $reportData->newMoney;
 
-        $users->each(function ($user) use ($reportData, &$report) {
+        $activeUsers->each(function ($user) use ($reportData, &$report) {
             $reportData = $this->reportDTOBuilder->buildHeadSubReport($reportData, $user);
 
             $report['generalPlan'] = $report['generalPlan'] + $reportData->monthWorkPlanGoal;

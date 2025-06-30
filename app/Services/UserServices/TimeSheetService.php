@@ -15,6 +15,7 @@ use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TimeSheetService
 {
@@ -53,11 +54,11 @@ class TimeSheetService
     private function getUsersWithoutDepartment(Carbon $date): Collection
     {
         if (!$date || DateHelper::isCurrentMonth($date)) {
-            $users = User::whereNull('department_id')->get();
+            $users = User::whereNull('department_id')->with('position')->get();
         } else {
             $query = User::getLatestHistoricalRecordsQuery($date)
                 ->whereNull('new_values->department_id');
-            $users = User::recreateFromQuery($query);
+            $users = User::recreateFromQuery($query, ['position']);
         }
 
         $users = $this->userService->filterUsersByStatus($users, $this->status, $date);
@@ -76,7 +77,7 @@ class TimeSheetService
 
             $fistHalf =  $user->adjustments->where('period', UserAdjustment::PERIOD_FIRST_HALF);
             $secondHalf = $user->adjustments->where('period', UserAdjustment::PERIOD_SECOND_HALF);
-            
+
             $latesPenalty = $this->calculateLatesPenalty($user);
 
             $firtHalfAdjustments = $this->calculateAdjustments($fistHalf) - $latesPenalty;
@@ -188,13 +189,16 @@ class TimeSheetService
     {
         $findUsersDate = DateHelper::isCurrentMonth($date) ? null : $date;
 
-        $departmentUsers = $this->userService->filterUsersByStatus($department->allUsers($findUsersDate, ['departmentHead', 'position']), $this->status, $date);
+        $departmentUsers = $this->userService->filterUsersByStatus(
+            $department->allUsers($findUsersDate, ['departmentHead', 'position']),
+            $this->status,
+            $date
+        );
 
-        $head = $this->userService->filterUsersByStatus(collect([$department->head]), $this->status, $date)->first();
+        $head = $departmentUsers->firstWhere('id', $department->head_id);
 
         if ($head) {
             $headReport = $this->saleHeadsReportGenerator->generateHeadReport($department, $date);
-
             $head->bonuses = $headReport['report']['headBonus'] + $headReport['report']['bonus'];
         }
 
@@ -202,25 +206,24 @@ class TimeSheetService
             return $user->departmentHead->isEmpty();
         });
 
-        $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
+        if ($users->isNotEmpty()) {
+            $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
+            $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users)->keyBy('user.id');
 
-        $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users);
-
-        $users = $pivotUsers->map(function ($userReport) use ($date) {
-            $user = $userReport['user'];
-            $user->bonuses = $userReport['salary']['amount'];
-            return $user;
-        })
-            ->sortBy('full_name')
-            ->values();
-
-        $users = new EloquentCollection($users);
-
-        if ($head) {
-            $users = $users->prepend($head);
+            $users->each(function ($user) use ($pivotUsers) {
+                $userReport = $pivotUsers->get($user->id);
+                $user->bonuses = $userReport['salary']['amount'] ?? 0;
+            });
         }
 
-        return $users;
+        $otherUsers = $departmentUsers->where('id', '!=', $department->head_id);
+        $sortedUsers = $otherUsers->sortBy('full_name');
+
+        if ($head) {
+            $sortedUsers->prepend($head);
+        }
+
+        return $sortedUsers->values();
     }
 
     public function userMonthReport(User $user, Carbon $date)
@@ -275,6 +278,7 @@ class TimeSheetService
 
         $users->loadMissing(
             [
+                'position',
                 'departmentHead',
                 'dailyWorkStatuses' => function ($query) use ($dateStart, $dateEnd) {
                     $query->whereBetween('date', [$dateStart, $dateEnd])
@@ -288,7 +292,5 @@ class TimeSheetService
                 },
             ]
         );
-
-        return false;
     }
 }

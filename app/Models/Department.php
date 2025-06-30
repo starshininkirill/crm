@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Department extends Model
 {
@@ -89,23 +90,18 @@ class Department extends Model
 
     public function allUsers(?Carbon $date = null, array $relations = []): SimpleCollection
     {
+        $departmentIds = self::getDepartmentWithChildrenIds($this->id);
+
         if (!$date || DateHelper::isCurrentMonth($date)) {
-            $users = $this->users->load($relations);
-
-            $this->childDepartments->each(function ($childDepartment) use (&$users, $relations) {
-                $users = $users->merge($childDepartment->users->load($relations));
-            });
-
-            return $users;
+            return User::whereIn('department_id', $departmentIds)
+                ->with($relations)
+                ->get();
         }
 
-        $users = $this->getUsersForDate($date, $relations);
+        $allHistoricalUsersQuery = User::getLatestHistoricalRecordsQuery($date)
+            ->whereIn(DB::raw("CAST(JSON_UNQUOTE(JSON_EXTRACT(new_values, '$.department_id')) AS UNSIGNED)"), $departmentIds);
 
-        $this->childDepartments->each(function ($childDepartment) use (&$users, $date, $relations) {
-            $users = $users->merge($childDepartment->getUsersForDate($date, $relations));
-        });
-
-        return $users;
+        return User::recreateFromQuery($allHistoricalUsersQuery, array_merge($relations, ['department']), $date);
     }
 
     protected function getUsersForDate(?Carbon $date = null, array $relations = []): SimpleCollection
