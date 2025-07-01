@@ -9,6 +9,7 @@ use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 final class TimeSheetService
 {
@@ -66,6 +67,7 @@ final class TimeSheetService
 
     public function generateUserReport(User $user, Carbon $date): array
     {
+        
         if (!isset($user->bonuses)) {
             $user->bonuses = $this->salaryCalculatorService->calculateUserBonus($user, $date);
         }

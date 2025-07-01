@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReportDTOBuilder
 {
@@ -215,6 +216,10 @@ class ReportDTOBuilder
 
     private function prepareUserData(ReportDTO $data, Carbon $date, User $user): void
     {
+        if (!DateHelper::isCurrentMonth($date)) {
+            $user = $user->getVersionAtDate($date, ['department', 'position']);
+        }
+
         $startDate = $date->copy()->startOfMonth();
         $endDate = $date->copy()->endOfMonth();
 
@@ -352,7 +357,7 @@ class ReportDTOBuilder
                 ->with($relations)
                 ->get();
         } else {
-            $historicalContractIds = ContractUser::getLatestHistoricalRecordsQuery($date)
+            $historicalContractIds = ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
                 ->whereIn('new_values->user_id', $userIds)
                 ->where('new_values->role', $role)
                 ->pluck('new_values')
@@ -360,11 +365,18 @@ class ReportDTOBuilder
                     return $data['contract_id'];
                 });
 
-
-            $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($date)
+            $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($endOfMonth)
                 ->whereBetween('new_values->created_at', [$startOfMonth, $endOfMonth])
                 ->where('new_values->status', Payment::STATUS_CLOSE)
                 ->whereIn('new_values->contract_id', $historicalContractIds);
+
+
+            Log::info($startOfMonth->format('Y-m-d'));
+            Log::info($endOfMonth->format('Y-m-d'));
+            Log::info(
+                "ReportData" .
+                    json_encode(Payment::recreateFromQuery($paymentsHistoryQuery, $relations), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+            );
 
             return Payment::recreateFromQuery($paymentsHistoryQuery, $relations);
         }
