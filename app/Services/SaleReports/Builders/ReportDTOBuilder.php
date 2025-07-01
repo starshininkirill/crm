@@ -370,14 +370,6 @@ class ReportDTOBuilder
                 ->where('new_values->status', Payment::STATUS_CLOSE)
                 ->whereIn('new_values->contract_id', $historicalContractIds);
 
-
-            Log::info($startOfMonth->format('Y-m-d'));
-            Log::info($endOfMonth->format('Y-m-d'));
-            Log::info(
-                "ReportData" .
-                    json_encode(Payment::recreateFromQuery($paymentsHistoryQuery, $relations), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-            );
-
             return Payment::recreateFromQuery($paymentsHistoryQuery, $relations);
         }
     }

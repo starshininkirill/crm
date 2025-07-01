@@ -19,26 +19,26 @@ class DepartmentSeeder extends Seeder
         Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
             'name' => 'Отдел продаж',
-            'type' => Department::SALE_DEPARTMENT
+            'type' => Department::DEPARTMENT_SALE
         ]);
 
         $mainDepartment->save();
 
         $saleDepartment1 = Department::create([
             'name' => 'Подотдел продаж 1',
-            'type' => Department::SALE_DEPARTMENT,
+            'type' => Department::DEPARTMENT_SALE,
             'parent_id' => $mainDepartment->id,
         ]);
 
         $saleDepartment2 = Department::create([
             'name' => 'Подотдел продаж 2',
-            'type' => Department::SALE_DEPARTMENT,
+            'type' => Department::DEPARTMENT_SALE,
             'parent_id' => $mainDepartment->id,
         ]);
 
         $mainDepartment = Department::create([
             'name' => 'Отдел рекламы',
-            'type' => Department::ADVERTISING_DEPARTMENT,
+            'type' => Department::DEPARTMENT_ADVERTISING,
         ]);
 
         Carbon::setTestNow();

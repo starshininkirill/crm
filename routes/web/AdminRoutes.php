@@ -14,6 +14,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     include __DIR__ . '/admin/UserRoutes.php';
     include __DIR__ . '/admin/DepartmentRoutes.php';
     include __DIR__ . '/admin/SaleDepartmentRoutes.php';
+    include __DIR__ . '/admin/ProjectManagersDepartmentRouter.php';
     include __DIR__ . '/admin/SettingRoutes.php';
     include __DIR__ . '/admin/DocumentGeneratorRoutes.php';
 });

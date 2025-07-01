@@ -40,22 +40,30 @@
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }"
                 :href="route('admin.time-check.index')">
-                Кадры
+              Кадры
               </Link>
             </li>
-            <li>
+            <!-- <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
                 :href="route('admin.department.index')">
               Отделы
               </Link>
-            </li>
+            </li> -->
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.index') }"
                 :href="route('admin.sale-department.index')">
               Отдел продаж
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.projects-department.index') }"
+                :href="route('admin.projects-department.index')">
+              Отдел Сопровождения
               </Link>
             </li>
 

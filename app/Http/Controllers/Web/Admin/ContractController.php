@@ -18,7 +18,7 @@ class ContractController extends Controller
 {
     public function index()
     {
-        $contracts = Contract::with('payments')->orderByDesc('created_at')->get();
+        $contracts = Contract::with('payments')->orderByDesc('id')->get();
 
         $contracts = $contracts->map(function ($contract) {
             return [

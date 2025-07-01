@@ -27,7 +27,7 @@ final class SalaryCalculatorService
 
     public function calculateDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection
     {
-        if ($department->type === Department::SALE_DEPARTMENT) {
+        if ($department->type === Department::DEPARTMENT_SALE) {
             return $this->calculateSaleDepartmentSalary($department, $date, $status);
         }
 
@@ -84,7 +84,7 @@ final class SalaryCalculatorService
         $bonus = 0;
 
         switch ($user->department->type) {
-            case Department::SALE_DEPARTMENT:
+            case Department::DEPARTMENT_SALE:
                 $user->loadMissing('departmentHead');
 
                 if ($user->id === $user->department->head_id) {

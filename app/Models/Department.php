@@ -19,8 +19,9 @@ class Department extends Model
 {
     use HasFactory, HasHistory;
 
-    public const SALE_DEPARTMENT = 0;
-    public const ADVERTISING_DEPARTMENT = 1;
+    public const DEPARTMENT_SALE = 0;
+    public const DEPARTMENT_ADVERTISING = 1;
+    public const DEPARTMENT_PROJECT_MANAGERS = 2;
 
     protected $fillable = [
         'head_id',
@@ -61,12 +62,12 @@ class Department extends Model
 
     public static function saleDepartments()
     {
-        return Department::where('type', Department::SALE_DEPARTMENT);
+        return Department::where('type', Department::DEPARTMENT_SALE);
     }
 
     public static function getMainSaleDepartment(): ?Department
     {
-        return Department::where('type', Department::SALE_DEPARTMENT)
+        return Department::where('type', Department::DEPARTMENT_SALE)
             ->whereNull('parent_id')
             ->first();
     }
