@@ -270,9 +270,21 @@ class UserSeeder extends Seeder
 
         if ($employmentType->is_another_recipient) {
             $details = [
-                'first_name' => $faker->firstName,
-                'last_name' => $faker->lastName,
-                'surname' => $faker->middleName,
+                [
+                    'name' => 'first_name',
+                    'value' => $faker->firstName,
+                    'readName' => 'Имя',
+                ],
+                [
+                    'name' => 'last_name',
+                    'value' => $faker->lastName,
+                    'readName' => 'Фамилия',
+                ],
+                [
+                    'name' => 'surname',
+                    'value' => $faker->middleName,
+                    'readName' => 'Отчество',
+                ],
             ];
         } else {
             $details = [];

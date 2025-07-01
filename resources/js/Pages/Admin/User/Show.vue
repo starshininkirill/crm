@@ -86,6 +86,7 @@
                                 {{ user.employmentDetail?.payment_account }}
                             </div>
                         </div>
+
                         <div v-for="row in user.employmentDetail?.details" class="flex justify-between border-b pb-1">
                             <div class="text-sm text-gray-500 font-medium">
                                 {{ row.readName }}

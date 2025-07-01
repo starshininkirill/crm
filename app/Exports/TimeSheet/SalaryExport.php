@@ -59,9 +59,10 @@ class SalaryExport implements FromCollection, WithHeadings, WithMapping, WithCol
         $surname = $user['surname'] ?? '';
 
         if ($user['employment_detail']->employmentType->is_another_recipient) {
-            $firstName = $user['employment_detail']['details']['first_name'];
-            $lastName = $user['employment_detail']['details']['last_name'];
-            $surname = $user['employment_detail']['details']['surname'];
+            $details = collect($user['employment_detail']['details'])->pluck('value', 'name');
+            $firstName = $details->get('first_name');
+            $lastName = $details->get('last_name');
+            $surname = $details->get('surname', '');
         }
 
         return [
