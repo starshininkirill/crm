@@ -103,6 +103,7 @@ final class TimeSheetService
                 'hour_salary' => $hourSalary,
                 'bonuses' => $user->bonuses,
                 'position' => $user->position,
+                'employment_detail' => $user->employmentDetail,
                 'employment_type_id' => $user->employmentDetail?->employment_type_id,
             ] + $timeData + $salaryData + $adjustmentData;
     }

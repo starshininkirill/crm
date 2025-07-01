@@ -1,9 +1,9 @@
 <template>
     <UsersLayout>
 
-        <Head title="Типы устройства" />
+        <Head title="Типы трудоустройства" />
         <div class="contract-page-wrapper flex flex-col">
-            <h1 class="text-4xl font-semibold mb-6">Типы устройства</h1>
+            <h1 class="text-4xl font-semibold mb-6">Типы трудоустройства</h1>
 
             <div class="grid grid-cols-3 gap-8">
                 <form @submit.prevent="submitForm" class="flex flex-col gap-2">

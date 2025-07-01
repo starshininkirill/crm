@@ -23,7 +23,7 @@
 
         <div class="flex flex-col">
             <span class="label">
-                Тип устройства
+                Тип трудоустройства
             </span>
             <VueSelect v-model="form.employment_type_id" :reduce="type => type.id" label="name"
                 :options="employmentTypes">

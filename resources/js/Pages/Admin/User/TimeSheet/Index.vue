@@ -11,6 +11,17 @@
                 @user-updated="handleUserUpdate" />
         </Modal>
 
+        <Modal :open="isExportModalOpen" @close="closeExportModal()">
+            <ExportSalaryModal
+                v-if="isExportModalOpen"
+                :employment-types="employmentTypes"
+                :date="selectedDate"
+                :department_id="selectedDepartment"
+                :half="selectedHalfForExport"
+                @close="closeExportModal()"
+            />
+        </Modal>
+
         <div class="flex gap-3 max-w-3xl w-full mb-4 h-fit self-end">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
@@ -40,10 +51,10 @@
                 <h3 class="font-semibold text-lg mb-3">Сформировать выплату</h3>
 
                 <div class="flex gap-2">
-                    <div class="btn !w-fit h-fit">
+                    <div @click="openExportModal(1)" class="btn !w-fit h-fit">
                         за 1-14 число
                     </div>
-                    <div class="btn !w-fit h-fit">
+                    <div @click="openExportModal(2)" class="btn !w-fit h-fit">
                         за 15-31 число
                     </div>
                 </div>
@@ -87,7 +98,7 @@
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20 relative">
                             Доп часы
-                            <span class=" absolute text-xl font-semibold text-black -left-8 -top-10 whitespace-nowrap">
+                            <span class=" absolute text-xl font-semibold text-black -top-10 whitespace-nowrap">
                                 выплаты за 1-14
                             </span>
                         </th>
@@ -114,7 +125,7 @@
                         </th>
                         <th class="px-2 py-2 border-r whitespace-normal w-20 relative">
                             Доп часы
-                            <span class=" absolute text-xl font-semibold text-black -left-8 -top-10 whitespace-nowrap">
+                            <span class=" absolute text-xl font-semibold text-black -top-10 whitespace-nowrap">
                                 выплаты за 15-31
                             </span>
                         </th>
@@ -258,6 +269,7 @@ import { route } from 'ziggy-js';
 import HelpStatusLegend from './HelpStatusLegend.vue';
 import Modal from '../../../../Components/Modal.vue';
 import UserAdjustment from './UserAdjustment.vue';
+import ExportSalaryModal from './ExportSalaryModal.vue';
 
 export default {
     components: {
@@ -267,7 +279,8 @@ export default {
         VueDatePicker,
         HelpStatusLegend,
         Modal,
-        UserAdjustment
+        UserAdjustment,
+        ExportSalaryModal
     },
     props: {
         days: {
@@ -293,6 +306,10 @@ export default {
             type: String,
             required: true,
         },
+        employmentTypes: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         let statuses = [
@@ -323,7 +340,9 @@ export default {
             isOpenModal: false,
             activeUser: null,
             activeHalf: null,
-            localUsersReport: { ...this.usersReport }
+            localUsersReport: { ...this.usersReport },
+            isExportModalOpen: false,
+            selectedHalfForExport: null,
         }
     },
     methods: {
@@ -394,6 +413,14 @@ export default {
             this.isOpenModal = false;
             this.activeUser = null;
             this.activeHalf = null;
+        },
+        openExportModal(half) {
+            this.selectedHalfForExport = half;
+            this.isExportModalOpen = true;
+        },
+        closeExportModal() {
+            this.isExportModalOpen = false;
+            this.selectedHalfForExport = null;
         }
     }
 }

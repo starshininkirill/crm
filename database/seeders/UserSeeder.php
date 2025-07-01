@@ -14,10 +14,14 @@ use Faker\Factory as Faker;
 class UserSeeder extends Seeder
 {
     protected $employmentTypes;
+    private static bool $anotherRecipientCreated = false;
+    private static bool $compensationAssigned = false;
 
     public function run(): void
     {
-        $this->employmentTypes = EmploymentType::whereIn('id', [1, 3])->get();
+        self::$anotherRecipientCreated = false;
+        self::$compensationAssigned = false;
+        $this->employmentTypes = EmploymentType::all();
 
         if ($this->employmentTypes->isEmpty()) {
             $this->command->warn('Таблица employment_types пуста. Заполните ее перед запуском сидера.');
@@ -250,9 +254,30 @@ class UserSeeder extends Seeder
         }
 
         $faker = Faker::create('ru_RU');
-        $employmentType = $this->employmentTypes->random();
 
-        $details = [];
+        $compensationType = $this->employmentTypes->firstWhere('compensation', '>', 0);
+        $anotherRecipientType = $this->employmentTypes->firstWhere('is_another_recipient', true);
+
+        if ($compensationType && !self::$compensationAssigned) {
+            $employmentType = $compensationType;
+            self::$compensationAssigned = true;
+        } elseif ($anotherRecipientType && !self::$anotherRecipientCreated) {
+            $employmentType = $anotherRecipientType;
+            self::$anotherRecipientCreated = true;
+        } else {
+            $employmentType = $this->employmentTypes->random();
+        }
+
+        if ($employmentType->is_another_recipient) {
+            $details = [
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'surname' => $faker->middleName,
+            ];
+        } else {
+            $details = [];
+        }
+
         $user->employmentDetail()->create([
             'employment_type_id' => $employmentType->id,
             'details' => $details,

@@ -69,7 +69,7 @@
 
                     <div class="space-y-4">
                         <div class="flex justify-between border-b pb-1">
-                            <div class="text-sm text-gray-500 font-medium">Тип устройства</div>
+                            <div class="text-sm text-gray-500 font-medium">Тип трудоустройства</div>
                             <div class="text-gray-800 text-right font-semibold">
                                 {{ user?.employmentDetail?.employment_type.name }}
                             </div>

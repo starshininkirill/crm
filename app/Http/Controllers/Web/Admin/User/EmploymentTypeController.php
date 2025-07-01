@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\EmploymentTypeRequest;
 use App\Models\EmploymentType;
 use Inertia\Inertia;
+use Illuminate\Http\RedirectResponse;
 
 class EmploymentTypeController extends Controller
 {
@@ -19,19 +20,17 @@ class EmploymentTypeController extends Controller
         ]);
     }
 
-    public function store(EmploymentTypeRequest $request)
+    public function store(EmploymentTypeRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        EmploymentType::create($request->validated());
 
-        EmploymentType::create($validated);
-
-        return redirect()->back()->with('success', 'Тип устройства успешно создан');
+        return redirect()->back()->with('success', 'Тип трудоустройства успешно создан');
     }
 
-    public function destroy(EmploymentType $employmentType)
+    public function destroy(EmploymentType $employmentType): RedirectResponse
     {
         $employmentType->delete();
 
-        return redirect()->back()->with('success', 'Тип устройства успешно удалён');
+        return redirect()->back()->with('success', 'Тип трудоустройства успешно удалён');
     }
 }

@@ -17,6 +17,7 @@ use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use App\Http\Requests\Admin\User\ExportSalaryRequest;
 use App\Exports\TimeSheet\SalaryExport;
+use App\Models\EmploymentType;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TimeSheetController extends Controller
@@ -45,6 +46,7 @@ class TimeSheetController extends Controller
             'status' => $status,
             'date' => $targetDate->format('Y-m'),
             'usersReport' => collect(),
+            'employmentTypes' => EmploymentType::all(),
         ];
 
         if ($departments->isEmpty() || $targetDate > Carbon::now()->endOfMonth()) {
