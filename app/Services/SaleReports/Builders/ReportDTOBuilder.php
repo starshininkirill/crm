@@ -53,7 +53,7 @@ class ReportDTOBuilder
         return $data;
     }
 
-    public function buildUserReport(Carbon $date, User $user): ReportDTO
+    public function buildSingleUserReport(Carbon $date, User $user): ReportDTO
     {
         $data = new ReportDTO();
         $this->prepareUserData($data, $date, $user);
@@ -73,7 +73,7 @@ class ReportDTOBuilder
         $data->workPlans = $this->workPlanService->actualSalePlans($date);
 
         $activeUsers = $users ?? $this->userService->filterUsersByStatus($data->department->allUsers($data->date, $this->userRelations), 'active', $data->date);
-        
+
         $activeUsers = $activeUsers->where('id', '!=', $department->head?->id);
 
         $data->payments = $this->monthlyClosePaymentsForRoleGroup(
@@ -215,28 +215,44 @@ class ReportDTOBuilder
 
     private function prepareUserData(ReportDTO $data, Carbon $date, User $user): void
     {
-        $data->date = $date;
-        $data->user = $user;
-        $mainDepartment = Department::getMainSaleDepartment();
-        $data->mainDepartmentId = $mainDepartment->id;
+        $startDate = $date->copy()->startOfMonth();
+        $endDate = $date->copy()->endOfMonth();
 
-        $data->workPlans = WorkPlan::where('department_id', $data->mainDepartmentId)
-            ->whereYear('created_at', $date->year)
-            ->whereMonth('created_at', $date->month)
-            ->with('serviceCategory')
-            ->get();
+        $data->date = $endDate;
+        $data->user = $user;
+        $data->isUserData = true;
+
+        $mainDepartment = Department::getMainSaleDepartment();
+        if (!$mainDepartment) {
+            return;
+        }
+
+        $data->mainDepartmentId = $mainDepartment->id;
+        $data->department = $user->department;
+
+        $data->workPlans = $this->workPlanService->actualSalePlans($date, ['serviceCategory']);
 
         if ($data->workPlans->isEmpty()) {
-            throw new Exception('Нет планов для рассчёта');
+            throw new BusinessException('Нет планов для рассчёта');
+        }
+
+        if ($user->phone) {
+            $data->callsStat = CallHistory::query()
+                ->where('phone', $user->phone)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->get()
+                ->groupBy('phone');
         }
 
         $workingDays = WorkingDay::whereYear('date', $date->format('Y'))->get();
         $data->workingDays = DateHelper::getWorkingDaysInMonth($date, $workingDays);
 
         $data->monthWorkPlan = $this->getMonthPlan($data->workPlans, $user, $data->date, $data->mainDepartmentId);
-        $data->monthWorkPlanGoal = $data->monthWorkPlan->data['goal'];
+        if ($data->monthWorkPlan) {
+            $data->monthWorkPlanGoal = $data->monthWorkPlan->data['goal'];
+        }
 
-        $data->payments = User::monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SELLER);
+        $data->payments = $this->monthlyClosePaymentsForRoleGroup($date, [$user->id], ContractUser::SELLER);
 
         $data->newPayments = $data->payments->where('type', Payment::TYPE_NEW);
         $data->oldPayments = $data->payments->where('type', Payment::TYPE_OLD);
@@ -247,7 +263,7 @@ class ReportDTOBuilder
         $data->oldMoney = $data->oldPayments->sum('value');
 
         $data->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($data->contracts);
-        $data->isUserData = true;
+        $data->financeWeeks = DateHelper::splitMonthIntoWeek($date);
     }
 
     private function filterPaymentsByUser(ReportDTO $mainData, User $user)

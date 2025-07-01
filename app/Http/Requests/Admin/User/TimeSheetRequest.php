@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\TimeCheck;
+namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OverworkRequest extends FormRequest
+class TimeSheetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,8 @@ class OverworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description' => 'required|string',
+            'date' => 'sometimes|date|date_format:Y-m',
+            'department_id' => 'nullable|integer|exists:departments,id'
         ];
     }
 }

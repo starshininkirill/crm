@@ -1,5 +1,5 @@
 <template>
-    <UserLayout>
+    <UsersLayout>
 
         <Head title="Сотрудники" />
         <div class="flex flex-col">
@@ -71,12 +71,12 @@
                 </div>
             </div>
         </div>
-    </UserLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head } from '@inertiajs/vue3';
-import UserLayout from '../Layouts/UserLayout.vue';
+import UsersLayout from '../Layouts/UsersLayout.vue';
 import CreateForm from './Components/CreateForm.vue';
 import VueSelect from 'vue-select';
 import { router } from '@inertiajs/vue3';
@@ -88,7 +88,7 @@ export default {
         Head,
         CreateForm,
         VueSelect,
-        UserLayout,
+        UsersLayout,
         Pagination
     },
     props: {

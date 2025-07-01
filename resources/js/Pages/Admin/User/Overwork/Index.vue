@@ -1,5 +1,5 @@
 <template>
-    <TimeCheckLayout>
+    <UsersLayout>
 
         <Head title="Переработки" />
         <div class="contract-page-wrapper flex flex-col">
@@ -98,18 +98,18 @@
                 </button>
             </div>
         </Modal>
-    </TimeCheckLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head, router } from '@inertiajs/vue3';
-import TimeCheckLayout from '../../Layouts/TimeCheckLayout.vue';
+import UsersLayout from '../../Layouts/UsersLayout.vue';
 import Modal from '../../../../Components/Modal.vue';
 
 export default {
     components: {
         Head,
-        TimeCheckLayout,
+        UsersLayout,
         Modal
     },
     props: {

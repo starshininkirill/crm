@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Admin\User;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Filters\Models\UserFilter;
-use App\Http\Requests\Admin\UserRequest;
+use App\Http\Requests\Admin\User\UserRequest;
 use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;

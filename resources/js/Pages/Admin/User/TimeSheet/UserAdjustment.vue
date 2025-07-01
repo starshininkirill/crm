@@ -3,7 +3,7 @@
         Компенсации и лишения
     </h1>
     <div class="flex flex-col gap-4">
-        <table class="table" v-if="bonuses.length || (user.lates_penalty != 0 && half == 'first_half')">
+        <table class="table" v-if="Object.keys(bonuses).length || (user.lates_penalty != 0 && half == 'first_half')">
             <thead class="thead">
                 <tr>
                     <th scope="col" class="px-2 py-2 border-x ">
@@ -77,11 +77,12 @@
 
 </template>
 <script>
-import { useForm, router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import VueSelect from 'vue-select';
 import FormInput from '../../../../Components/FormInput.vue';
 import Error from '../../../../Components/Error.vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -103,58 +104,60 @@ export default {
         },
     },
     data() {
-
-        let types = [
-            {
-                'name': 'Компенсация',
-                'value': 'bonus'
-            },
-            {
-                'name': 'Лишение',
-                'value': 'penalty'
-            },
-        ]
-
-        let form = useForm({
-            'user_id': this.user.id,
-            'period': this.half,
-            'date': this.date,
-            'type': types[0].value,
-            'value': null,
-            'description': null,
-        });
-
         return {
-            form,
-            types,
-            bonuses: this.user[this.half],
-            adjustments: this.user[this.half + '_adjustments'],
+            types: [
+                { 'name': 'Компенсация', 'value': 'bonus' },
+                { 'name': 'Лишение', 'value': 'penalty' }
+            ],
+            form: {
+                'user_id': this.user.id,
+                'period': this.half,
+                'date': this.date,
+                'type': 'bonus',
+                'value': null,
+                'description': null,
+            },
+            isLoading: false,
         }
     },
-    emits: ['closeModal'],
+    computed: {
+        bonuses() {
+            return this.user[this.half];
+        },
+        adjustments() {
+            return this.user[this.half + '_adjustments'];
+        },
+    },
+    emits: ['closeModal', 'user-updated'],
     methods: {
         submitForm() {
-            const context = this;
-            this.form.post(route('admin.time-sheet.user-adjustment.store'), {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    context.$emit('closeModal');
-
-                    // this.$inertia.reload({
-                    //     only: ['adjustments'],
-                    // });
-                },
-            });
+            this.isLoading = true;
+            axios.post(route('admin.time-sheet.user-adjustment.store'), this.form)
+                .then(response => {
+                    this.$emit('user-updated', response.data.user);
+                    this.form.value = null;
+                    this.form.description = null;
+                })
+                .catch(error => {
+                    console.error(error.response);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         deleteBonus(adjustment) {
-            const context = this;
             if (confirm('Вы уверены, что хотите удалить выплату?')) {
-                router.delete(route('admin.time-sheet.user-adjustment.destroy', adjustment), {
-                    onSuccess: () => {
-                        context.$emit('closeModal');
-                    },
-                });
+                this.isLoading = true;
+                axios.delete(route('admin.time-sheet.user-adjustment.destroy', adjustment))
+                    .then(response => {
+                        this.$emit('user-updated', response.data.user);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                    });
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\TimeCheck;
+namespace App\Http\Requests\Admin\User;
 
 use App\Models\UserAdjustment;
 use Carbon\Carbon;

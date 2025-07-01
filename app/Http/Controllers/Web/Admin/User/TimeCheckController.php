@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\TimeCheck;
+namespace App\Http\Controllers\Web\Admin\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\TimeCheck\WorkStatusRequest;
+use App\Http\Requests\Admin\User\WorkStatusRequest;
+use App\Models\Department;
 use App\Models\WorkStatus;
 use App\Services\TimeCheckServices\ReportService;
 use App\Services\WorkStatusService;
@@ -21,12 +22,13 @@ class TimeCheckController extends Controller
         $todayReport = $servise->getWorkTimeDayReport($date);
         $logReport = $servise->getLogReport($date);
 
-        return Inertia::render('Admin/TimeCheck/Index', [
+        return Inertia::render('Admin/User/TimeCheck', [
             'todayReport' => $todayReport['detailed'],
             'aggregatedReport' => $todayReport['aggregated'],
             'logReport' => $logReport,
             'date' => $date,
             'workStatuses' => $workStatuses,
+            'departments' => Department::all(),
         ]);
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <TimeCheckLayout>
+    <UsersLayout>
 
         <Head title="Кадровый табель" />
         <div class="contract-page-wrapper flex flex-col">
@@ -7,10 +7,11 @@
         </div>
 
         <Modal :open="isOpenModal" @close="closeModal()">
-            <UserAdjustment :user="activeUser" :half="activeHalf" :date="selectedDate" @closeModal="closeModal" />
+            <UserAdjustment v-if="activeUser" :user="activeUser" :half="activeHalf" :date="selectedDate"
+                @user-updated="handleUserUpdate" />
         </Modal>
 
-        <div class="flex gap-3 max-w-3xl mb-4">
+        <div class="flex gap-3 max-w-3xl w-full mb-4 h-fit self-end">
             <div class=" w-2/4 flex flex-col">
                 <label class="label">Отдел</label>
                 <VueSelect class="full-vue-select h-full" v-model="selectedDepartment"
@@ -33,8 +34,23 @@
                 Выбрать
             </div>
         </div>
+        <div class="flex justify-between gap-3">
+            <HelpStatusLegend />
+            <div class="flex flex-col justify-end">
+                <h3 class="font-semibold text-lg mb-3">Сформировать выплату</h3>
+
+                <div class="flex gap-2">
+                    <div class="btn !w-fit h-fit">
+                        за 1-14 число
+                    </div>
+                    <div class="btn !w-fit h-fit">
+                        за 15-31 число
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="overflow-x-auto w-[calc(100vw-260px)] bg-white rounded-lg  pt-16">
-            <table v-if="Object.keys(usersReport).length"
+            <table v-if="Object.keys(localUsersReport).length"
                 class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full border">
                 <thead class="thead ">
                     <tr>
@@ -84,6 +100,9 @@
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Итого к выплате
                         </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-24">
+                            Итого c компенс...
+                        </th>
                         <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
 
                         </td>
@@ -108,9 +127,12 @@
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
                             Итого к выплате
                         </th>
+                        <th class="px-2 py-2 border-r whitespace-normal w-24">
+                            Итого c компенс...
+                        </th>
                     </tr>
                 </thead>
-                <tbody v-for="department, key in usersReport">
+                <tbody v-for="department, key in localUsersReport">
                     <tr class="text-xs text-gray-700 text-center uppercase bg-gray-50">
                         <td colspan="100%" class="px-2 py-2 bg-gray-800 text-white font-semibold">
                             {{ key == '' ? 'Без отдела' : key }}
@@ -189,6 +211,9 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_first_half_salary) }}
                         </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            {{ formatPrice(user.amount_first_half_salary_with_compensation) }}
+                        </td>
                         <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
 
                         </td>
@@ -205,11 +230,14 @@
                             {{ user.second_half_hours }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center cursor-pointer"
-                            @click="openModal(user, 'first_half')">
+                            @click="openModal(user, 'second_half')">
                             {{ formatPrice(user.second_half_adjustments) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_second_half_salary) }}
+                        </td>
+                        <td class="px-2 py-2 border-r w-20 text-center">
+                            {{ formatPrice(user.amount_second_half_salary_with_compensation) }}
                         </td>
                     </tr>
                 </tbody>
@@ -218,14 +246,12 @@
                 Нет данных для расчёта
             </h1>
         </div>
-
-        <HelpStatusLegend />
-    </TimeCheckLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head, router } from '@inertiajs/vue3';
-import TimeCheckLayout from '../../Layouts/TimeCheckLayout.vue';
+import UsersLayout from '../../Layouts/UsersLayout.vue';
 import VueSelect from 'vue-select';
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { route } from 'ziggy-js';
@@ -236,7 +262,7 @@ import UserAdjustment from './UserAdjustment.vue';
 export default {
     components: {
         Head,
-        TimeCheckLayout,
+        UsersLayout,
         VueSelect,
         VueDatePicker,
         HelpStatusLegend,
@@ -297,9 +323,20 @@ export default {
             isOpenModal: false,
             activeUser: null,
             activeHalf: null,
+            localUsersReport: { ...this.usersReport }
         }
     },
     methods: {
+        handleUserUpdate(updatedUser) {
+            this.activeUser = updatedUser;
+            for (const departmentName in this.localUsersReport) {
+                const userIndex = this.localUsersReport[departmentName].findIndex(user => user.id === updatedUser.id);
+                if (userIndex !== -1) {
+                    this.localUsersReport[departmentName][userIndex] = updatedUser;
+                    break;
+                }
+            }
+        },
         getActionColor(day, user) {
             let colors = [];
 

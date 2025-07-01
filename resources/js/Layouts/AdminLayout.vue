@@ -36,18 +36,11 @@
               Услуги
               </Link>
             </li>
-
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }" :href="route('admin.user.index')">
-              Сотрудники
-              </Link>
-            </li>
-            <li>
-              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.time-check.index') }"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }"
                 :href="route('admin.time-check.index')">
-              Time Check
+                Кадры
               </Link>
             </li>
             <li>

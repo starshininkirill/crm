@@ -1,5 +1,5 @@
 <template>
-    <UserLayout>
+    <UsersLayout>
 
         <Head title="Типы устройства" />
         <div class="contract-page-wrapper flex flex-col">
@@ -140,12 +140,12 @@
                 </div>
             </div>
         </div>
-    </UserLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head, useForm } from '@inertiajs/vue3';
-import UserLayout from '../../Layouts/UserLayout.vue';
+import UsersLayout from '../../Layouts/UsersLayout.vue';
 import FormInput from '../../../../Components/FormInput.vue';
 import Error from '../../../../Components/Error.vue';
 import VueSelect from 'vue-select';
@@ -159,7 +159,7 @@ export default {
         FormInput,
         Error,
         VueSelect,
-        UserLayout,
+        UsersLayout,
         ToggleSwitch
     },
     props: {

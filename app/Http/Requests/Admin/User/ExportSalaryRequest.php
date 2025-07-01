@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\TimeCheck;
+namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TimeSheetRequest extends FormRequest
+class ExportSalaryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class TimeSheetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => 'sometimes|date|date_format:Y-m',
-            'department_id' => 'nullable|integer|exists:departments,id'
+            'date' => 'required|date',
+            'half' => 'required|integer|in:1,2',
+            'department_id' => 'nullable|integer|exists:departments,id',
+            'employment_type_ids' => 'required|array',
+            'employment_type_ids.*' => 'integer|exists:employment_types,id',
         ];
     }
 }

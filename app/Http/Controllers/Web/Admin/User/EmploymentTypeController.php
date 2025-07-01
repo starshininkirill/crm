@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Admin\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\EmploymentTypeRequest;
+use App\Http\Requests\Admin\User\EmploymentTypeRequest;
 use App\Models\EmploymentType;
 use Inertia\Inertia;
 

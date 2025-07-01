@@ -3,16 +3,27 @@
 namespace Database\Seeders;
 
 use App\Models\Department;
+use App\Models\EmploymentType;
 use App\Models\TimeCheck;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
+    protected $employmentTypes;
+
     public function run(): void
     {
+        $this->employmentTypes = EmploymentType::whereIn('id', [1, 3])->get();
+
+        if ($this->employmentTypes->isEmpty()) {
+            $this->command->warn('Таблица employment_types пуста. Заполните ее перед запуском сидера.');
+            return;
+        }
+
         $realManagersNumbers = [
             79922896554,
             79535174387,
@@ -53,7 +64,7 @@ class UserSeeder extends Seeder
     {
         Carbon::setTestNow('2025-01-02 10:26:39');
 
-        User::create([
+        $user = User::create([
             'first_name' => 'GRAMPUS',
             'last_name' => 'GRAMPUS',
             'surname' => 'GRAMPUS',
@@ -63,6 +74,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('Goofy__741501'),
             'role' => 'admin',
         ]);
+        $this->createEmploymentDetailsForUser($user);
 
         $admin = User::create([
             'first_name' => 'Admin',
@@ -76,6 +88,7 @@ class UserSeeder extends Seeder
             'position_id' => 6,
             'department_id' => 4,
         ]);
+        $this->createEmploymentDetailsForUser($admin);
 
         Carbon::setTestNow('2025-03-02 10:26:39');
         $admin->update([
@@ -97,7 +110,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($salesDept2 as $sale) {
-            User::create([
+            $user = User::create([
                 'first_name' => $sale[0],
                 'last_name' => $sale[1],
                 'surname' => 'Иванович',
@@ -109,6 +122,7 @@ class UserSeeder extends Seeder
                 'department_id' => 2,
                 'phone' => $sale[3]
             ]);
+            $this->createEmploymentDetailsForUser($user);
         }
 
         // Продажники отдела 3
@@ -119,7 +133,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($salesDept3 as $sale) {
-            User::create([
+            $user = User::create([
                 'first_name' => $sale[0],
                 'last_name' => $sale[1],
                 'surname' => 'Иванович',
@@ -131,6 +145,7 @@ class UserSeeder extends Seeder
                 'department_id' => 3,
                 'phone' => $sale[3]
             ]);
+            $this->createEmploymentDetailsForUser($user);
         }
 
         // Руководители отделов
@@ -152,6 +167,7 @@ class UserSeeder extends Seeder
             'position_id' => 1,
             'department_id' => 2,
         ]);
+        $this->createEmploymentDetailsForUser($sale1Head);
 
         Department::find(2)->update(['head_id' => $sale1Head->id]);
 
@@ -166,6 +182,7 @@ class UserSeeder extends Seeder
             'position_id' => 1,
             'department_id' => 3,
         ]);
+        $this->createEmploymentDetailsForUser($sale2Head);
 
         Department::find(3)->update(['head_id' => $sale2Head->id]);
     }
@@ -174,20 +191,28 @@ class UserSeeder extends Seeder
     {
         Carbon::setTestNow('2025-01-02 10:26:39');
         // Создаем пользователей для отдела 2
-        User::factory()->count($countPerDepartment)->create([
-            'department_id' => 2,
-            'surname' => 'Иванович',
-            'position_id' => rand(2, 4), // случайная позиция из доступных для продажников
-            'role' => 'user'
-        ]);
+        User::factory()->count($countPerDepartment)
+            ->afterCreating(function (User $user) {
+                $this->createEmploymentDetailsForUser($user);
+            })
+            ->create([
+                'department_id' => 2,
+                'surname' => 'Иванович',
+                'position_id' => rand(2, 4), // случайная позиция из доступных для продажников
+                'role' => 'user'
+            ]);
 
         // Создаем пользователей для отдела 3
-        User::factory()->count($countPerDepartment)->create([
-            'department_id' => 3,
-            'surname' => 'Иванович',
-            'position_id' => rand(2, 4),
-            'role' => 'user'
-        ]);
+        User::factory()->count($countPerDepartment)
+            ->afterCreating(function (User $user) {
+                $this->createEmploymentDetailsForUser($user);
+            })
+            ->create([
+                'department_id' => 3,
+                'surname' => 'Иванович',
+                'position_id' => rand(2, 4),
+                'role' => 'user'
+            ]);
 
         // Создаем пользователей с реальными номерами
         // foreach ($realManagersNumbers as $number) {
@@ -216,5 +241,22 @@ class UserSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    protected function createEmploymentDetailsForUser(User $user): void
+    {
+        if ($this->employmentTypes->isEmpty()) {
+            return;
+        }
+
+        $faker = Faker::create('ru_RU');
+        $employmentType = $this->employmentTypes->random();
+
+        $details = [];
+        $user->employmentDetail()->create([
+            'employment_type_id' => $employmentType->id,
+            'details' => $details,
+            'payment_account' => '1111111111111',
+        ]);
     }
 }

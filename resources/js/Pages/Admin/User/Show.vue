@@ -1,5 +1,5 @@
 <template>
-    <UserLayout>
+    <UsersLayout>
 
         <Head :title="user.full_name" />
         <div class="contract-page-wrapper flex flex-col">
@@ -98,17 +98,17 @@
                 </div>
             </div>
         </div>
-    </UserLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head } from '@inertiajs/vue3';
-import UserLayout from '../Layouts/UserLayout.vue';
+import UsersLayout from '../Layouts/UsersLayout.vue';
 
 export default {
     components: {
         Head,
-        UserLayout
+        UsersLayout
     },
     props: {
         user: {

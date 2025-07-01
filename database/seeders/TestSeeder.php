@@ -126,7 +126,10 @@ class TestSeeder extends Seeder
         $last->type = Payment::TYPE_OLD;
         $last->save();
 
-        Carbon::setTestNow('2025-02-14 10:26:39');
+        Carbon::setTestNow('2025-03-14 10:26:39');
+        
+        $user->position_id = 1;
+        $user->save();
 
         $user->fire();
         // dd($user);
@@ -141,7 +144,7 @@ class TestSeeder extends Seeder
         // $contractService->attachPerformers($contract, $attachData);
 
 
-        Carbon::setTestNow('2025-03-30 10:26:39');
+        Carbon::setTestNow('2025-02-01 10:26:39');
 
         $position = Position::find(4);
 

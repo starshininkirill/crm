@@ -121,11 +121,13 @@ class DepartmentReportGenerator extends BaseReportGenerator
         return $report;
     }
 
-    protected function motivationReport(ReportDTO $reportData, User $user): Collection
+    protected function motivationReport(ReportDTO $reportInfo, User $user): Collection
     {
         $report = collect();
 
-        $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportData, $user);
+        if(!$reportInfo->isUserData){
+            $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportInfo, $user);
+        }
 
         $report['monthPlan'] = $this->planCalculator->monthPlan($reportInfo);
         $report['doublePlan'] = $this->planCalculator->doublePlan($reportInfo);

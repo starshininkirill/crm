@@ -1,5 +1,5 @@
 <template>
-    <TimeCheckLayout>
+    <UsersLayout>
 
         <Head title="Time Check" />
         <div class="flex flex-col">
@@ -27,12 +27,12 @@
                 <LogReport :logReport="logReport" />
             </div>
         </div>
-    </TimeCheckLayout>
+    </UsersLayout>
 </template>
 
 <script>
 import { Head, router } from '@inertiajs/vue3';
-import TimeCheckLayout from '../Layouts/TimeCheckLayout.vue';
+import UsersLayout from '../Layouts/UsersLayout.vue';
 import CurrentUserStatuses from './Components/CurrentTable/CurrentUserStatuses.vue';
 import LogReport from './Components/LogReportTable/LogReport.vue';
 import { route } from 'ziggy-js';
@@ -42,7 +42,7 @@ import AggregateTable from './Components/AggregateTable/AggregateTable.vue';
 export default {
     components: {
         Head,
-        TimeCheckLayout,
+        UsersLayout,
         CurrentUserStatuses,
         LogReport,
         VueDatePicker,
