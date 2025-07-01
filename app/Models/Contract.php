@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\DateHelper;
+use App\Models\States\Contract\ContractState;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,10 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Spatie\ModelStates\HasStates;
 
 class Contract extends Model
 {
-    use HasFactory;
+    use HasFactory, HasStates;
 
     protected $fillable = [
         'number',
@@ -23,6 +25,10 @@ class Contract extends Model
         'amount_price',
         'parent_id',
         'client_id'
+    ];
+
+    protected $casts = [
+        'state' => ContractState::class,
     ];
 
     public function parent(): BelongsTo

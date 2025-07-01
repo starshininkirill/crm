@@ -42,7 +42,7 @@
                         {{ bonus.description }}
                     </td>
                     <td class="px-2 border-r py-2 text-gray-900">
-                        {{ bonus.type == 'bonus' ? 'Бонус' : 'Лишение' }}
+                        {{ bonus.type == 'bonus' ? 'Компенсация' : 'Лишение' }}
                     </td>
                     <td class="px-2 border-r py-2 text-gray-900">
                         <button @click="deleteBonus(bonus)" class="text-red-600 hover:underline">

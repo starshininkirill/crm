@@ -87,7 +87,7 @@
                                 {{ showAllDates ? '▼' : '▲' }}
                             </span>
                         </th>
-                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-6 text-center">
 
                         </td>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
@@ -114,7 +114,7 @@
                         <th class="px-2 py-2 border-r whitespace-normal w-24">
                             Итого c компенс...
                         </th>
-                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-6 text-center">
 
                         </td>
                         <th class="px-2 py-2 border-r whitespace-normal w-20">
@@ -200,7 +200,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-6 text-center">
 
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
@@ -225,7 +225,7 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.amount_first_half_salary_with_compensation) }}
                         </td>
-                        <td class="px-2 py-2 bg-zinc-600 border-r w-8 text-center">
+                        <td class="px-2 py-2 bg-zinc-600 border-r w-6 text-center">
 
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
