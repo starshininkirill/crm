@@ -18,9 +18,10 @@ class DatabaseSeeder extends Seeder
 
             EmploymentTypeSeeder::class,
             UserSeeder::class,
-            ClientSeeder::class,
             ServiceSeeder::class,
-            ContractSeeder::class,
+
+            SaleContractSeeder::class,
+            ProjectContractSeeder::class,
             WorkPlanSeeder::class,
             OrganizationSeeder::class,
             DocumentTemplateSeeder::class,

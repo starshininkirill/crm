@@ -16,6 +16,22 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->saleDepartments();
+
+        $this->projectManagersDepartment();
+    }
+
+    private function projectManagersDepartment()
+    {
+        Carbon::setTestNow('2025-01-01 00:00:00');
+        $mainDepartment = Department::create([
+            'name' => 'Отдел Сопровождения',
+            'type' => Department::DEPARTMENT_PROJECT_MANAGERS
+        ]);
+    }
+
+    private function saleDepartments()
+    {
         Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
             'name' => 'Отдел продаж',

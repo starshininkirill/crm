@@ -6,6 +6,8 @@ use App\Models\States\Contract\ContractState;
 
 class Created extends ContractState
 {
+    public static $name = 'Создан';
+
     public function name(): string
     {
         return 'Создан';

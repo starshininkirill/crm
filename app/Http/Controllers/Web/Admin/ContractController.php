@@ -8,17 +8,17 @@ use App\Http\Requests\Admin\ContractRequest;
 use App\Models\Contract;
 use App\Models\ContractUser;
 use App\Models\Payment;
-use App\Models\Service;
 use App\Models\User;
 use App\Services\ContractService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\States\Contract\ContractState;
 
 class ContractController extends Controller
 {
     public function index()
     {
-        $contracts = Contract::with('payments')->orderByDesc('id')->get();
+        $contracts = Contract::with('payments')->latest()->get();
 
         $contracts = $contracts->map(function ($contract) {
             return [
@@ -51,6 +51,13 @@ class ContractController extends Controller
     {
         $users = User::all();
 
+        $allStates = ContractState::getStates();
+
+        $currentStateData = [
+            'name' => $contract?->state?->name() ?? '',
+            'order' => $contract?->state?->order() ?? '',
+        ];
+
         $contractData = [
             'id' => $contract->id,
             'number' => $contract->number,
@@ -82,6 +89,8 @@ class ContractController extends Controller
         return Inertia::render('Admin/Contract/Show', [
             'contract' => $contractData,
             'users' => $users,
+            'all_states' => $allStates,
+            'current_state' => $currentStateData,
         ]);
     }
 

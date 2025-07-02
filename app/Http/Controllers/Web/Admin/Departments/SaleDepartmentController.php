@@ -129,7 +129,7 @@ class SaleDepartmentController extends Controller
             'date' => $date->format('Y-m'),
         ]);
     }
- 
+
     public function plansSettings(Request $request, WorkPlanService $workPlanService)
     {
         $requestDate = $request->query('date');

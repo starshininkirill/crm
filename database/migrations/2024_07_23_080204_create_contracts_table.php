@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\States\Contract\Created;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,8 +22,9 @@ return new class extends Migration
             $table->float('amount_price')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('contracts')->references('id')->onDelete('set null');
             $table->foreignId('client_id')->nullable();
-            $table->string('state')->nullable();
-        }); 
+            $table->dateTime('close_date')->nullable();
+            $table->string('state')->default(Created::class);
+        });
     }
     /**
      * Reverse the migrations.
@@ -32,4 +34,3 @@ return new class extends Migration
         Schema::dropIfExists('contracts');
     }
 };
- 

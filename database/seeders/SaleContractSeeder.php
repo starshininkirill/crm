@@ -12,20 +12,22 @@ use App\Services\ContractService;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
-class ContractSeeder extends Seeder
+class SaleContractSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(ContractService $contractService): void
     {
+
+        Carbon::setTestNow('2025-02-02 10:26:39');
+        $clients = Client::factory()->count(60)->create();
+
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonths(5);
+        $startDate = Carbon::now()->subMonths(4);
         $endDate = Carbon::now();
 
         $services = Service::query()->WhereNotNull('price')->get();
-
-        $clients = Client::all();
 
         $users = Department::getMainSaleDepartment()->allUsers($endDate, ['departmentHead'])->filter(function ($user) {
             return $user->departmentHead->isEmpty();

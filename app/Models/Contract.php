@@ -24,11 +24,13 @@ class Contract extends Model
         'sale',
         'amount_price',
         'parent_id',
-        'client_id'
+        'client_id',
+        'close_date',
     ];
 
     protected $casts = [
         'state' => ContractState::class,
+        'close_date' => 'datetime',
     ];
 
     public function parent(): BelongsTo

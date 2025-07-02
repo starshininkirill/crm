@@ -16,7 +16,28 @@ class PositionSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->saleManagersPositions();
+        $this->projectManagersPositions();
+    }
 
+    private function projectManagersPositions()
+    {
+        Carbon::setTestNow('2025-01-01 10:26:39');
+        $position = [
+            ['name' => 'Руководитель отдела Сопровождения', 'salary' => 40000],
+            ['name' => 'Проект-менеджер', 'salary' => 16000, 'has_probation' => true],
+            ['name' => 'Старший проект-менеджер', 'salary' => 19000],
+            ['name' => 'Ведущий проект-менеджер', 'salary' => 22000],
+            ['name' => 'Главный проект-менеджер', 'salary' => 25000],
+        ];
+
+        foreach ($position as $position) {
+            Position::create($position);
+        };
+    }
+
+    private function saleManagersPositions()
+    {
         Carbon::setTestNow('2025-01-01 10:26:39');
         $position = [
             ['name' => 'Руководитель отдела продаж', 'salary' => 100000],

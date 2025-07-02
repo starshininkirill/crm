@@ -62,7 +62,7 @@
         </div>
         <div class="overflow-x-auto w-[calc(100vw-260px)] bg-white rounded-lg  pt-16">
             <table v-if="Object.keys(localUsersReport).length"
-                class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap table-fixed w-full border">
+                class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap w-full border table-fixed">
                 <thead class="thead ">
                     <tr>
                         <th class="px-2 py-2 border-r w-20">

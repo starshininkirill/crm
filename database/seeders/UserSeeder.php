@@ -57,6 +57,8 @@ class UserSeeder extends Seeder
         // Создаем тестовых продажников
         $this->createSalesTeam();
 
+        $this->createProjectManagers();
+
         // Создаем случайных пользователей через фабрику
         // $this->createFactoryUsers(50); // 50 пользователей для каждого отдела
 
@@ -100,6 +102,42 @@ class UserSeeder extends Seeder
             'department_id' => 4
         ]);
         Carbon::setTestNow();
+    }
+
+    protected function createProjectManagers(): void
+    {
+        Carbon::setTestNow('2025-01-02 10:26:39');
+        // Сортудники
+        $projectManagers = [
+            ['Анастасия', 'Загоскина', 'zagoskina@mail.ru', 89999999944, 8],
+            ['Дарья', 'Романова', 'dariaromanova@mail.ru', 89999999911, 12],
+            ['Марина', 'Красильникова', 'krasilnikova@mail.ru', 89999999922, 9],
+            ['Никита', 'Редькин', 'redkin@mail.ru', 89999999933, 11],
+        ];
+
+        $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);
+
+        foreach ($projectManagers as $person) {
+            $user = User::create([
+                'first_name' => $person[0],
+                'last_name' => $person[1],
+                'surname' => 'Иванович',
+                'work_phone' => '89999999999',
+                'bitrix_id' => rand(2, 100),
+                'email' => $person[2],
+                'password' => Hash::make('1409199696Rust'),
+                'position_id' => $person[4],
+                'department_id' => $department->id,
+                'phone' => $person[3]
+            ]);
+
+            if ($person[4] == 8) {
+                $department->head_id = $user->id;
+                $department->save();
+            }
+
+            $this->createEmploymentDetailsForUser($user);
+        }
     }
 
     protected function createSalesTeam(): void

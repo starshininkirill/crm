@@ -7,7 +7,6 @@
 
             <SelectForm :departments="departments" :users="users" :initial-department="selectedDepartment"
                 :initial-user="selectUser" :initial-date="date" />
-
             <Error />
 
             <template v-if="!report?.motivationReport?.weeksPlan">

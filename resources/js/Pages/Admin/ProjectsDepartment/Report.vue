@@ -5,10 +5,88 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Отчёт отдела Сопровождения</h1>
 
+            <SelectForm :users="users" :initial-user="selectUser" :initial-date="date" />
 
-            <div class="text-2xl font-semibold">
-                Тут будет Отчёт для отдела Сопровождения
-            </div>
+            <Error />
+
+            <table v-if="report.length != 0" class="overflow-hidden table table-fixed">
+                <thead class="thead border-b">
+                    <tr>
+                        <th scope="col" class="px-3 py-2 border-x w-60">
+                            Сотрудник
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Дз
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Допродажи
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            % от допродаж
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Уник
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Готовый
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Комплекс
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Б1
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Б2
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Б3
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Б4
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="row in report" :key="row.user.full_name" class="table-row ">
+                        <th scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
+                            {{ row.user.full_name }}
+                        </th>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.accounts_receivable }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ formatPrice(row.upsells) }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ formatPrice(row.percent_upsells) }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            0
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            0
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            0
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.b1 }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.b2 }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.b3 }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.b4 }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
         </div>
     </ProjectsLayout>
 </template>
@@ -16,15 +94,31 @@
 <script>
 import { Head } from '@inertiajs/vue3';
 import ProjectsLayout from '../Layouts/ProjectsLayout.vue';
+import SelectForm from './Components/SelectForm.vue';
+import Error from '../../../Components/Error.vue';
 
 export default {
     components: {
         Head,
-        ProjectsLayout
+        ProjectsLayout,
+        SelectForm,
+        Error
     },
     props: {
         department: {
             type: Object,
+        },
+        users: {
+            type: Array,
+        },
+        selectUser: {
+            type: Object,
+        },
+        date: {
+            type: String,
+        },
+        report: {
+            type: Array,
         },
     },
 }
