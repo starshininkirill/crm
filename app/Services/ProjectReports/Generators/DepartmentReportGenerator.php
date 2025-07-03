@@ -3,7 +3,6 @@
 namespace App\Services\ProjectReports\Generators;
 
 use App\Models\Department;
-use App\Models\WorkPlan;
 use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use Carbon\Carbon;
@@ -39,49 +38,13 @@ class DepartmentReportGenerator
             'percent_ladder' => 1.5,
             'upsells' => $userData->upsailsMoney,
             'percent_upsells' => $userData->upsailsMoney * 0.1,
-            'compexes' => $this->calculateCompexes($userData),
-            'individual_sites' => $this->calculateIndividualSites($userData),
-            'ready_sites' => $this->calculateReadySites($userData),
+            'compexes' => $userData->compexes,
+            'individual_sites' => $userData->individualSites,
+            'ready_sites' => $userData->readySites,
             'b1' => 0,
             'b2' => 0,
             'b3' => 0,
             'b4' => 0,
         ]);
-    }
-
-    protected function calculateIndividualSites(UserDataDTO $userData): int
-    {
-        return $this->calculateContractsByWorkPlanType($userData, WorkPlan::INDIVID_CATEGORY_IDS);
-    }
-
-    protected function calculateReadySites(UserDataDTO $userData): int
-    {
-        return $this->calculateContractsByWorkPlanType($userData, WorkPlan::READY_SYTES_CATEGORY_IDS);
-    }
-
-    private function calculateContractsByWorkPlanType(UserDataDTO $userData, string $workPlanType): int
-    {
-        $categoryIds = $userData->workPlans
-            ->where('type', $workPlanType)
-            ->pluck('data.categoryIds')
-            ->flatten()
-            ->filter();
-
-        if ($categoryIds->isEmpty()) {
-            return 0;
-        }
-
-        $contracts = $userData->closeContracts->filter(function ($contract) use ($categoryIds) {
-            return $contract->services->pluck('category.id')->intersect($categoryIds)->isNotEmpty();
-        });
-
-        return $contracts->count();
-    }
-
-    protected function calculateCompexes(UserDataDTO $userData): int
-    {
-        $contracts = $userData->closeContracts->where('is_complex', true);
-
-        return $contracts->count();
     }
 }

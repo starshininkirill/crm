@@ -8,6 +8,7 @@ use App\Models\ContractUser;
 use App\Models\Department;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\WorkPlan;
 use App\Services\ProjectReports\DTO\ReportDataDTO;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
@@ -77,6 +78,10 @@ class ReportDataDTOBuilder
             return $isProjectManager && !$isSeller;
         });
 
+        $individualSites = $this->calculateIndividualSites($closeContracts, $mainData->workPlans);
+        $readySites = $this->calculateReadySites($closeContracts, $mainData->workPlans);
+        $compexes = $this->calculateCompexes($closeContracts);
+
         return new UserDataDTO(
             $upsails,
             $upsailsMoney,
@@ -85,6 +90,9 @@ class ReportDataDTOBuilder
             $closeContracts,
             $accountSeceivable,
             $mainData->workPlans,
+            $individualSites,
+            $readySites,
+            $compexes,
         );
     }
 
@@ -224,5 +232,41 @@ class ReportDataDTOBuilder
 
             return Payment::recreateFromQuery($paymentsHistoryQuery, $relations, $endOfMonth);
         }
+    }
+
+    private function calculateIndividualSites(Collection $closeContracts, Collection $workPlans): int
+    {
+        return $this->calculateContractsByWorkPlanType($closeContracts, $workPlans, WorkPlan::INDIVID_CATEGORY_IDS);
+    }
+
+    private function calculateReadySites(Collection $closeContracts, Collection $workPlans): int
+    {
+        return $this->calculateContractsByWorkPlanType($closeContracts, $workPlans, WorkPlan::READY_SYTES_CATEGORY_IDS);
+    }
+
+    private function calculateContractsByWorkPlanType(Collection $closeContracts, Collection $workPlans, string $workPlanType): int
+    {
+        $categoryIds = $workPlans
+            ->where('type', $workPlanType)
+            ->pluck('data.categoryIds')
+            ->flatten()
+            ->filter();
+
+        if ($categoryIds->isEmpty()) {
+            return 0;
+        }
+
+        $contracts = $closeContracts->filter(function ($contract) use ($categoryIds) {
+            return $contract->services->pluck('category.id')->intersect($categoryIds)->isNotEmpty();
+        });
+
+        return $contracts->count();
+    }
+
+    private function calculateCompexes(Collection $closeContracts): int
+    {
+        $contracts = $closeContracts->where('is_complex', true);
+
+        return $contracts->count();
     }
 }

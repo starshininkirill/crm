@@ -16,5 +16,8 @@ class UserDataDTO
         public Collection $closeContracts = new Collection(),
         public Collection $accountSeceivable = new Collection(),
         public Collection $workPlans = new Collection(),
+        public int $individualSites = 0,
+        public int $readySites = 0,
+        public int $compexes = 0,
     ) {}
 }
