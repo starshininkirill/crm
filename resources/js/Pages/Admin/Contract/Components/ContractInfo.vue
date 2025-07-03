@@ -31,6 +31,14 @@
                 </div>
                 <div class=" font-semibold grid grid-cols-2">
                     <span class="text-lg">
+                        Комплекс услуг:
+                    </span>
+                    <span>
+                        {{ contract.is_complex ? 'Да' : 'Нет' }}
+                    </span>
+                </div>
+                <div class=" font-semibold grid grid-cols-2">
+                    <span class="text-lg">
                         Дата создания:
                     </span>
                     <span>

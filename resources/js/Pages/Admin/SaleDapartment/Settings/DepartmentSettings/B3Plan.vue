@@ -40,8 +40,8 @@ import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import FormInput from '../../../../../Components/FormInput.vue';
 import ServiceSelector from './ServiceSelector.vue';
-import ServiceCategoriesSelector from './ServiceCategoriesSelector.vue';
 import ServicePairsSelector from './ServicePairsSelector.vue';
+import ServiceCategoriesSelector from '../../../../../Components/PlanSettings/ServiceCategoriesSelector.vue';
 
 export default {
     components: {

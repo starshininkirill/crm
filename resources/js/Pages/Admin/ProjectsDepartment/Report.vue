@@ -19,6 +19,9 @@
                             Дз
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
+                            %
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
                             Допродажи
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
@@ -53,7 +56,10 @@
                             {{ row.user.full_name }}
                         </th>
                         <td class="px-4 py-2 text-center border-r">
-                            {{ row.accounts_receivable }}
+                            {{ formatPrice(row.accounts_receivable) }} 
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.percent_ladder }} %
                         </td>
                         <td class="px-4 py-2 text-center border-r">
                             {{ formatPrice(row.upsells) }}
@@ -62,13 +68,13 @@
                             {{ formatPrice(row.percent_upsells) }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            0
+                            {{ row.individual_sites }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            0
+                            {{ row.ready_sites }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            0
+                            {{ row.compexes }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
                             {{ row.b1 }}

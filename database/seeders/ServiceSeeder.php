@@ -72,34 +72,6 @@ class ServiceSeeder extends Seeder
             'work_days_duration' => '35 (тридцать пять) рабочих дней',
             'description' => 'описание Инд ИМ',
         ]);
-        // Service::create([
-        //     'name' => 'Гот Лендинг',
-        //     'service_category_id' => 2,
-        //     'price' => 25000,
-        //     'description' => 'описание Гот лендинг',
-        //     'work_days_duration' => '8 (восемь) рабочих дней',
-        // ]);
-        // Service::create([
-        //     'name' => 'Гот КС',
-        //     'service_category_id' => 2,
-        //     'price' => 29000,
-        //     'description' => 'описание Гот КС',
-        //     'work_days_duration' => '8 (восемь) рабочих дней',
-        // ]);
-        // Service::create([
-        //     'name' => 'Гот Каталог',
-        //     'service_category_id' => 2,
-        //     'price' => 58000,
-        //     'work_days_duration' => '19 (девятнадцать) рабочих дней',
-        //     'description' => 'описание Гот Каталог',
-        // ]);
-        // Service::create([
-        //     'name' => 'Гот ИМ',
-        //     'service_category_id' => 2,
-        //     'price' => 70000,
-        //     'work_days_duration' => '23 (девятнадцать) рабочих дней',
-        //     'description' => 'описание Гот ИМ',
-        // ]);
         Service::create([
             'name' => 'Настройка и ведение рекламы в Яндекс Директ',
             'service_category_id' => 3,
@@ -163,6 +135,37 @@ class ServiceSeeder extends Seeder
             'name' => '2й и далее платёж за настройку',
             'service_category_id' => 6,
             'description' => '2й и далее платёж за настройку'
+        ]);
+
+
+
+        Service::create([
+            'name' => 'Гот Лендинг',
+            'service_category_id' => 2,
+            'price' => 25000,
+            'description' => 'описание Гот лендинг',
+            'work_days_duration' => '8 (восемь) рабочих дней',
+        ]);
+        Service::create([
+            'name' => 'Гот КС',
+            'service_category_id' => 2,
+            'price' => 29000,
+            'description' => 'описание Гот КС',
+            'work_days_duration' => '8 (восемь) рабочих дней',
+        ]);
+        Service::create([
+            'name' => 'Гот Каталог',
+            'service_category_id' => 2,
+            'price' => 58000,
+            'work_days_duration' => '19 (девятнадцать) рабочих дней',
+            'description' => 'описание Гот Каталог',
+        ]);
+        Service::create([
+            'name' => 'Гот ИМ',
+            'service_category_id' => 2,
+            'price' => 70000,
+            'work_days_duration' => '23 (девятнадцать) рабочих дней',
+            'description' => 'описание Гот ИМ',
         ]);
     }
 }

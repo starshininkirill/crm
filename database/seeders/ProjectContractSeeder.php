@@ -38,7 +38,7 @@ class ProjectContractSeeder extends Seeder
             $query->where('role', ContractUser::SELLER)->whereNotIn('user_id', $managersIds);
         })->whereDoesntHave('contractUsers', function ($query) {
             $query->where('role', ContractUser::PROJECT);
-        })->limit(50)->get();
+        })->limit(80)->get();
 
         foreach ($contracts as $contract) {
             if ($projectManagers->isEmpty()) {
@@ -61,6 +61,7 @@ class ProjectContractSeeder extends Seeder
             $contract->state->transitionTo(Close::class);
             $contract->payments()->update(['status' => Payment::STATUS_CLOSE]);
             $contract->close_date = Carbon::now();
+            $contract->is_complex = (bool) rand(0, 1);
             $contract->save();
         }
     }

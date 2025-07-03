@@ -66,6 +66,7 @@ class ContractController extends Controller
             'sale' => TextFormaterHelper::getPrice($contract->sale ?? 0),
             'created_at' => $contract->created_at->format('d.m.Y'),
             'parent' => $contract->parent ?? '',
+            'is_complex' => $contract->is_complex,
             'services' => $contract->services->map(function ($service) {
                 return [
                     'id' => $service->id,

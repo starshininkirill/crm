@@ -10,9 +10,9 @@ use Illuminate\Support\Collection;
 
 class WorkPlanService
 {
-    public function actualSalePlans(Carbon|null $date = null, array $relations = []): Collection
+    public function actualPlans(Carbon|null $date = null, Department $department, $relations = []): Collection
     {
-        $mainDepartmentId = Department::getMainSaleDepartment()->id;
+        $mainDepartmentId = $department->id;
 
         if (!$date || DateHelper::isCurrentMonth($date)) {
             return WorkPlan::where('department_id', $mainDepartmentId)
@@ -20,16 +20,16 @@ class WorkPlanService
                 ->get();
         }
 
-        $allHistoricalPlans = WorkPlan::getLatestHistoricalRecords($date, $relations);
+        $allHistoricalPlans = WorkPlan::getLatestHistoricalRecords($date);
 
         return $allHistoricalPlans->filter(function ($plan) use ($mainDepartmentId) {
             return $plan->department_id == $mainDepartmentId;
         });
     }
 
-    public function plansForSaleSettings(Carbon $date): Collection
+    public function plansForDepartment(Carbon $date, Department $department, $relations = []): Collection
     {
-        $plans = self::actualSalePlans($date)->groupBy('type');
+        $plans = self::actualPlans($date, $department, $relations)->groupBy('type');
 
         if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
             $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->filter(function ($plan) {

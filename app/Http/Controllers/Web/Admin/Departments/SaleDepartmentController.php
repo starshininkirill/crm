@@ -137,8 +137,8 @@ class SaleDepartmentController extends Controller
         $date = DateHelper::getValidatedDateOrNow($requestDate);
         $isCurrentMonth = DateHelper::isCurrentMonth($date);
 
-        $departmentId = Department::getMainSaleDepartment()->id;
-        $plans = $workPlanService->plansForSaleSettings($date);
+        $department = Department::getMainSaleDepartment();
+        $plans = $workPlanService->plansForDepartment($date, $department);
 
         $services = Service::with('category')->get();
         $rkServices = $services->where('category.type', ServiceCategory::RK)->values();
@@ -150,7 +150,7 @@ class SaleDepartmentController extends Controller
             'dateProp' => $date->format('Y-m'),
             'plans' => $plans,
             'isCurrentMonth' => $isCurrentMonth,
-            'departmentId' => $departmentId,
+            'departmentId' => $department->id,
             'rkServices' => $rkServices,
             'seoServices' => $seoServices,
             'services' => $services,

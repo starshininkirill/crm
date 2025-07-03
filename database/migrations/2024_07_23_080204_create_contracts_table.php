@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreignId('client_id')->nullable();
             $table->dateTime('close_date')->nullable();
             $table->string('state')->default(Created::class);
+            $table->boolean('is_complex')->default(false);
         });
     }
     /**

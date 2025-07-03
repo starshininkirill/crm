@@ -26,6 +26,7 @@ class Contract extends Model
         'parent_id',
         'client_id',
         'close_date',
+        'is_complex',
     ];
 
     protected $casts = [

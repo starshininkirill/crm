@@ -10,10 +10,36 @@ use Illuminate\Database\Seeder;
 
 class WorkPlanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private $projectDepartmentId = 5;
+
     public function run(): void
+    {
+        $this->createSalePlans();
+        $this->createProjectPlans();
+    }
+
+    private function createProjectPlans()
+    {
+        Carbon::setTestNow('2025-01-01 10:26:39');
+
+        WorkPlan::create([
+            'type' => WorkPlan::INDIVID_CATEGORY_IDS,
+            'data' => [
+                'categoryIds' =>  [1],
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::READY_SYTES_CATEGORY_IDS,
+            'data' => [
+                'categoryIds' =>  [2],
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+    }
+
+    private function createSalePlans()
     {
         Carbon::setTestNow('2025-01-01 10:26:39');
         // Создание месячных планов продажников

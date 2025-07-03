@@ -68,10 +68,11 @@ class ReportDTOBuilder
 
         $data->date = $endDate;
 
-        $data->mainDepartmentId = Department::getMainSaleDepartment()?->id;
+        $mainDepartment = Department::getMainSaleDepartment();
+        $data->mainDepartmentId = $mainDepartment->id;
         $data->department = $department;
 
-        $data->workPlans = $this->workPlanService->actualSalePlans($date);
+        $data->workPlans = $this->workPlanService->actualPlans($date, $mainDepartment, ['serviceCategory']);
 
         $activeUsers = $users ?? $this->userService->filterUsersByStatus($data->department->allUsers($data->date, $this->userRelations), 'active', $data->date);
 
@@ -140,7 +141,7 @@ class ReportDTOBuilder
         $data->mainDepartmentId = $mainDepartment->id;
         $data->department = $department ?? $mainDepartment;
 
-        $data->workPlans = $this->workPlanService->actualSalePlans($date, ['serviceCategory']);
+        $data->workPlans = $this->workPlanService->actualPlans($date, $mainDepartment, ['serviceCategory']);
 
 
         if ($data->workPlans->isEmpty()) {
@@ -235,7 +236,7 @@ class ReportDTOBuilder
         $data->mainDepartmentId = $mainDepartment->id;
         $data->department = $user->department;
 
-        $data->workPlans = $this->workPlanService->actualSalePlans($date, ['serviceCategory']);
+        $data->workPlans = $this->workPlanService->actualPlans($date, $mainDepartment, ['serviceCategory']);
 
         if ($data->workPlans->isEmpty()) {
             throw new BusinessException('Нет планов для рассчёта');

@@ -34,6 +34,9 @@ class WorkPlan extends Model
     public const HEAD_PERCENT_BONUS = 'headPercentBonus';
     public const HEAD_MINIMAL_PERCENT = 'headMinimalBonus';
 
+    public const INDIVID_CATEGORY_IDS = 'individCategoryIds';
+    public const READY_SYTES_CATEGORY_IDS = 'readySyesCategoryIds';
+
     public const ALL_PLANS = [
         self::MOUNTH_PLAN,
         self::DOUBLE_PLAN,
@@ -46,6 +49,8 @@ class WorkPlan extends Model
         self::B4_PLAN,
         self::PERCENT_LADDER,
         self::NO_PERCENTAGE_MONTH,
+        self::INDIVID_CATEGORY_IDS,
+        self::READY_SYTES_CATEGORY_IDS,
     ];
 
     protected $fillable = [
