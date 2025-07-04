@@ -27,7 +27,8 @@
                 </ul>
             </div>
 
-            <div v-if="activePlan" :class="[activePlan.key === 'percent_ladder' ? '' : 'grid grid-cols-3 gap-8', 'mb-4']">
+            <div v-if="activePlan"
+                :class="[activePlan.key === 'percent_ladder' ? '' : 'grid grid-cols-3 gap-8', 'mb-4']">
                 <keep-alive>
                     <component :is="activePlan.component" v-bind="activePlan.props" />
                 </keep-alive>
@@ -47,6 +48,7 @@ import ReadySitesSettings from './Settings/DepartmentSettings/ReadySitesSettings
 import Error from '../../../Components/Error.vue';
 import UniversalPlan from './Components/UniversalPlan.vue';
 import PercentLadder from './Components/PercentLadder.vue';
+import B4Plan from './Components/B4Plan.vue';
 
 export default {
     components: {
@@ -58,6 +60,7 @@ export default {
         Error,
         UniversalPlan,
         PercentLadder,
+        B4Plan,
     },
     props: {
         dateProp: {
@@ -84,36 +87,12 @@ export default {
     data() {
         return {
             date: this.dateProp,
-            activeTab: 'individ',
+            activeTab: 'up_sale_bonus',
         }
     },
     computed: {
         planComponents() {
             return [
-                {
-                    key: 'individ',
-                    title: 'Индивидуальные',
-                    component: IndividSettings,
-                    props: {
-                        departmentId: this.departmentId,
-                        propPlan: this.plans.individCategoryIds,
-                        allCategories: this.serviceCats,
-                        isCurrentMonth: this.isCurrentMonth,
-                        plans: this.plans,
-                    }
-                },
-                {
-                    key: 'ready_sites',
-                    title: 'Готовые сайты',
-                    component: ReadySitesSettings,
-                    props: {
-                        departmentId: this.departmentId,
-                        propPlan: this.plans.readySyesCategoryIds,
-                        allCategories: this.serviceCats,
-                        isCurrentMonth: this.isCurrentMonth,
-                        plans: this.plans,
-                    }
-                },
                 {
                     key: 'up_sale_bonus',
                     title: 'Бонус за допродажу (%)',
@@ -167,6 +146,16 @@ export default {
                     }
                 },
                 {
+                    key: 'b4_plan',
+                    title: 'Б4 План',
+                    component: B4Plan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        propPlan: this.plans.b4Plan,
+                    }
+                },
+                {
                     key: 'percent_ladder',
                     title: 'Процентная лестница',
                     component: PercentLadder,
@@ -175,7 +164,31 @@ export default {
                         isCurrentMonth: this.isCurrentMonth,
                         percentLadder: this.plans.percentLadder,
                     }
-                }
+                },
+                {
+                    key: 'individ',
+                    title: 'Индивидуальные',
+                    component: IndividSettings,
+                    props: {
+                        departmentId: this.departmentId,
+                        propPlan: this.plans.individCategoryIds,
+                        allCategories: this.serviceCats,
+                        isCurrentMonth: this.isCurrentMonth,
+                        plans: this.plans,
+                    }
+                },
+                {
+                    key: 'ready_sites',
+                    title: 'Готовые сайты',
+                    component: ReadySitesSettings,
+                    props: {
+                        departmentId: this.departmentId,
+                        propPlan: this.plans.readySyesCategoryIds,
+                        allCategories: this.serviceCats,
+                        isCurrentMonth: this.isCurrentMonth,
+                        plans: this.plans,
+                    }
+                },
             ]
         },
         activePlan() {

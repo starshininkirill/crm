@@ -53,6 +53,14 @@ class ProjectWorkPlanRequest extends FormRequest
             ]);
         }
 
+        if($this->input('type') == WorkPlan::B4_PLAN) {
+            $rules = array_merge($rules, [
+                'data.projects' => 'required|integer',
+                'data.complexes' => 'required|integer',
+                'data.bonus' => 'required|numeric',
+            ]);
+        }
+
         return $rules;
     }
 }

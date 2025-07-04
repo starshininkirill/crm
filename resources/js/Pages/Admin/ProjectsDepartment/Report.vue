@@ -22,10 +22,16 @@
                             %
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
+                            % от ДЗ
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
                             Допродажи
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
                             % от допродаж
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Закрыто проектов
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
                             Уник
@@ -65,10 +71,16 @@
                             {{ row.percent_ladder }} %
                         </td>
                         <td class="px-4 py-2 text-center border-r">
+                            {{ formatPrice(row.accounts_receivable_percent) }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
                             {{ formatPrice(row.upsells) }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            {{ formatPrice(row.percent_upsells) }}
+                            {{ formatPrice(row.upsells_bonus) }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r">
+                            {{ row.close_contracts }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
                             {{ row.individual_sites }}

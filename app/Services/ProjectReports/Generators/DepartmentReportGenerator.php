@@ -36,19 +36,26 @@ class DepartmentReportGenerator
         $b1PlanResult = $this->calculateB1Plan($userData);
         $b2PlanResult = $this->calculateB2Plan($userData);
         $b3PlanResult = $this->calculateB3Plan($userData);
-        $b4PlanResult = ['bonus' => 0, 'completed' => false]; // Placeholder for B4
+        $b4PlanResult = $this->calculateB4Plan($userData);
+
+        $percentLadder = $this->calculatePercentLadder($userData);
+
+        $accountsReceivablePercent = $userData->accountSeceivable->sum('value') / 100 * $percentLadder;
 
         $totalBonuses =
             $upsellsBonus +
             $b1PlanResult['bonus'] +
             $b2PlanResult['bonus'] +
             $b3PlanResult['bonus'] +
-            $b4PlanResult['bonus'];
+            $b4PlanResult['bonus'] +
+            $accountsReceivablePercent;
 
         return collect([
             'user' => $user->only('id', 'full_name'),
+            'close_contracts' => $userData->closeContracts->count(),
             'accounts_receivable' => $userData->accountSeceivable->sum('value'),
-            'percent_ladder' => 1.5,
+            'accounts_receivable_percent' => $accountsReceivablePercent,
+            'percent_ladder' => $percentLadder,
             'upsells' => $userData->upsailsMoney,
             'upsells_bonus' => $upsellsBonus,
             'compexes' => $userData->compexes,
@@ -60,6 +67,34 @@ class DepartmentReportGenerator
             'b4' => $b4PlanResult,
             'bonuses' => $totalBonuses,
         ]);
+    }
+
+    protected function calculatePercentLadder(UserDataDTO $userData): int|float
+    {
+        $closedContractsCount = $userData->closeContracts->count();
+
+        $ladderPlans = $userData->workPlans->where('type', WorkPlan::PERCENT_LADDER);
+
+        $highestTierPlan = $ladderPlans->first(function ($plan) {
+            return ! isset($plan->data['goal']);
+        });
+
+        $tieredPlans = $ladderPlans->filter(function ($plan) {
+            return isset($plan->data['goal']);
+        })->sortBy('data.goal');
+
+
+        foreach ($tieredPlans as $plan) {
+            if ($closedContractsCount < $plan->data['goal']) {
+                return $plan->data['bonus'];
+            }
+        }
+
+        if ($highestTierPlan) {
+            return $highestTierPlan->data['bonus'];
+        }
+
+        return 0;
     }
 
     protected function calculateUpsalesBonus(UserDataDTO $userData): int|float
@@ -100,7 +135,38 @@ class DepartmentReportGenerator
         );
     }
 
-    private function calculatePlan(UserDataDTO $userData, string $planType, int|float $currentValue): array
+    protected function calculateB4Plan(UserDataDTO $userData): array
+    {
+        $defaultResult = [
+            'bonus' => 0,
+            'completed' => false,
+        ];
+
+        $plan = $userData->workPlans->where('type', WorkPlan::B4_PLAN)->first();
+
+        if (!$plan) {
+            return $defaultResult;
+        }
+
+        $projectsGoal = $plan->data['projects'] ?? 0;
+        $complexesGoal = $plan->data['complexes'] ?? 0;
+        $bonus = $plan->data['bonus'] ?? 0;
+
+        if ($projectsGoal <= 0 || $complexesGoal <= 0) {
+            return $defaultResult;
+        }
+
+        if ($userData->closeContracts->count() >= $projectsGoal && $userData->compexes >= $complexesGoal) {
+            return [
+                'bonus' => $bonus,
+                'completed' => true,
+            ];
+        }
+
+        return $defaultResult;
+    }
+
+    protected function calculatePlan(UserDataDTO $userData, string $planType, int|float $currentValue): array
     {
         $defaultResult = [
             'bonus' => 0,

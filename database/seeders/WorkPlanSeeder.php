@@ -72,6 +72,16 @@ class WorkPlanSeeder extends Seeder
             ],
             'department_id' => $this->projectDepartmentId,
         ]);
+        
+        WorkPlan::create([
+            'type' => WorkPlan::B4_PLAN,
+            'data' => [
+                'projects' => 14,
+                'complexes' => 7,
+                'bonus' => 18000,
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
 
 
         WorkPlan::create([
@@ -86,7 +96,7 @@ class WorkPlanSeeder extends Seeder
             'type' => WorkPlan::PERCENT_LADDER,
             'department_id' => $this->projectDepartmentId,
             'data' => [
-                'goal' => 15,
+                'goal' => 16,
                 'bonus' => 2.5
             ],
         ]);

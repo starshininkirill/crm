@@ -60,7 +60,7 @@ import { router } from '@inertiajs/vue3';
 export default {
     props: {
         percentLadder: {
-            type: Array,
+            type: Object,
             required: true,
             default: () => ([])
         },
