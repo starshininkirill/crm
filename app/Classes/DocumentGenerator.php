@@ -104,9 +104,7 @@ class DocumentGenerator
                 throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
             }
         }
-
-        $this->incrementOption($option);
-
+        
         $generatedDocument = GeneratedDocument::create([
             'type' => $documentType,
             'deal' => $dealNumber,
@@ -116,6 +114,8 @@ class DocumentGenerator
             'act_number' => $option->value,
             'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : ''
         ]);
+        
+        $this->incrementOption($option);
 
         if (!$generatedDocument) {
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');
