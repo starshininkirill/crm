@@ -48,6 +48,9 @@
                         <th scope="col" class="px-3 py-2 text-center border-x">
                             Б4
                         </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            Итого бонусов
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,7 +59,7 @@
                             {{ row.user.full_name }}
                         </th>
                         <td class="px-4 py-2 text-center border-r">
-                            {{ formatPrice(row.accounts_receivable) }} 
+                            {{ formatPrice(row.accounts_receivable) }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
                             {{ row.percent_ladder }} %
@@ -76,17 +79,24 @@
                         <td class="px-4 py-2 text-center border-r">
                             {{ row.compexes }}
                         </td>
-                        <td class="px-4 py-2 text-center border-r">
-                            {{ row.b1 }}
+                        <td class="px-4 py-2 text-center border-r font-semibold"
+                            :class="{ 'text-green-500': row.b1.completed, 'text-red-500': !row.b1.completed }">
+                            {{ row.b1.completed ? 'Да' : 'Нет' }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r font-semibold"
+                            :class="{ 'text-green-500': row.b2.completed, 'text-red-500': !row.b2.completed }">
+                            {{ row.b2.completed ? 'Да' : 'Нет' }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r font-semibold"
+                            :class="{ 'text-green-500': row.b3.completed, 'text-red-500': !row.b3.completed }">
+                            {{ row.b3.completed ? 'Да' : 'Нет' }}
+                        </td>
+                        <td class="px-4 py-2 text-center border-r font-semibold"
+                            :class="{ 'text-green-500': row.b4.completed, 'text-red-500': !row.b4.completed }">
+                            {{ row.b4.completed ? 'Да' : 'Нет' }}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            {{ row.b2 }}
-                        </td>
-                        <td class="px-4 py-2 text-center border-r">
-                            {{ row.b3 }}
-                        </td>
-                        <td class="px-4 py-2 text-center border-r">
-                            {{ row.b4 }}
+                            {{ formatPrice(row.bonuses) }}
                         </td>
                     </tr>
                 </tbody>

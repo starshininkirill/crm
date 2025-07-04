@@ -36,6 +36,7 @@ class WorkPlan extends Model
 
     public const INDIVID_CATEGORY_IDS = 'individCategoryIds';
     public const READY_SYTES_CATEGORY_IDS = 'readySyesCategoryIds';
+    public const UPSALE_BONUS = 'upSaleBonus';
 
     public const ALL_PLANS = [
         self::MOUNTH_PLAN,
@@ -51,6 +52,7 @@ class WorkPlan extends Model
         self::NO_PERCENTAGE_MONTH,
         self::INDIVID_CATEGORY_IDS,
         self::READY_SYTES_CATEGORY_IDS,
+        self::UPSALE_BONUS,
     ];
 
     protected $fillable = [

@@ -38,10 +38,10 @@ class WorkPlanService
         }
 
         if ($plans->has(WorkPlan::MOUNTH_PLAN)) {
-            $plans[WorkPlan::MOUNTH_PLAN]->sortBy('data.month');
+            $plans[WorkPlan::MOUNTH_PLAN] = $plans[WorkPlan::MOUNTH_PLAN]->sortBy('data.month');
         }
         if ($plans->has(WorkPlan::PERCENT_LADDER)) {
-            $plans[WorkPlan::PERCENT_LADDER]->sortBy('data.goal');
+            $plans[WorkPlan::PERCENT_LADDER] = $plans[WorkPlan::PERCENT_LADDER]->sortBy('data.goal');
         }
 
         return $plans;

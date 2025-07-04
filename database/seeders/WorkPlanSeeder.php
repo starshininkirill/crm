@@ -37,6 +37,66 @@ class WorkPlanSeeder extends Seeder
             ],
             'department_id' => $this->projectDepartmentId,
         ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::UPSALE_BONUS,
+            'data' => [
+                'bonus' => 10,
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'data' => [
+                'goal' => 4,
+                'bonus' => 12500,
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'data' => [
+                'goal' => 10,
+                'bonus' => 12500,
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::B3_PLAN,
+            'data' => [
+                'goal' => 250000,
+                'bonus' => 12500,
+            ],
+            'department_id' => $this->projectDepartmentId,
+        ]);
+
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 12,
+                'bonus' => 1.5
+            ],
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 15,
+                'bonus' => 2.5
+            ],
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'bonus' => 3.5
+            ],
+        ]);
     }
 
     private function createSalePlans()

@@ -26,29 +26,31 @@ class ProjectWorkPlanRequest extends FormRequest
             'type' => 'required|string|in:' . implode(',', WorkPlan::ALL_PLANS),
         ];
 
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            if ($this->input('type') == WorkPlan::INDIVID_CATEGORY_IDS || $this->input('type') == WorkPlan::READY_SYTES_CATEGORY_IDS) {
-                $rules = array_merge($rules, [
-                    'data.categoryIds' => 'required|array',
-                    'data.categoryIds.*' => 'integer|exists:service_categories,id',
-                ]);
-            }
-
-            return $rules;
-        } else if ($this->isMethod('POST')) {
-
+        if ($this->isMethod('POST')) {
             $rules = array_merge($rules, [
                 'department_id' => 'required|exists:departments,id',
                 'position_id' => 'nullable|exists:positions,id',
             ]);
+        }
 
+        if ($this->input('type') == WorkPlan::INDIVID_CATEGORY_IDS || $this->input('type') == WorkPlan::READY_SYTES_CATEGORY_IDS) {
+            $rules = array_merge($rules, [
+                'data.categoryIds' => 'required|array',
+                'data.categoryIds.*' => 'integer|exists:service_categories,id',
+            ]);
+        }
 
-            if ($this->input('type') == WorkPlan::INDIVID_CATEGORY_IDS || $this->input('type') == WorkPlan::READY_SYTES_CATEGORY_IDS) {
-                $rules = array_merge($rules, [
-                    'data.categoryIds' => 'required|array',
-                    'data.categoryIds.*' => 'integer|exists:service_categories,id',
-                ]);
-            }
+        if ($this->input('type') == WorkPlan::B1_PLAN || $this->input('type') == WorkPlan::B2_PLAN || $this->input('type') == WorkPlan::B3_PLAN || $this->input('type') == WorkPlan::PERCENT_LADDER) {
+            $rules = array_merge($rules, [
+                'data.goal' => 'nullable|integer',
+                'data.bonus' => 'required|numeric',
+            ]);
+        }
+
+        if ($this->input('type') == WorkPlan::UPSALE_BONUS) {
+            $rules = array_merge($rules, [
+                'data.bonus' => 'required|numeric',
+            ]);
         }
 
         return $rules;

@@ -27,7 +27,7 @@
                 </ul>
             </div>
 
-            <div v-if="activePlan" class="grid grid-cols-3 gap-8 mb-4">
+            <div v-if="activePlan" :class="[activePlan.key === 'percent_ladder' ? '' : 'grid grid-cols-3 gap-8', 'mb-4']">
                 <keep-alive>
                     <component :is="activePlan.component" v-bind="activePlan.props" />
                 </keep-alive>
@@ -45,6 +45,8 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import IndividSettings from './Settings/DepartmentSettings/IndividSettings.vue';
 import ReadySitesSettings from './Settings/DepartmentSettings/ReadySitesSettings.vue';
 import Error from '../../../Components/Error.vue';
+import UniversalPlan from './Components/UniversalPlan.vue';
+import PercentLadder from './Components/PercentLadder.vue';
 
 export default {
     components: {
@@ -54,6 +56,8 @@ export default {
         IndividSettings,
         ReadySitesSettings,
         Error,
+        UniversalPlan,
+        PercentLadder,
     },
     props: {
         dateProp: {
@@ -108,6 +112,68 @@ export default {
                         allCategories: this.serviceCats,
                         isCurrentMonth: this.isCurrentMonth,
                         plans: this.plans,
+                    }
+                },
+                {
+                    key: 'up_sale_bonus',
+                    title: 'Бонус за допродажу (%)',
+                    component: UniversalPlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Бонус за допродажу (%)',
+                        planType: 'upSaleBonus',
+                        plans: this.plans.upSaleBonus,
+                        hasGoalField: false,
+                    }
+                },
+                {
+                    key: 'b1_plan',
+                    title: 'Б1 План',
+                    component: UniversalPlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Б1 План',
+                        planType: 'b1Plan',
+                        plans: this.plans.b1Plan,
+                        hasGoalField: true,
+                    }
+                },
+                {
+                    key: 'b2_plan',
+                    title: 'Б2 План',
+                    component: UniversalPlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Б2 План',
+                        planType: 'b2Plan',
+                        plans: this.plans.b2Plan,
+                        hasGoalField: true,
+                    }
+                },
+                {
+                    key: 'b3_plan',
+                    title: 'Б3 План',
+                    component: UniversalPlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Б3 План',
+                        planType: 'b3Plan',
+                        plans: this.plans.b3Plan,
+                        hasGoalField: true,
+                    }
+                },
+                {
+                    key: 'percent_ladder',
+                    title: 'Процентная лестница',
+                    component: PercentLadder,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        percentLadder: this.plans.percentLadder,
                     }
                 }
             ]
