@@ -24,14 +24,17 @@ class ProjectContractSeeder extends Seeder
     private function attachManagersToExistingContracts(ContractService $contractService)
     {
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonth(1);
+        $startDate = Carbon::now()->subMonth(2);
         $endDate = Carbon::now();
 
         $projectDepartment = Department::where('type', Department::DEPARTMENT_PROJECT_MANAGERS)->whereNull('parent_id')->first();
         if (!$projectDepartment) {
             return;
         }
-        $projectManagers = $projectDepartment->allUsers(Carbon::now());
+        $projectManagers = $projectDepartment->allUsers(Carbon::now())->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        });
+
         $managersIds = $projectManagers->pluck('id');
 
         $contracts = Contract::whereHas('contractUsers', function ($query) use ($managersIds) {
@@ -69,10 +72,10 @@ class ProjectContractSeeder extends Seeder
     private function createUpsails(ContractService $contractService)
     {
         Carbon::setTestNow('2025-07-01 10:26:39');
-        $clients = Client::factory()->count(20)->create();
+        $clients = Client::factory()->count(30)->create();
 
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonth();
+        $startDate = Carbon::now()->subMonth(2);
         $endDate = Carbon::now();
 
         $services = Service::query()->WhereNotNull('price')->get();

@@ -13,6 +13,7 @@ use App\Services\ProjectReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProjectManagersDepartmentController extends Controller
@@ -37,11 +38,16 @@ class ProjectManagersDepartmentController extends Controller
 
         $report = $reportService->generateFullReport($department, $date);
 
+        if ($request->get('user')) {
+            $userReport = $report->firstWhere('user.id', $request->get('user'));
+        }
+
         return Inertia::render('Admin/ProjectsDepartment/Report', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
             'users' => fn() => $allUsers,
             'selectUser' => fn() => $user ?? null,
             'report' => fn() => $report ?? [],
+            'userReport' => fn() => $userReport ?? null,
         ]);
     }
 

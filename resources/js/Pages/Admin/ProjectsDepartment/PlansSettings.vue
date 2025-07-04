@@ -87,25 +87,12 @@ export default {
     data() {
         return {
             date: this.dateProp,
-            activeTab: 'up_sale_bonus',
+            activeTab: 'b1_plan',
         }
     },
     computed: {
         planComponents() {
             return [
-                {
-                    key: 'up_sale_bonus',
-                    title: 'Бонус за допродажу (%)',
-                    component: UniversalPlan,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        title: 'Бонус за допродажу (%)',
-                        planType: 'upSaleBonus',
-                        plans: this.plans.upSaleBonus,
-                        hasGoalField: false,
-                    }
-                },
                 {
                     key: 'b1_plan',
                     title: 'Б1 План',
@@ -187,6 +174,19 @@ export default {
                         allCategories: this.serviceCats,
                         isCurrentMonth: this.isCurrentMonth,
                         plans: this.plans,
+                    }
+                },
+                {
+                    key: 'up_sale_bonus',
+                    title: 'Бонус за допродажу (%)',
+                    component: UniversalPlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Бонус за допродажу (%)',
+                        planType: 'upSaleBonus',
+                        plans: this.plans.upSaleBonus,
+                        hasGoalField: false,
                     }
                 },
             ]

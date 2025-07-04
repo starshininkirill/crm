@@ -19,7 +19,9 @@ class DepartmentReportGenerator
     {
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
 
-        $users = $fullReportData->users;
+        $users = $fullReportData->users->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        });
 
         return $users->map(function ($user) use ($fullReportData) {
             $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
@@ -52,11 +54,15 @@ class DepartmentReportGenerator
 
         return collect([
             'user' => $user->only('id', 'full_name'),
-            'close_contracts' => $userData->closeContracts->count(),
-            'accounts_receivable' => $userData->accountSeceivable->sum('value'),
+            'close_contracts' => $userData->closeContracts,
+            'close_contracts_count' => $userData->closeContracts->count(),
+            'close_contracts_sum' => $userData->closeContracts->sum('value'),
+            'accounts_receivable' => $userData->accountSeceivable,
+            'accounts_receivable_sum' => $userData->accountSeceivable->sum('value'),
             'accounts_receivable_percent' => $accountsReceivablePercent,
             'percent_ladder' => $percentLadder,
-            'upsells' => $userData->upsailsMoney,
+            'upsells' => $userData->upsails,
+            'upsells_money' => $userData->upsailsMoney,
             'upsells_bonus' => $upsellsBonus,
             'compexes' => $userData->compexes,
             'individual_sites' => $userData->individualSites,

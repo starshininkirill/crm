@@ -203,7 +203,8 @@ class ReportDataDTOBuilder
         $endOfMonth = $date->copy()->endOfMonth();
 
         $relations = [
-            'contract.contractUsers.user'
+            'contract.contractUsers.user',
+            'contract.services'
         ];
 
         if (DateHelper::isCurrentMonth($date)) {
