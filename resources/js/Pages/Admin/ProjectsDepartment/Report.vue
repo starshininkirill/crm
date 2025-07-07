@@ -124,7 +124,6 @@
                 </tbody>
             </table>
 
-            <UserReport v-if="false" :user-report="userReport" />
         </div>
     </ProjectsLayout>
 </template>

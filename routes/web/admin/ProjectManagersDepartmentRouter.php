@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('projects-department')->group(function () {
     Route::get('/report', [ProjectManagersDepartmentController::class, 'report'])->name('admin.projects-department.report');
+    Route::get('/head-report', [ProjectManagersDepartmentController::class, 'headReport'])->name('admin.projects-department.head-report');
     Route::get('/plans-settings', [ProjectManagersDepartmentController::class, 'plansSettings'])->name('admin.projects-department.plans-settings');
 
     Route::patch('/{workPlan}', [ProjectManagersDepartmentController::class, 'updateWorkPlan'])->name('admin.projects-department.work-plan.update');

@@ -91,6 +91,8 @@ class ReportDataDTOBuilder
         $readySites = $this->calculateReadySites($closeContracts, $mainData->workPlans);
         $compexes = $this->calculateCompexes($closeContracts);
 
+        $isProbation = $this->userService->isProbation($user, $mainData->date);
+
         return new UserDataDTO(
             $upsails,
             $upsailsMoney,
@@ -102,18 +104,14 @@ class ReportDataDTOBuilder
             $individualSites,
             $readySites,
             $compexes,
+            $isProbation,
         );
     }
 
     private function handleProbationUsersPayments(Collection $activeUsers, Carbon $date, Collection $accountSeceivable, Collection $otherAccountSeceivable): array
     {
         $probationUsers = $activeUsers->filter(function ($user) use ($date) {
-            if (empty($user->probation_start) || empty($user->probation_end)) {
-                return false;
-            }
-            $probationStart = Carbon::parse($user->probation_start)->startOfDay();
-            $probationEnd = Carbon::parse($user->probation_end)->endOfDay();
-            return $date->between($probationStart, $probationEnd);
+            return $this->userService->isProbation($user, $date);
         });
 
         if ($probationUsers->isEmpty()) {
@@ -263,7 +261,6 @@ class ReportDataDTOBuilder
 
         return [$accountSeceivable, $otherAccountSeceivable];
     }
-
 
     protected function getUpsails(Carbon $date, array|Collection $userIds, int $role)
     {

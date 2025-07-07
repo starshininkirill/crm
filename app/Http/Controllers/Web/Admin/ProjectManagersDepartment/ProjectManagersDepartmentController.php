@@ -51,6 +51,20 @@ class ProjectManagersDepartmentController extends Controller
         ]);
     }
 
+    public function headReport(Request $request)
+    {
+        $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);
+        $date = Carbon::parse($request->get('date')) ?? Carbon::now();
+        $date = $date->endOfMonth();
+
+        $departmentHead = $department->head;
+
+
+        return Inertia::render('Admin/ProjectsDepartment/HeadReport', [
+            'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
+        ]);
+    }
+
     public function plansSettings(Request $request, WorkPlanService $workPlanService)
     {
         $requestDate = $request->query('date');

@@ -113,6 +113,9 @@ class UserSeeder extends Seeder
             ['Дарья', 'Романова', 'dariaromanova@mail.ru', 89999999911, 12],
             ['Марина', 'Красильникова', 'krasilnikova@mail.ru', 89999999922, 9],
             ['Никита', 'Редькин', 'redkin@mail.ru', 89999999933, 11],
+            ['Даниил', 'Куршев', 'daniil@mail.ru', 89999999941, 12],
+            ['Марина', 'Габбасова', 'gabbasova@mail.ru', 89999949942, 12],
+            ['Татьяна', 'Галасимова', 'galasimova@mail.ru', 89992999955, 12],
         ];
 
         $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);

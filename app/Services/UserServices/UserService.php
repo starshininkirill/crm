@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+    public function isProbation(User $user, Carbon $date): bool
+    {
+        if (empty($user->probation_start) || empty($user->probation_end)) {
+            return false;
+        }
+        $probationStart = Carbon::parse($user->probation_start)->startOfDay();
+        $probationEnd = Carbon::parse($user->probation_end)->endOfDay();
+        return $date->between($probationStart, $probationEnd);
+    }
     public function getFirstWorkingDay(User $user): Carbon
     {
         $employmentDate = $user->created_at->copy();

@@ -39,6 +39,7 @@ class DepartmentReportGenerator
     {
         $user = $userData->user;
 
+        
         $upsellsBonus = $this->calculateUpsalesBonus($userData);
         $b1PlanResult = $this->calculateB1Plan($userData);
         $b2PlanResult = $this->calculateB2Plan($userData);
@@ -49,13 +50,15 @@ class DepartmentReportGenerator
 
         $accountsReceivablePercent = $userData->accountSeceivable->sum('value') / 100 * $percentLadder;
 
-        $totalBonuses =
-            $upsellsBonus +
-            $b1PlanResult['bonus'] +
+        $totalBonuses = $upsellsBonus;
+
+        if (!$userData->isProbation) {
+            $totalBonuses += $b1PlanResult['bonus'] +
             $b2PlanResult['bonus'] +
             $b3PlanResult['bonus'] +
             $b4PlanResult['bonus'] +
             $accountsReceivablePercent;
+        }
 
         return collect([
             'user' => $user->only('id', 'full_name'),

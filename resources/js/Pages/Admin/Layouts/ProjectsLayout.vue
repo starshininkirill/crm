@@ -9,6 +9,10 @@
                 :route="'admin.projects-department.report'">
                 Отчёт по сотрудникам
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.projects-department.head-report')"
+                :route="'admin.projects-department.head-report'">
+                Отчёт руководителя
+            </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.projects-department.plans-settings')"
                 :route="'admin.projects-department.plans-settings'">
                 Настройки планов

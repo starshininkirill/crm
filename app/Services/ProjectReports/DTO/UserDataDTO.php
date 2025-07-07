@@ -19,5 +19,6 @@ class UserDataDTO
         public int $individualSites = 0,
         public int $readySites = 0,
         public int $compexes = 0,
+        public bool $isProbation = false,
     ) {}
 }
