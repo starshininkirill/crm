@@ -8,6 +8,7 @@ use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DepartmentReportGenerator
 {
@@ -23,11 +24,15 @@ class DepartmentReportGenerator
             return $user->departmentHead->isEmpty();
         });
 
-        return $users->map(function ($user) use ($fullReportData) {
+        $report = $users->map(function ($user) use ($fullReportData) {
             $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
 
             return $this->processUser($userData);
         });
+
+        $report->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
+
+        return $report;
     }
 
     protected function processUser(UserDataDTO $userData): Collection
@@ -72,6 +77,33 @@ class DepartmentReportGenerator
             'b3' => $b3PlanResult,
             'b4' => $b4PlanResult,
             'bonuses' => $totalBonuses,
+        ]);
+    }
+
+    protected function createOtherPaymentsRow(Collection $otherPayments): Collection
+    {
+        $sum = $otherPayments->sum('value');
+
+        return collect([
+            'user' => ['full_name' => 'GRAMPUS'],
+            'close_contracts' => collect(),
+            'close_contracts_count' => 0,
+            'close_contracts_sum' => 0,
+            'accounts_receivable' => $otherPayments,
+            'accounts_receivable_sum' => $sum,
+            'accounts_receivable_percent' => 0,
+            'percent_ladder' => 0,
+            'upsells' => collect(),
+            'upsells_money' => 0,
+            'upsells_bonus' => 0,
+            'compexes' => 0,
+            'individual_sites' => 0,
+            'ready_sites' => 0,
+            'b1' => ['completed' => false, 'bonus' => 0],
+            'b2' => ['completed' => false, 'bonus' => 0],
+            'b3' => ['completed' => false, 'bonus' => 0],
+            'b4' => ['completed' => false, 'bonus' => 0],
+            'bonuses' => 0,
         ]);
     }
 

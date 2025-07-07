@@ -3,7 +3,7 @@
         <div class="text-2xl font-semibold mb-2">
             Б4 План
         </div>
-        <form class="flex flex-col gap-4" @submit.prevent="submitForm(plan)">
+        <form class="flex flex-col gap-4" @submit.prevent="submitForm">
             <label class="grid grid-cols-2 gap-2 items-center whitespace-nowrap" for="projects">
                 Кол-во проектов
                 <input v-model="plan.data.projects" class="input" name="projects" type="number"

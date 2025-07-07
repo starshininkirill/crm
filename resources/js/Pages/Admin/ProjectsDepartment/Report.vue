@@ -22,13 +22,7 @@
                             %
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
-                            % от ДЗ
-                        </th>
-                        <th scope="col" class="px-3 py-2 text-center border-x">
                             Допродажи
-                        </th>
-                        <th scope="col" class="px-3 py-2 text-center border-x">
-                            % от допродаж
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
                             Закрыто проектов
@@ -55,6 +49,12 @@
                             Б4
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
+                            % от ДЗ
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
+                            % от допродаж
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
                             Итого бонусов
                         </th>
                     </tr>
@@ -74,13 +74,7 @@
                                 {{ row.percent_ladder }} %
                             </td>
                             <td class="px-4 py-2 text-center border-r">
-                                {{ formatPrice(row.accounts_receivable_percent) }}
-                            </td>
-                            <td class="px-4 py-2 text-center border-r">
                                 {{ formatPrice(row.upsells_money) }}
-                            </td>
-                            <td class="px-4 py-2 text-center border-r">
-                                {{ formatPrice(row.upsells_bonus) }}
                             </td>
                             <td class="px-4 py-2 text-center border-r">
                                 {{ row.close_contracts_count }}
@@ -111,6 +105,12 @@
                                 {{ row.b4.completed ? 'Да' : 'Нет' }}
                             </td>
                             <td class="px-4 py-2 text-center border-r">
+                                {{ formatPrice(row.accounts_receivable_percent) }}
+                            </td>
+                            <td class="px-4 py-2 text-center border-r">
+                                {{ formatPrice(row.upsells_bonus) }}
+                            </td>
+                            <td class="px-4 py-2 text-center border-r">
                                 {{ formatPrice(row.bonuses) }}
                             </td>
                         </tr>
@@ -118,7 +118,7 @@
                             <td colspan="15" class="p-2 bg-gray-100">
                                 <UserReport :user-report="detailedReportUser" />
                             </td>
-                            
+
                         </tr>
                     </template>
                 </tbody>

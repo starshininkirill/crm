@@ -24,7 +24,7 @@ class ProjectContractSeeder extends Seeder
     private function attachManagersToExistingContracts(ContractService $contractService)
     {
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonth(2);
+        $startDate = Carbon::now()->subMonth();
         $endDate = Carbon::now();
 
         $projectDepartment = Department::where('type', Department::DEPARTMENT_PROJECT_MANAGERS)->whereNull('parent_id')->first();
@@ -34,6 +34,14 @@ class ProjectContractSeeder extends Seeder
         $projectManagers = $projectDepartment->allUsers(Carbon::now())->filter(function ($user) {
             return $user->departmentHead->isEmpty();
         });
+
+        Carbon::setTestNow($startDate);
+        
+        $managerToFire = $projectManagers->first();
+        $managerToFire->fire();
+
+        Carbon::setTestNow();
+
 
         $managersIds = $projectManagers->pluck('id');
 

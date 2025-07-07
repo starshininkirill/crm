@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-3 ">
         <div class="text-2xl font-semibold mb-2">
             Категории идущие в готовые сайты
         </div>

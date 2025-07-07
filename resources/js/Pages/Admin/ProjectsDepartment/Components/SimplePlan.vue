@@ -102,11 +102,14 @@ export default {
     },
     methods: {
         updatePlan(plan) {
+            let data = {};
+            if (this.hasGoalField) {
+                data.goal = plan.data.goal;
+            }
+            data.bonus = plan.data.bonus;
+
             router.put(route('admin.projects-department.work-plan.update', { workPlan: plan }), {
-                'data': {
-                    'goal': plan.data.goal,
-                    'bonus': plan.data.bonus,
-                },
+                'data': data,
                 'type': plan.type
             })
         },
@@ -114,17 +117,20 @@ export default {
             router.delete(route('admin.projects-department.work-plan.destroy', { workPlan: plan }))
         },
         createPlan() {
+            let data = {};
+            if (this.hasGoalField) {
+                data.goal = this.newPlan.data.goal;
+            }
+            data.bonus = this.newPlan.data.bonus;
+
             router.post(route('admin.projects-department.work-plan.store'), {
-                'data': {
-                    'bonus': this.newPlan.data.bonus,
-                    'goal': this.newPlan.data.goal,
-                },
+                'data': data,
                 'department_id': this.newPlan.department_id,
                 'type': this.newPlan.type,
             }, {
                 onSuccess: () => {
-                    this.newPlan.data.month = '';
-                    this.newPlan.data.goal = '';
+                    this.newPlan.data.goal = null;
+                    this.newPlan.data.bonus = null;
                 },
             })
         },
@@ -132,4 +138,4 @@ export default {
 }
 
 
-</script>
+</script> 

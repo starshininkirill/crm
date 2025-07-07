@@ -27,10 +27,9 @@
                 </ul>
             </div>
 
-            <div v-if="activePlan"
-                :class="[activePlan.key === 'percent_ladder' ? '' : 'grid grid-cols-3 gap-8', 'mb-4']">
+            <div v-if="activePlan" :class="[activePlan.key === 'percent_ladder' ? '' : 'mb-4']">
                 <keep-alive>
-                    <component :is="activePlan.component" v-bind="activePlan.props" />
+                    <component class="max-w-2xl" :is="activePlan.component" v-bind="activePlan.props" />
                 </keep-alive>
             </div>
         </div>
@@ -46,9 +45,9 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import IndividSettings from './Settings/DepartmentSettings/IndividSettings.vue';
 import ReadySitesSettings from './Settings/DepartmentSettings/ReadySitesSettings.vue';
 import Error from '../../../Components/Error.vue';
-import UniversalPlan from './Components/UniversalPlan.vue';
 import PercentLadder from './Components/PercentLadder.vue';
-import B4Plan from './Components/B4Plan.vue';
+import BPlans from './Components/BPlans.vue';
+import SimplePlan from './Components/SimplePlan.vue';
 
 export default {
     components: {
@@ -58,9 +57,9 @@ export default {
         IndividSettings,
         ReadySitesSettings,
         Error,
-        UniversalPlan,
         PercentLadder,
-        B4Plan,
+        BPlans,
+        SimplePlan,
     },
     props: {
         dateProp: {
@@ -87,59 +86,20 @@ export default {
     data() {
         return {
             date: this.dateProp,
-            activeTab: 'b1_plan',
+            activeTab: 'b_plans',
         }
     },
     computed: {
         planComponents() {
             return [
                 {
-                    key: 'b1_plan',
-                    title: 'Б1 План',
-                    component: UniversalPlan,
+                    key: 'b_plans',
+                    title: 'Б Планы',
+                    component: BPlans,
                     props: {
                         departmentId: this.departmentId,
                         isCurrentMonth: this.isCurrentMonth,
-                        title: 'Б1 План',
-                        planType: 'b1Plan',
-                        plans: this.plans.b1Plan,
-                        hasGoalField: true,
-                    }
-                },
-                {
-                    key: 'b2_plan',
-                    title: 'Б2 План',
-                    component: UniversalPlan,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        title: 'Б2 План',
-                        planType: 'b2Plan',
-                        plans: this.plans.b2Plan,
-                        hasGoalField: true,
-                    }
-                },
-                {
-                    key: 'b3_plan',
-                    title: 'Б3 План',
-                    component: UniversalPlan,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        title: 'Б3 План',
-                        planType: 'b3Plan',
-                        plans: this.plans.b3Plan,
-                        hasGoalField: true,
-                    }
-                },
-                {
-                    key: 'b4_plan',
-                    title: 'Б4 План',
-                    component: B4Plan,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        propPlan: this.plans.b4Plan,
+                        plans: this.plans,
                     }
                 },
                 {
@@ -150,6 +110,19 @@ export default {
                         departmentId: this.departmentId,
                         isCurrentMonth: this.isCurrentMonth,
                         percentLadder: this.plans.percentLadder,
+                    }
+                },
+                {
+                    key: 'up_sale_bonus',
+                    title: 'Бонус за допродажу (%)',
+                    component: SimplePlan,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        title: 'Бонус за допродажу (%)',
+                        planType: 'upSaleBonus',
+                        plans: this.plans.upSaleBonus,
+                        hasGoalField: false,
                     }
                 },
                 {
@@ -174,19 +147,6 @@ export default {
                         allCategories: this.serviceCats,
                         isCurrentMonth: this.isCurrentMonth,
                         plans: this.plans,
-                    }
-                },
-                {
-                    key: 'up_sale_bonus',
-                    title: 'Бонус за допродажу (%)',
-                    component: UniversalPlan,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        title: 'Бонус за допродажу (%)',
-                        planType: 'upSaleBonus',
-                        plans: this.plans.upSaleBonus,
-                        hasGoalField: false,
                     }
                 },
             ]
