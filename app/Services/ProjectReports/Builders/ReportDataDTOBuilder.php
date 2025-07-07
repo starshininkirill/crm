@@ -33,7 +33,7 @@ class ReportDataDTOBuilder
     {
         $startOfMonth = $date->copy()->startOfMonth();
         $endOfMonth = $date->copy()->endOfMonth();
-        
+
         $plans = $this->workPlanService->actualPlans($date, $department);
 
         $allUsers = $department->allUsers($date, ['departmentHead']);
@@ -50,7 +50,7 @@ class ReportDataDTOBuilder
             $accountSeceivable,
             $otherAccountSeceivable
         );
-        
+
         return new ReportDataDTO(
             $upsails,
             $department,
@@ -61,39 +61,6 @@ class ReportDataDTOBuilder
             $otherAccountSeceivable,
             $date,
         );
-    }
-
-    private function handleProbationUsersPayments(Collection $activeUsers, Carbon $date, Collection $accountSeceivable, Collection $otherAccountSeceivable): array
-    {
-        $probationUsers = $activeUsers->filter(function ($user) use ($date) {
-            if (empty($user->probation_start) || empty($user->probation_end)) {
-                return false;
-            }
-            $probationStart = Carbon::parse($user->probation_start)->startOfDay();
-            $probationEnd = Carbon::parse($user->probation_end)->endOfDay();
-            return $date->between($probationStart, $probationEnd);
-        });
-
-        if ($probationUsers->isEmpty()) {
-            return [$accountSeceivable, $otherAccountSeceivable];
-        }
-
-        $probationUserIds = $probationUsers->pluck('id');
-
-        $probationPayments = $accountSeceivable->filter(function ($payment) use ($probationUserIds) {
-            $contractUsers = $payment->contract->contractUsers;
-            return $contractUsers
-                ->where('role', ContractUser::PROJECT)
-                ->whereIn('user_id', $probationUserIds)
-                ->isNotEmpty();
-        });
-
-        if ($probationPayments->isNotEmpty()) {
-            $accountSeceivable = $accountSeceivable->diff($probationPayments);
-            $otherAccountSeceivable = $otherAccountSeceivable->merge($probationPayments);
-        }
-
-        return [$accountSeceivable, $otherAccountSeceivable];
     }
 
     public function getUserSubdata(ReportDataDTO $mainData, User $user): UserDataDTO
@@ -136,6 +103,39 @@ class ReportDataDTOBuilder
             $readySites,
             $compexes,
         );
+    }
+
+    private function handleProbationUsersPayments(Collection $activeUsers, Carbon $date, Collection $accountSeceivable, Collection $otherAccountSeceivable): array
+    {
+        $probationUsers = $activeUsers->filter(function ($user) use ($date) {
+            if (empty($user->probation_start) || empty($user->probation_end)) {
+                return false;
+            }
+            $probationStart = Carbon::parse($user->probation_start)->startOfDay();
+            $probationEnd = Carbon::parse($user->probation_end)->endOfDay();
+            return $date->between($probationStart, $probationEnd);
+        });
+
+        if ($probationUsers->isEmpty()) {
+            return [$accountSeceivable, $otherAccountSeceivable];
+        }
+
+        $probationUserIds = $probationUsers->pluck('id');
+
+        $probationPayments = $accountSeceivable->filter(function ($payment) use ($probationUserIds) {
+            $contractUsers = $payment->contract->contractUsers;
+            return $contractUsers
+                ->where('role', ContractUser::PROJECT)
+                ->whereIn('user_id', $probationUserIds)
+                ->isNotEmpty();
+        });
+
+        if ($probationPayments->isNotEmpty()) {
+            $accountSeceivable = $accountSeceivable->diff($probationPayments);
+            $otherAccountSeceivable = $otherAccountSeceivable->merge($probationPayments);
+        }
+
+        return [$accountSeceivable, $otherAccountSeceivable];
     }
 
     protected function getCloseContracts(Carbon $date, array|Collection $userIds)
@@ -221,7 +221,7 @@ class ReportDataDTOBuilder
             $contractUserHistories = ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
                 ->where('new_values->role', $role)
                 ->pluck('new_values')
-                ->map(fn ($data) => $data['contract_id']);
+                ->map(fn($data) => $data['contract_id']);
 
             $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($endOfMonth)
                 ->whereBetween('new_values->created_at', [$startOfMonth, $endOfMonth])
@@ -248,7 +248,7 @@ class ReportDataDTOBuilder
                 $otherAccountSeceivable->push($payment);
                 return;
             }
-            
+
             $hasActiveUser = $contract->contractUsers
                 ->where('role', ContractUser::PROJECT)
                 ->whereIn('user_id', $activeUserIds)

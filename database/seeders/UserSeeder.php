@@ -117,7 +117,7 @@ class UserSeeder extends Seeder
 
         $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);
 
-        foreach ($projectManagers as $person) {
+        foreach ($projectManagers as $key => $person) {
             $user = User::create([
                 'first_name' => $person[0],
                 'last_name' => $person[1],
@@ -130,6 +130,12 @@ class UserSeeder extends Seeder
                 'department_id' => $department->id,
                 'phone' => $person[3]
             ]);
+
+            if ($key == 2) {
+                $user->probation_start = Carbon::parse('2025-06-01')->startOfMonth();
+                $user->probation_end = Carbon::parse('2025-06-01')->endOfMonth();
+                $user->save();
+            }
 
             if ($person[4] == 8) {
                 $department->head_id = $user->id;
