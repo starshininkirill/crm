@@ -10,6 +10,7 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use App\Models\WorkPlan;
 use App\Services\ProjectReports\Generators\DepartmentReportGenerator;
+use App\Services\ProjectReports\Generators\HeadReportGenerator;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,8 +28,6 @@ class ProjectManagersDepartmentController extends Controller
     {
         $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);
 
-        $user = $request->get('user') ? User::find($request->get('user')) : null;
-
         $date = Carbon::parse($request->get('date')) ?? Carbon::now();
         $date = $date->endOfMonth();
 
@@ -38,30 +37,24 @@ class ProjectManagersDepartmentController extends Controller
 
         $report = $reportService->generateFullReport($department, $date);
 
-        if ($request->get('user')) {
-            $userReport = $report->firstWhere('user.id', $request->get('user'));
-        }
-
         return Inertia::render('Admin/ProjectsDepartment/Report', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
             'users' => fn() => $allUsers,
-            'selectUser' => fn() => $user ?? null,
             'report' => fn() => $report ?? [],
-            'userReport' => fn() => $userReport ?? null,
         ]);
     }
 
-    public function headReport(Request $request)
+    public function headReport(Request $request, HeadReportGenerator $headReportGenerator)
     {
-        $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);
+
         $date = Carbon::parse($request->get('date')) ?? Carbon::now();
         $date = $date->endOfMonth();
 
-        $departmentHead = $department->head;
-
+        $report = $headReportGenerator->generateHeadReport( $date);
 
         return Inertia::render('Admin/ProjectsDepartment/HeadReport', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
+            'report' => fn() => $report ?? [],
         ]);
     }
 

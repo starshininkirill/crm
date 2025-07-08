@@ -22,6 +22,10 @@ export default {
     },
     props: {
         initialDate: String,
+        targetUrl: {
+            type: String,
+            required: true,
+        },
     },
     data() {
 
@@ -34,8 +38,8 @@ export default {
     methods: {
         updateDate() {
             this.form.user = this.selectedUser?.id || null;
-            this.form.get(route('admin.projects-department.report'), {
-                // preserveScroll: true,
+            this.form.get(this.targetUrl, {
+                preserveScroll: true,
             });
         },
     }

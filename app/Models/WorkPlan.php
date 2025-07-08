@@ -31,6 +31,8 @@ class WorkPlan extends Model
 
     public const HEAD_B1_PLAN = 'headB1Plan';
     public const HEAD_B2_PLAN = 'headB2Plan';
+    public const HEAD_B3_PLAN = 'headB3Plan';
+    public const HEAD_B4_PLAN = 'headB4Plan';
     public const HEAD_PERCENT_BONUS = 'headPercentBonus';
     public const HEAD_MINIMAL_PERCENT = 'headMinimalBonus';
 
@@ -53,6 +55,12 @@ class WorkPlan extends Model
         self::INDIVID_CATEGORY_IDS,
         self::READY_SYTES_CATEGORY_IDS,
         self::UPSALE_BONUS,
+        self::HEAD_B1_PLAN,
+        self::HEAD_B2_PLAN,
+        self::HEAD_B3_PLAN,
+        self::HEAD_B4_PLAN,
+        self::HEAD_PERCENT_BONUS,
+        self::HEAD_MINIMAL_PERCENT,
     ];
 
     protected $fillable = [

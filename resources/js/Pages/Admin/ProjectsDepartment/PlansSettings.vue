@@ -48,6 +48,7 @@ import Error from '../../../Components/Error.vue';
 import PercentLadder from './Components/PercentLadder.vue';
 import BPlans from './Components/BPlans.vue';
 import SimplePlan from './Components/SimplePlan.vue';
+import HeadSettings from './Settings/HeadSettings/BPlans.vue';
 
 export default {
     components: {
@@ -60,6 +61,7 @@ export default {
         PercentLadder,
         BPlans,
         SimplePlan,
+        HeadSettings,
     },
     props: {
         dateProp: {
@@ -96,6 +98,16 @@ export default {
                     key: 'b_plans',
                     title: 'Б Планы',
                     component: BPlans,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        plans: this.plans,
+                    }
+                },
+                {
+                    key: 'head_settings',
+                    title: 'Б Планы руководителя',
+                    component: HeadSettings,
                     props: {
                         departmentId: this.departmentId,
                         isCurrentMonth: this.isCurrentMonth,

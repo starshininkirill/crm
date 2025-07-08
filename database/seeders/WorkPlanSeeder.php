@@ -72,7 +72,7 @@ class WorkPlanSeeder extends Seeder
             ],
             'department_id' => $this->projectDepartmentId,
         ]);
-        
+
         WorkPlan::create([
             'type' => WorkPlan::B4_PLAN,
             'data' => [
@@ -105,6 +105,42 @@ class WorkPlanSeeder extends Seeder
             'department_id' => $this->projectDepartmentId,
             'data' => [
                 'bonus' => 3.5
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B1_PLAN,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 2,
+                'bonus' => 3000
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B2_PLAN,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 2,
+                'bonus' => 3000
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B3_PLAN,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'penalty' => 10,
+                'bonus' => 1.5
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_B4_PLAN,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 3,
+                'bonus' => 3500
             ],
         ]);
     }

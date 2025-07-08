@@ -16,7 +16,7 @@ class DepartmentReportGenerator
         private ReportDataDTOBuilder $reportDataDTOBuilder,
     ) {}
 
-    public function generateFullReport(Department $department, Carbon $date): Collection
+    public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
     {
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
 
@@ -30,7 +30,9 @@ class DepartmentReportGenerator
             return $this->processUser($userData);
         });
 
-        $report->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
+        if ($withOtherPayments) {
+            $report->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
+        }
 
         return $report;
     }
@@ -38,8 +40,8 @@ class DepartmentReportGenerator
     protected function processUser(UserDataDTO $userData): Collection
     {
         $user = $userData->user;
+        $user->is_probation = $userData->isProbation;
 
-        
         $upsellsBonus = $this->calculateUpsalesBonus($userData);
         $b1PlanResult = $this->calculateB1Plan($userData);
         $b2PlanResult = $this->calculateB2Plan($userData);
@@ -52,7 +54,7 @@ class DepartmentReportGenerator
 
         $totalBonuses = $upsellsBonus;
 
-        if (!$userData->isProbation) {
+        if (!$user->isProbation) {
             $totalBonuses += $b1PlanResult['bonus'] +
             $b2PlanResult['bonus'] +
             $b3PlanResult['bonus'] +
@@ -61,7 +63,7 @@ class DepartmentReportGenerator
         }
 
         return collect([
-            'user' => $user->only('id', 'full_name'),
+            'user' => $user->only('id', 'full_name', 'is_probation'),
             'close_contracts' => $userData->closeContracts,
             'close_contracts_count' => $userData->closeContracts->count(),
             'close_contracts_sum' => $userData->closeContracts->sum('value'),

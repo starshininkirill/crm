@@ -5,7 +5,7 @@
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Отчёт отдела Сопровождения</h1>
 
-            <SelectForm :initial-date="date" />
+            <SelectForm :initial-date="date" :target-url="route('admin.projects-department.report')" />
 
             <Error />
 
@@ -144,9 +144,6 @@ export default {
         UserReport,
     },
     props: {
-        department: {
-            type: Object,
-        },
         date: {
             type: String,
         },

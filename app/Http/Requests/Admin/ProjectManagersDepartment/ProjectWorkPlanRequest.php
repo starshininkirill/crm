@@ -26,6 +26,16 @@ class ProjectWorkPlanRequest extends FormRequest
             'type' => 'required|string|in:' . implode(',', WorkPlan::ALL_PLANS),
         ];
 
+        $simplePlans = [
+            WorkPlan::B1_PLAN,
+            WorkPlan::B2_PLAN,
+            WorkPlan::B3_PLAN,
+            WorkPlan::PERCENT_LADDER,
+            WorkPlan::HEAD_B1_PLAN,
+            WorkPlan::HEAD_B2_PLAN,
+            WorkPlan::HEAD_B4_PLAN,
+        ];
+
         if ($this->isMethod('POST')) {
             $rules = array_merge($rules, [
                 'department_id' => 'required|exists:departments,id',
@@ -40,7 +50,7 @@ class ProjectWorkPlanRequest extends FormRequest
             ]);
         }
 
-        if ($this->input('type') == WorkPlan::B1_PLAN || $this->input('type') == WorkPlan::B2_PLAN || $this->input('type') == WorkPlan::B3_PLAN || $this->input('type') == WorkPlan::PERCENT_LADDER) {
+        if (in_array($this->input('type'), $simplePlans)) {
             $rules = array_merge($rules, [
                 'data.goal' => 'nullable|integer',
                 'data.bonus' => 'required|numeric',
@@ -53,7 +63,7 @@ class ProjectWorkPlanRequest extends FormRequest
             ]);
         }
 
-        if($this->input('type') == WorkPlan::B4_PLAN) {
+        if ($this->input('type') == WorkPlan::B4_PLAN) {
             $rules = array_merge($rules, [
                 'data.projects' => 'required|integer',
                 'data.complexes' => 'required|integer',
