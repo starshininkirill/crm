@@ -73,7 +73,20 @@ class DocumentGenerator
                 if ($templateKey == 'UfCrm1671029036' && $value != '') {
                     $this->insertFormattedHtml($templateProcessor, $templateKey, $value);
                 } else {
-                    $templateProcessor->setValue($templateKey, $value);
+                    if (is_string($value) && strpos($value, '|') !== false) {
+                        $textRun = new TextRun();
+                        $parts = explode('|', $value);
+                        $partsCount = count($parts);
+                        foreach ($parts as $index => $part) {
+                            $textRun->addText(htmlspecialchars(trim($part)), ['name' => 'Times New Roman', 'size' => 9]);
+                            if ($index < $partsCount - 1) {
+                                $textRun->addTextBreak();
+                            }
+                        }
+                        $templateProcessor->setComplexValue($templateKey, $textRun);
+                    } else {
+                        $templateProcessor->setValue($templateKey, $value);
+                    }
                 }
             }
         }
@@ -104,7 +117,7 @@ class DocumentGenerator
                 throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
             }
         }
-        
+
         $generatedDocument = GeneratedDocument::create([
             'type' => $documentType,
             'deal' => $dealNumber,
@@ -114,7 +127,7 @@ class DocumentGenerator
             'act_number' => $option->value,
             'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : ''
         ]);
-        
+
         $this->incrementOption($option);
 
         if (!$generatedDocument) {
