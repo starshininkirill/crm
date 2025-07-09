@@ -90,7 +90,7 @@ class DepartmentReportGenerator
         $sum = $otherPayments->sum('value');
 
         return collect([
-            'user' => ['full_name' => 'GRAMPUS'],
+            'user' => ['full_name' => 'GRAMPUS', 'is_probation' => true],
             'close_contracts' => collect(),
             'close_contracts_count' => 0,
             'close_contracts_sum' => 0,

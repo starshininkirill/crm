@@ -16,7 +16,7 @@
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
         />
-        <SimplePlan 
+        <B3Plan 
             title="Б3 План"
             :plans="plans.headB3Plan"
             planType="headB3Plan"
@@ -36,10 +36,12 @@
 </template>
 <script>
 import SimplePlan from '../../Components/SimplePlan.vue';
+import B3Plan from './B3Plan.vue';
 
 export default {
     components: {
         SimplePlan,
+        B3Plan
     },
     props: {
         plans: {

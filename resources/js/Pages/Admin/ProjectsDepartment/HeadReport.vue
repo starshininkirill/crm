@@ -60,7 +60,11 @@
                                 {{ row.b2.completed_count }} / {{ row.b2.employees_count }}
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold">
-                                -
+                                {{ formatPrice(row.b3.bonus) }}
+                                
+                                <span class="text-sm text-gray-500">
+                                   ({{ row.b3.completed_count }} / {{ row.b3.employees_count }})
+                                </span>
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b4.completed, 'text-red-500': !row.b4.completed }">

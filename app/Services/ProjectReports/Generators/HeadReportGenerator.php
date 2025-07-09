@@ -45,18 +45,20 @@ class HeadReportGenerator
 
     protected function processUser(Department $department, $date): array
     {
-        $departmentReport = $this->departmentReportGenerator->generateFullReport($department, $date, false);
+        $departmentReport = $this->departmentReportGenerator->generateFullReport($department, $date);
 
         $upsells = $departmentReport->sum('upsells_money');
         $accountsReceivable = $departmentReport->sum('accounts_receivable_sum');
 
         $b1PlanResult = $this->calculatePlanByCompletedCount($departmentReport, 'b1', WorkPlan::HEAD_B1_PLAN);
         $b2PlanResult = $this->calculatePlanByCompletedCount($departmentReport, 'b2', WorkPlan::HEAD_B2_PLAN);
+        $b3PlanResult = $this->calculateB3Plan($departmentReport);
         $b4PlanResult = $this->calculatePlanByCompletedCount($departmentReport, 'b4', WorkPlan::HEAD_B4_PLAN);
 
         $totalBonus = $b1PlanResult['bonus']
             + $b2PlanResult['bonus']
-            + $b4PlanResult['bonus'];
+            + $b4PlanResult['bonus']
+            + $b3PlanResult['bonus'];
 
         return [
             'user' => $department->head->only('id', 'full_name'),
@@ -64,8 +66,56 @@ class HeadReportGenerator
             'accounts_receivable' => $accountsReceivable,
             'b1' => $b1PlanResult,
             'b2' => $b2PlanResult,
+            'b3' => $b3PlanResult,
             'b4' => $b4PlanResult,
             'bonuses' => $totalBonus,
+        ];
+    }
+
+    protected function calculateB3Plan(Collection $departmentReport): array
+    {
+        $reportWithoutProbation = $departmentReport->filter(fn ($pmReport) => !$pmReport['user']['is_probation']);
+        $employeesCount = $reportWithoutProbation->count();
+
+        $completedPmsCount = $reportWithoutProbation->filter(
+            fn ($pmReport) => $pmReport['b3']['completed'] ?? false
+        )->count();
+
+        $defaultResult = [
+            'bonus' => 0,
+            'completed_count' => $completedPmsCount,
+            'employees_count' => $employeesCount,
+        ];
+        
+        $plan = $this->workPlans->where('type', WorkPlan::HEAD_B3_PLAN)->first();
+
+        if (!$plan) {
+            return $defaultResult;
+        }
+
+        $planPenaltyValue = $plan->data['penalty'] ?? 0;
+        $planBonusPercentage = $plan->data['bonus'] ?? 0;
+
+        if ($planPenaltyValue <= 0 || $planBonusPercentage <= 0 || $employeesCount === 0) {
+            return $defaultResult;
+        }
+
+        $totalAccountsReceivable = $departmentReport->sum('accounts_receivable_sum');
+        $bonusAmount = $totalAccountsReceivable / 100 * $planBonusPercentage;
+
+        $employeeWeight = $employeesCount > 10 
+            ? 100 / $employeesCount
+            : $planPenaltyValue;
+
+        $nonCompletedPmsCount = $employeesCount - $completedPmsCount;
+        $totalPenaltyPercent = $nonCompletedPmsCount * $employeeWeight;
+
+        $finalBonus = $bonusAmount * (1 - $totalPenaltyPercent / 100);
+
+        return [
+            'bonus' => max(0, $finalBonus),
+            'completed_count' => $completedPmsCount,
+            'employees_count' => $employeesCount,
         ];
     }
 

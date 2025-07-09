@@ -63,6 +63,13 @@ class ProjectWorkPlanRequest extends FormRequest
             ]);
         }
 
+        if ($this->input('type') == WorkPlan::HEAD_B3_PLAN) {
+            $rules = array_merge($rules, [
+                'data.penalty' => 'required|numeric',
+                'data.bonus' => 'required|numeric',
+            ]);
+        }
+
         if ($this->input('type') == WorkPlan::B4_PLAN) {
             $rules = array_merge($rules, [
                 'data.projects' => 'required|integer',
