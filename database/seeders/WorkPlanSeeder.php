@@ -143,6 +143,15 @@ class WorkPlanSeeder extends Seeder
                 'bonus' => 3500
             ],
         ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::HEAD_UPSALE_PLAN,
+            'department_id' => $this->projectDepartmentId,
+            'data' => [
+                'goal' => 50000,
+                'bonus' => 2.5
+            ],
+        ]);
     }
 
     private function createSalePlans()

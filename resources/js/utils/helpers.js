@@ -1,5 +1,5 @@
 export function formatPrice(value, symbol = ' ₽') {
-    value = parseInt(value);
+    value = Math.round(Number(value));
     if (!value || typeof value !== 'number') {
         return '0' + symbol;
     }

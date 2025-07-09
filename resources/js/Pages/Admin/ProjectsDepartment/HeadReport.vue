@@ -34,6 +34,9 @@
                             Б4
                         </th>
                         <th scope="col" class="px-3 py-2 text-center border-x">
+                            % от допродаж
+                        </th>
+                        <th scope="col" class="px-3 py-2 text-center border-x">
                             Итого бонусов
                         </th>
                     </tr>
@@ -53,11 +56,11 @@
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b1.completed, 'text-red-500': !row.b1.completed }">
-                                {{ row.b1.completed_count }} / {{ row.b1.employees_count }}
+                                {{ formatPrice(row.b1.bonus) }} ({{ row.b1.completed_count }} / {{ row.b1.employees_count }})
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b2.completed, 'text-red-500': !row.b2.completed }">
-                                {{ row.b2.completed_count }} / {{ row.b2.employees_count }}
+                                {{ formatPrice(row.b2.bonus) }} ({{ row.b2.completed_count }} / {{ row.b2.employees_count }})
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.b3.bonus) }}
@@ -68,9 +71,12 @@
                             </td>
                             <td class="px-4 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b4.completed, 'text-red-500': !row.b4.completed }">
-                                {{ row.b4.completed_count }} / {{ row.b4.employees_count }}
+                                {{ formatPrice(row.b4.bonus) }} ({{ row.b4.completed_count }} / {{ row.b4.employees_count }})
                             </td>
-                            <td class="px-4 py-2 text-center border-r">
+                            <td class="px-4 py-2 text-center border-r font-semibold">
+                                {{ formatPrice(row.upsales_bonus.bonus) }}
+                            </td>
+                            <td class="px-4 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.bonuses) }}
                             </td>
                         </tr>

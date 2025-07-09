@@ -32,6 +32,14 @@
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
         />
+        <SimplePlan 
+            title="План допродаж"
+            :plans="plans.headUpsalePlan"
+            planType="headUpsalePlan"
+            :hasGoalField="true"
+            :isCurrentMonth="isCurrentMonth"
+            :departmentId="departmentId"
+        />
     </div>
 </template>
 <script>

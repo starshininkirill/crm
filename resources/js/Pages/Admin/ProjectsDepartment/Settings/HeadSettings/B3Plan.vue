@@ -17,7 +17,7 @@
 
                 <label class="flex gap-2 items-center" for="bonus">
                     Бонус
-                    <input v-model="plan.data.bonus" class="input" name="bonus" type="float"
+                    <input v-model="plan.data.bonus" class="input" name="bonus" type="number" step="0.1"
                         :disabled="!isCurrentMonth" />
                 </label>
 

@@ -34,6 +34,7 @@ class ProjectWorkPlanRequest extends FormRequest
             WorkPlan::HEAD_B1_PLAN,
             WorkPlan::HEAD_B2_PLAN,
             WorkPlan::HEAD_B4_PLAN,
+            WorkPlan::HEAD_UPSALE_PLAN,
         ];
 
         if ($this->isMethod('POST')) {

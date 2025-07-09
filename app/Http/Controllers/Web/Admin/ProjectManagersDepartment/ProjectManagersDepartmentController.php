@@ -46,11 +46,10 @@ class ProjectManagersDepartmentController extends Controller
 
     public function headReport(Request $request, HeadReportGenerator $headReportGenerator)
     {
-
         $date = Carbon::parse($request->get('date')) ?? Carbon::now();
         $date = $date->endOfMonth();
 
-        $report = $headReportGenerator->generateHeadReport( $date);
+        $report = $headReportGenerator->generateHeadReport($date);
 
         return Inertia::render('Admin/ProjectsDepartment/HeadReport', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
@@ -84,14 +83,14 @@ class ProjectManagersDepartmentController extends Controller
         $validated = $request->validated();
 
         $workPlan = WorkPlan::create($validated);
-        
+
         if (!$workPlan) {
             return redirect()->back()->withErrors('Не удалось создать план');
         }
-        
+
         return redirect()->back()->with('success', 'План успешно создан');
     }
-    
+
     public function updateWorkPlan(ProjectWorkPlanRequest $request, WorkPlan $workPlan)
     {
         $validated = $request->validated();

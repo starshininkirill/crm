@@ -15,6 +15,7 @@ use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReportDataDTOBuilder
 {
@@ -113,21 +114,20 @@ class ReportDataDTOBuilder
         $probationUsers = $activeUsers->filter(function ($user) use ($date) {
             return $this->userService->isProbation($user, $date);
         });
-
+        
         if ($probationUsers->isEmpty()) {
             return [$accountSeceivable, $otherAccountSeceivable];
         }
-
+        
         $probationUserIds = $probationUsers->pluck('id');
-
+        
         $probationPayments = $accountSeceivable->filter(function ($payment) use ($probationUserIds) {
             $contractUsers = $payment->contract->contractUsers;
             return $contractUsers
-                ->where('role', ContractUser::PROJECT)
-                ->whereIn('user_id', $probationUserIds)
-                ->isNotEmpty();
+            ->where('role', ContractUser::PROJECT)
+            ->whereIn('user_id', $probationUserIds)
+            ->isNotEmpty();
         });
-
         if ($probationPayments->isNotEmpty()) {
             $accountSeceivable = $accountSeceivable->diff($probationPayments);
             $otherAccountSeceivable = $otherAccountSeceivable->merge($probationPayments);
@@ -203,7 +203,8 @@ class ReportDataDTOBuilder
         $endOfMonth = $date->copy()->endOfMonth();
 
         $relations = [
-            'contract.contractUsers.user.department'
+            'contract.contractUsers.user.department',
+            'contract.contractUsers.user.position',
         ];
 
         if (DateHelper::isCurrentMonth($date)) {

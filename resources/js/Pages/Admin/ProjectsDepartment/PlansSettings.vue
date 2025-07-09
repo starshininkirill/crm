@@ -96,18 +96,8 @@ export default {
             return [
                 {
                     key: 'b_plans',
-                    title: 'Б Планы',
+                    title: 'Б Планы сотрудников',
                     component: BPlans,
-                    props: {
-                        departmentId: this.departmentId,
-                        isCurrentMonth: this.isCurrentMonth,
-                        plans: this.plans,
-                    }
-                },
-                {
-                    key: 'head_settings',
-                    title: 'Б Планы руководителя',
-                    component: HeadSettings,
                     props: {
                         departmentId: this.departmentId,
                         isCurrentMonth: this.isCurrentMonth,
@@ -135,6 +125,16 @@ export default {
                         planType: 'upSaleBonus',
                         plans: this.plans.upSaleBonus,
                         hasGoalField: false,
+                    }
+                },
+                {
+                    key: 'head_settings',
+                    title: 'Планы руководителя',
+                    component: HeadSettings,
+                    props: {
+                        departmentId: this.departmentId,
+                        isCurrentMonth: this.isCurrentMonth,
+                        plans: this.plans,
                     }
                 },
                 {
