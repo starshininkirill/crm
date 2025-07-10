@@ -78,7 +78,7 @@
                                         Скачать
                                     </a>
                                 </td>
-                                <td class="px-3 py-4 border-r">
+                                <td class="px-3 py-4 border-r text-center">
                                     <a v-if="document.pdf_file" download
                                         class="font-medium text-blue-600  hover:underline" :href="document.pdf_file">
                                         Скачать
