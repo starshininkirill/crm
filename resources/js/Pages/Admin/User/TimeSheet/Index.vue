@@ -71,10 +71,10 @@
                         <th class="px-2 py-2 border-r w-16">
                             Час
                         </th>
-                        <th class="px-2 py-2 border-r w-60">
+                        <th class="px-2 py-2 border-r w-72">
                             Должность
                         </th>
-                        <th class="px-2 py-2 border-r w-60">
+                        <th class="px-2 py-2 border-r w-56">
                             ФИО
                         </th>
                         <th v-for="(day, idx) in days" v-show="idx == 1 || showAllDates" :key="idx"

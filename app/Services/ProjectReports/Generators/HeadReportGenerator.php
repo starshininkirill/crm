@@ -70,8 +70,11 @@ class HeadReportGenerator
             + $b3PlanResult['bonus']
             + $upsalesPlanResult['bonus'];
 
+        $head = $department->head;
+        $head->bonuses = $totalBonus;
+
         return [
-            'user' => $department->head->only('id', 'full_name'),
+            'user' => $head,
             'upsells' => $upsells,
             'accounts_receivable' => $accountsReceivable,
             'b1' => $b1PlanResult,

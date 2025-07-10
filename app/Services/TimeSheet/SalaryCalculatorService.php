@@ -15,6 +15,8 @@ use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Log;
+use App\Services\ProjectReports\Generators\DepartmentReportGenerator as ProjectReportGenerator;
+use App\Services\ProjectReports\Generators\HeadReportGenerator as ProjectHeadReportGenerator;
 
 final class SalaryCalculatorService
 {
@@ -23,15 +25,36 @@ final class SalaryCalculatorService
         private DepartmentReportGenerator $serviceReportGenerator,
         private HeadsReportGenerator $saleHeadsReportGenerator,
         private UserService $userService,
+        private ProjectReportGenerator $projectReportGenerator,
+        private ProjectHeadReportGenerator $projectHeadReportGenerator,
     ) {}
 
     public function calculateDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection
     {
         if ($department->type === Department::DEPARTMENT_SALE) {
             return $this->calculateSaleDepartmentSalary($department, $date, $status);
+        } else if ($department->type === Department::DEPARTMENT_PROJECT_MANAGERS) {
+            return $this->calculateProjectManagersDepartmentSalary($department, $date, $status);
         }
 
         return $department->users;
+    }
+
+    private function calculateProjectManagersDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection
+    {
+        $report = $this->projectReportGenerator->generateFullReport($department, $date, false);
+
+        $users = $report->map(function ($user) {
+            return $user['user'];
+        });
+
+        $headReport = $this->projectHeadReportGenerator->generateHeadReport($date);
+
+        if ($headReport->isNotEmpty()) {
+            $users->prepend($headReport->pluck('user')->first());
+        }
+
+        return new EloquentCollection($users);
     }
 
     private function calculateSaleDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection

@@ -50,8 +50,6 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $pivotUsers = $this->pivotUsers($reportData, $users);
 
-
-
         $report = array_merge($report, [
             'pivotUsers' => $pivotUsers,
             'generalPlan' => $this->generalPlan($reportData, $pivotUsers),

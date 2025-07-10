@@ -54,7 +54,7 @@ class DepartmentReportGenerator
 
         $totalBonuses = $upsellsBonus;
 
-        if (!$user->isProbation) {
+        if (!$user->is_probation) {
             $totalBonuses += $b1PlanResult['bonus'] +
             $b2PlanResult['bonus'] +
             $b3PlanResult['bonus'] +
@@ -62,16 +62,11 @@ class DepartmentReportGenerator
             $accountsReceivablePercent;
         }
 
-        $reportUser = new ($user::class);
-        $reportUser->setRawAttributes([
-            'id' => $user->id,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'is_probation' => $user->is_probation,
-        ]);
+
+        $user->bonuses = $totalBonuses;
 
         return collect([
-            'user' => $reportUser,
+            'user' => $user,
             'close_contracts' => $userData->closeContracts,
             'close_contracts_count' => $userData->closeContracts->count(),
             'close_contracts_sum' => $userData->closeContracts->sum('value'),

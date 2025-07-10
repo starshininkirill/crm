@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use App\Http\Requests\Admin\User\ExportSalaryRequest;
 use App\Exports\TimeSheet\SalaryExport;
 use App\Models\EmploymentType;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TimeSheetController extends Controller
@@ -28,7 +29,6 @@ class TimeSheetController extends Controller
 
     public function index(TimeSheetRequest $request, TimeSheetService $service)
     {
-        $startTime = microtime(true);
         $status = $request->input('status', 'active');
 
         $departments = $request->filled('department_id')
