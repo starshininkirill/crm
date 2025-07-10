@@ -256,7 +256,7 @@ class DocumentGenerator
         $resultName = $documentTemplate->result_name ?? 'неизвестная_услуга';
         $documentName = $resultName . ' по договору№' . $dealNumber;
 
-        if ($documentType == GeneratedDocument::TYPE_ACT) {
+        if ($documentType == GeneratedDocument::TYPE_ACT || $documentType == GeneratedDocument::TYPE_INVOICE) {
             $resultName = array_key_exists('UF_CRM_1671028759', $data) ? $data['UF_CRM_1671028759'] : "неизвестная организация";
             $documentName = $dealNumber . '_' . $resultName;
         }
