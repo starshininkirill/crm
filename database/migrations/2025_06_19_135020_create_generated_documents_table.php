@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('pdf_file')->nullable();
             $table->string('act_number')->nullable();
             $table->string('creater')->nullable();
+            $table->string('inn')->nullable();
             $table->timestamps();
         });
     }

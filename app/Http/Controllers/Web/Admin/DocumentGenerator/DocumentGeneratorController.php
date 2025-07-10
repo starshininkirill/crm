@@ -34,6 +34,7 @@ class DocumentGeneratorController extends Controller
                     'date' => $document->created_at->format('d.m.Y H:i'),
                     'creater' => $document->creater,
                     'act_number' => $document->act_number,
+                    'inn' => $document->inn,
                 ];
             });
 

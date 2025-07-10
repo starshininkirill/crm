@@ -11,7 +11,8 @@ class GeneratedDocumentFilter extends Filter
     {
         return $this->builder->where('file_name', 'like', '%' . $value . '%')
             ->orWhere('act_number', 'like', '%' . $value . '%')
-            ->orWhere('creater', 'like', '%' . $value . '%');
+            ->orWhere('creater', 'like', '%' . $value . '%')
+            ->orWhere('inn', 'like', '%' . $value . '%');
     }
 
     protected function type(string $value): Builder

@@ -104,7 +104,7 @@ class DocumentGenerator
                 throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Ошибка при конвертации в PDF: ' . $e->getMessage());
             }
         }
-        
+
         $generatedDocument = GeneratedDocument::create([
             'type' => $documentType,
             'deal' => $dealNumber,
@@ -112,9 +112,10 @@ class DocumentGenerator
             'word_file' => $docxRelativePath,
             'pdf_file' => $withPdf ? $pdfRelativePath : null,
             'act_number' => $option->value,
-            'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : ''
+            'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : '',
+            'inn' => array_key_exists('UF_CRM_1671028881', $data) ? $data['UF_CRM_1671028881'] : null,
         ]);
-        
+
         $this->incrementOption($option);
 
         if (!$generatedDocument) {
@@ -227,6 +228,8 @@ class DocumentGenerator
                 return GeneratedDocument::TYPE_DEAL;
             } else if ($data['generator_action'] == 'act') {
                 return GeneratedDocument::TYPE_ACT;
+            } else if ($data['generator_action'] == 'invoice') {
+                return GeneratedDocument::TYPE_INVOICE;
             }
         }
 
