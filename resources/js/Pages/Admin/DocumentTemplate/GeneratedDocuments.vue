@@ -88,6 +88,10 @@
                         </tbody>
                     </table>
 
+                    <div class="text-xl text-black font-semibold mt-4">
+                        Всего сгенерированных документов: {{ documentsCount }}
+                    </div>
+
                     <Pagination :links="documents.links" />
                 </div>
             </div>
@@ -119,6 +123,10 @@ export default {
         filters: {
             type: Object,
             default: () => ({})
+        },
+        documentsCount: {
+            type: Number,
+            default: 0
         }
     },
     data() {

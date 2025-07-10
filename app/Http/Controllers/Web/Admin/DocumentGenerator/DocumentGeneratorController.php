@@ -38,9 +38,12 @@ class DocumentGeneratorController extends Controller
                 ];
             });
 
+        $documentsCount = GeneratedDocument::count();
+
         return Inertia::render('Admin/DocumentTemplate/GeneratedDocuments', [
             'documents' => $documents,
             'filters' => $request->all(),
+            'documentsCount' => $documentsCount,
         ]);
     }
 
