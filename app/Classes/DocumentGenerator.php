@@ -73,7 +73,20 @@ class DocumentGenerator
                 if ($templateKey == 'UfCrm1671029036' && $value != '') {
                     $this->insertFormattedHtml($templateProcessor, $templateKey, $value);
                 } else {
-                    $templateProcessor->setValue($templateKey, $value);
+                    if (is_string($value) && strpos($value, '|') !== false) {
+                        $textRun = new TextRun();
+                        $parts = explode('|', $value);
+                        $partsCount = count($parts);
+                        foreach ($parts as $index => $part) {
+                            $textRun->addText(htmlspecialchars(trim($part)), ['name' => 'Times New Roman', 'size' => 9]);
+                            if ($index < $partsCount - 1) {
+                                $textRun->addTextBreak();
+                            }
+                        }
+                        $templateProcessor->setComplexValue($templateKey, $textRun);
+                    } else {
+                        $templateProcessor->setValue($templateKey, $value);
+                    }
                 }
             }
         }
