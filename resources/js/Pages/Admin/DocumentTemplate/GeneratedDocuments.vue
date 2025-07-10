@@ -23,10 +23,10 @@
                                 <th scope="col" class="px-3 py-2 border-x w-36">
                                     Дата
                                 </th>
-                                <th scope="col" class="px-3 py-2 border-x w-72">
+                                <th scope="col" class="px-3 py-2 border-x w-64">
                                     Сотрудник
                                 </th>
-                                <th scope="col" class="px-3 py-2 border-x w-24">
+                                <th scope="col" class="px-3 py-2 border-x w-32">
                                     Сделка
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x w-28">
@@ -143,6 +143,10 @@ export default {
                 {
                     'name': "Акт",
                     'id': "act"
+                },
+                {
+                    'name': "Счёт/фактура",
+                    'id': "invoice"
                 }
             ]
         }
