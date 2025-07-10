@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\ProjectReports\Generators;
 
+use App\Helpers\DateHelper;
+use App\Models\DailyWorkStatus;
 use App\Models\Department;
 use App\Models\WorkPlan;
+use App\Models\WorkStatus;
 use App\Services\ProjectReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class HeadReportGenerator
 {
@@ -47,6 +51,10 @@ class HeadReportGenerator
     {
         $departmentReport = $this->departmentReportGenerator->generateFullReport($department, $date);
 
+        $users = new EloquentCollection($departmentReport->pluck('user')->filter(fn($user) => !$user['is_probation']));
+
+        $this->loadSkippedDays($users, $date);
+
         $upsells = $departmentReport->sum('upsells_money');
         $accountsReceivable = $departmentReport->sum('accounts_receivable_sum');
 
@@ -54,7 +62,7 @@ class HeadReportGenerator
         $b2PlanResult = $this->calculatePlanByCompletedCount($departmentReport, 'b2', WorkPlan::HEAD_B2_PLAN);
         $b3PlanResult = $this->calculateB3Plan($departmentReport);
         $b4PlanResult = $this->calculatePlanByCompletedCount($departmentReport, 'b4', WorkPlan::HEAD_B4_PLAN);
-        $upsalesPlanResult = $this->calculateUpsalePlan($departmentReport);
+        $upsalesPlanResult = $this->calculateUpsalePlan($departmentReport, $date);
 
         $totalBonus = $b1PlanResult['bonus']
             + $b2PlanResult['bonus']
@@ -75,29 +83,46 @@ class HeadReportGenerator
         ];
     }
 
-    protected function calculateUpsalePlan(Collection $departmentReport): array
+    protected function calculateUpsalePlan(Collection $departmentReport, Carbon $date): array
     {
         $upsales = $departmentReport->sum('upsells_money');
         $upsalesPlan = $this->workPlans->where('type', WorkPlan::HEAD_UPSALE_PLAN)->first();
 
         $defaultResult = [
             'bonus' => 0,
+            'goal' => 0,
+            'upsales' => 0,
         ];
 
-        if (!$upsalesPlan || $upsales <= 0) {
+        if (!$upsalesPlan || $upsales <= 0 || $departmentReport->isEmpty()) {
             return $defaultResult;
         }
 
         $reportWithoutProbation = $departmentReport->filter(fn($pmReport) => !$pmReport['user']['is_probation']);
-        $employeesCount = $reportWithoutProbation->count();
 
-        $goal = $upsalesPlan->data['goal'] ?? 0;
-        $goal = $goal * $employeesCount;
+        $planGoal = $upsalesPlan->data['goal'] ?? 0;
+        $workingDaysInMonth = DateHelper::getWorkingDaysInMonth($date)->count();
+
+        $goal = $reportWithoutProbation->map(function($report) use ($planGoal, $workingDaysInMonth) {
+            $skippedDays = $report['user']['skipped_days'] ?? 0;
+            if($skippedDays == 0){
+                return $planGoal;
+            }
+
+            $planGoal = $planGoal / $workingDaysInMonth * ($workingDaysInMonth - $skippedDays);
+
+            return $planGoal;
+        })->sum();
+
+        $defaultResult['goal'] = $goal;
+        $defaultResult['upsales'] = $upsales;
 
         if ($upsales >= $goal) {
             $bonus = $upsales / 100 * $upsalesPlan->data['bonus'];
             return [
-                'bonus' => $bonus,
+                'bonus' => $bonus,  
+                'goal' => $goal,
+                'upsales' => $upsales,
             ];
         }
 
@@ -194,5 +219,25 @@ class HeadReportGenerator
         }
 
         return array_merge($defaultResult, ['completed_count' => $completedPmsCount]);
+    }
+
+    protected function loadSkippedDays(Collection $users, Carbon $date)
+    {
+        if ($users->isNotEmpty()) {
+            $startDate = $date->copy()->startOfMonth()->startOfDay();
+            $endDate = $date->copy()->endOfMonth()->endOfDay();
+
+            $users->loadCount(['dailyWorkStatuses' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date', [$startDate, $endDate])
+                    ->whereHas('workStatus', function ($query) {
+                        $query->whereIn('type', [WorkStatus::TYPE_OWN_DAY, WorkStatus::TYPE_SICK_LEAVE, WorkStatus::TYPE_VACATION]);
+                    });
+            }]);
+
+            foreach ($users as $user) {
+                $user->skipped_days = $user->daily_work_statuses_count ?? 0;
+                unset($user->daily_work_statuses_count);
+            }
+        }
     }
 }

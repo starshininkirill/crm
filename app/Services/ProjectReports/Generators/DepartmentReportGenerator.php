@@ -62,8 +62,16 @@ class DepartmentReportGenerator
             $accountsReceivablePercent;
         }
 
+        $reportUser = new ($user::class);
+        $reportUser->setRawAttributes([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'is_probation' => $user->is_probation,
+        ]);
+
         return collect([
-            'user' => $user->only('id', 'full_name', 'is_probation'),
+            'user' => $reportUser,
             'close_contracts' => $userData->closeContracts,
             'close_contracts_count' => $userData->closeContracts->count(),
             'close_contracts_sum' => $userData->closeContracts->sum('value'),

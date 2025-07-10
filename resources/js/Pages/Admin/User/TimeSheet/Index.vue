@@ -6,7 +6,7 @@
             <h1 class="text-4xl font-semibold mb-6">Кадровый табель</h1>
         </div>
 
-        <Modal :open="isOpenModal" @close="closeModal()">
+        <Modal :modalClass="'overflow-y-auto'" :open="isOpenModal" @close="closeModal()">
             <UserAdjustment v-if="activeUser" :user="activeUser" :half="activeHalf" :date="selectedDate"
                 @user-updated="handleUserUpdate" />
         </Modal>

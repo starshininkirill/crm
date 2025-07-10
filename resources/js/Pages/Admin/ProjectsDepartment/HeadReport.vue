@@ -45,38 +45,46 @@
                     <template v-for="row in report" :key="row.user.id">
                         <tr class="table-row">
                             <th scope="row"
-                                class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
+                                class="px-2 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
                                 {{ row.user.full_name }}
                             </th>
-                            <td class="px-4 py-2 text-center border-r font-semibold">
+                            <td class="px-2 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.upsells) }}
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold">
+                            <td class="px-2 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.accounts_receivable) }}
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold"
+                            <td class="px-2 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b1.completed, 'text-red-500': !row.b1.completed }">
-                                {{ formatPrice(row.b1.bonus) }} ({{ row.b1.completed_count }} / {{ row.b1.employees_count }})
+                                {{ formatPrice(row.b1.bonus) }}
+                                <br>
+                                ({{ row.b1.completed_count }} / {{ row.b1.employees_count }})
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold"
+                            <td class="px-2 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b2.completed, 'text-red-500': !row.b2.completed }">
-                                {{ formatPrice(row.b2.bonus) }} ({{ row.b2.completed_count }} / {{ row.b2.employees_count }})
+                                {{ formatPrice(row.b2.bonus) }} 
+                                <br>
+                                ({{ row.b2.completed_count }} / {{ row.b2.employees_count }})
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold">
+                            <td class="px-2 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.b3.bonus) }}
-                                
+                                <br>
                                 <span class="text-sm text-gray-500">
                                    ({{ row.b3.completed_count }} / {{ row.b3.employees_count }})
                                 </span>
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold"
+                            <td class="px-2 py-2 text-center border-r font-semibold"
                                 :class="{ 'text-green-500': row.b4.completed, 'text-red-500': !row.b4.completed }">
-                                {{ formatPrice(row.b4.bonus) }} ({{ row.b4.completed_count }} / {{ row.b4.employees_count }})
+                                {{ formatPrice(row.b4.bonus) }}
+                                <br>
+                                ({{ row.b4.completed_count }} / {{ row.b4.employees_count }})
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold">
-                                {{ formatPrice(row.upsales_bonus.bonus) }}
+                            <td class="px-2 py-2 text-center border-r font-semibold">
+                                {{ formatPrice(row.upsales_bonus.bonus) }} 
+                                <br>
+                                ({{ formatPrice(row.upsales_bonus.upsales) }} / {{ formatPrice(row.upsales_bonus.goal) }})
                             </td>
-                            <td class="px-4 py-2 text-center border-r font-semibold">
+                            <td class="px-2 py-2 text-center border-r font-semibold">
                                 {{ formatPrice(row.bonuses) }}
                             </td>
                         </tr>
