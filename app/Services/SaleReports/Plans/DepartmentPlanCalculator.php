@@ -478,6 +478,7 @@ class DepartmentPlanCalculator
 
         $noPercentageMonth = $reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
 
+        
         if ($noPercentageMonth && array_key_exists('goal', $noPercentageMonth->data) && $monthWorked > $noPercentageMonth->data['goal']) {
             $minimalWorkPlan = $reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
                 ->whereNotNull('data.goal')

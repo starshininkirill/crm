@@ -38,13 +38,16 @@
 
             <div class="flex flex-col gap-4">
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
-                    :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true" />
+                    :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true"
+                    info="Сумма новых денег в текущем расчетном периоде больше или равна" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Двойной план'"
-                    :planType="'doublePlan'" :plans="plans.doublePlan" />
+                    :planType="'doublePlan'" :plans="plans.doublePlan"
+                    info="Сумма новых денег в текущем расчетном периоде больше или равна удвоенному плану" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'План недели'"
                     :planType="'weekPlan'" :plans="plans.weekPlan" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Супер план'"
-                    :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true" />
+                    :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true"
+                    info="Сумма новых денег в текущем расчетном периоде больше или равна Цели или выполненны все планы недель" />
             </div>
 
             <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
@@ -69,13 +72,17 @@
         <div v-if="isRopActive" class="grid grid-cols-3 gap-8 mb-4">
             <div class="flex flex-col gap-4">
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б1 План'"
-                    :planType="'headB1Plan'" :plans="plans.headB1Plan" :hasGoalField="true" />
+                    :planType="'headB1Plan'" :plans="plans.headB1Plan" :hasGoalField="true" 
+                    info="Сумма всех планов перевыполненная на ... %" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б2 План'"
-                    :planType="'headB2Plan'" :plans="plans.headB2Plan" :hasGoalField="true" />
+                    :planType="'headB2Plan'" :plans="plans.headB2Plan" :hasGoalField="true"
+                    info="Сумма всех планов перевыполненная на ... %" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Процент с продаж'"
-                    :planType="'headPercentBonus'" :plans="plans.headPercentBonus" :hasGoalField="false" />
+                    :planType="'headPercentBonus'" :plans="plans.headPercentBonus" :hasGoalField="false"
+                    info="Руководитель отдела продаж получает ...% от новых денег заведенных его отделом" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Минимальный бонус'"
-                    :planType="'headMinimalBonus'" :plans="plans.headMinimalBonus" :hasGoalField="false" />
+                    :planType="'headMinimalBonus'" :plans="plans.headMinimalBonus" :hasGoalField="false" 
+                    info="Минимальный % от процента с продаж после вычетов за менеджеров не выполнивших план" />
             </div>
         </div>
 

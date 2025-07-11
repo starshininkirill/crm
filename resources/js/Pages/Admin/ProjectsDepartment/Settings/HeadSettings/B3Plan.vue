@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-2xl font-semibold mb-2">
+        <div class="text-2xl font-semibold mb-2 flex items-center gap-2">
             {{ title }}
+            <Info text="% от всей суммы ДЗ и минус Вычет(%) за каждого кто не выполнил Б3" />
         </div>
         <p v-if="plansCount > 1" class="text-red-400">
             Кол-во планов не должно быть больше 1!<br />
@@ -53,8 +54,12 @@
 <script>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
+    components: {
+        Info
+    },
     props: {
         title: {
             type: String,
@@ -78,7 +83,7 @@ export default {
         departmentId: {
             type: Number,
             required: true,
-        }
+        },
     },
     data() {
         return {

@@ -17,10 +17,11 @@
                     </tr>
                     <tr v-for="contract in userReport.close_contracts" :key="contract.id" class="table-row ">
                         <th scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
-                            <Link :href="route('admin.contract.show', contract.id)"
-                                class="text-blue-500 hover:text-blue-600">
-                            Договор № {{ contract.number }}
-                            </Link>
+                            <a :href="route('admin.contract.show', contract.id)"
+                                class="text-blue-500 hover:text-blue-600"
+                                target="_blank" rel="noopener">
+                            № {{ contract.number }}
+                            </a>
                         </th>
                     </tr>
                 </tbody>
@@ -44,10 +45,17 @@
                     </tr>
                     <tr v-for="payment in userReport.accounts_receivable" :key="payment.id" class="table-row ">
                         <th scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
-                            <Link :href="route('admin.payment.show', payment.id)"
-                                class="text-blue-500 hover:text-blue-600">
+                            <a :href="route('admin.payment.show', payment.id)"
+                                class="text-blue-500 hover:text-blue-600"
+                                target="_blank" rel="noopener">
                             Платеж № {{ payment.id }}
-                            </Link>
+                            </a>
+                            по договору
+                            <a :href="route('admin.contract.show', payment.contract.id)"
+                                class="text-blue-500 hover:text-blue-600"
+                                target="_blank" rel="noopener">
+                                № {{ payment.contract.number }}
+                            </a>
                         </th>
                         <td class="px-4 py-2 text-center border-r">
                             {{ formatPrice(payment.value) }}
@@ -78,13 +86,14 @@
                     </tr>
                     <tr v-for="upsale in userReport.upsells" :key="upsale.id" class="table-row ">
                         <td scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap  border-x">
-                            <Link :href="route('admin.contract.show', upsale.contract.id)"
-                                class="text-blue-500 hover:text-blue-600">
-                            Договор № {{ upsale.contract.number }}
-                            </Link>
+                            <a :href="route('admin.contract.show', upsale.contract.id)"
+                                class="text-blue-500 hover:text-blue-600"
+                                target="_blank" rel="noopener">
+                            № {{ upsale.contract.number }}
+                            </a>
                         </td>
                         <td class="px-4 py-2 text-center border-r">
-                            {{ upsale.contract.services.map(service => service.name).join(', ') }}
+                            {{upsale.contract.services.map(service => service.name).join(', ')}}
                         </td>
                         <td class="px-4 py-2 text-center border-r">
                             {{ formatPrice(upsale.value) }}

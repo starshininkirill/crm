@@ -12,6 +12,13 @@ class OptionSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // Какие типы трудоустройства в учавствую в формировании таблицы ЗП
+        Option::create([
+            'name' => 'ids_of_employment_types_for_generating_salary_table',
+            'value' => '[1,2,3,4,5,6]'
+        ]);
+
         Option::create([
             'name' => 'contract_generator_main_categories',
             'value' => '["1", "2", "3", "4"]'

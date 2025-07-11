@@ -1,7 +1,8 @@
 <template>
-    <div class="flex flex-col gap-3">
-        <div class="text-2xl font-semibold mb-2">
+    <div class="flex flex-col gap-3">   
+        <div class="text-2xl font-semibold mb-2 flex items-center gap-2">
             Б1 План
+            <Info :text="plan.data.avgDurationCalls + ' минут в среднем на разговоры в день и ' + plan.data.avgCountCalls + ' успешных разговоров в день.<br>В случае если менеджер не выполнил показатели эффективности по времени переговоров, но сделал ' + plan.data.goal + ' рублей новыми, то показатель считается выполненным.'" />
         </div>
         <form class="flex flex-col gap-4" @submit.prevent="submitForm(plan)">
             <label class="grid grid-cols-2 gap-2 items-center whitespace-nowrap" for="avgDurationCalls">
@@ -35,8 +36,12 @@
 <script>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
+    components: {
+        Info
+    },
     props: {
         propPlan: {
             type: Object
@@ -48,7 +53,7 @@ export default {
         departmentId: {
             type: Number,
             required: true,
-        }
+        },
     },
     data() {
         let plan = {

@@ -23,7 +23,7 @@ class ProjectManagersDepartmentController extends Controller
     {
         return Inertia::render('Admin/ProjectsDepartment/Index', []);
     }
-
+    
     public function report(Request $request, DepartmentReportGenerator $reportService)
     {
         $department = Department::firstWhere('type', Department::DEPARTMENT_PROJECT_MANAGERS);

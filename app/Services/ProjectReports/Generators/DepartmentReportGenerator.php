@@ -183,33 +183,11 @@ class DepartmentReportGenerator
 
     protected function calculateB4Plan(UserDataDTO $userData): array
     {
-        $defaultResult = [
-            'bonus' => 0,
-            'completed' => false,
-        ];
-
-        $plan = $userData->workPlans->where('type', WorkPlan::B4_PLAN)->first();
-
-        if (!$plan) {
-            return $defaultResult;
-        }
-
-        $projectsGoal = $plan->data['projects'] ?? 0;
-        $complexesGoal = $plan->data['complexes'] ?? 0;
-        $bonus = $plan->data['bonus'] ?? 0;
-
-        if ($projectsGoal <= 0 || $complexesGoal <= 0) {
-            return $defaultResult;
-        }
-
-        if ($userData->closeContracts->count() >= $projectsGoal && $userData->compexes >= $complexesGoal) {
-            return [
-                'bonus' => $bonus,
-                'completed' => true,
-            ];
-        }
-
-        return $defaultResult;
+        return $this->calculatePlan(
+            $userData,
+            WorkPlan::B4_PLAN,
+            $userData->compexes
+        );
     }
 
     protected function calculatePlan(UserDataDTO $userData, string $planType, int|float $currentValue): array

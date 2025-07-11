@@ -317,19 +317,24 @@ class ReportDTOBuilder
             if ($monthPlan) return $monthPlan;
         }
 
-
         // Поиск по количеству отработанных месяцев
-        $monthPlan = $workPlans->first(
-            function ($plan) use ($mainDepartmentId, $monthsWorked) {
-                if ($plan->position_id != null || $plan->type != WorkPlan::MOUNTH_PLAN) {
-                    return false;
-                }
-                return $plan->department_id == $mainDepartmentId &&
-                    $plan->data['month'] == $monthsWorked;
-            }
-        );
-        if ($monthPlan) return $monthPlan;
+        $monthPlans = $workPlans->where('type', WorkPlan::MOUNTH_PLAN)
+            ->whereNull('position_id')
+            ->where('department_id', $mainDepartmentId)
+            ->sortBy(fn($plan) => $plan->data['month'] ?? 0);
 
+        if ($monthPlans->isNotEmpty()) {
+            $matchedPlan = $monthPlans->firstWhere('data.month', $monthsWorked);
+
+            if ($matchedPlan) {
+                return $matchedPlan;
+            }
+
+            $maxMonthPlan = $monthPlans->last();
+            if ($monthsWorked > $maxMonthPlan->data['month']) {
+                return $maxMonthPlan;
+            }
+        }
 
         // Возвращаем последний доступный план
         return $workPlans

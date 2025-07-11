@@ -17,6 +17,7 @@ use App\Services\CallHistoryService;
 use App\Services\SaleReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\Generators\HeadsReportGenerator;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
+use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -66,7 +67,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function userReport(Request $request, DepartmentReportGenerator $reportService)
+    public function userReport(Request $request, DepartmentReportGenerator $reportService, UserService $userService)
     {
         $departments = Department::saleDepartments()->get();
         $mainDepartment = $departments->whereNull('parent_id')->first();
@@ -88,6 +89,8 @@ class SaleDepartmentController extends Controller
             return $user->departmentHead->isEmpty();
         })->values();
 
+        $allUsers = $userService->filterUsersByStatus($allUsers, 'active', $date);
+
         return Inertia::render('Admin/SaleDapartment/UserReport', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),
             'users' => fn() => $allUsers,
@@ -98,7 +101,7 @@ class SaleDepartmentController extends Controller
         ]);
     }
 
-    public function usersInDepartment(Request $request)
+    public function usersInDepartment(Request $request, UserService $userService)
     {
         $date = $request->filled('date') ? Carbon::parse($request->get('date')) : Carbon::now();
         $date = $date->endOfMonth();
@@ -107,6 +110,8 @@ class SaleDepartmentController extends Controller
         $allUsers = $department->allUsers($date, ['departmentHead'])->filter(function ($user) {
             return $user->departmentHead->isEmpty();
         })->values();
+
+        $allUsers = $userService->filterUsersByStatus($allUsers, 'active', $date);
 
         return response()->json([
             'users' => $allUsers,

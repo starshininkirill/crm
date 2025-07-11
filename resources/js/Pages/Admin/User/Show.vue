@@ -46,7 +46,7 @@
                             <div class="text-sm text-gray-500 font-medium">Дата принятия на работу</div>
                             <div class="text-gray-800 text-right font-semibold">{{ user.created_at }}</div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
+                        <div v-if="user.department" class="flex justify-between border-b pb-1">
                             <div class="text-sm text-gray-500 font-medium">Отдел</div>
                             <div class="text-blue-600 text-right font-semibold">
                                 <Link :href="route('admin.department.show', { department: user.department.id })">
@@ -54,7 +54,7 @@
                                 </Link>
                             </div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
+                        <div v-if="user.position" class="flex justify-between border-b pb-1">
                             <div class="text-sm text-gray-500 font-medium">Должность</div>
                             <div class="text-gray-800 text-right font-semibold">{{ user.position.name }}</div>
                         </div>

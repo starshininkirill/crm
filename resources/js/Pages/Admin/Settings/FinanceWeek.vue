@@ -14,15 +14,14 @@
             <Error />
 
 
-            <form @submit.prevent="submitForm" class="flex max-w-md flex-col gap-4">
-                <div v-for="i in 5" :key="i" class="flex justify-between gap-4">
-                    <FormInput :name="`week[${i}][date_start]`" v-model="form.week[i - 1].date_start" type="date"
-                        :min="startOfMonth" :max="endOfMonth" label="Начало недели" />
-                    <FormInput :name="`week[${i}][date_end]`" v-model="form.week[i - 1].date_end" type="date"
-                        :min="startOfMonth" :max="endOfMonth" label="Конец недели" />
+            <form @submit.prevent="submitForm" class="flex max-w-sm flex-col gap-4">
+                <div v-for="i in 4" :key="i" class="flex justify-between items-end gap-4">
+                    <VueDatePicker locale="ru" format="yyyy-MM-dd" model-type="yyyy-MM-dd" range
+                        v-model="form.week[i - 1].dates"
+                        :start-date="startOfMonth" />
                     <FormInput :name="`week[${i}][weeknum]`" :value="i" type="number" label="Номер недели" readonly />
                 </div>
-                <button type="submit" class="btn">Отправить</button>
+                <button type="submit" class="btn">Сохранить</button>
             </form>
         </div>
     </SettingsLayout>
@@ -32,12 +31,14 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import SettingsLayout from '../Layouts/SettingsLayout.vue';
 import FormInput from '../../../Components/FormInput.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
 
 export default {
     components: {
         Head,
         FormInput,
-        SettingsLayout
+        SettingsLayout,
+        VueDatePicker
     },
     props: {
         date: {
@@ -55,12 +56,24 @@ export default {
     },
     setup(props) {
         const form = useForm({
-            week: Array.from({ length: 5 }, (_, i) => ({
-                date_start: props.financeWeeks[i]?.date_start || '',
-                date_end: props.financeWeeks[i]?.date_end || '',
-                weeknum: props.financeWeeks[i]?.weeknum || i + 1,
-            })),
+            week: Array.from({ length: 4 }, (_, i) => {
+                const start = props.financeWeeks[i]?.date_start;
+                const end = props.financeWeeks[i]?.date_end;
+                return {
+                    dates: (start && end) ? [start, end] : [],
+                    weeknum: props.financeWeeks[i]?.weeknum || i + 1,
+                };
+            }),
         });
+
+        form.transform(data => ({
+            ...data,
+            week: data.week.map(w => ({
+                date_start: w.dates ? w.dates[0] : null,
+                date_end: w.dates ? w.dates[1] : null,
+                weeknum: w.weeknum,
+            })),
+        }));
 
         return {
             form,

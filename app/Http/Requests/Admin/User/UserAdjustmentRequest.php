@@ -27,7 +27,7 @@ class UserAdjustmentRequest extends FormRequest
             'user_id' => 'required|integer|exists:users,id',
             'type' => 'required|string|in:' . implode(',', UserAdjustment::TYPES),
             'period' => 'required|string|in:' . implode(',', UserAdjustment::PERIODS),
-            'value' => 'required|integer|min:1|',
+            'value' => 'required|numeric|min:1|',
             'description' => 'required|string|min:1',
             'date' => 'required|date',
         ];

@@ -2,71 +2,79 @@
     <table class="min-w-full border border-gray-300">
         <thead>
             <tr class="bg-gray-800">
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Менеджер
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
+                    class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+                    План месяца
+                </th>
+                <th style="width: calc(100% / 19)"
+                    class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
+                    План недели
+                </th>
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     NEW $
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     OLD $
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Инд
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Гот
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     РК
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     СЕО
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Иное
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     План Месяц
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Двойной план
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Бонус план
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Супер план
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Б1
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Б2
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Б3
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Б4
                 </th>
-                <th style="width: calc(100% / 17)"
+                <th style="width: calc(100% / 19)"
                     class="border text-xs border-gray-300 text-md px-1 py-1 text-left text-white">
                     Итого
                 </th>
@@ -78,12 +86,30 @@
                     GRAMPUS
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    {{ formatPrice(unusedPayments.newMoney) }}
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ formatPrice(unusedPayments.oldMoney) }}
                 </td>
-                <td colspan="5" class="border text-xs border-gray-300 text-md px-1 py-1">
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ formatPrice(unusedPayments.oldMoney) }}
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    -
+                </td>
+                <td colspan="4" class="border text-xs border-gray-300 text-md px-1 py-1">
                     -
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
@@ -99,25 +125,18 @@
                     -
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    -
-                </td>
-                <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    -
-                </td>
-                <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    -
-                </td>
-                <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    -
-                </td>
-                <td class="border text-xs border-gray-300 text-md px-1 py-1">
-                    <!-- {{ formatPrice(unusedPayments.allMoney) }} -->
                     -
                 </td>
             </tr>
             <tr v-for="user in pivotUsers">
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ user.name }}
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ formatPrice(user.monthPlan.goal) }}
+                </td>
+                <td class="border text-xs border-gray-300 text-md px-1 py-1">
+                    {{ formatPrice(user.weeksPlan[0].goal) }}
                 </td>
                 <td class="border text-xs border-gray-300 text-md px-1 py-1">
                     {{ formatPrice(user.totalValues.newMoney) }}

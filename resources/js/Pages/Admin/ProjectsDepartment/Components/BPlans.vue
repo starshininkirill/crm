@@ -7,6 +7,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Кол-во закрытых индивидов"
         />
         <SimplePlan 
             title="Б2 План"
@@ -15,6 +16,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Кол-во закрытых Готовых сайтов"
         />
         <SimplePlan 
             title="Б3 План"
@@ -23,22 +25,25 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Сумма заведённых ДЗ в текущем расчетном периоде"
         />
-        <B4PlanSettings 
-            :propPlan="plans.b4Plan"
+        <SimplePlan 
+            title="Б4 План"
+            :plans="plans.b4Plan"
+            planType="b4Plan"
+            :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Кол-во закрытых Комплексов"
         />
     </div>
 </template>
 <script>
 import SimplePlan from './SimplePlan.vue';
-import B4PlanSettings from './B4PlanSettings.vue';
 
 export default {
     components: {
         SimplePlan,
-        B4PlanSettings,
     },
     props: {
         plans: {

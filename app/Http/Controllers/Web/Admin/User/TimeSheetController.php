@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use App\Http\Requests\Admin\User\ExportSalaryRequest;
 use App\Exports\TimeSheet\SalaryExport;
 use App\Models\EmploymentType;
+use App\Models\Option;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -99,9 +100,17 @@ class TimeSheetController extends Controller
     public function exportSalary(ExportSalaryRequest $request, TimeSheetService $service)
     {
         $validated = $request->validated();
+        
+        $option = Option::firstWhere('name', 'ids_of_employment_types_for_generating_salary_table');
+        if(!$option){
+            throw new BusinessException('Не найдены типы трудоустройства для формирования отчета');
+        }
+        $employmentTypeIds = $option->value ? json_decode($option->value, true) : [];
+
+        
         $date = Carbon::parse($validated['date'])->endOfMonth();
         $half = (int) $validated['half'];
-        $employmentTypeIds = $validated['employment_type_ids'];
+        
         $departmentId = $validated['department_id'] ?? null;
 
         $departments = $departmentId

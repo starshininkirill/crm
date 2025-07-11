@@ -16,20 +16,32 @@
             </template>
 
             <div v-else class="flex gap-4">
-                <table class="reports w-1/2">
-                    <DailyReport v-if="report.daylyReport?.length" :report="report.daylyReport" />
-                    <WeeksReport v-if="report.motivationReport?.weeksPlan"
-                        :totalValues="report.motivationReport.totalValues" :weeks="report.motivationReport.weeksPlan" />
-                    <MotivationReport v-if="report.motivationReport?.weeksPlan"
-                        :motivationReport="report.motivationReport" />
-                </table>
-                <table class="pivot-reports w-1/2 h-fit">
-                    <DailyReport v-if="report.pivotDaily?.length" :report="report.pivotDaily" />
-                    <WeeksReport v-if="report.pivotWeeks?.weeksPlan" :weeks="report.pivotWeeks.weeksPlan"
-                        :totalValues="report.pivotWeeks.totalValues" />
-                    <GeneralReport v-if="report.generalPlan && Object.keys(report.generalPlan).length > 0"
-                        :generalPlan="report.generalPlan" />
-                </table>
+
+                <div class="w-1/2 reports">
+                    <div class="text-2xl font-semibold mb-4 text-center">
+                        Отчёт по сотруднику: {{ selectUser.full_name }}
+                    </div>
+                    <table class="w-full">
+                        <DailyReport v-if="report.daylyReport?.length" :report="report.daylyReport" />
+                        <WeeksReport v-if="report.motivationReport?.weeksPlan"
+                            :totalValues="report.motivationReport.totalValues"
+                            :weeks="report.motivationReport.weeksPlan" />
+                        <MotivationReport v-if="report.motivationReport?.weeksPlan"
+                            :motivationReport="report.motivationReport" />
+                    </table>
+                </div>
+                <div class="w-1/2 reports">
+                    <div class="text-2xl font-semibold mb-4 text-center">
+                        Отчёт по отделу
+                    </div>
+                    <table class="w-full">
+                        <DailyReport v-if="report.pivotDaily?.length" :report="report.pivotDaily" />
+                        <WeeksReport v-if="report.pivotWeeks?.weeksPlan" :weeks="report.pivotWeeks.weeksPlan"
+                            :totalValues="report.pivotWeeks.totalValues" />
+                        <GeneralReport v-if="report.generalPlan && Object.keys(report.generalPlan).length > 0"
+                            :generalPlan="report.generalPlan" />
+                    </table>
+                </div>
             </div>
 
             <div v-if="report.pivotUsers" class="w-100 mt-6">

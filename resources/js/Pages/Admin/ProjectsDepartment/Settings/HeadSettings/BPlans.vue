@@ -7,6 +7,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Минимальное кол-во сотрудников, закрывших Б1 план"
         />
         <SimplePlan 
             title="Б2 План"
@@ -15,6 +16,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Минимальное кол-во сотрудников, закрывших Б2 план"
         />
         <B3Plan 
             title="Б3 План"
@@ -31,6 +33,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="Минимальное кол-во сотрудников, закрывших Б4 план"
         />
         <SimplePlan 
             title="План допродаж"
@@ -39,6 +42,7 @@
             :hasGoalField="true"
             :isCurrentMonth="isCurrentMonth"
             :departmentId="departmentId"
+            info="План допродаж за каждого сотрудника в отделе.<br>Бонус - % от допродаж который руководитель получит в случае выполнения плана"
         />
     </div>
 </template>

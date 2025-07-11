@@ -24,9 +24,9 @@ class FinanceWeekRequest extends FormRequest
     {
         return [
             'week' => 'array|min:1|max:5',
-            'week.*' => 'array', 
-            'week.*.date_start' => 'nullable|date|before_or_equal:week.*.date_end', 
-            'week.*.date_end' => 'nullable|date|after_or_equal:week.*.date_start',  
+            'week.*' => 'array',
+            'week.*.date_start' => 'nullable|date|before_or_equal:week.*.date_end',
+            'week.*.date_end' => 'nullable|date|after_or_equal:week.*.date_start',
             'week.*.weeknum' => 'required|integer|min:1|max:5',
         ];
     }
@@ -37,20 +37,32 @@ class FinanceWeekRequest extends FormRequest
 
         if (isset($validated['week']) && is_array($validated['week'])) {
             $validated['week'] = array_filter($validated['week'], function ($week) {
-                return !is_null($week['date_start']) && !is_null($week['date_end']);
+                if (!array_key_exists('date_start', $week) || !array_key_exists('date_end', $week)) {
+                    return false;
+                }
+                
+                if (is_null($week['date_start']) || is_null($week['date_end'])) {
+                    return false;
+                }
+                
+                return true;
             });
         }
+        
 
-        foreach($validated['week'] as $key => $week){
-            if($key <= 1){
+        foreach ($validated['week'] as $key => $week) {
+            if ($key === 0) {
                 continue;
             }
 
-            if($validated['week'][$key - 1]['date_end'] >= $week['date_start'] ){
-                $updatedStartDaye = Carbon::parse($validated['week'][$key - 1]['date_end'])->addDay()->format('Y-m-d'); 
-                $validated['week'][$key]['date_start'] =  $updatedStartDaye;
-            }
+            if (isset($validated['week'][$key - 1]) && $validated['week'][$key - 1]['date_end'] >= $week['date_start']) {
+                $updatedStartDate = Carbon::parse($validated['week'][$key - 1]['date_end'])->addDay()->format('Y-m-d');
+                $validated['week'][$key]['date_start'] =  $updatedStartDate;
 
+                if ($validated['week'][$key]['date_start'] > $validated['week'][$key]['date_end']) {
+                    $validated['week'][$key]['date_end'] = $validated['week'][$key]['date_start'];
+                }
+            }
         }
 
         return $validated;

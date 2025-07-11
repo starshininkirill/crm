@@ -76,8 +76,7 @@ class WorkPlanSeeder extends Seeder
         WorkPlan::create([
             'type' => WorkPlan::B4_PLAN,
             'data' => [
-                'projects' => 14,
-                'complexes' => 7,
+                'goal' => 7,
                 'bonus' => 18000,
             ],
             'department_id' => $this->projectDepartmentId,

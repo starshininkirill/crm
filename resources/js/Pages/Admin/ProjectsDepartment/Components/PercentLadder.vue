@@ -1,8 +1,9 @@
 <template>
     <div class="max-w-xl">
         <div class="flex flex-col gap-2 w-fit">
-            <div class=" text-2xl font-semibold mb-4">
+            <div class=" text-2xl font-semibold mb-4 flex items-center gap-2">
                 Процентная лестница
+                <Info text="Процентная лестница по закрытым проектам в текущем расчетном периоде" />
             </div>
         </div>
         <div v-if="percentLadder && percentLadder.length == 0" class=" text-xl mb-4">
@@ -56,8 +57,12 @@
 <script>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Info from '../../../../Components/Info.vue';
 
 export default {
+    components: {
+        Info
+    },
     props: {
         percentLadder: {
             type: Object,
