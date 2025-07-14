@@ -3,8 +3,8 @@
 namespace App\Services\SaleReports\WorkPlans;
 
 use App\Helpers\DateHelper;
-use App\Models\Department;
-use App\Models\WorkPlan;
+use App\Models\UserManagement\Department;
+use App\Models\Global\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

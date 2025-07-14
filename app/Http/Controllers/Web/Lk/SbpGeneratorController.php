@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Web\Lk;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lk\SbpGeneratorRequest;
-use App\Models\Organization;
-use App\Models\Payment;
+use App\Models\Finance\Organization;
+use App\Models\Finance\Payment;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 

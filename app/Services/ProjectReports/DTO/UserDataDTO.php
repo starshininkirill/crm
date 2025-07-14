@@ -2,8 +2,8 @@
 
 namespace App\Services\ProjectReports\DTO;
 
-use App\Models\Department;
-use App\Models\User;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\User;
 use Illuminate\Support\Collection;
 
 class UserDataDTO

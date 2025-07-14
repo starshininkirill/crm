@@ -2,8 +2,8 @@
 
 namespace App\Services\ProjectReports\Generators;
 
-use App\Models\Department;
-use App\Models\WorkPlan;
+use App\Models\UserManagement\Department;
+use App\Models\Global\WorkPlan;
 use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use Carbon\Carbon;

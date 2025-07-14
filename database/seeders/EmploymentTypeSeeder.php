@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\EmploymentType;
+use App\Models\UserManagement\EmploymentType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 

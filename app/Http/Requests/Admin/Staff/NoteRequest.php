@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Staff;
 
-use App\Models\Note;
+use App\Models\Global\Note;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

@@ -3,7 +3,7 @@
 namespace App\Http\Filters\Models;
 
 use App\Http\Filters\Filter;
-use App\Models\Department;
+use App\Models\UserManagement\Department;
 use Illuminate\Database\Eloquent\Builder;
 
 class UserFilter extends Filter

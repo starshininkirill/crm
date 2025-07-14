@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PositionRequest;
-use App\Models\Department;
-use App\Models\Position;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\Position;
 use Inertia\Inertia;
 
 class PositionController extends Controller

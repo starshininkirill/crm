@@ -3,12 +3,12 @@
 namespace App\Services\ProjectReports\Builders;
 
 use App\Helpers\DateHelper;
-use App\Models\Contract;
-use App\Models\ContractUser;
-use App\Models\Department;
-use App\Models\Payment;
-use App\Models\User;
-use App\Models\WorkPlan;
+use App\Models\Contracts\Contract;
+use App\Models\Contracts\ContractUser;
+use App\Models\UserManagement\Department;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
+use App\Models\Global\WorkPlan;
 use App\Services\ProjectReports\DTO\ReportDataDTO;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\User\WorkStatusRequest;
-use App\Models\Department;
-use App\Models\WorkStatus;
+use App\Http\Requests\Admin\Staff\WorkStatusRequest;
+use App\Models\UserManagement\Department;
+use App\Models\TimeTracking\WorkStatus;
 use App\Services\TimeCheckServices\ReportService;
 use App\Services\WorkStatusService;
 use Carbon\Carbon;

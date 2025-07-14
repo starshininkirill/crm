@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\ServiceCategory;
+use App\Models\Services\ServiceCategory;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;

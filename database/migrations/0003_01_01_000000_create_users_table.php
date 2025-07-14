@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
             $table->string('work_phone')->nullable();
+            $table->integer('min_salary')->nullable();
             $table->integer('salary')->nullable();
             $table->date('probation_start')->nullable();
             $table->date('probation_end')->nullable();

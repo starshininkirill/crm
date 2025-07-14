@@ -3,7 +3,7 @@
 namespace App\Services\SaleReports\Generators;
 
 use App\Helpers\DateHelper;
-use App\Models\Payment;
+use App\Models\Finance\Payment;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use App\Services\SaleReports\DTO\ReportDTO;
 use App\Services\UserServices\UserService;

@@ -2,7 +2,7 @@
 
 namespace App\Services\ProjectReports\DTO;
 
-use App\Models\Department;
+use App\Models\UserManagement\Department;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

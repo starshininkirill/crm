@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ServiceCategory;
-use App\Models\WorkPlan;
+use App\Models\Services\ServiceCategory;
+use App\Models\Global\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;

@@ -2,7 +2,7 @@
 
 namespace App\Models\Traits;
 
-use App\Models\History;
+use App\Models\Global\History;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;

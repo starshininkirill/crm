@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\CallHistory;
-use App\Models\Department;
+use App\Models\Global\CallHistory;
+use App\Models\UserManagement\Department;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

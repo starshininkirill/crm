@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\AdvertisingDepartment;
-use App\Models\Department;
-use App\Models\Position;
-use App\Models\ServiceCategory;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\Position;
+use App\Models\Services\ServiceCategory;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 

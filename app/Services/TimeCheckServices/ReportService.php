@@ -2,9 +2,9 @@
 
 namespace App\Services\TimeCheckServices;
 
-use App\Models\DailyWorkStatus;
-use App\Models\Department;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\UserManagement\Department;
+use App\Models\TimeTracking\WorkStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 

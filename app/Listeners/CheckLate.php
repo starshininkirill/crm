@@ -4,9 +4,9 @@ namespace App\Listeners;
 
 use App\Events\StartWorkDay;
 use App\Helpers\DateHelper;
-use App\Models\DailyWorkStatus;
-use App\Models\TimeCheck;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\TimeTracking\TimeCheck;
+use App\Models\TimeTracking\WorkStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;

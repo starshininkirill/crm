@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\WorkStatus;
 use Illuminate\Database\Seeder;
 
 class WorkStatusSeeder extends Seeder

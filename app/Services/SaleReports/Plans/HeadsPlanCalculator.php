@@ -3,7 +3,7 @@
 namespace App\Services\SaleReports\Plans;
 
 use App\Exceptions\Business\InfoException;
-use App\Models\WorkPlan;
+use App\Models\Global\WorkPlan;
 use App\Services\SaleReports\DTO\ReportDTO;
 use Exception;
 

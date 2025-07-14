@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Web\Admin\Organization;
 use App\Classes\FileManager;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Organization\DocumentTemplateRequest;
-use App\Models\DocumentTemplate;
-use App\Models\Organization;
+use App\Models\Documents\DocumentTemplate;
+use App\Models\Finance\Organization;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 

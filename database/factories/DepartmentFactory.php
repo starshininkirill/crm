@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Department;
+use App\Models\UserManagement\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DepartmentFactory extends Factory

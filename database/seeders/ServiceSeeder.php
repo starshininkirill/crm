@@ -3,13 +3,13 @@
 namespace Database\Seeders;
 
 
-use App\Models\Client;
-use App\Models\Contract;
-use App\Models\ContractUser;
-use App\Models\Department;
-use App\Models\Service;
-use App\Models\Payment;
-use App\Models\ServiceCategory;
+use App\Models\Contracts\Client;
+use App\Models\Contracts\Contract;
+use App\Models\Contracts\ContractUser;
+use App\Models\UserManagement\Department;
+use App\Models\Services\Service;
+use App\Models\Finance\Payment;
+use App\Models\Services\ServiceCategory;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder

@@ -3,11 +3,11 @@
 namespace App\Classes;
 
 use App\Exceptions\Api\ApiException;
-use App\Models\Option;
-use App\Models\DocumentGeneratorTemplate;
-use App\Models\DocumentTemplate;
-use App\Models\GeneratedDocument;
-use App\Models\Organization;
+use App\Models\Global\Option;
+use App\Models\Documents\DocumentGeneratorTemplate;
+use App\Models\Documents\DocumentTemplate;
+use App\Models\Documents\GeneratedDocument;
+use App\Models\Finance\Organization;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;

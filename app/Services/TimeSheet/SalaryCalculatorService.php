@@ -3,18 +3,17 @@
 namespace App\Services\TimeSheet;
 
 use App\Helpers\DateHelper;
-use App\Models\DailyWorkStatus;
-use App\Models\Department;
-use App\Models\User;
-use App\Models\UserAdjustment;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\User;
+use App\Models\Finance\UserAdjustment;
+use App\Models\TimeTracking\WorkStatus;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use App\Services\SaleReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\Generators\HeadsReportGenerator;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Facades\Log;
 use App\Services\ProjectReports\Generators\DepartmentReportGenerator as ProjectReportGenerator;
 use App\Services\ProjectReports\Generators\HeadReportGenerator as ProjectHeadReportGenerator;
 

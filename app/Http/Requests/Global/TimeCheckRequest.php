@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Global;
 
-use App\Models\TimeCheck;
+use App\Models\TimeTracking\TimeCheck;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TimeCheckRequest extends FormRequest

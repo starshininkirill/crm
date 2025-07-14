@@ -4,12 +4,12 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Client;
-use App\Models\Contract;
-use App\Models\Payment;
-use App\Models\Position;
-use App\Models\Service;
-use App\Models\User;
+use App\Models\Contracts\Client;
+use App\Models\Contracts\Contract;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\Position;
+use App\Models\Services\Service;
+use App\Models\UserManagement\User;
 use App\Services\ContractService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;

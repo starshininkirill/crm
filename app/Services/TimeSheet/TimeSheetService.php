@@ -3,9 +3,9 @@
 namespace App\Services\TimeSheet;
 
 use App\Helpers\DateHelper;
-use App\Models\Department;
-use App\Models\Note;
-use App\Models\User;
+use App\Models\UserManagement\Department;
+use App\Models\Global\Note;
+use App\Models\UserManagement\User;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -67,7 +67,6 @@ final class TimeSheetService
 
     public function generateUserReport(User $user, Carbon $date): array
     {
-        
         if (!isset($user->bonuses)) {
             $user->bonuses = $this->salaryCalculatorService->calculateUserBonus($user, $date);
         }
@@ -77,20 +76,24 @@ final class TimeSheetService
         $totalWorkingHoursInMonth = count($workingDays) * 9;
 
         $salary = (float) $user->getSalary();
+        $user->salary = $salary;
+
+        $secondBonus = $this->calculateSecondBonus($user);
+        
         $hourSalary = $totalWorkingHoursInMonth > 0 ? $salary / $totalWorkingHoursInMonth : 0;
 
         $timeData = $this->timeTrackingService->calculateTimeData($daysReport, $workingDays);
         $salaryData = $this->salaryCalculatorService->calculateSalaryData($user, $timeData, $salary, $hourSalary);
         $adjustmentData = $this->salaryCalculatorService->calculateAdjustmentData($user);
 
-        
         $salaryData['amount_first_half_salary'] += $adjustmentData['first_half_adjustments'];
-        $salaryData['amount_second_half_salary'] += $adjustmentData['second_half_adjustments'];
+        $salaryData['amount_second_half_salary'] += $adjustmentData['second_half_adjustments'] + $secondBonus;
 
         $compensationPercent = $user->employmentDetail->employmentType->compensation ?? 0;
         $salaryData['amount_first_half_salary_with_compensation'] = $salaryData['amount_first_half_salary'] + $salaryData['amount_first_half_salary'] * $compensationPercent / 100;
         $salaryData['amount_second_half_salary_with_compensation'] = $salaryData['amount_second_half_salary'] + $salaryData['amount_second_half_salary'] * $compensationPercent / 100;
 
+        
         return [
                 'id' => $user->id,
                 'full_name' => $user->full_name,
@@ -101,9 +104,11 @@ final class TimeSheetService
                 'fired_at' => $user->fired_at,
                 'days' => $daysReport,
                 'salary' => $salary,
+                'min_salary' => $user->min_salary,
                 'part_salary' => $salary / 2,
                 'hour_salary' => $hourSalary,
                 'bonuses' => $user->bonuses,
+                'second_bonuses' => $secondBonus,
                 'position' => $user->position,
                 'employment_detail' => $user->employmentDetail,
                 'note' => $user->notes->where('type', Note::TYPE_TIME_SHEET)->first(),
@@ -143,5 +148,18 @@ final class TimeSheetService
                 },
             ]
         );
+    }
+
+    protected function calculateSecondBonus(User $user): int|float
+    {
+        if(!$user->min_salary) {
+            return 0;
+        }
+
+        if($user->salary + $user->bonuses >= $user->min_salary) {
+            return 0;
+        }
+
+        return $user->min_salary - ($user->salary + $user->bonuses);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Global;
 
 use App\Http\Requests\Global\OptionRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Option;
+use App\Models\Global\Option;
 
 class OptionController extends Controller
 {

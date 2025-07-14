@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Lk;
 
-use App\Models\Client;
+use App\Models\Contracts\Client;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
 

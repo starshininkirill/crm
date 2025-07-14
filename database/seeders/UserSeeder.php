@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Department;
-use App\Models\EmploymentType;
-use App\Models\Note;
-use App\Models\TimeCheck;
-use App\Models\User;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\EmploymentType;
+use App\Models\Global\Note;
+use App\Models\TimeTracking\TimeCheck;
+use App\Models\UserManagement\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -134,6 +134,7 @@ class UserSeeder extends Seeder
                 'department_id' => $department->id,
                 'phone' => $person[3]
             ]);
+            
 
             if ($key == 2) {
                 $user->probation_start = Carbon::parse('2025-06-01')->startOfMonth();
@@ -163,8 +164,8 @@ class UserSeeder extends Seeder
 
         // Продажники отдела 2
         $salesDept2 = [
-            ['Кирилл', 'Продажник 1', 'sale1@mail.ru', 79535175470, 4],
-            ['Илья', 'Продажник 1', 'sale2@mail.ru', 79922851746, 4],
+            ['Кирилл', 'Минималка 100к', 'sale1@mail.ru', 79535175470, 4],
+            ['Илья', 'Продажник 1 (30к)', 'sale2@mail.ru', 79922851746, 4],
             ['Игорь', 'Продажник 1', 'sale3@mail.ru', 79922857462, 2]
         ];
 
@@ -181,6 +182,14 @@ class UserSeeder extends Seeder
                 'department_id' => 2,
                 'phone' => $sale[3]
             ]);
+            if($user->first_name == 'Кирилл') {
+                $user->min_salary = 100000;
+                $user->save();
+            }
+            if($user->first_name == 'Илья') {
+                $user->min_salary = 30000;
+                $user->save();
+            }
             $this->createEmploymentDetailsForUser($user);
         }
 

@@ -2,7 +2,7 @@
 
 namespace App\Models\States\Contract;
 
-use App\Models\Contract;
+use App\Models\Contracts\Contract;
 use Spatie\ModelStates\State;
 use Spatie\ModelStates\StateConfig;
 

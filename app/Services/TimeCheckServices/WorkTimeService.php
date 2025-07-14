@@ -3,10 +3,10 @@
 namespace App\Services\TimeCheckServices;
 
 use App\Helpers\DateHelper;
-use App\Models\DailyWorkStatus;
-use App\Models\TimeCheck;
-use App\Models\User;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\TimeTracking\TimeCheck;
+use App\Models\UserManagement\User;
+use App\Models\TimeTracking\WorkStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

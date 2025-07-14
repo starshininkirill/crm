@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\ProjectReports\Generators;
 
 use App\Helpers\DateHelper;
-use App\Models\DailyWorkStatus;
-use App\Models\Department;
-use App\Models\WorkPlan;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\UserManagement\Department;
+use App\Models\Global\WorkPlan;
+use App\Models\TimeTracking\WorkStatus;
 use App\Services\ProjectReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use Carbon\Carbon;

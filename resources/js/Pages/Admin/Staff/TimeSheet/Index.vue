@@ -83,6 +83,9 @@
                         <th class="px-2 py-2 border-r w-20">
                             Ставка
                         </th>
+                        <th class="px-2 py-2 border-r w-20">
+                            Мин<br>выплата
+                        </th>
                         <th class="px-2 py-2 border-r w-16">
                             Час
                         </th>
@@ -170,13 +173,18 @@
                             {{ formatPrice(user.salary) }}
                         </td>
                         <td class="px-2 py-3 border-r">
+                            {{ user.min_salary ? formatPrice(user.min_salary) : '-' }}
+                        </td>
+                        <td class="px-2 py-3 border-r">
                             {{ formatPrice(user.hour_salary) }}
                         </td>
                         <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
                             {{ user.position?.name ?? 'Не указана' }}
                         </th>
                         <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
-                            {{ user.full_name }}
+                            <Link :href="route('admin.user.show', user.id)">
+                                {{ user.full_name }}
+                            </Link>
                         </th>
                         <td v-for="(day, index) in user.days"
                             class="px-2 py-3 border-r text-center cursor-pointer relative group"
@@ -248,7 +256,7 @@
                             {{ formatPrice(user.part_salary) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
-                            0 ₽
+                            {{ formatPrice(user.second_bonuses) }}
                         </td>
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ formatPrice(user.second_half_hours_money) }}

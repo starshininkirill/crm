@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use App\Models\FinanceWeek;
-use App\Models\WorkingDay;
+use App\Models\TimeTracking\FinanceWeek;
+use App\Models\TimeTracking\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Carbon\CarbonPeriod;

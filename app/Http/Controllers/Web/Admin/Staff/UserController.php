@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Web\Admin\Staff;
 use App\Exceptions\Business\BusinessException;
 use App\Http\Filters\Models\UserFilter;
 use App\Http\Requests\Admin\Staff\UserRequest;
-use App\Models\Department;
-use App\Models\EmploymentType;
-use App\Models\Position;
-use App\Models\User;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\EmploymentType;
+use App\Models\UserManagement\Position;
+use App\Models\UserManagement\User;
 use App\Services\UserServices\UserService;
 use Inertia\Inertia;
 

@@ -2,9 +2,9 @@
 
 namespace App\Services\SaleReports\DTO;
 
-use App\Models\Department;
-use App\Models\User;
-use App\Models\WorkPlan;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\User;
+use App\Models\Global\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

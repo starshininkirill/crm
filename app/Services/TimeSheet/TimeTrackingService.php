@@ -2,9 +2,9 @@
 namespace App\Services\TimeSheet;
 
 use App\Helpers\DateHelper;
-use App\Models\DailyWorkStatus;
-use App\Models\User;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\UserManagement\User;
+use App\Models\TimeTracking\WorkStatus;
 use App\Services\TimeCheckServices\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

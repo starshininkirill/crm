@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Web\Admin\Staff;
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Staff\OverworkRequest;
-use App\Models\DailyWorkStatus;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\TimeTracking\WorkStatus;
 use Inertia\Inertia;
 
 class OverworkController extends Controller

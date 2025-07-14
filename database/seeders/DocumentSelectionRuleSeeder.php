@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\DocumentSelectionRule;
+use App\Models\Documents\DocumentSelectionRule;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

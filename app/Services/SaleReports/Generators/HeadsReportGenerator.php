@@ -2,8 +2,8 @@
 
 namespace App\Services\SaleReports\Generators;
 
-use App\Models\Department;
-use App\Models\WorkPlan;
+use App\Models\UserManagement\Department;
+use App\Models\Global\WorkPlan;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use Carbon\Carbon;
 use App\Services\SaleReports\DTO\ReportDTO;

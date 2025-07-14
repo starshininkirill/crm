@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\CallHistory;
-use App\Models\User;
+use App\Models\Global\CallHistory;
+use App\Models\UserManagement\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;

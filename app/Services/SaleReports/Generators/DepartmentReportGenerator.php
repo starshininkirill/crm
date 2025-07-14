@@ -3,11 +3,11 @@
 namespace App\Services\SaleReports\Generators;
 
 use App\Exceptions\Business\BusinessException;
-use App\Models\User;
+use App\Models\UserManagement\User;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
-use App\Models\Department;
-use App\Models\ServiceCategory;
+use App\Models\UserManagement\Department;
+use App\Models\Services\ServiceCategory;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

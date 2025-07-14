@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Web\Admin\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\Models\ServiceFilter;
 use App\Http\Requests\Admin\ServiceRequest;
-use App\Models\Service;
-use App\Models\ServiceCategory;
+use App\Models\Services\Service;
+use App\Models\Services\ServiceCategory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

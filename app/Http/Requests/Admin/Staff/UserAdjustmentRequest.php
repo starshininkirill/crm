@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Staff;
 
-use App\Models\UserAdjustment;
+use App\Models\Finance\UserAdjustment;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 

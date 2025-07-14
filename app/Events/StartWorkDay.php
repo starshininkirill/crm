@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\TimeCheck;
+use App\Models\TimeTracking\TimeCheck;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;

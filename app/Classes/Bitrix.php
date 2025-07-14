@@ -2,12 +2,12 @@
 
 namespace App\Classes;
 
-use App\Models\Client;
-use App\Models\Option;
-use App\Models\Service;
+use App\Models\Contracts\Client;
+use App\Models\Global\Option;
+use App\Models\Services\Service;
 use App\Helpers\TextFormaterHelper;
-use App\Models\Organization;
-use App\Models\ServiceCategory;
+use App\Models\Finance\Organization;
+use App\Models\Services\ServiceCategory;
 use Illuminate\Support\Facades\Http;
 
 class Bitrix

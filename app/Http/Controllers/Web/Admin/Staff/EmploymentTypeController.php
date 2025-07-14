@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Staff\EmploymentTypeRequest;
-use App\Models\EmploymentType;
+use App\Models\UserManagement\EmploymentType;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 

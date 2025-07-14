@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Admin\Service;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceCategoryRequest;
-use App\Models\ServiceCategory;
+use App\Models\Services\ServiceCategory;
 use Inertia\Inertia;
 
 class ServiceCategoryController extends Controller

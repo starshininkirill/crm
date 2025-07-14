@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\WorkPlan;
+use App\Models\Global\WorkPlan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SaleWorkPlanRequest extends FormRequest

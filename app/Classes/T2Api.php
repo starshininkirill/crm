@@ -2,7 +2,7 @@
  
 namespace App\Classes;
 
-use App\Models\Option;
+use App\Models\Global\Option;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;

@@ -3,7 +3,7 @@
 namespace App\Services\DocumentTemplateServices;
 
 use App\Exceptions\Business\BusinessException;
-use App\Models\DocumentSelectionRule;
+use App\Models\Documents\DocumentSelectionRule;
 
 class DocumentTemplateService
 {

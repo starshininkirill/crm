@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\ContractUser;
+use App\Models\Contracts\ContractUser;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContractRequest extends FormRequest

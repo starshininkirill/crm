@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Resources\ContractForShortlistResource;
-use App\Models\Contract;
-use App\Models\ContractUser;
-use App\Models\Service;
+use App\Models\Contracts\Contract;
+use App\Models\Contracts\ContractUser;
+use App\Models\Services\Service;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
