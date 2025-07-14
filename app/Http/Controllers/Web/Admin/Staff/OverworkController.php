@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\User;
+namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\User\OverworkRequest;
+use App\Http\Requests\Admin\Staff\OverworkRequest;
 use App\Models\DailyWorkStatus;
 use App\Models\WorkStatus;
 use Inertia\Inertia;

@@ -11,6 +11,18 @@
                 @user-updated="handleUserUpdate" />
         </Modal>
 
+        <Modal :open="isNoteModalOpen" @close="closeNoteModal()">
+            <NoteModal 
+                v-if="isNoteModalOpen"
+                :user="activeUserForNote"
+                :date="selectedDate"
+                :note="activeUserForNote.note"
+                @close="closeNoteModal()"
+                @note-saved="handleNoteSaved"
+                @note-deleted="handleNoteDeleted"
+            />
+        </Modal>
+
         <Modal :open="isExportModalOpen" @close="closeExportModal()">
             <ExportSalaryModal
                 v-if="isExportModalOpen"
@@ -153,9 +165,7 @@
                         </td>
                     </tr>
                     <tr v-for="user in department" :key="user.id" class="table-row ">
-                        <td class="px-2 py-3 border-r">
-                            {{ user.note ?? 'Не указано' }}
-                        </td>
+                        <NoteCell :note="user.note" @open-modal="openNoteModal(user)"/>
                         <td class="px-2 py-3 border-r">
                             {{ formatPrice(user.salary) }}
                         </td>
@@ -221,7 +231,7 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ user.first_half_hours }}
                         </td>
-                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer"
+                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer hover:bg-gray-200"
                             @click="openModal(user, 'first_half')">
                             {{ formatPrice(user.first_half_adjustments) }}
                         </td>
@@ -246,7 +256,7 @@
                         <td class="px-2 py-2 border-r w-20 text-center">
                             {{ user.second_half_hours }}
                         </td>
-                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer"
+                        <td class="px-2 py-2 border-r w-20 text-center cursor-pointer hover:bg-gray-200"
                             @click="openModal(user, 'second_half')">
                             {{ formatPrice(user.second_half_adjustments) }}
                         </td>
@@ -276,6 +286,8 @@ import HelpStatusLegend from './HelpStatusLegend.vue';
 import Modal from '../../../../Components/Modal.vue';
 import UserAdjustment from './UserAdjustment.vue';
 import ExportSalaryModal from './ExportSalaryModal.vue';
+import NoteCell from './NoteCell.vue';
+import NoteModal from './NoteModal.vue';
 
 export default {
     components: {
@@ -286,7 +298,9 @@ export default {
         HelpStatusLegend,
         Modal,
         UserAdjustment,
-        ExportSalaryModal
+        ExportSalaryModal,
+        NoteCell,
+        NoteModal
     },
     props: {
         days: {
@@ -349,9 +363,21 @@ export default {
             localUsersReport: { ...this.usersReport },
             isExportModalOpen: false,
             selectedHalfForExport: null,
+            isNoteModalOpen: false,
+            activeUserForNote: null,
         }
     },
     methods: {
+        handleNoteSaved(newNote) {
+            if (this.activeUserForNote) {
+                this.activeUserForNote.note = newNote;
+            }
+        },
+        handleNoteDeleted(deletedNote) {
+            if (this.activeUserForNote && this.activeUserForNote.note?.id === deletedNote.id) {
+                this.activeUserForNote.note = null;
+            }
+        },
         handleUserUpdate(updatedUser) {
             this.activeUser = updatedUser;
             for (const departmentName in this.localUsersReport) {
@@ -419,6 +445,14 @@ export default {
             this.isOpenModal = false;
             this.activeUser = null;
             this.activeHalf = null;
+        },
+        openNoteModal(user) {
+            this.activeUserForNote = user;
+            this.isNoteModalOpen = true;
+        },
+        closeNoteModal() {
+            this.isNoteModalOpen = false;
+            this.activeUserForNote = null;
         },
         openExportModal(half) {
             this.selectedHalfForExport = half;

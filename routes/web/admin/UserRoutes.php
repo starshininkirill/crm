@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Web\Admin\User\PositionController;
-use App\Http\Controllers\Web\Admin\User\EmploymentTypeController;
-use App\Http\Controllers\Web\Admin\User\UserController;
-use App\Http\Controllers\Web\Admin\User\OverworkController;
-use App\Http\Controllers\Web\Admin\User\TimeSheetController;
-use App\Http\Controllers\Web\Admin\User\TimeCheckController;
+use App\Http\Controllers\Web\Admin\Staff\PositionController;
+use App\Http\Controllers\Web\Admin\Staff\EmploymentTypeController;
+use App\Http\Controllers\Web\Admin\Staff\UserController;
+use App\Http\Controllers\Web\Admin\Staff\OverworkController;
+use App\Http\Controllers\Web\Admin\Staff\TimeSheetController;
+use App\Http\Controllers\Web\Admin\Staff\TimeCheckController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -27,6 +27,8 @@ Route::prefix('users')->group(function () {
         Route::get('/export-salary', [TimeSheetController::class, 'exportSalary'])->name('admin.time-sheet.export-payments');
         Route::post('/user-adjustment', [TimeSheetController::class, 'userAdjustmentStore'])->name('admin.time-sheet.user-adjustment.store');
         Route::delete('/user-adjustment/{adjustment}', [TimeSheetController::class, 'userAdjustmentDestroy'])->name('admin.time-sheet.user-adjustment.destroy');
+        Route::post('/note', [TimeSheetController::class, 'storeNote'])->name('admin.time-sheet.note.store');
+        Route::delete('/note/{note}', [TimeSheetController::class, 'destroyNote'])->name('admin.time-sheet.note.destroy');
     });
 
 

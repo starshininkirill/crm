@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\User;
+namespace App\Http\Requests\Admin\Staff;
 
 use App\Models\UserAdjustment;
 use Carbon\Carbon;

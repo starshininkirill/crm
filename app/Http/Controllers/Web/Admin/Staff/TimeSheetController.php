@@ -1,13 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\User;
+namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Exceptions\Business\BusinessException;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\User\TimeSheetRequest;
-use App\Http\Requests\Admin\User\UserAdjustmentRequest;
+use App\Http\Requests\Admin\Staff\ExportSalaryRequest;
+use App\Http\Requests\Admin\Staff\NoteRequest;
+use App\Http\Requests\Admin\Staff\TimeSheetRequest;
+use App\Http\Requests\Admin\Staff\UserAdjustmentRequest;
 use App\Models\Department;
+use App\Models\EmploymentType;
 use App\Models\User;
 use App\Models\UserAdjustment;
 use App\Services\TimeSheet\TimeSheetService;
@@ -15,11 +18,9 @@ use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use App\Http\Requests\Admin\User\ExportSalaryRequest;
 use App\Exports\TimeSheet\SalaryExport;
-use App\Models\EmploymentType;
+use App\Models\Note;
 use App\Models\Option;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -62,6 +63,32 @@ class TimeSheetController extends Controller
         $info['usersReport'] = $service->generateUsersReport($departments, $targetDate);
 
         return Inertia::render('Admin/Staff/TimeSheet/Index', $info);
+    }
+
+    public function storeNote(NoteRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = User::findOrFail($validated['user_id']);
+
+        $note = $user->notes()->updateOrCreate(
+            [
+                'date' => Carbon::parse($validated['date'])->startOfMonth(),
+                'type' => Note::TYPE_TIME_SHEET,
+            ],
+            [
+                'content' => $validated['content'],
+            ]
+        );
+
+        return response()->json(['note' => $note]);
+    }
+
+    public function destroyNote(Note $note)
+    {
+        $note->delete();
+
+        return response()->json(['note' => $note]);
     }
 
     public function userAdjustmentStore(UserAdjustmentRequest $request, TimeSheetService $service)

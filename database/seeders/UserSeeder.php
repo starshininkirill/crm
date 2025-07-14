@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Department;
 use App\Models\EmploymentType;
+use App\Models\Note;
 use App\Models\TimeCheck;
 use App\Models\User;
 use Carbon\Carbon;
@@ -142,6 +143,13 @@ class UserSeeder extends Seeder
 
             if ($person[4] == 8) {
                 $department->head_id = $user->id;
+                Carbon::setTestNow();
+                $user->notes()->create([
+                    'content' => 'Тестовое примечание',
+                    'date' => Carbon::now()->startOfMonth(),
+                    'type' => Note::TYPE_TIME_SHEET,
+                ]);
+                Carbon::setTestNow('2025-01-02 10:26:39');
                 $department->save();
             }
 

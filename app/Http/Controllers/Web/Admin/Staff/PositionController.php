@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\User;
+namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PositionRequest;

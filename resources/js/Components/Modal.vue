@@ -26,7 +26,18 @@ export default {
     methods: {
         closeModal() {
             this.$emit('close');
+        },
+        handleEsc(e) {
+            if (e.key === 'Escape') {
+                this.closeModal();
+            }
         }
+    },
+    mounted() {
+        document.addEventListener('keydown', this.handleEsc);
+    },
+    beforeUnmount() {
+        document.removeEventListener('keydown', this.handleEsc);
     }
 }
 </script>

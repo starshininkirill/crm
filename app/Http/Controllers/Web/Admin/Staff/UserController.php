@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Web\Admin\User;
+namespace App\Http\Controllers\Web\Admin\Staff;
 
 use App\Exceptions\Business\BusinessException;
 use App\Http\Filters\Models\UserFilter;
-use App\Http\Requests\Admin\User\UserRequest;
+use App\Http\Requests\Admin\Staff\UserRequest;
 use App\Models\Department;
 use App\Models\EmploymentType;
 use App\Models\Position;

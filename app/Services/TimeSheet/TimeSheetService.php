@@ -4,6 +4,7 @@ namespace App\Services\TimeSheet;
 
 use App\Helpers\DateHelper;
 use App\Models\Department;
+use App\Models\Note;
 use App\Models\User;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
@@ -105,6 +106,7 @@ final class TimeSheetService
                 'bonuses' => $user->bonuses,
                 'position' => $user->position,
                 'employment_detail' => $user->employmentDetail,
+                'note' => $user->notes->where('type', Note::TYPE_TIME_SHEET)->first(),
                 'employment_type_id' => $user->employmentDetail?->employment_type_id,
             ] + $timeData + $salaryData + $adjustmentData;
     }
@@ -133,6 +135,11 @@ final class TimeSheetService
                 },
                 'adjustments' => function ($query) use ($dateStart, $dateEnd) {
                     $query->whereBetween('date', [$dateStart, $dateEnd]);
+                },
+                'notes' => function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('date', [$dateStart, $dateEnd])
+                        ->where('type', Note::TYPE_TIME_SHEET)
+                        ->limit(1);
                 },
             ]
         );

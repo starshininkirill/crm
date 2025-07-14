@@ -10,7 +10,11 @@ class Note extends Model
 {
     use HasFactory;
 
-    const TYPE_TIME_SHEET = 'time_sheet';
+    const TYPE_TIME_SHEET = 'time_sheet';   
+
+    const TYPES = [
+        self::TYPE_TIME_SHEET,
+    ];  
 
     protected $fillable = [
         'content',
