@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('payments')->group(function () {
     Route::get('/search-contract', [PaymentController::class, 'searchContract'])->name('admin.payment.search-contract');
 
-    Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.payment.unsorted');
-    Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.payment.unsortedSbp');
+    Route::get('/unsorted', [PaymentController::class, 'unsorted'])->name('admin.unsorted-payment');
+    Route::get('/unsorted-sbp', [PaymentController::class, 'unsortedSbp'])->name('admin.unsorted-paymentsSbp');
 
     Route::get('payment/shortlist/{payment}', [PaymentController::class, 'shortlist'])->name('admin.payment.shortlist');
     Route::post('payment/shortlist/attach', [PaymentController::class, 'shortlistAttach'])->name('admin.payment.shortlist.attach');

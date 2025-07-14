@@ -65,6 +65,9 @@
                 class="shadow-md border-collapse rounded-md sm:rounded-lg text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap w-full border table-fixed">
                 <thead class="thead ">
                     <tr>
+                        <th class="px-2 py-2 border-r w-28">
+                            Примечание
+                        </th>
                         <th class="px-2 py-2 border-r w-20">
                             Ставка
                         </th>
@@ -150,6 +153,9 @@
                         </td>
                     </tr>
                     <tr v-for="user in department" :key="user.id" class="table-row ">
+                        <td class="px-2 py-3 border-r">
+                            {{ user.note ?? 'Не указано' }}
+                        </td>
                         <td class="px-2 py-3 border-r">
                             {{ formatPrice(user.salary) }}
                         </td>

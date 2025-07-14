@@ -1,7 +1,7 @@
 <template>
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
-            <AdminSubnavLink :href="route('admin.document-generator.index')" :route="'admin.document-generator.index'">
+            <AdminSubnavLink :href="route('admin.document-generator.templates')" :route="'admin.document-generator.templates'">
                 Шаблоны Документов
             </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.document-generator.generated-documents')" :route="'admin.document-generator.generated-documents'">

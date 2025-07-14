@@ -13,5 +13,5 @@ Route::prefix('projects-department')->group(function () {
     Route::delete('/{workPlan}', [ProjectManagersDepartmentController::class, 'destroyWorkPlan'])->name('admin.projects-department.work-plan.destroy');
     Route::post('/', [ProjectManagersDepartmentController::class, 'storeWorkPlan'])->name('admin.projects-department.work-plan.store');
 
-    Route::get('/', [ProjectManagersDepartmentController::class, 'index'])->name('admin.projects-department.index');
+    Route::get('/', [ProjectManagersDepartmentController::class, 'index'])->name('admin.projects-department.info');
 });

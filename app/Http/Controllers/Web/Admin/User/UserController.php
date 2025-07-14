@@ -37,7 +37,7 @@ class UserController
         $positions = Position::all();
         $employmentTypes = EmploymentType::all();
 
-        return Inertia::render('Admin/User/Index', [
+        return Inertia::render('Admin/Staff/Index', [
             'users' => $users,
             'positions' => $positions,
             'departments' => $departments,
@@ -69,7 +69,7 @@ class UserController
         // dd($user);
         $user['created_at'] = $user['created_at']->format('d.m.Y');
 
-        return Inertia::render('Admin/User/Show', [
+        return Inertia::render('Admin/Staff/Show', [
             'user' => $user,
         ]);
     }

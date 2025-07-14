@@ -214,7 +214,7 @@ export default {
             const params = {};
             if (this.search !== null) params.template_id = this.search;
 
-            router.get(route('admin.document-generator.index'), params, {
+            router.get(route('admin.document-generator.templates'), params, {
                 preserveState: true,
                 preserveScroll: true,
                 replace: true

@@ -8,7 +8,7 @@
             <AdminSubnavLink :href="route('admin.time-sheet')" :route="'admin.time-sheet'">
                 Кадровый табель
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.time-check.overwork')" :route="'admin.time-check.overwork'">
+            <AdminSubnavLink :href="route('admin.overwork')" :route="'admin.overwork'">
                 Переработки
             </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.user.index')" :route="'admin.user.index'">

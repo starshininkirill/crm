@@ -1,7 +1,7 @@
 <template>
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
-            <AdminSubnavLink :href="route('admin.sale-department.index')" :route="'admin.sale-department.index'">
+            <AdminSubnavLink :href="route('admin.sale-department.info')" :route="'admin.sale-department.info'">
                 Главная
             </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.sale-department.calls')" :route="'admin.sale-department.calls'">

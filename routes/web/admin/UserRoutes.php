@@ -31,9 +31,9 @@ Route::prefix('users')->group(function () {
 
 
     Route::prefix('/overworks')->group(function () {
-        Route::get('/', [OverworkController::class, 'index'])->name('admin.time-check.overwork');
-        Route::post('/{overwork}/acept', [OverworkController::class, 'accept'])->name('admin.time-check.overwork.accept');
-        Route::post('/{overwork}/reject', [OverworkController::class, 'reject'])->name('admin.time-check.overwork.reject');
+        Route::get('/', [OverworkController::class, 'index'])->name('admin.overwork');
+        Route::post('/{overwork}/acept', [OverworkController::class, 'accept'])->name('admin.overwork.accept');
+        Route::post('/{overwork}/reject', [OverworkController::class, 'reject'])->name('admin.overwork.reject');
     });
 
     Route::prefix('time-check')->group(function () {

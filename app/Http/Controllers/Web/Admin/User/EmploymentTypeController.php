@@ -15,7 +15,7 @@ class EmploymentTypeController extends Controller
     {
         $employmentTypes = EmploymentType::all();
 
-        return Inertia::render('Admin/User/EmploymentType/Index', [
+        return Inertia::render('Admin/Staff/EmploymentType/Index', [
             'employmentTypes' => $employmentTypes,
         ]);
     }

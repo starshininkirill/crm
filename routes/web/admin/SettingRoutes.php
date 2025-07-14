@@ -13,5 +13,5 @@ Route::prefix('settings')->group(function () {
 
     Route::get('/staff', [SettingsController::class, 'staff'])->name('admin.settings.staff');
 
-    Route::get('/', [SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::get('/', [SettingsController::class, 'index'])->name('admin.settings.main');
 }); 

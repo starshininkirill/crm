@@ -53,32 +53,32 @@
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.index') }"
-                :href="route('admin.sale-department.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.info') }"
+                :href="route('admin.sale-department.info')">
               Отдел продаж
               </Link>
             </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.projects-department.index') }"
-                :href="route('admin.projects-department.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.projects-department.info') }"
+                :href="route('admin.projects-department.info')">
               Отдел Сопровождения
               </Link>
             </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.settings.index') }"
-                :href="route('admin.settings.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.settings.main') }"
+                :href="route('admin.settings.main')">
               Настройки
               </Link>
             </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.document-generator.index') }"
-                :href="route('admin.document-generator.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.document-generator.templates') }"
+                :href="route('admin.document-generator.templates')">
               Генератор документов
               </Link>
             </li>

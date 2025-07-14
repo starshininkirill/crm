@@ -6,7 +6,7 @@
 
 <script>
 import { Link, usePage } from '@inertiajs/vue3';
-import { route as ziggyRoute } from 'ziggy-js';
+import { route } from 'ziggy-js';
 
 export default {
     name: 'HeaderNavLink',
@@ -22,11 +22,10 @@ export default {
     },
     methods: {
         isActive() {
-            const page = usePage();
-            const currentRoute = page.props.ziggy.location;
-            const targetRoute = ziggyRoute(this.route);
+            const baseRoute = this.route.replace(/\.index$/, '');
+            const currentRoute = route().current();
 
-            return currentRoute === targetRoute;
+            return currentRoute === this.route || currentRoute.startsWith(baseRoute + '.');
         },
     },
 };

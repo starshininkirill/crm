@@ -19,7 +19,7 @@ class OverworkController extends Controller
                 $query->where('type', WorkStatus::TYPE_OVERWORK);
             })->get();
 
-        return Inertia::render('Admin/User/Overwork/Index', [
+        return Inertia::render('Admin/Staff/Overwork/Index', [
             'overworks' => $overworks,
         ]);
     }

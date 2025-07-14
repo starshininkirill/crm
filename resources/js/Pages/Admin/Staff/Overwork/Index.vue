@@ -141,8 +141,8 @@ export default {
         },
         submitAction() {
             const routeName = this.modalAction === 'accept'
-                ? 'admin.time-check.overwork.accept'
-                : 'admin.time-check.overwork.reject';
+                ? 'admin.overwork.accept'
+                : 'admin.overwork.reject';
 
             router.post(route(routeName, { overwork: this.selectedOverwork.id }), {
                 description: this.description,

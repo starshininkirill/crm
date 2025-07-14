@@ -22,7 +22,7 @@ class TimeCheckController extends Controller
         $todayReport = $servise->getWorkTimeDayReport($date);
         $logReport = $servise->getLogReport($date);
 
-        return Inertia::render('Admin/User/TimeCheck', [
+        return Inertia::render('Admin/Staff/TimeCheck', [
             'todayReport' => $todayReport['detailed'],
             'aggregatedReport' => $todayReport['aggregated'],
             'logReport' => $logReport,

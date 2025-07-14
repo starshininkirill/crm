@@ -15,7 +15,7 @@ class PositionController extends Controller
         $departments = Department::mainDepartments();
         $positions = Position::get();
 
-        return Inertia::render('Admin/User/Position/Index', [
+        return Inertia::render('Admin/Staff/Position/Index', [
             'departments' => $departments,
             'positions' => $positions,
         ]);

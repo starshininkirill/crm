@@ -20,6 +20,7 @@ use App\Exports\TimeSheet\SalaryExport;
 use App\Models\EmploymentType;
 use App\Models\Option;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class TimeSheetController extends Controller
@@ -50,8 +51,8 @@ class TimeSheetController extends Controller
             'employmentTypes' => EmploymentType::all(),
         ];
 
-        if ($departments->isEmpty() || $targetDate > Carbon::now()->endOfMonth()) {
-            return Inertia::render('Admin/User/TimeSheet/Index', $info);
+        if ($departments->isEmpty()) {
+            return Inertia::render('Admin/Staff/TimeSheet/Index', $info);
         }
 
         $service->status = $request->filled('status')
@@ -60,7 +61,7 @@ class TimeSheetController extends Controller
 
         $info['usersReport'] = $service->generateUsersReport($departments, $targetDate);
 
-        return Inertia::render('Admin/User/TimeSheet/Index', $info);
+        return Inertia::render('Admin/Staff/TimeSheet/Index', $info);
     }
 
     public function userAdjustmentStore(UserAdjustmentRequest $request, TimeSheetService $service)
@@ -77,7 +78,9 @@ class TimeSheetController extends Controller
         $date = Carbon::parse($validated['date']);
 
         $service->loadRelationsForUsers(new EloquentCollection([$user]), $date);
-        $report = $service->generateUserReport($user, $date);
+        $report = $service->generateUserReport($user, $date->copy()->startOfMonth()->subMonth());
+
+        Log::info($report);
 
         return response()->json(['user' => $report]);
     }
@@ -92,7 +95,7 @@ class TimeSheetController extends Controller
         }
 
         $service->loadRelationsForUsers(new EloquentCollection([$user]), $date);
-        $report = $service->generateUserReport($user, $date);
+        $report = $service->generateUserReport($user, $date->copy()->startOfMonth()->subMonth());
 
         return response()->json(['user' => $report]);
     }
