@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('short_name');
             $table->string('name');
-            $table->bigInteger('inn')->unique();
-            $table->boolean('nds');
-            $table->integer('terminal');
+            $table->boolean('nds')->default(false);
+            $table->bigInteger('inn')->unique()->nullable();
+            $table->integer('terminal')->nullable();
+            $table->bigInteger('doc_number')->nullable();
+            $table->boolean('has_doc_number')->default(false);
+            $table->integer('wiki_id')->nullable();
         });
     }
 
@@ -29,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('organizations');
     }
 };
-  

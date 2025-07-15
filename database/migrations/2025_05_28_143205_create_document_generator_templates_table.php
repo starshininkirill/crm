@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('result_name');
             $table->bigInteger('template_id')->unique();
+            $table->boolean('use_custom_doc_number')->default(false);
             $table->string('file');
         });
     }

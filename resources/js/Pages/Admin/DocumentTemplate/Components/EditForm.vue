@@ -12,6 +12,8 @@
         <FormInput v-model="form.template_id" type="number" name="name" placeholder="id шаблона" label="id шаблона"
             autocomplete="name" required readonly />
 
+        <ToggleSwitch v-model="form.use_custom_doc_number" label="Использовать нумератор организации" />
+
         <label class="text-sm font-medium leading-6 text-gray-900 flex flex-col gap-1 cursor-pointer" for="file">
             Прикрепить новый документ
             <input type="file" id="file" name="file" class="form-input cursor-pointer" @change="handleFileChange" />
@@ -27,11 +29,13 @@ import { useForm } from '@inertiajs/vue3';
 import FormInput from '../../../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
 import Error from '../../../../Components/Error.vue';
+import ToggleSwitch from '../../../../Components/ToggleSwitch.vue';
 
 export default {
     components: {
         FormInput,
-        Error
+        Error,
+        ToggleSwitch
     },
     props: {
         docuementTemplate: {
@@ -44,6 +48,7 @@ export default {
             'result_name': props.docuementTemplate.result_name,
             'template_id': props.docuementTemplate.template_id,
             'file': props.docuementTemplate.file,
+            'use_custom_doc_number': props.docuementTemplate.use_custom_doc_number,
             '_method': 'PATCH'
         });
 
@@ -53,6 +58,7 @@ export default {
                     form.template_id = '';
                     form.file = '';
                     form.result_name = '';
+                    form.use_custom_doc_number = 0;
 
                     const fileInput = document.querySelector('input[type="file"]');
                     if (fileInput) {

@@ -28,21 +28,22 @@ class DocumentGenerator
     public function generateDocumentFromApi(array $requestData)
     {
         Log::channel('document_generator')->info('Начало генерации документа' . Carbon::now()->format('d.m.Y H:i:s'));
-        $option = $this->getOption();
-
+        
         $data = $this->formatSourceData($requestData);
-
+        
         Log::channel('document_generator')->info(
             'Отформатированный запрос на генерацию документа: ' . var_export($data, true)
         );
-
+        
         $templateId = $this->getTemplateId($data);
-
+        
         $dealNumber = $this->getDealNumber($data);
-
+        
         $formatedData = $this->formatApiData($data);
-
+        
         $documentTemplate = $this->getDocumentTemplate($templateId);
+        
+        $actNumber = $this->getActNumber($documentTemplate, $data);
 
         $filePath = Storage::path('public/' . $documentTemplate->file);
 
@@ -54,7 +55,7 @@ class DocumentGenerator
         }
 
         $formatedData['DocumentCreateTime'] = Carbon::now()->format('d.m.Y');
-        $formatedData['DocumentNumber'] = $option->value;
+        $formatedData['DocumentNumber'] = $actNumber;
 
         $templateProcessor = new TemplateProcessor($filePath);
 
@@ -124,12 +125,10 @@ class DocumentGenerator
             'file_name' => $documentName,
             'word_file' => $docxRelativePath,
             'pdf_file' => $withPdf ? $pdfRelativePath : null,
-            'act_number' => $option->value,
+            'act_number' => $actNumber,
             'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : '',
             'inn' => array_key_exists('UF_CRM_1671028881', $data) ? $data['UF_CRM_1671028881'] : null,
         ]);
-
-        $this->incrementOption($option);
 
         if (!$generatedDocument) {
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');
@@ -142,8 +141,21 @@ class DocumentGenerator
         ];
     }
 
-    private function getOption(): Option
+    private function getActNumber(DocumentGeneratorTemplate $documentTemplate, array $data): int
     {
+        if ($documentTemplate->use_custom_doc_number) {
+            if (array_key_exists('ip', $data)) {
+                $organization = Organization::firstWhere('wiki_id', $data['ip']);
+                if ($organization && $organization->has_doc_number) {
+                    $number = $organization->doc_number;
+                    if($number && is_integer($number)){
+                        $organization->doc_number = $organization->doc_number + 1;
+                        $organization->save();
+                        return $number;
+                    }
+                }
+            }
+        }
         $option = Option::query()->firstWhere('name', 'document_generator_num');
 
         if (!$option) {
@@ -153,13 +165,10 @@ class DocumentGenerator
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Настройте нумератор');
         }
 
-        return $option;
-    }
-
-    private function incrementOption(Option $option): void
-    {
-        $option->value = intval($option->value) + 1;
+        $number = $option->value;
+        $option->value = $option->value + 1;
         $option->save();
+        return $number;
     }
 
     private function formatSourceData(array $data): array

@@ -13,6 +13,7 @@ class DocumentGeneratorTemplate extends Model
     protected $fillable = [
         'result_name',
         'template_id',
+        'use_custom_doc_number',
         'file',
     ];
 

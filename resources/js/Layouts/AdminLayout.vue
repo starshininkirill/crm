@@ -21,13 +21,6 @@
               </Link>
             </li>
 
-            <li>
-              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.organization.index') }"
-                :href="route('admin.organization.index')">
-              Организации
-              </Link>
-            </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
@@ -73,6 +66,15 @@
               Настройки
               </Link>
             </li> -->
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.organization.index') }"
+                :href="route('admin.organization.index')">
+              Организации
+              </Link>
+            </li>
+
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"

@@ -25,16 +25,19 @@ class OrganizationRequest extends FormRequest
         $rules = [
             'short_name' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'inn' => 'required|integer|unique:organizations,inn',
-            'nds' => 'required|integer|in:0,1',
-            'terminal' => 'required|integer|min:1',
+            'inn' => 'nullable|integer|unique:organizations,inn',
+            'nds' => 'required|boolean',
+            'terminal' => 'nullable|integer|min:1',
+            'has_doc_number' => 'required|boolean',
+            'doc_number' => 'nullable|integer|min:1',
+            'wiki_id' => 'nullable|integer|min:1',
         ];
 
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             $organization = $this->route('organization');
 
             $rules['inn'] =  [
-                'required',
+                'nullable',
                 'integer',
                 Rule::unique('organizations', 'inn')->ignore($organization->id),
             ];

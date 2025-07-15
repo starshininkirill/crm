@@ -28,6 +28,7 @@ class DocumentTemplateRequest extends FormRequest
                 'template_id' => 'required|integer|unique:document_generator_templates,template_id',
                 'result_name' => 'required|min:3|max:255',
                 'file' => 'required|file',
+                'use_custom_doc_number' => 'required|boolean',
             ]);
         }
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
@@ -40,6 +41,7 @@ class DocumentTemplateRequest extends FormRequest
                 ],
                 'result_name' => 'required|min:3|max:255',
                 'file' => 'nullable|file',
+                'use_custom_doc_number' => 'required|boolean',
             ]);
         }
 

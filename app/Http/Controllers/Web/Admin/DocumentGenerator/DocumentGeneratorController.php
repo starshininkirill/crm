@@ -60,6 +60,7 @@ class DocumentGeneratorController extends Controller
                     'template_id' => $document->template_id,
                     'file_path' => Storage::url($document->file),
                     'file_name' => basename($document->file),
+                    'use_custom_doc_number' => $document->use_custom_doc_number,
                 ];
             });
 
@@ -85,6 +86,7 @@ class DocumentGeneratorController extends Controller
             'template_id' => $validated['template_id'],
             'result_name' => $validated['result_name'],
             'file' => $path,
+            'use_custom_doc_number' => $validated['use_custom_doc_number'],
         ]);
 
         return redirect()->back()->with('success', 'Шаблон документа успешно создан');
@@ -96,7 +98,7 @@ class DocumentGeneratorController extends Controller
 
         $documentTemplate->result_name = $validated['result_name'];
         $documentTemplate->template_id = $validated['template_id'];
-
+        $documentTemplate->use_custom_doc_number = $validated['use_custom_doc_number'];
         
         if ($request->hasFile('file')) {
             $file = $request->file('file');
