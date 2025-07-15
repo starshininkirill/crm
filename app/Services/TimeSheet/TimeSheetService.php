@@ -5,6 +5,7 @@ namespace App\Services\TimeSheet;
 use App\Helpers\DateHelper;
 use App\Models\UserManagement\Department;
 use App\Models\Global\Note;
+use App\Models\UserManagement\ScheduledUpdate;
 use App\Models\UserManagement\User;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
@@ -19,8 +20,7 @@ final class TimeSheetService
         private UserService $userService,
         private SalaryCalculatorService $salaryCalculatorService,
         private TimeTrackingService $timeTrackingService,
-    ) {
-    }
+    ) {}
 
     public function generateUsersReport(Collection $departments, Carbon $date): Collection
     {
@@ -32,7 +32,7 @@ final class TimeSheetService
         $usersWithoutDepartment = $this->getUsersWithoutDepartment($date);
         $result['Без отдела'] = $usersWithoutDepartment;
 
-        return $result->filter(fn (Collection $department) => !$department->isEmpty());
+        return $result->filter(fn(Collection $department) => !$department->isEmpty());
     }
 
     private function processDepartmentUsers(Department $department, Carbon $date): Collection
@@ -79,7 +79,7 @@ final class TimeSheetService
         $user->salary = $salary;
 
         $secondBonus = $this->calculateSecondBonus($user);
-        
+
         $hourSalary = $totalWorkingHoursInMonth > 0 ? $salary / $totalWorkingHoursInMonth : 0;
 
         $timeData = $this->timeTrackingService->calculateTimeData($daysReport, $workingDays);
@@ -93,27 +93,29 @@ final class TimeSheetService
         $salaryData['amount_first_half_salary_with_compensation'] = $salaryData['amount_first_half_salary'] + $salaryData['amount_first_half_salary'] * $compensationPercent / 100;
         $salaryData['amount_second_half_salary_with_compensation'] = $salaryData['amount_second_half_salary'] + $salaryData['amount_second_half_salary'] * $compensationPercent / 100;
 
-        
+
         return [
-                'id' => $user->id,
-                'full_name' => $user->full_name,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'surname' => $user->surname,
-                'payment_account' => $user->employmentDetail?->payment_account,
-                'fired_at' => $user->fired_at,
-                'days' => $daysReport,
-                'salary' => $salary,
-                'min_salary' => $user->min_salary,
-                'part_salary' => $salary / 2,
-                'hour_salary' => $hourSalary,
-                'bonuses' => $user->bonuses,
-                'second_bonuses' => $secondBonus,
-                'position' => $user->position,
-                'employment_detail' => $user->employmentDetail,
-                'note' => $user->notes->where('type', Note::TYPE_TIME_SHEET)->first(),
-                'employment_type_id' => $user->employmentDetail?->employment_type_id,
-            ] + $timeData + $salaryData + $adjustmentData;
+            'id' => $user->id,
+            'full_name' => $user->full_name,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'surname' => $user->surname,
+            'payment_account' => $user->employmentDetail?->payment_account,
+            'fired_at' => $user->fired_at,
+            'scheduled_salary_updates' => $user->scheduledUpdates->firstWhere('field', 'salary'),
+            'scheduled_min_salary_updates' => $user->scheduledUpdates->firstWhere('field', 'min_salary'),
+            'days' => $daysReport,
+            'salary' => $salary,
+            'min_salary' => $user->min_salary,
+            'part_salary' => $salary / 2,
+            'hour_salary' => $hourSalary,
+            'bonuses' => $user->bonuses,
+            'second_bonuses' => $secondBonus,
+            'position' => $user->position,
+            'employment_detail' => $user->employmentDetail,
+            'note' => $user->notes->where('type', Note::TYPE_TIME_SHEET)->first(),
+            'employment_type_id' => $user->employmentDetail?->employment_type_id,
+        ] + $timeData + $salaryData + $adjustmentData;
     }
 
     public function loadRelationsForUsers(EloquentCollection $users, Carbon $date): void
@@ -146,17 +148,21 @@ final class TimeSheetService
                         ->where('type', Note::TYPE_TIME_SHEET)
                         ->limit(1);
                 },
+                'scheduledUpdates' => function ($query) use ($dateEnd) {
+                    $query->whereDate('effective_date', '>', $dateEnd)
+                        ->where('status', ScheduledUpdate::STATUS_PENDING);
+                },
             ]
         );
     }
 
     protected function calculateSecondBonus(User $user): int|float
     {
-        if(!$user->min_salary) {
+        if (!$user->min_salary) {
             return 0;
         }
 
-        if($user->salary + $user->bonuses >= $user->min_salary) {
+        if ($user->salary + $user->bonuses >= $user->min_salary) {
             return 0;
         }
 

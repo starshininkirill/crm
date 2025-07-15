@@ -12,26 +12,20 @@
         </Modal>
 
         <Modal :open="isNoteModalOpen" @close="closeNoteModal()">
-            <NoteModal 
-                v-if="isNoteModalOpen"
-                :user="activeUserForNote"
-                :date="selectedDate"
-                :note="activeUserForNote.note"
-                @close="closeNoteModal()"
-                @note-saved="handleNoteSaved"
-                @note-deleted="handleNoteDeleted"
-            />
+            <NoteModal v-if="isNoteModalOpen" :user="activeUserForNote" :date="selectedDate"
+                :note="activeUserForNote.note" @close="closeNoteModal()" @note-saved="handleNoteSaved"
+                @note-deleted="handleNoteDeleted" />
+        </Modal>
+
+        <Modal :open="updateSalaryModalOpen" @close="closeUpdateSalaryModal()">
+            <ScheduleSalaryUpdateModal v-if="updateSalaryModalOpen" :user="activeUser"
+                :field="activeFieldForSalaryUpdate" :title="activeTitleForSalaryUpdate" :date="date"
+                @close="closeUpdateSalaryModal()" @update-scheduled="handleSalaryUpdated" />
         </Modal>
 
         <Modal :open="isExportModalOpen" @close="closeExportModal()">
-            <ExportSalaryModal
-                v-if="isExportModalOpen"
-                :employment-types="employmentTypes"
-                :date="selectedDate"
-                :department_id="selectedDepartment"
-                :half="selectedHalfForExport"
-                @close="closeExportModal()"
-            />
+            <ExportSalaryModal v-if="isExportModalOpen" :employment-types="employmentTypes" :date="selectedDate"
+                :department_id="selectedDepartment" :half="selectedHalfForExport" @close="closeExportModal()" />
         </Modal>
 
         <div class="flex gap-3 max-w-3xl w-full mb-4 h-fit self-end">
@@ -168,12 +162,33 @@
                         </td>
                     </tr>
                     <tr v-for="user in department" :key="user.id" class="table-row ">
-                        <NoteCell :note="user.note" @open-modal="openNoteModal(user)"/>
-                        <td class="px-2 py-3 border-r">
+                        <NoteCell :note="user.note" @open-modal="openNoteModal(user)" />
+                        <td class="px-2 py-3 border-r cursor-pointer group hover:bg-gray-200 relative"
+                            @click="openUpdateSalaryModal(user, 'salary', 'Запланировать изменение ставки')"
+                            :class="{ 'bg-yellow-200': user.scheduled_salary_updates }">
                             {{ formatPrice(user.salary) }}
+
+                            <div v-if="user.scheduled_salary_updates"
+                                class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[250px] max-w-[550px] left-full ml-2 top-0 pointer-events-none text-left">
+                                <p class="text-sm text-gray-700 whitespace-pre-wrap">
+                                    {{ 'Изменение ставки ' + formatPrice(user.scheduled_salary_updates.new_value) }}<br>
+                                    {{ 'с ' + user.scheduled_salary_updates.effective_date }}
+                                </p>
+                            </div>
                         </td>
-                        <td class="px-2 py-3 border-r">
+                        <td class="px-2 py-3 border-r cursor-pointer group hover:bg-gray-200 relative"
+                            :class="{ 'bg-yellow-200': user.scheduled_min_salary_updates }"
+                            @click="openUpdateSalaryModal(user, 'min_salary', 'Запланировать изменение мин. выплаты')">
                             {{ user.min_salary ? formatPrice(user.min_salary) : '-' }}
+
+                            <div v-if="user.scheduled_min_salary_updates"
+                                
+                                class="absolute hidden group-hover:block z-20 bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[250px] max-w-[550px] left-full ml-2 top-0 pointer-events-none text-left">
+                                <p class="text-sm text-gray-700 whitespace-pre-wrap">
+                                    {{ 'Изменение мин. выплаты ' + formatPrice(user.scheduled_min_salary_updates.new_value) }}<br>
+                                    {{ 'с ' + user.scheduled_min_salary_updates.effective_date }}
+                                </p>
+                            </div>
                         </td>
                         <td class="px-2 py-3 border-r">
                             {{ formatPrice(user.hour_salary) }}
@@ -183,7 +198,7 @@
                         </th>
                         <th scope="row" class="px-2 py-3 font-medium text-gray-900 whitespace-nowrap border-r">
                             <Link :href="route('admin.user.show', user.id)">
-                                {{ user.full_name }}
+                            {{ user.full_name }}
                             </Link>
                         </th>
                         <td v-for="(day, index) in user.days"
@@ -296,6 +311,7 @@ import UserAdjustment from './UserAdjustment.vue';
 import ExportSalaryModal from './ExportSalaryModal.vue';
 import NoteCell from './NoteCell.vue';
 import NoteModal from './NoteModal.vue';
+import ScheduleSalaryUpdateModal from './ScheduleSalaryUpdateModal.vue';
 
 export default {
     components: {
@@ -308,7 +324,8 @@ export default {
         UserAdjustment,
         ExportSalaryModal,
         NoteCell,
-        NoteModal
+        NoteModal,
+        ScheduleSalaryUpdateModal
     },
     props: {
         days: {
@@ -373,9 +390,22 @@ export default {
             selectedHalfForExport: null,
             isNoteModalOpen: false,
             activeUserForNote: null,
+            updateSalaryModalOpen: false,
+            activeFieldForSalaryUpdate: null,
+            activeTitleForSalaryUpdate: null,
         }
     },
     methods: {
+        handleSalaryUpdated(scheduled_update) {
+             if(this.activeUser && scheduled_update){
+                if(scheduled_update.field == 'salary'){
+                    this.activeUser.scheduled_salary_updates = scheduled_update;
+                }
+                if(scheduled_update.field == 'min_salary'){
+                    this.activeUser.scheduled_min_salary_updates = scheduled_update;
+                }
+             }
+        },
         handleNoteSaved(newNote) {
             if (this.activeUserForNote) {
                 this.activeUserForNote.note = newNote;
@@ -469,6 +499,18 @@ export default {
         closeExportModal() {
             this.isExportModalOpen = false;
             this.selectedHalfForExport = null;
+        },
+        openUpdateSalaryModal(user, field, title) {
+            this.activeUser = user;
+            this.activeFieldForSalaryUpdate = field;
+            this.activeTitleForSalaryUpdate = title;
+            this.updateSalaryModalOpen = true;
+        },
+        closeUpdateSalaryModal() {
+            this.updateSalaryModalOpen = false;
+            this.activeUser = null;
+            this.activeFieldForSalaryUpdate = null;
+            this.activeTitleForSalaryUpdate = null;
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white rounded-lg">
+    <div >
         <h2 class="text-2xl font-semibold mb-4">Примечание для {{ user.full_name }}</h2>
         <form @submit.prevent="saveNote">
             <textarea 
@@ -8,7 +8,7 @@
                 placeholder="Введите текст примечания..."
             ></textarea>
             <div class="flex justify-end mt-4 gap-2">
-                <div type="submit" class="btn !bg-red-500" :disabled="loading" @click="deleteNote">Удалить</div>
+                <div v-if="note" type="submit" class="btn !bg-red-500" :disabled="loading" @click="deleteNote">Удалить</div>
                 <button type="submit" class="btn" :disabled="loading">Сохранить</button>
             </div>
         </form>

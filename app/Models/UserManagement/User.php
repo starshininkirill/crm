@@ -114,6 +114,11 @@ class User extends Authenticatable
         );
     }
 
+    public function scheduledUpdates(): MorphMany
+    {
+        return $this->morphMany(ScheduledUpdate::class, 'updatable');
+    }
+
     public function adjustments(): HasMany
     {
         return $this->hasMany(UserAdjustment::class);

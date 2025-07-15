@@ -23,6 +23,8 @@ use App\Models\Global\Note;
 use App\Models\Global\Option;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\Admin\Staff\ScheduleSalaryUpdateRequest;
+use App\Models\UserManagement\ScheduledUpdate;
 
 class TimeSheetController extends Controller
 {
@@ -125,6 +127,31 @@ class TimeSheetController extends Controller
         $report = $service->generateUserReport($user, $date->copy()->startOfMonth()->subMonth());
 
         return response()->json(['user' => $report]);
+    }
+
+    public function scheduleSalaryUpdate(ScheduleSalaryUpdateRequest $request)
+    {
+        $validated = $request->validated();
+
+        $user = User::findOrFail($validated['user_id']);
+
+        $effectiveDate = Carbon::parse($validated['effective_date'])->startOfMonth();
+        $reportDate = Carbon::parse($validated['date'])->startOfMonth();
+
+        $scheduledUpdate = $user->scheduledUpdates()->create($validated);
+        if(!$scheduledUpdate){
+            throw new BusinessException('Не удалось запланировать изменение зарплаты');
+        }
+
+        if ($effectiveDate->lt($reportDate)) {
+            return response()->json(['scheduled_update' => null]);
+        }
+        
+        $scheduledUpdate->effective_date = Carbon::parse($scheduledUpdate->effective_date)->format('Y-m-d');
+
+        return response()->json([
+            'scheduled_update' => $scheduledUpdate->only('id', 'new_value', 'effective_date', 'field')
+        ]);
     }
 
     public function exportSalary(ExportSalaryRequest $request, TimeSheetService $service)
