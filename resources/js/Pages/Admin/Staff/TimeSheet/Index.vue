@@ -20,7 +20,8 @@
         <Modal :open="updateSalaryModalOpen" @close="closeUpdateSalaryModal()">
             <ScheduleSalaryUpdateModal v-if="updateSalaryModalOpen" :user="activeUser"
                 :field="activeFieldForSalaryUpdate" :title="activeTitleForSalaryUpdate" :date="date"
-                @close="closeUpdateSalaryModal()" @update-scheduled="handleSalaryUpdated" />
+                :scheduled-update="activeScheduledUpdate" @close="closeUpdateSalaryModal()"
+                @update-scheduled="handleSalaryUpdated" />
         </Modal>
 
         <Modal :open="isExportModalOpen" @close="closeExportModal()">
@@ -395,16 +396,33 @@ export default {
             activeTitleForSalaryUpdate: null,
         }
     },
+    computed: {
+        activeScheduledUpdate() {
+            if (!this.activeUser) {
+                return null;
+            }
+
+            if (this.activeFieldForSalaryUpdate === 'salary') {
+                return this.activeUser.scheduled_salary_updates;
+            }
+
+            if (this.activeFieldForSalaryUpdate === 'min_salary') {
+                return this.activeUser.scheduled_min_salary_updates;
+            }
+
+            return null;
+        }
+    },
     methods: {
         handleSalaryUpdated(scheduled_update) {
-             if(this.activeUser && scheduled_update){
-                if(scheduled_update.field == 'salary'){
+            if (this.activeUser) {
+                if (this.activeFieldForSalaryUpdate == 'salary') {
                     this.activeUser.scheduled_salary_updates = scheduled_update;
                 }
-                if(scheduled_update.field == 'min_salary'){
+                if (this.activeFieldForSalaryUpdate == 'min_salary') {
                     this.activeUser.scheduled_min_salary_updates = scheduled_update;
                 }
-             }
+            }
         },
         handleNoteSaved(newNote) {
             if (this.activeUserForNote) {

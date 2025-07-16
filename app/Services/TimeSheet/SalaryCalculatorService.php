@@ -65,7 +65,7 @@ final class SalaryCalculatorService
             $status,
             $date
         );
-
+        
         $head = $departmentUsers->firstWhere('id', $department->head_id);
 
         if ($head) {
@@ -94,7 +94,7 @@ final class SalaryCalculatorService
             $sortedUsers->prepend($head);
         }
 
-        return $sortedUsers->values();
+        return new EloquentCollection($sortedUsers->values());
     }
 
     public function calculateUserBonus(User $user, Carbon $date): float

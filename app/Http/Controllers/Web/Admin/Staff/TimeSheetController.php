@@ -154,6 +154,12 @@ class TimeSheetController extends Controller
         ]);
     }
 
+    public function destroyScheduledSalaryUpdate(ScheduledUpdate $scheduledUpdate)
+    {
+        $scheduledUpdate->delete();
+        return response()->json(['scheduled_update' => null]);
+    }
+
     public function exportSalary(ExportSalaryRequest $request, TimeSheetService $service)
     {
         $validated = $request->validated();

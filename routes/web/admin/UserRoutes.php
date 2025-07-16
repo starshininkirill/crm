@@ -31,6 +31,7 @@ Route::prefix('users')->group(function () {
         Route::delete('/note/{note}', [TimeSheetController::class, 'destroyNote'])->name('admin.time-sheet.note.destroy');
 
         Route::post('/schedule-salary-update', [TimeSheetController::class, 'scheduleSalaryUpdate'])->name('admin.time-sheet.schedule-salary-update.store');
+        Route::delete('/schedule-salary-update/{scheduledUpdate}', [TimeSheetController::class, 'destroyScheduledSalaryUpdate'])->name('admin.time-sheet.schedule-salary-update.destroy');
     });
 
 

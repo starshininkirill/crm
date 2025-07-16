@@ -149,7 +149,7 @@ final class TimeSheetService
                         ->limit(1);
                 },
                 'scheduledUpdates' => function ($query) use ($dateEnd) {
-                    $query->whereDate('effective_date', '>', $dateEnd)
+                    $query
                         ->where('status', ScheduledUpdate::STATUS_PENDING);
                 },
             ]
