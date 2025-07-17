@@ -13,6 +13,7 @@ use App\Models\UserManagement\User;
 use App\Models\TimeTracking\WorkingDay;
 use App\Models\Global\WorkPlan;
 use App\Services\SaleReports\DTO\ReportDTO;
+use App\Services\SaleReports\DTO\UserDataDTO;
 use App\Services\SaleReports\WorkPlans\WorkPlanService;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
@@ -54,9 +55,9 @@ class ReportDTOBuilder
         return $data;
     }
 
-    public function buildSingleUserReport(Carbon $date, User $user): ReportDTO
+    public function buildSingleUserReport(Carbon $date, User $user): UserDataDTO
     {
-        $data = new ReportDTO();
+        $data = new UserDataDTO();
         $this->prepareUserData($data, $date, $user);
         return $data;
     }
@@ -96,10 +97,6 @@ class ReportDTOBuilder
     public function buildHeadSubReport(ReportDTO $mainData, User $user): ?ReportDTO
     {
 
-        if ($mainData->isUserData) {
-            return null;
-        }
-
         $subData = new ReportDTO();
 
         $subData->date = $mainData->date->copy()->endOfMonth();
@@ -120,8 +117,6 @@ class ReportDTOBuilder
 
         $subData->newMoney = $subData->newPayments->sum('value');
         $subData->oldMoney = $subData->oldPayments->sum('value');
-
-        $subData->isUserData = true;
 
         return $subData;
     }
@@ -171,15 +166,11 @@ class ReportDTOBuilder
         $data->financeWeeks = DateHelper::splitMonthIntoWeek($date);
     }
 
-    public function getUserSubdata(ReportDTO $mainData, User $user): ?ReportDTO
+    public function getUserSubdata(ReportDTO $mainData, User $user): ?UserDataDTO
     {
-        if ($mainData->isUserData) {
-            return null;
-        }
 
-        $subData = new ReportDTO();
+        $subData = new UserDataDTO();
 
-        // Копируем общие данные
         $subData->date = $mainData->date->copy()->endOfMonth();
         $subData->mainDepartmentId = $mainData->mainDepartmentId;
         $subData->workPlans = $mainData->workPlans;
@@ -209,13 +200,12 @@ class ReportDTOBuilder
 
         $subData->servicesByCatsCount = ServiceCountHelper::calculateServiceCountsByContracts($subData->contracts);
         $subData->financeWeeks = $mainData->financeWeeks;
-        $subData->isUserData = true;
 
         return $subData;
     }
 
 
-    private function prepareUserData(ReportDTO $data, Carbon $date, User $user): void
+    private function prepareUserData(UserDataDTO $data, Carbon $date, User $user): void
     {
         if (!DateHelper::isCurrentMonth($date)) {
             $user = $user->getVersionAtDate($date, ['department', 'position']);
@@ -226,7 +216,6 @@ class ReportDTOBuilder
 
         $data->date = $endDate;
         $data->user = $user;
-        $data->isUserData = true;
 
         $mainDepartment = Department::getMainSaleDepartment();
         if (!$mainDepartment) {

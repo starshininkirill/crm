@@ -13,6 +13,7 @@ use App\Models\Services\Service;
 use App\Models\Services\ServiceCategory;
 use App\Models\UserManagement\User;
 use App\Models\Global\WorkPlan;
+use App\Models\UserManagement\Position;
 use App\Services\CallHistoryService;
 use App\Services\SaleReports\Generators\DepartmentReportGenerator;
 use App\Services\SaleReports\Generators\HeadsReportGenerator;
@@ -145,6 +146,8 @@ class SaleDepartmentController extends Controller
         $department = Department::getMainSaleDepartment();
         $plans = $workPlanService->plansForDepartment($date, $department);
 
+        $positions = Position::all();
+
         $services = Service::with('category')->get();
         $rkServices = $services->where('category.type', ServiceCategory::RK)->values();
         $seoServices = $services->where('category.type', ServiceCategory::SEO)->values();
@@ -154,6 +157,7 @@ class SaleDepartmentController extends Controller
         return Inertia::render('Admin/SaleDapartment/PlansSettings', [
             'dateProp' => $date->format('Y-m'),
             'plans' => $plans,
+            'positions' => $positions,
             'isCurrentMonth' => $isCurrentMonth,
             'departmentId' => $department->id,
             'rkServices' => $rkServices,

@@ -16,63 +16,97 @@
 
         <Error />
 
-        <div class="grow w-full border-b mb-6">
-            <div class="flex gap-3">
-                <div @click="isRopActive = false"
-                    :class="[{ 'text-white bg-gray-800': !isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer border-t']">
-                    Планы отдела
-                </div>
-                <div @click="isRopActive = true"
-                    :class="[{ 'text-white bg-gray-800': isRopActive }, 'px-4 py-2 border border-y-0 cursor-pointer border-t']">
-                    Планы РОП
-                </div>
-            </div>
-            <slot />
+        <div class="mb-4 border-b border-gray-200">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                <li class="mr-2">
+                    <button @click="activeTab = null"
+                        :class="['inline-block p-4 border-b-2 rounded-t-lg', activeTab == null ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300']">
+                        Планы отдела
+                    </button>
+                </li>
+                <li class="mr-2" v-for="position_id in Object.keys(positionalPlans)" :key="position_id">
+                    <button @click="activeTab = position_id"
+                        :class="['inline-block p-4 border-b-2 rounded-t-lg', activeTab == position_id ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300']">
+                        {{positions.find(p => p.id == position_id)?.name}}
+                    </button>
+                </li>
+                <li class="mr-2">
+                    <button @click="activeTab = 'rop'"
+                        :class="['inline-block p-4 border-b-2 rounded-t-lg', activeTab == 'rop' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300']">
+                        Планы РОП
+                    </button>
+                </li>
+            </ul>
         </div>
 
 
-        <div v-if="!isRopActive" class="grid grid-cols-3 gap-8 mb-4">
-            <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="plans.monthPlan" :departmentId="departmentId" />
-            <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="plans.percentLadder"
-                :departmentId="departmentId" :propNoPercentageMonth="plans.noPercentageMonth" />
+        <div v-if="activeTab == null" class="grid grid-cols-3 gap-8 mb-4">
+            <MonthPlan :isCurrentMonth="isCurrentMonth" :monthPlan="departmentPlans.monthPlan"
+                :departmentId="departmentId" />
+            <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="departmentPlans.percentLadder"
+                :departmentId="departmentId" :propNoPercentageMonth="departmentPlans.noPercentageMonth" />
 
             <div class="flex flex-col gap-4">
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Бонус план'"
-                    :planType="'bonusPlan'" :plans="plans.bonusPlan" :hasGoalField="true"
+                    :planType="'bonusPlan'" :plans="departmentPlans.bonusPlan" :hasGoalField="true"
                     info="Сумма новых денег в текущем расчетном периоде больше или равна" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Двойной план'"
-                    :planType="'doublePlan'" :plans="plans.doublePlan"
+                    :planType="'doublePlan'" :plans="departmentPlans.doublePlan"
                     info="Сумма новых денег в текущем расчетном периоде больше или равна удвоенному плану" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'План недели'"
-                    :planType="'weekPlan'" :plans="plans.weekPlan" />
+                    :planType="'weekPlan'" :plans="departmentPlans.weekPlan" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Супер план'"
-                    :planType="'superPlan'" :plans="plans.superPlan" :hasGoalField="true"
+                    :planType="'superPlan'" :plans="departmentPlans.superPlan" :hasGoalField="true"
                     info="Сумма новых денег в текущем расчетном периоде больше или равна Цели или выполненны все планы недель" />
             </div>
 
-            <B1Plan :propPlan="plans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
+            <B1Plan :propPlan="departmentPlans.b1Plan" :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
 
-            <B4Plan :propPlan="plans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
+            <B4Plan :propPlan="departmentPlans.b4Plan" :propServices="rkServices" :isCurrentMonth="isCurrentMonth"
                 :departmentId="departmentId" />
             <div>
 
             </div>
 
-            <B2Plan :services="services" :propPlan="plans.b2Plan" :propSeoServices="seoServices"
+            <B2Plan :services="services" :propPlan="departmentPlans.b2Plan" :propSeoServices="seoServices"
                 :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
 
 
             <div class=" col-span-2">
-                <B3Plan :serviceCats="serviceCats" :services="services" :propPlan="plans.b3Plan"
+                <B3Plan :serviceCats="serviceCats" :services="services" :propPlan="departmentPlans.b3Plan"
                     :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" />
             </div>
-
         </div>
 
-        <div v-if="isRopActive" class="grid grid-cols-3 gap-8 mb-4">
+        <div v-if="positionalPlans[activeTab]" class="flex flex-col gap-8 mb-4">
+            <div class="grid grid-cols-3 gap-8">
+                <ServicesPlan title="Б2 План" planType="b2Plan"
+                    infoText="Менеджеру необходимо продать N указанных услуг"
+                    :propPlan="positionalPlans[activeTab].b2Plan" :allServices="services"
+                    :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" :positionId="activeTab" />
+
+                <ServicesPlan title="Б3 План" planType="b3Plan"
+                    infoText="Менеджеру необходимо продать N указанных услуг"
+                    :propPlan="positionalPlans[activeTab].b3Plan" :allServices="services"
+                    :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" :positionId="activeTab" />
+
+                <ServicesPlan title="Б4 План" planType="b4Plan"
+                    infoText="Менеджеру необходимо продать N указанных услуг"
+                    :propPlan="positionalPlans[activeTab].b4Plan" :allServices="services"
+                    :isCurrentMonth="isCurrentMonth" :departmentId="departmentId" :positionId="activeTab" />
+            </div>
+
+            <div class="w-1/2">
+                <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="positionalPlans[activeTab].percentLadder"
+                    :departmentId="departmentId" :propNoPercentageMonth="positionalPlans[activeTab].noPercentageMonth"
+                    :positionId="activeTab" />
+            </div>
+        </div>
+
+        <div v-if="activeTab == 'rop'" class="grid grid-cols-3 gap-8 mb-4">
             <div class="flex flex-col gap-4">
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б1 План'"
-                    :planType="'headB1Plan'" :plans="plans.headB1Plan" :hasGoalField="true" 
+                    :planType="'headB1Plan'" :plans="plans.headB1Plan" :hasGoalField="true"
                     info="Сумма всех планов перевыполненная на ... %" />
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Б2 План'"
                     :planType="'headB2Plan'" :plans="plans.headB2Plan" :hasGoalField="true"
@@ -80,8 +114,9 @@
                 <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Процент с продаж'"
                     :planType="'headPercentBonus'" :plans="plans.headPercentBonus" :hasGoalField="false"
                     info="Руководитель отдела продаж получает ...% от новых денег заведенных его отделом" />
-                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth" :title="'Минимальный бонус'"
-                    :planType="'headMinimalBonus'" :plans="plans.headMinimalBonus" :hasGoalField="false" 
+                <UniversalPlan :departmentId="departmentId" :isCurrentMonth="isCurrentMonth"
+                    :title="'Минимальный бонус'" :planType="'headMinimalBonus'" :plans="plans.headMinimalBonus"
+                    :hasGoalField="false"
                     info="Минимальный % от процента с продаж после вычетов за менеджеров не выполнивших план" />
             </div>
         </div>
@@ -104,6 +139,7 @@ import B4Plan from './Settings/DepartmentSettings/B4Plan.vue';
 import PercentLadder from './Settings/DepartmentSettings/PercentLadder.vue';
 import Error from '../../../Components/Error.vue';
 import VueDatePicker from '@vuepic/vue-datepicker'
+import ServicesPlan from './Settings/DepartmentSettings/ServicesPlan.vue';
 
 export default {
     components: {
@@ -118,7 +154,8 @@ export default {
         PercentLadder,
         Error,
         SaleDepartmentLayout,
-        VueDatePicker
+        VueDatePicker,
+        ServicesPlan
     },
     props: {
         dateProp: {
@@ -127,6 +164,10 @@ export default {
         },
         plans: {
             type: Object,
+            required: true,
+        },
+        positions: {
+            type: Array,
             required: true,
         },
         isCurrentMonth: {
@@ -157,7 +198,44 @@ export default {
     data() {
         return {
             date: this.dateProp,
-            isRopActive: false,
+            activeTab: null,
+        }
+    },
+    computed: {
+        departmentPlans() {
+            const result = {};
+            for (const key in this.plans) {
+                if (Array.isArray(this.plans[key])) {
+                    result[key] = this.plans[key].filter(p => !p.position_id);
+                } else {
+                    result[key] = this.plans[key];
+                }
+            }
+            return result;
+        },
+        positionalPlans() {
+            const result = {};
+            const positionIdsWithPlans = new Set(this.plans.percentLadder.filter(p => p.position_id).map(p => p.position_id));
+
+            this.positions.forEach(position => {
+                if (positionIdsWithPlans.has(position.id)) {
+                    result[position.id] = {};
+                }
+            });
+
+            for (const planType in this.plans) {
+                if (Array.isArray(this.plans[planType])) {
+                    this.plans[planType].forEach(plan => {
+                        if (plan.position_id && result[plan.position_id]) {
+                            if (!result[plan.position_id][planType]) {
+                                result[plan.position_id][planType] = [];
+                            }
+                            result[plan.position_id][planType].push(plan);
+                        }
+                    });
+                }
+            }
+            return result;
         }
     },
     methods: {

@@ -41,19 +41,37 @@ final class SalaryCalculatorService
 
     private function calculateProjectManagersDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection
     {
-        $report = $this->projectReportGenerator->generateFullReport($department, $date, false);
+        $departmentUsers = $this->userService->filterUsersByStatus(
+            $department->allUsers($date, ['departmentHead', 'position']),
+            $status,
+            $date
+        );
 
-        $users = $report->map(function ($user) {
-            return $user['user'];
-        });
-
-        $headReport = $this->projectHeadReportGenerator->generateHeadReport($date);
-
-        if ($headReport->isNotEmpty()) {
-            $users->prepend($headReport->pluck('user')->first());
+        if ($departmentUsers->isEmpty()) {
+            return new EloquentCollection();
         }
 
-        return new EloquentCollection($users);
+        $reportDate = $date->copy()->startOfMonth()->subMonth();
+        $report = $this->projectReportGenerator->generateFullReport($department, $reportDate, false);
+        $headReport = $this->projectHeadReportGenerator->generateHeadReport($reportDate);
+
+        if ($headReport->isNotEmpty()) {
+            $report->push($headReport->first());
+        }
+
+        $reportUsersData = $report->keyBy(fn($reportItem) => $reportItem['user']->id);
+
+        $departmentUsers->each(function (User $user) use ($reportUsersData) {
+            $reportData = $reportUsersData->get($user->id);
+            if ($reportData) {
+                $user->bonuses = $reportData['bonuses'] ?? 0;
+                $user->total_services = $reportData['total_services'] ?? 0;
+            }
+        });
+
+        $finalUsers = $departmentUsers->filter(fn(User $user) => $reportUsersData->has($user->id));
+
+        return new EloquentCollection($finalUsers->values());
     }
 
     private function calculateSaleDepartmentSalary(Department $department, Carbon $date, string $status): EloquentCollection
@@ -65,11 +83,13 @@ final class SalaryCalculatorService
             $status,
             $date
         );
+
+        $reportDate = $date->copy()->startOfMonth()->subMonth();
         
         $head = $departmentUsers->firstWhere('id', $department->head_id);
 
         if ($head) {
-            $headReport = $this->saleHeadsReportGenerator->generateHeadReport($department, $date);
+            $headReport = $this->saleHeadsReportGenerator->generateHeadReport($department, $reportDate);
             $head->bonuses = $headReport['report']['headBonus'] + $headReport['report']['bonus'];
         }
 
@@ -78,7 +98,7 @@ final class SalaryCalculatorService
         });
 
         if ($users->isNotEmpty()) {
-            $reportData = $this->reportDTOBuilder->buildFullReport($date, $department);
+            $reportData = $this->reportDTOBuilder->buildFullReport($reportDate, $department);
             $pivotUsers = $this->serviceReportGenerator->pivotUsers($reportData, $users)->keyBy('user.id');
 
             $users->each(function ($user) use ($pivotUsers) {

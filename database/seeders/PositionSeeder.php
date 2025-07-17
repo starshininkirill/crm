@@ -18,6 +18,19 @@ class PositionSeeder extends Seeder
     {
         $this->saleManagersPositions();
         $this->projectManagersPositions();
+        $this->advertisingSalePositions();
+    }
+
+    private function advertisingSalePositions()
+    {
+        Carbon::setTestNow('2025-01-01 10:26:39');
+        $position = [
+            ['name' => 'Менеджер по продаже Рекламы', 'salary' => 20000, 'plan_type' => Position::PLAN_TYPE_ADVERTISING_SALE],
+        ];
+
+        foreach ($position as $position) {
+            Position::create($position);
+        };
     }
 
     private function projectManagersPositions()

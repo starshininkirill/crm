@@ -8,4 +8,4 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote')->hourly();
 
 // Обновление зарплат сотрудникам
-Schedule::command(ApplyScheduledUpdates::class)->everyMinut();
+Schedule::command(ApplyScheduledUpdates::class)->everyMinute();

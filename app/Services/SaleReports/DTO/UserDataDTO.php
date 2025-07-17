@@ -8,7 +8,7 @@ use App\Models\Global\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class ReportDTO
+class UserDataDTO
 {
     public function __construct(
         public float $newMoney = 0,

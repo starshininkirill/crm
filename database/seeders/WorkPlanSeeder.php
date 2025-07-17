@@ -16,6 +16,87 @@ class WorkPlanSeeder extends Seeder
     {
         $this->createSalePlans();
         $this->createProjectPlans();
+        $this->createAdvertisingSalePlans();
+    }
+
+    private function createAdvertisingSalePlans()
+    {
+        Carbon::setTestNow('2025-01-01 10:26:39');
+        
+
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                "goal" => 20,
+                "bonus" => "10000",
+                "includeIds" => [5],
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::B3_PLAN,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                "goal" => 30,
+                "bonus" => "10000",
+                "includeIds" => [5],
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::B4_PLAN,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                "goal" => 50,
+                "bonus" => "20000",
+                "includeIds" => [5],
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                'goal' => 200000,
+                'bonus' => 3
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                'goal' => 400000,
+                'bonus' => 3
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                'goal' => 550000,
+                'bonus' => 5
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::PERCENT_LADDER,
+            'department_id' => 1,
+            'position_id' => 13,
+            'data' => [
+                'bonus' => 7
+            ],
+        ]);
+        
+        Carbon::setTestNow();
     }
 
     private function createProjectPlans()

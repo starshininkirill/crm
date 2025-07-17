@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('salary');
             $table->boolean('has_probation')->default(false);
+            $table->string('plan_type')->nullable();
             $table->timestamps();
         });
     }

@@ -9,10 +9,10 @@ use App\Helpers\ServiceCountHelper;
 use App\Models\UserManagement\Department;
 use App\Models\Services\ServiceCategory;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
+use App\Services\SaleReports\Plans\PlanCalculatorFactory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
-use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +22,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
     public function __construct(
         ReportDTOBuilder $reportDTOBuilder,
         UserService $userService,
-        protected DepartmentPlanCalculator $planCalculator
+        protected PlanCalculatorFactory $planCalculatorFactory
     ) {
         parent::__construct($reportDTOBuilder, $userService);
     }
@@ -112,9 +112,10 @@ class DepartmentReportGenerator extends BaseReportGenerator
     protected function pivotWeek(ReportDTO $reportData): Collection
     {
         $report = collect();
+        $planCalculator = $this->planCalculatorFactory->defaultCalculator();
 
-        $report['weeksPlan'] = $this->planCalculator->weeksReport($reportData);
-        $report['totalValues'] = $this->planCalculator->totalValues($reportData);
+        $report['weeksPlan'] = $planCalculator->weeksReport($reportData);
+        $report['totalValues'] = $planCalculator->totalValues($reportData);
 
         return $report;
     }
@@ -123,23 +124,22 @@ class DepartmentReportGenerator extends BaseReportGenerator
     {
         $report = collect();
 
-        if(!$reportInfo->isUserData){
-            $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportInfo, $user);
-        }
+        $planCalculator = $this->planCalculatorFactory->makeFor($user);
+        $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportInfo, $user);
 
-        $report['monthPlan'] = $this->planCalculator->monthPlan($reportInfo);
-        $report['doublePlan'] = $this->planCalculator->doublePlan($reportInfo);
-        $report['bonusPlan'] = $this->planCalculator->bonusPlan($reportInfo);
-        $report['weeksPlan'] = $this->planCalculator->weeksPlan($reportInfo);
-        $report['superPlan'] = $this->planCalculator->superPlan($report['weeksPlan'], $reportInfo);
-        $report['totalValues'] = $this->planCalculator->totalValues($reportInfo);
-        $report['b1'] = $this->planCalculator->b1Plan($reportInfo);
-        $report['b2'] = $this->planCalculator->b2Plan($reportInfo);
-        $report['b3'] = $this->planCalculator->b3Plan($reportInfo);
-        $report['b4'] = $this->planCalculator->b4Plan($reportInfo);
+        $report['monthPlan'] = $planCalculator->monthPlan($reportInfo);
+        $report['doublePlan'] = $planCalculator->doublePlan($reportInfo);
+        $report['bonusPlan'] = $planCalculator->bonusPlan($reportInfo);
+        $report['weeksPlan'] = $planCalculator->weeksPlan($reportInfo);
+        $report['superPlan'] = $planCalculator->superPlan($report['weeksPlan'], $reportInfo);
+        $report['totalValues'] = $planCalculator->totalValues($reportInfo);
+        $report['b1'] = $planCalculator->b1Plan($reportInfo);
+        $report['b2'] = $planCalculator->b2Plan($reportInfo);
+        $report['b3'] = $planCalculator->b3Plan($reportInfo);
+        $report['b4'] = $planCalculator->b4Plan($reportInfo);
 
-        $bonuses = $this->planCalculator->getBonuses();
-        $report['salary'] = $this->planCalculator->calculateSalary($report, $reportInfo, $bonuses);
+        $bonuses = $planCalculator->getBonuses();
+        $report['salary'] = $planCalculator->calculateSalary($report, $reportInfo, $bonuses);
 
         return $report;
     }

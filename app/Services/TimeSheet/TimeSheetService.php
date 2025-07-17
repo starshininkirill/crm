@@ -37,7 +37,7 @@ final class TimeSheetService
 
     private function processDepartmentUsers(Department $department, Carbon $date): Collection
     {
-        $users = $this->salaryCalculatorService->calculateDepartmentSalary($department, $date->copy()->startOfMonth()->subMonth(), $this->status);
+        $users = $this->salaryCalculatorService->calculateDepartmentSalary($department, $date, $this->status);
         $this->loadRelationsForUsers($users, $date);
         return $this->calculateGeneralData($users, $date);
     }

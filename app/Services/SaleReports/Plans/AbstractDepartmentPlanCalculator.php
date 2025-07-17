@@ -6,37 +6,85 @@ use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
 use App\Models\Services\ServiceCategory;
 use App\Models\Global\WorkPlan;
+use App\Models\UserManagement\Position;
 use App\Services\SaleReports\DTO\ReportDTO;
+use App\Services\SaleReports\DTO\UserDataDTO;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\Collection;
 
-class DepartmentPlanCalculator
+abstract class AbstractDepartmentPlanCalculator
 {
-    private $boneses = 0;
+    protected $boneses = 0;
 
     public function __construct(
-        private UserService $userService
+        protected UserService $userService
     ) {}
- 
+
+
+    abstract public function b2Plan(UserDataDTO $reportInfo): Collection;
+
+    abstract public function b3Plan(UserDataDTO $reportInfo): Collection;
+
+    abstract public function b4Plan(UserDataDTO $reportInfo): Collection;
+
+    abstract protected function getLadderPlans(UserDataDTO $reportInfo): Collection;
+
+    protected function getPlan(string|int $planType, ReportDTO|UserDataDTO $reportInfo): ?WorkPlan
+    {
+        return $reportInfo->workPlans->where('type', $planType)
+            ->whereNull('position_id')
+            ->first();
+    }
+
+    public function b1Plan(UserDataDTO $reportInfo): Collection
+    {
+        $result = collect([
+            'completed' => false,
+            'bonus' => 0,
+        ]);
+
+        $plan = $this->getPlan(WorkPlan::B1_PLAN, $reportInfo);
+
+        if (!$plan) {
+            return $result;
+        }
+
+        $averageDuration = $reportInfo->callsStat->map(function ($call) {
+            return $call->duration / 60;
+        })->avg();
+
+        $averageCalls = $reportInfo->callsStat->map(function ($call) {
+            return $call->income + $call->outcome;
+        })->avg();
+
+        if ($averageDuration >= $plan->data['avgDurationCalls'] && $averageCalls >= $plan->data['avgCountCalls']) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan->data['bonus'];
+        }
+
+        if ($reportInfo->newMoney >= $plan->data['goal']) {
+            $result['completed'] = true;
+            $result['bonus'] = $plan->data['bonus'];
+        }
+
+        return $result;
+    }
+
     public function getBonuses()
     {
         $bonuses = $this->boneses;
 
         $this->boneses = 0;
+
         return $bonuses;
     }
 
-    private function getPlan(string|int $planType, ReportDTO $reportInfo): ?WorkPlan
-    {
-        return $reportInfo->workPlans->firstWhere('type', $planType);
-    }
-
-    private function updateBonus(int|float $bonus): void
+    protected function updateBonus(int|float $bonus): void
     {
         $this->boneses += $bonus;
     }
 
-    public function monthPlan(ReportDTO $reportInfo): Collection
+    public function monthPlan(UserDataDTO|ReportDTO $reportInfo): Collection
     {
         return  collect(
             [
@@ -47,7 +95,7 @@ class DepartmentPlanCalculator
         );
     }
 
-    public function doublePlan(ReportDTO $reportInfo): Collection
+    public function doublePlan(UserDataDTO $reportInfo): Collection
     {
 
         $res = collect(
@@ -75,7 +123,7 @@ class DepartmentPlanCalculator
         return $res;
     }
 
-    public function bonusPlan(ReportDTO $reportInfo): Collection
+    public function bonusPlan(UserDataDTO $reportInfo): Collection
     {
         $res = collect(
             [
@@ -102,7 +150,7 @@ class DepartmentPlanCalculator
         return $res;
     }
 
-    public function weeksPlan(ReportDTO $reportInfo): Collection
+    public function weeksPlan(ReportDTO|UserDataDTO $reportInfo): Collection
     {
         $res = collect();
         $weekPlan = $reportInfo->monthWorkPlanGoal / 4;
@@ -160,7 +208,7 @@ class DepartmentPlanCalculator
         return $res;
     }
 
-    public function weeksReport(ReportDTO $reportInfo): Collection
+    public function weeksReport(ReportDTO|UserDataDTO $reportInfo): Collection
     {
         $res = collect();
         $weeks = DateHelper::splitMonthIntoWeek($reportInfo->date);
@@ -206,7 +254,7 @@ class DepartmentPlanCalculator
         return $res;
     }
 
-    public function totalValues(ReportDTO $reportInfo): Collection
+    public function totalValues(ReportDTO|UserDataDTO $reportInfo): Collection
     {
         $res = collect([
             'newMoney' => $reportInfo->newMoney,
@@ -223,186 +271,7 @@ class DepartmentPlanCalculator
         return $res;
     }
 
-    public function b1Plan(ReportDTO $reportInfo)
-    {
-        $result = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-
-        $plan = $this->getPlan(WorkPlan::B1_PLAN, $reportInfo);
-
-        if (!$plan) {
-            return $result;
-        }
-
-        $averageDuration = $reportInfo->callsStat->map(function ($call) {
-            return $call->duration / 60;
-        })->avg();
-
-        $averageCalls = $reportInfo->callsStat->map(function ($call) {
-            return $call->income + $call->outcome;
-        })->avg();
-
-        if ($averageDuration >= $plan->data['avgDurationCalls'] && $averageCalls >= $plan->data['avgCountCalls']) {
-            $result['completed'] = true;
-            $result['bonus'] = $plan->data['bonus'];
-        }
-
-        if ($reportInfo->newMoney >= $plan->data['goal']) {
-            $result['completed'] = true;
-            $result['bonus'] = $plan->data['bonus'];
-        }
-
-        return $result;
-    }
-
-    public function b2Plan(ReportDTO $reportInfo)
-    {
-        $result = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-
-        $plan = $this->getPlan(WorkPlan::B2_PLAN, $reportInfo);
-
-        if (!$plan || empty($plan->data)) {
-            return $result;
-        }
-
-        $includedServiceIds = $plan->data['includeIds'] ?? [];
-        $excludedServiceIds = $plan->data['excludeIds'] ?? [];
-        $goal = $plan->data['goal'] ?? '';
-        $bonus = $plan->data['bonus'] ?? 0;
-
-        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
-            return $result;
-        }
-
-        $matchingContractCount = $reportInfo->contracts
-            ->filter(function ($contract) use ($includedServiceIds, $excludedServiceIds) {
-                $serviceIds = $contract->services->pluck('id');
-                if ($serviceIds->intersect($includedServiceIds)->isEmpty()) {
-                    return false;
-                }
-
-                if (!$serviceIds->intersect($excludedServiceIds)->isEmpty()) {
-                    return false;
-                }
-
-                return true;
-            })
-            ->count();
-
-        if ($matchingContractCount >= $goal) {
-            $result['completed'] = true;
-            $result['bonus'] = $bonus;
-            $this->updateBonus($bonus);
-        }
-
-        return $result;
-    }
-
-    public function b3Plan(ReportDTO $reportInfo)
-    {
-        $result = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-
-        $plan = $this->getPlan(WorkPlan::B3_PLAN, $reportInfo);
-
-        if (!$plan || empty($plan->data)) {
-            return $result;
-        }
-
-        $includedServiceIds = $plan->data['includeIds'] ?? [];
-        $includedServiceCategoriesIds = $plan->data['includedCategoryIds'] ?? [];
-        $excludeServicePairs = $plan->data['excludeServicePairs'] ?? [];
-        $goal = $plan->data['goal'] ?? '';
-        $bonus = $plan->data['bonus'] ?? 0;
-
-        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
-            return $result;
-        }
-
-        $matchingContractCount = $reportInfo->contracts
-            ->filter(function ($contract) use ($includedServiceIds, $includedServiceCategoriesIds, $excludeServicePairs) {
-                $serviceIds = $contract->services->pluck('id');
-
-                if ($serviceIds->count() < 2) {
-                    return false;
-                }
-                $servicesFromCategories = $contract->services->whereIn('service_category_id', $includedServiceCategoriesIds)->pluck('id');
-
-                $hasIncludedService = $serviceIds->intersect($includedServiceIds)->isNotEmpty();
-
-                $hasIncludedCategory = $servicesFromCategories->intersect($includedServiceCategoriesIds)->isNotEmpty();
-
-                $hasValidServices = $hasIncludedService && $hasIncludedCategory;
-
-                if (!$hasValidServices) {
-                    return false;
-                }
-
-                foreach ($excludeServicePairs as $pair) {
-                    if ($serviceIds->contains($pair[0]) && $serviceIds->contains($pair[1])) {
-                        return false;
-                    }
-                }
-
-                return true;
-            })
-            ->count();
-
-        if ($matchingContractCount >= $goal) {
-            $result['completed'] = true;
-            $result['bonus'] = $bonus;
-            $this->updateBonus($bonus);
-        }
-
-        return $result;
-    }
-
-
-    public function b4Plan(ReportDTO $reportInfo)
-    {
-        $result = collect([
-            'completed' => false,
-            'bonus' => 0,
-        ]);
-
-        $plan = $this->getPlan(WorkPlan::B4_PLAN, $reportInfo);
-
-        if (!$plan || empty($plan->data)) {
-            return $result;
-        }
-
-        $includedServiceIds = $plan->data['includeIds'] ?? [];
-        $goal = $plan->data['goal'] ?? '';
-        $bonus = $plan->data['bonus'] ?? 0;
-
-        if (empty($includedServiceIds) || !is_numeric($goal) || $goal <= 0) {
-            return $result;
-        }
-
-        $matchingContractCount = $reportInfo->contracts
-            ->filter(function ($contract) use ($includedServiceIds) {
-                $serviceIds = $contract->services->pluck('id');
-                return !$serviceIds->intersect($includedServiceIds)->isEmpty();
-            })
-            ->count();
-
-        if ($matchingContractCount >= $goal) {
-            $result['completed'] = true;
-            $result['bonus'] = $bonus;
-            $this->updateBonus($bonus);
-        }
-
-        return $result;
-    }
-
-    public function superPlan(Collection $weeks, ReportDTO $reportInfo): Collection
+    public function superPlan(Collection $weeks, UserDataDTO $reportInfo): Collection
     {
         $result = collect([
             'completed' => false,
@@ -440,7 +309,7 @@ class DepartmentPlanCalculator
     }
 
 
-    private function calculateWeeksCompleted(Collection $weeks, WorkPlan $plan): Collection
+    protected function calculateWeeksCompleted(Collection $weeks, WorkPlan $plan): Collection
     {
         $weeksCompleted = collect();
 
@@ -464,71 +333,83 @@ class DepartmentPlanCalculator
         return $weeksCompleted;
     }
 
-    public function calculateSalary(Collection $report, ReportDTO $reportInfo, float|int $bonuses): Collection
+    public function calculateSalary(Collection $report, ReportDTO|UserDataDTO $reportInfo, float|int $bonuses): Collection
     {
-        $monthWorked = $this->userService->getMonthWorked($reportInfo->user, $reportInfo->date);
-        $bonus = null;
+        $bonusPercentage = $this->calculateBonusPercentage($reportInfo);
 
         $res = collect([
             'bonuses' => $bonuses,
             'newMoney' => 0,
             'oldMoney' => 0,
-            'amount' => $bonuses
+            'amount' => $bonuses,
+            'percentage' => $bonusPercentage,
         ]);
 
-        $noPercentageMonth = $reportInfo->workPlans->where('type', WorkPlan::NO_PERCENTAGE_MONTH)->first();
-
-        
-        if ($noPercentageMonth && array_key_exists('goal', $noPercentageMonth->data) && $monthWorked > $noPercentageMonth->data['goal']) {
-            $minimalWorkPlan = $reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
-                ->whereNotNull('data.goal')
-                ->sortBy('data.goal')
-                ->skip(1)
-                ->first();
-            if ($reportInfo->newMoney < $minimalWorkPlan->data['goal']) {
-                $bonus = 0;
-            }
-        }
-
-        $workPlan = $reportInfo->workPlans->where('data.goal', '>', $reportInfo->newMoney)
-            ->where('type', WorkPlan::PERCENT_LADDER)
-            ->where('department_id', $reportInfo->mainDepartmentId)
-            ->sortBy('data.goal')
-            ->first();
-
-        if ($workPlan == null) {
-            $workPlan = $reportInfo->workPlans->where('type', WorkPlan::PERCENT_LADDER)
-                ->sortByDesc('data.bonus')
-                ->first();
-        }
-
-        if ($workPlan == null) {
-            return $res;
-        }
-
-        $bonus !== 0 ? $bonus = $workPlan->data['bonus'] : '';
-
-        $res['percentage'] = $bonus;
-        $res['newMoney'] = ($reportInfo->newMoney * $bonus) / 100;
-        $res['oldMoney'] = ($reportInfo->oldMoney * $bonus) / 100;
-
+        $res['newMoney'] = ($reportInfo->newMoney * $bonusPercentage) / 100;
+        $res['oldMoney'] = ($reportInfo->oldMoney * $bonusPercentage) / 100;
         $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
-
 
         if (!$report['b1']['completed']) {
             $b1Plan = $this->getPlan(WorkPlan::B1_PLAN, $reportInfo);
-            $res['newMoney'] = $res['newMoney'] - ($res['newMoney'] * ($b1Plan->data['bonus'] / 100));
-            $res['oldMoney'] = $res['oldMoney'] - ($res['oldMoney'] * ($b1Plan->data['bonus'] / 100));
-            $res['bonuses'] = $res['bonuses'] - ($res['bonuses'] * ($b1Plan->data['bonus'] / 100));
-        };
+            if ($b1Plan && isset($b1Plan->data['bonus'])) {
+                $penaltyPercentage = $b1Plan->data['bonus'];
+                $res['newMoney'] -= ($res['newMoney'] * ($penaltyPercentage / 100));
+                $res['oldMoney'] -= ($res['oldMoney'] * ($penaltyPercentage / 100));
+                $res['bonuses'] -= ($res['bonuses'] * ($penaltyPercentage / 100));
+            }
+        }
 
         $res['amount'] = $res['newMoney'] + $res['oldMoney'] + $res['bonuses'];
-
 
         return $res;
     }
 
-    private function checkPreviousWeek(Collection &$weeksCompleted, int $currentKey, float $currentWeekMoney, float $planGoal): void
+    private function calculateBonusPercentage(UserDataDTO $reportInfo): float
+    {
+        $allLadderPlans = $this->getLadderPlans($reportInfo);
+
+        if ($allLadderPlans->isEmpty()) {
+            return 0.0;
+        }
+
+        $topTierPlan = $allLadderPlans->firstWhere('data.goal', null);
+        $tieredPlans = $allLadderPlans->whereNotNull('data.goal')->sortBy('data.goal');
+
+        $bonusPercentage = 0.0;
+
+        $achievedPlan = $tieredPlans
+            ->where('data.goal', '<=', $reportInfo->newMoney)
+            ->last();
+
+        if ($achievedPlan) {
+            $bonusPercentage = (float) $achievedPlan->data['bonus'];
+
+            $highestTierWithGoal = $tieredPlans->last();
+            if ($topTierPlan && $reportInfo->newMoney > $highestTierWithGoal->data['goal']) {
+                $bonusPercentage = (float) $topTierPlan->data['bonus'];
+            }
+        }
+
+        $monthWorked = $this->userService->getMonthWorked($reportInfo->user, $reportInfo->date);
+        $gracePeriodPlan = $reportInfo->workPlans
+            ->where('type', WorkPlan::NO_PERCENTAGE_MONTH)
+            ->first();
+
+        if ($gracePeriodPlan && $monthWorked <= $gracePeriodPlan->data['goal'] && $bonusPercentage === 0.0) {
+            $minimalBonusPlan = $tieredPlans
+                ->where('data.bonus', '>', 0)
+                ->sortBy('data.bonus')
+                ->first();
+
+            if ($minimalBonusPlan) {
+                return (float) $minimalBonusPlan->data['bonus'];
+            }
+        }
+
+        return $bonusPercentage;
+    }
+
+    protected function checkPreviousWeek(Collection &$weeksCompleted, int $currentKey, float $currentWeekMoney, float $planGoal): void
     {
         $previousWeek = $weeksCompleted[$currentKey - 1];
         if (!$previousWeek['completed'] && $currentWeekMoney >= $planGoal / 2) {

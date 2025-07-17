@@ -8,6 +8,7 @@ use App\Models\Contracts\ContractUser;
 use App\Models\UserManagement\Department;
 use App\Models\Finance\Payment;
 use App\Models\Services\Service;
+use App\Models\UserManagement\User;
 use App\Services\ContractService;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -21,17 +22,22 @@ class SaleContractSeeder extends Seeder
     {
 
         Carbon::setTestNow('2025-02-02 10:26:39');
-        $clients = Client::factory()->count(100)->create();
+        $clients = Client::factory()->count(300)->create();
 
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonths(4);
+        $startDate = Carbon::now()->subMonths(3);
         $endDate = Carbon::now();
 
         $services = Service::query()->WhereNotNull('price')->get();
+        $service5 = $services->firstWhere('id', 5);
 
         $users = Department::getMainSaleDepartment()->allUsers($endDate, ['departmentHead'])->filter(function ($user) {
             return $user->departmentHead->isEmpty();
         })->values();
+
+        $adManager = $users->firstWhere('id', 6);
+        $otherUsers = $users->where('id', '!=', 6);
+
 
         foreach ($clients as $key => $client) {
 
@@ -49,7 +55,17 @@ class SaleContractSeeder extends Seeder
 
             $contract = Contract::create($contractData);
 
-            $contractServices = $services->random(rand(1, 5));
+            $assignedUser = null;
+            $contractServices = $services->random(rand(1, 4));
+
+            if ($adManager && ($key + 1) % 4 === 0) {
+                $assignedUser = $adManager;
+                if ($service5 && !$contractServices->contains('id', 5)) {
+                    $contractServices->push($service5);
+                }
+            } elseif ($otherUsers->isNotEmpty()) {
+                $assignedUser = $otherUsers->random();
+            }
 
             foreach ($contractServices as $service) {
                 $contract->services()->attach($service->id, [
@@ -64,13 +80,11 @@ class SaleContractSeeder extends Seeder
 
             $this->addPaymentsToContract($contract, $payments, $randomDate);
 
-            if ($users->count() > 0) {
-                $randomUser = $users->random();
-
+            if ($assignedUser) {
                 $attachData = [
                     [
                         'id' => 0,
-                        'performers' => [$randomUser->id]
+                        'performers' => [$assignedUser->id]
                     ]
                 ];
                 Carbon::setTestNow('2025-01-02 10:26:39');

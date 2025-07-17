@@ -7,17 +7,17 @@ use App\Models\Global\WorkPlan;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use Carbon\Carbon;
 use App\Services\SaleReports\DTO\ReportDTO;
-use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
+use App\Services\SaleReports\Plans\DefaultSalePlanCalculator;
 use App\Services\SaleReports\Plans\HeadsPlanCalculator;
 use App\Services\UserServices\UserService;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class HeadsReportGenerator extends BaseReportGenerator
 {
     public function __construct(
         ReportDTOBuilder $reportDTOBuilder,
         UserService $userService,
-        protected DepartmentPlanCalculator $departmentPlanCalculator,
+        protected DefaultSalePlanCalculator $DefaultSalePlanCalculator,
         protected HeadsPlanCalculator $headsPlanCalculator,
     ) {
         parent::__construct($reportDTOBuilder, $userService);
@@ -71,7 +71,7 @@ class HeadsReportGenerator extends BaseReportGenerator
 
             $report['generalPlan'] = $report['generalPlan'] + $reportData->monthWorkPlanGoal;
 
-            $monthResult = $this->departmentPlanCalculator->monthPlan($reportData);
+            $monthResult = $this->DefaultSalePlanCalculator->monthPlan($reportData);
 
             if ($monthResult['completed']) {
                 $report['completed'] = $report['completed'] + 1;

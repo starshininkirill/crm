@@ -14,7 +14,9 @@ class Position extends Model
 {
     use HasFactory, HasHistory;
 
-    protected $fillable = ['name', 'salary', 'has_probation'];
+    const PLAN_TYPE_ADVERTISING_SALE = 'advertising_sale';
+
+    protected $fillable = ['name', 'salary', 'has_probation', 'plan_type'];
 
     public function scheduledUpdates(): MorphMany
     {
