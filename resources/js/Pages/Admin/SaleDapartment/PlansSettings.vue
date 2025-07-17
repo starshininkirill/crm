@@ -97,9 +97,9 @@
             </div>
 
             <div class="w-1/2">
-                <PercentLadder :isCurrentMonth="isCurrentMonth" :percentLadder="positionalPlans[activeTab].percentLadder"
-                    :departmentId="departmentId" :propNoPercentageMonth="positionalPlans[activeTab].noPercentageMonth"
-                    :positionId="activeTab" />
+                <PercentLadder :isCurrentMonth="isCurrentMonth"
+                    :percentLadder="positionalPlans[activeTab].percentLadder" :departmentId="departmentId"
+                    :propNoPercentageMonth="positionalPlans[activeTab].noPercentageMonth" :positionId="activeTab" />
             </div>
         </div>
 
@@ -214,28 +214,39 @@ export default {
             return result;
         },
         positionalPlans() {
-            const result = {};
-            const positionIdsWithPlans = new Set(this.plans.percentLadder.filter(p => p.position_id).map(p => p.position_id));
+            // Создаем пустой объект для группировки
+            const grouped = {};
 
-            this.positions.forEach(position => {
-                if (positionIdsWithPlans.has(position.id)) {
-                    result[position.id] = {};
-                }
-            });
+            // Перебираем все типы планов ('percentLadder', 'b2Plan' и т.д.)
+            for (const [planType, plansArray] of Object.entries(this.plans)) {
 
-            for (const planType in this.plans) {
-                if (Array.isArray(this.plans[planType])) {
-                    this.plans[planType].forEach(plan => {
-                        if (plan.position_id && result[plan.position_id]) {
-                            if (!result[plan.position_id][planType]) {
-                                result[plan.position_id][planType] = [];
-                            }
-                            result[plan.position_id][planType].push(plan);
+                // Пропускаем, если это не массив планов
+                if (!Array.isArray(plansArray)) continue;
+
+                // Перебираем каждый отдельный план в массиве
+                for (const plan of plansArray) {
+
+                    // Если у плана есть position_id - это наш клиент
+                    if (plan.position_id) {
+                        const posId = plan.position_id;
+
+                        // 1. Убеждаемся, что для этой должности есть "контейнер". Если нет - создаем.
+                        if (!grouped[posId]) {
+                            grouped[posId] = {};
                         }
-                    });
+
+                        // 2. Убеждаемся, что в контейнере есть "массив" для этого типа плана. Если нет - создаем.
+                        if (!grouped[posId][planType]) {
+                            grouped[posId][planType] = [];
+                        }
+
+                        // 3. Кладем план в его ячейку.
+                        grouped[posId][planType].push(plan);
+                    }
                 }
             }
-            return result;
+
+            return grouped;
         }
     },
     methods: {

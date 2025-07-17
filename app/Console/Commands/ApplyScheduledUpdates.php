@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\UserManagement\ScheduledUpdate;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ApplyScheduledUpdates extends Command
@@ -33,8 +34,8 @@ class ApplyScheduledUpdates extends Command
             ->get();
 
         foreach ($updates as $update) {
-            Log::info("Обновления: {$update}");
             try {
+                DB::beginTransaction();
                 $model = $update->updatable;
 
                 if (!$model) {
@@ -51,17 +52,14 @@ class ApplyScheduledUpdates extends Command
                 $model->$field = $update->new_value;
                 $model->save();
 
-                Log::info("Обновлено: {$model->id} {$model}");
-
                 $update->status = ScheduledUpdate::STATUS_APPLIED;
                 $update->save();
-                Log::info("Обновлено: {$update->id} {$update}");
+                DB::commit();
             } catch (\Throwable $e) {
-
-                Log::info("Не удалось применить обновление: {$update->id}. Ошибка: {$e->getMessage()}");
                 $update->status = ScheduledUpdate::STATUS_FAILED;
                 $update->save();
 
+                DB::rollBack();
                 $this->error("Не удалось применить обновление: {$update->id}. Ошибка: {$e->getMessage()}");
                 continue;
             }
