@@ -119,7 +119,7 @@ class DocumentGenerator
             }
         }
 
-        $generatedDocument = GeneratedDocument::create([
+        $documentData = [
             'type' => $documentType,
             'deal' => $dealNumber,
             'file_name' => $documentName,
@@ -128,7 +128,22 @@ class DocumentGenerator
             'act_number' => $actNumber,
             'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : '',
             'inn' => array_key_exists('UF_CRM_1671028881', $data) ? $data['UF_CRM_1671028881'] : null,
-        ]);
+        ];
+
+        try{
+            if (
+                array_key_exists('UF_CRM_1739861052', $data) &&
+                !empty($data['UF_CRM_1739861052']) &&
+                ($date = Carbon::parse($data['UF_CRM_1739861052'], null, true)) &&
+                $date->isValid()
+            ) {
+                $documentData['document_date'] = $date->format('Y-m-d');
+            }
+        } catch (\Exception $e) {
+            $documentData['document_date'] = Carbon::now()->format('Y-m-d');
+        }
+
+        $generatedDocument = GeneratedDocument::create($documentData);
 
         if (!$generatedDocument) {
             throw new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, 'Не удалось записать договор в БД');

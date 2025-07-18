@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('act_number')->nullable();
             $table->string('creater')->nullable();
             $table->string('inn')->nullable();
+            $table->date('document_date')->nullable();
             $table->timestamps();
         });
     }

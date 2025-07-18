@@ -35,6 +35,7 @@ class DocumentGeneratorController extends Controller
                     'creater' => $document->creater,
                     'act_number' => $document->act_number,
                     'inn' => $document->inn,
+                    'document_date' => $document->document_date ? $document->document_date->format('d.m.Y') : null,
                 ];
             });
 

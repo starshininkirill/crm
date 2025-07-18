@@ -18,7 +18,8 @@ class GeneratedDocument extends Model
         'pdf_file',
         'act_number',
         'creater',
-        'inn'
+        'inn',
+        'document_date'
     ];
 
     const TYPE_DEAL = 'deal';
@@ -31,6 +32,10 @@ class GeneratedDocument extends Model
         self::TYPE_PAY => 'Счёт/Акт',
         self::TYPE_ACT => 'Акт',
         self::TYPE_INVOICE => 'Счёт/фактура',
+    ];
+
+    protected $casts = [
+        'document_date' => 'date',
     ];
 
     public function formatedType(): string

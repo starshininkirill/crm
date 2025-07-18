@@ -24,4 +24,9 @@ class GeneratedDocumentFilter extends Filter
     {
         return $this->builder->whereDate('created_at', $value);
     }
+
+    protected function documentDate(string $value): Builder
+    {
+        return $this->builder->whereDate('document_date', $value);
+    }
 }

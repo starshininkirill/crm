@@ -11,9 +11,23 @@
                     <VueSelect v-model="selectedType" :options="typeOptions" :reduce="type => type.id" label="name"
                         class="full-vue-select max-w-[200px] w-full" />
                     <input v-model="search" type="text" class="input max-w-[300px]" placeholder="Поиск...">
-                    <VueDatePicker v-model="selectedDate" class="max-w-[200px] w-full ml-auto" :auto-apply="true"
-                        format="yyyy-MM-dd" model-type="yyyy-MM-dd" placeholder="Дата" locale="ru"
-                        @update:model-value="updateDocuments" />
+
+                    <div class="flex flex-col ml-auto">
+                        <div class="label">
+                            Дата документа
+                        </div>
+                        <VueDatePicker v-model="selectedDocumentDate" class="max-w-[200px] w-full" :auto-apply="true"
+                            format="yyyy-MM-dd" model-type="yyyy-MM-dd" placeholder="Дата" locale="ru"
+                            @update:model-value="updateDocuments" />
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="label">
+                            Дата создания
+                        </div>
+                        <VueDatePicker v-model="selectedDate" class="max-w-[200px] w-full" :auto-apply="true"
+                            format="yyyy-MM-dd" model-type="yyyy-MM-dd" placeholder="Дата" locale="ru"
+                            @update:model-value="updateDocuments" />
+                    </div>
                 </div>
                 <h2 v-if="!documents.data.length" class="text-xl">Сгенерированных документов не найдено</h2>
                 <div v-if="documents.data.length" class="relative">
@@ -22,6 +36,9 @@
                             <tr>
                                 <th scope="col" class="px-3 py-2 border-x w-36">
                                     Дата
+                                </th>
+                                <th scope="col" class="px-3 py-2 border-x w-36">
+                                    Дата документа
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x w-64">
                                     Сотрудник
@@ -53,6 +70,9 @@
                             <tr v-for="document in documents.data" :key="document.id" class="table-row">
                                 <td class="px-3 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
                                     {{ document.date }}
+                                </td>
+                                <td class="px-3 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
+                                    {{ document.document_date }}
                                 </td>
                                 <td scope="row" class="px-3 py-4 border-r whitespace-nowrap">
                                     {{ document.creater }}
@@ -134,6 +154,7 @@ export default {
             search: this.filters.name || '',
             selectedType: this.filters.type || '',
             selectedDate: this.filters.date || null,
+            selectedDocumentDate: this.filters.document_date || null,
             searchTimeout: null,
             typeOptions: [
                 {
@@ -165,6 +186,7 @@ export default {
             if (this.search !== null) params.name = this.search;
             if (this.selectedType !== null) params.type = this.selectedType;
             if (this.selectedDate) params.date = this.selectedDate;
+            if (this.selectedDocumentDate) params.document_date = this.selectedDocumentDate;
 
             router.get(route('admin.document-generator.generated-documents'), params, {
                 preserveState: true,
