@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('date')->index();
             $table->string('status')->default('pending')->index();
             $table->float('hours')->nullable()->default(null);
+            $table->float('money')->nullable();
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();
             $table->string('links')->nullable();

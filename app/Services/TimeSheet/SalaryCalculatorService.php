@@ -194,18 +194,14 @@ final class SalaryCalculatorService
 
     private function calculateLatesPenalty(User $user): int
     {
-        $lates = $user->dailyWorkStatuses
-            ->where('status', DailyWorkStatus::STATUS_APPROVED)
-            ->filter(function ($dailyStatus) {
-                return $dailyStatus->workStatus &&
-                    $dailyStatus->workStatus->type === WorkStatus::TYPE_LATE;
-            });
+        $lates = $user->lateWorkStatuses
+            ->where('status', DailyWorkStatus::STATUS_APPROVED);
 
         if ($lates->isEmpty()) {
             return 0;
         }
 
-        return ($lates->count() - 1) * 300;
+        return $lates->sum('money');
     }
 
     private function calculateAdjustments($adjustments): int

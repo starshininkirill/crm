@@ -75,7 +75,7 @@ final class TimeSheetService
         $workingDays = DateHelper::getWorkingDaysInMonth($date);
         $totalWorkingHoursInMonth = count($workingDays) * 9;
 
-        $salary = (float) $user->getSalary();
+        $salary = (float) $user->calculated_salary;
         $user->salary = $salary;
 
         $secondBonus = $this->calculateSecondBonus($user);
@@ -127,6 +127,9 @@ final class TimeSheetService
         $dateStart = $date->copy()->startOfMonth();
         $dateEnd = $date->copy()->endOfMonth();
 
+        $subMonthDateStart = $dateStart->copy()->startOfMonth()->subMonth()->startOfMonth();
+        $subMonthDateEnd = $dateEnd->copy()->startOfMonth()->subMonth()->endOfMonth();
+
         $users->loadMissing(
             [
                 'department',
@@ -135,6 +138,10 @@ final class TimeSheetService
                 'departmentHead',
                 'dailyWorkStatuses' => function ($query) use ($dateStart, $dateEnd) {
                     $query->whereBetween('date', [$dateStart, $dateEnd])
+                        ->with(['workStatus']);
+                },
+                'lateWorkStatuses' => function ($query) use ($subMonthDateStart, $subMonthDateEnd) {
+                    $query->whereBetween('date', [$subMonthDateStart, $subMonthDateEnd])
                         ->with(['workStatus']);
                 },
                 'timeChecks' => function ($query) use ($dateStart, $dateEnd) {

@@ -12,7 +12,6 @@ use App\Models\UserManagement\EmploymentDetail;
 use App\Models\Global\Note;
 use App\Models\Finance\Payment;
 use App\Models\UserManagement\Position;
-use App\Models\Scopes\UserScope;
 use App\Models\TimeTracking\TimeCheck;
 use App\Models\Traits\HasFilter;
 use Carbon\Carbon;
@@ -30,14 +29,11 @@ use App\Models\TimeTracking\WorkStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasHistory, HasFilter;
-
-    const ROLE_ADMIN = 'admin';
-    const ROLE_SELLER = 'SELLER';
-    const ROLE_USER = 'user';
+    use HasApiTokens, HasFactory, Notifiable, HasHistory, HasFilter, HasRoles;
 
     protected $fillable = [
         'first_name',
@@ -48,7 +44,6 @@ class User extends Authenticatable
         'work_phone',
         'probation_start',
         'probation_end',
-        'role',
         'position_id',
         'department_id',
         'password',

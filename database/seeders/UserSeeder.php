@@ -79,7 +79,6 @@ class UserSeeder extends Seeder
             'bitrix_id' => 1,
             'email' => 'info@grampus-studio.ru',
             'password' => Hash::make('Goofy__741501'),
-            'role' => 'admin',
         ]);
         $this->createEmploymentDetailsForUser($user);
 
@@ -91,7 +90,6 @@ class UserSeeder extends Seeder
             'bitrix_id' => 1,
             'email' => 'admin@mail.ru',
             'password' => Hash::make('1409199696Rust'),
-            'role' => 'admin',
             'position_id' => 6,
             'department_id' => 4,
         ]);
@@ -268,7 +266,6 @@ class UserSeeder extends Seeder
                 'department_id' => 2,
                 'surname' => 'Иванович',
                 'position_id' => rand(2, 4), // случайная позиция из доступных для продажников
-                'role' => 'user'
             ]);
 
         // Создаем пользователей для отдела 3
@@ -280,7 +277,6 @@ class UserSeeder extends Seeder
                 'department_id' => 3,
                 'surname' => 'Иванович',
                 'position_id' => rand(2, 4),
-                'role' => 'user'
             ]);
 
         // Создаем пользователей с реальными номерами

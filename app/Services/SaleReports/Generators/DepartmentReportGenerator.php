@@ -13,6 +13,7 @@ use App\Services\SaleReports\Plans\PlanCalculatorFactory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
+use App\Services\SaleReports\DTO\UserDataDTO;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\Facades\DB;
 
@@ -95,7 +96,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
         return $res;
     }
 
-    public function pivotUsers(ReportDTO $reportData, Collection $users): Collection
+    public function pivotUsers(ReportDTO|UserDataDTO $reportData, Collection $users): Collection
     {
         $report = collect();
 

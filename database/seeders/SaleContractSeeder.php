@@ -22,10 +22,10 @@ class SaleContractSeeder extends Seeder
     {
 
         Carbon::setTestNow('2025-02-02 10:26:39');
-        $clients = Client::factory()->count(300)->create();
+        $clients = Client::factory()->count(150)->create();
 
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonths(3);
+        $startDate = Carbon::now()->subMonths(4);
         $endDate = Carbon::now();
 
         $services = Service::query()->WhereNotNull('price')->get();

@@ -7,8 +7,6 @@ use App\Helpers\DateHelper;
 use App\Models\TimeTracking\DailyWorkStatus;
 use App\Models\TimeTracking\TimeCheck;
 use App\Models\TimeTracking\WorkStatus;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
 class CheckLate
@@ -48,15 +46,34 @@ class CheckLate
             return;
         }
 
-        $newStatus = DailyWorkStatus::updateOrCreate(
+        $lateWorkStatus = WorkStatus::lateStatuses()->first();
+        if (!$lateWorkStatus) {
+            Log::warning('Не найден статус для опоздания (WorkStatus)');
+            return;
+        }
+
+        $currentDate = $event->action->date;
+        $user = $event->action->user;
+
+        $latesCountThisMonth = DailyWorkStatus::where('user_id', $user->id)
+            ->whereIn('work_status_id', WorkStatus::lateStatuses()->pluck('id'))
+            ->whereYear('date', $currentDate->year)
+            ->whereMonth('date', $currentDate->month)
+            ->whereDate('date', '<', $currentDate->toDateString())
+            ->count();
+
+        $penalty = $latesCountThisMonth === 0 ? 0 : DailyWorkStatus::LATE_PENALTY;
+
+        DailyWorkStatus::updateOrCreate(
             [
-                'date' => $event->action->date->format('Y-m-d'),
-                'user_id' => $event->action->user->id,
-                'work_status_id' => WorkStatus::lateStatuses()->first()?->id,
+                'date' => $currentDate->format('Y-m-d'),
+                'user_id' => $user->id,
+                'work_status_id' => $lateWorkStatus->id,
             ],
             [
                 'status' => DailyWorkStatus::STATUS_APPROVED,
                 'time_start' => $dateStartTime,
+                'money' => $penalty,
             ]
         );
     }

@@ -7,13 +7,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Lk\OverworkRequest;
 use App\Models\TimeTracking\DailyWorkStatus;
 use App\Models\TimeTracking\WorkStatus;
-use Illuminate\Http\Request;
+use App\Models\UserManagement\User;
 use Inertia\Inertia;
 
 class OverworkController extends Controller
 {
     public function create()
     {
+        $users = User::all();
+
         return Inertia::render('Lk/Overwork/Create');
     }
 

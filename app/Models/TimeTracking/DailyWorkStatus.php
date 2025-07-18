@@ -16,6 +16,8 @@ class DailyWorkStatus extends Model
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
 
+    const LATE_PENALTY = 300;
+
     protected $fillable = [
         'date',
         'user_id', 
@@ -27,6 +29,7 @@ class DailyWorkStatus extends Model
         'description',
         'report',
         'status',
+        'money',
     ];
 
     protected $casts = [
