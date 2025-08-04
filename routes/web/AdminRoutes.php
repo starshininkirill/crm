@@ -4,7 +4,7 @@ use App\Http\Controllers\Web\Admin\MainController;
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->middleware('role:admin')->group(function () {
+Route::prefix('admin')->middleware('checkPermission:can view admin')->group(function () {
     Route::get('/', [MainController::class, 'admin'])->name('admin');
 
     include __DIR__ . '/admin/ContractRoutes.php';

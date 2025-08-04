@@ -56,7 +56,6 @@
                         ID Шаблонов для генератора договора
                     </div>
                 </div>
-
             </div>
         </div>
     </SettingsLayout>

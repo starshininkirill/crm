@@ -2,8 +2,7 @@
 
     <Head title="Авторизация" />
 
-    <form @submit.prevent="submitForm" method="post"
-        class="p-6 border rounded-md max-w-md w-full m-auto mt-36">
+    <form @submit.prevent="submitForm" method="post" class="p-6 border rounded-md max-w-md w-full m-auto mt-36">
         <h2 class=" mb-5 text-4xl font-bold">
             Вход
         </h2>
@@ -27,10 +26,11 @@
 </template>
 
 <script>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import FormInput from '../../Components/FormInput.vue';
 import { route } from 'ziggy-js';
 import Error from '../../Components/Error.vue'
+
 
 export default {
     name: 'LoginForm',
@@ -40,7 +40,7 @@ export default {
         Error,
     },
     methods: {
-        loginSale(){
+        loginSale() {
             this.form.email = 'sale1@mail.ru';
             this.form.password = '1409199696Rust';
         }
@@ -52,11 +52,14 @@ export default {
         });
 
         const submitForm = () => {
-            form.post(route('login.attempt'), {
+            let data = form.data();
+            router.post(route('login.attempt'), data, {
+                onSuccess: () => {
+                    window.location.reload();
+                },
                 onFinish: () => {
                     form.password = null;
                 },
-
             });
         };
 

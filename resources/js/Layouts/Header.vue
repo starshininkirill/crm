@@ -8,16 +8,16 @@
                         <HeaderNavLink v-if="$page.props.user" :href="route('lk')" route="lk">
                             Личный кабинет
                         </HeaderNavLink>
-                        <HeaderNavLink v-if="$page.props.user" :href="route('admin')" route="admin">Админка
+                        <HeaderNavLink v-if="$page.props.user && can('can view admin')" :href="route('admin')" route="admin">Админка
                         </HeaderNavLink>
                     </div>
 
                     <TimeCheck v-if="$page.props.user" />
 
                     <div class="flex items-center space-x-4">
-                        <HeaderNavLink v-if="!$page.props.user" :href="route('login')" route="login">Вход
+                        <HeaderNavLink :isLink="true" v-if="!$page.props.user" :href="route('login')" route="login">Вход
                         </HeaderNavLink>
-                        <HeaderNavLink v-if="!$page.props.user" :href="route('fastLogin')" route="fastLogin">
+                        <HeaderNavLink :isLink="true" v-if="!$page.props.user" :href="route('fastLogin')" route="fastLogin">
                             Войти как админ
                         </HeaderNavLink>
                         <span v-if="$page.props.user" class=" text-l text-white ">
@@ -37,6 +37,7 @@ import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import HeaderNavLink from '../Components/HeaderNavLink.vue';
 import TimeCheck from '../Components/TimeCheck.vue'
+import usePermissions from '../utils/usePermissions';
 
 export default {
     name: "Header",
@@ -44,11 +45,15 @@ export default {
         HeaderNavLink,
         TimeCheck
     },
+    setup() {
+        const { can } = usePermissions();
+        return { can };
+    },
     methods: {
         logout() {
             router.post(`/logout`, {
                 onSuccess: () => {
-
+                    router.reload();
                 },
                 onError: () => {
                     alert('При попытке выхода возникла ошибка');

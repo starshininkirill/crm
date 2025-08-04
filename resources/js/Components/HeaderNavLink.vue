@@ -1,5 +1,10 @@
 <template>
-    <Link :href="href"
+    <a v-if="isLink" :href="href"
+        :class="isActive() ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'"
+        class="rounded-md px-3 py-2 text-sm font-medium">
+    <slot />
+    </a>
+    <Link v-else :href="href"
         :class="isActive() ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'"
         class="rounded-md px-3 py-2 text-sm font-medium">
     <slot />
@@ -22,6 +27,10 @@ export default {
             required: true
         },
         strictMode:{
+            type: Boolean,
+            default: false,
+        },
+        isLink: {
             type: Boolean,
             default: false,
         }

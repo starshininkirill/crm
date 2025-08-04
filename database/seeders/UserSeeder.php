@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -52,6 +54,8 @@ class UserSeeder extends Seeder
             79922851746,
         ];
 
+        $this->createRoles();
+
         // Создаем тестовых администраторов
         $this->createAdmins();
 
@@ -65,6 +69,19 @@ class UserSeeder extends Seeder
 
         // Создаем записи о рабочем времени
         $this->generateTimeChecks();
+    }
+
+    protected function createRoles(): void
+    {
+        $adminRole = Role::create([
+            'name' => 'admin',
+        ]);
+
+        $canViewAdminPermission = Permission::create([
+            'name' => 'can view admin',
+        ]);
+
+        $adminRole->givePermissionTo($canViewAdminPermission);
     }
 
     protected function createAdmins(): void
@@ -81,6 +98,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('Goofy__741501'),
         ]);
         $this->createEmploymentDetailsForUser($user);
+        $user->assignRole('admin');
 
         $admin = User::create([
             'first_name' => 'Admin',
@@ -93,6 +111,7 @@ class UserSeeder extends Seeder
             'position_id' => 6,
             'department_id' => 4,
         ]);
+        $admin->assignRole('admin');
         $this->createEmploymentDetailsForUser($admin);
 
         Carbon::setTestNow('2025-03-02 10:26:39');
