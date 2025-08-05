@@ -13,33 +13,36 @@ use App\Services\ContractService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\States\Contract\ContractState;
+use Carbon\Carbon;
 
 class ContractController extends Controller
 {
     public function index()
     {
-        $contracts = Contract::with('payments')->latest()->get();
-
-        $contracts = $contracts->map(function ($contract) {
-            return [
-                'id' => $contract->id,
-                'number' => $contract->number,
-                'created_at' => $contract->created_at->format('d.m.Y'),
-                'SELLER' => $contract->SELLER() ?? [],
-                'parent' => $contract->parent ?? [],
-                'client' => $contract->client ?? [],
-                'phone' => $contract->phone ?? '',
-                'services' => $contract->services ?? [],
-                'price' => $contract->amount_price,
-                'payments' => $contract->payments->map(function ($payment) {
-                    return [
-                        'id' => $payment->id,
-                        'value' => $payment->value,
-                        'status' => $payment->status
-                    ];
-                }),
-            ];
-        })->toArray();
+        $contracts = Contract::with('payments')
+            ->orderByDesc('id')
+            ->paginate(30)
+            ->withQueryString()
+            ->through((function ($contract) {
+                return [
+                    'id' => $contract->id,
+                    'number' => $contract->number,
+                    'created_at' => $contract->created_at->format('d.m.Y'),
+                    'SELLER' => $contract->SELLER() ?? [],
+                    'parent' => $contract->parent ?? [],
+                    'client' => $contract->client ?? [],
+                    'phone' => $contract->phone ?? '',
+                    'services' => $contract->services ?? [],
+                    'price' => $contract->amount_price,
+                    'payments' => $contract->payments->map(function ($payment) {
+                        return [
+                            'id' => $payment->id,
+                            'value' => $payment->value,
+                            'status' => $payment->status
+                        ];
+                    }),
+                ];
+            }));
 
         return Inertia::render('Admin/Contract/Index', [
             'contracts' => $contracts,
@@ -67,6 +70,7 @@ class ContractController extends Controller
             'created_at' => $contract->created_at->format('d.m.Y'),
             'parent' => $contract->parent ?? '',
             'is_complex' => $contract->is_complex,
+            'type' => $contract->type,
             'services' => $contract->services->map(function ($service) {
                 return [
                     'id' => $service->id,
@@ -74,6 +78,20 @@ class ContractController extends Controller
                     'price' => TextFormaterHelper::getPrice($service->pivot->price),
                 ];
             }),
+
+            'service_months' =>  $contract->serviceMonths->load('tarif')->map(function($month){
+                return [
+                    'id' => $month->id,
+                    'price' => $month->price,
+                    'month' => $month->month,
+                    'payment_date' => $month->payment_date ? $month->payment_date->format('Y-m-d') : '',
+                    'start_service_date' => $month->start_service_date ? $month->start_service_date->format('Y-m-d') : '',
+                    'end_service_date' => $month->end_service_date ? $month->end_service_date->format('Y-m-d') : '',
+                    'tarif' => $month->tarif->only(['id', 'name']),
+                    'payment' => $month->payment ?? '',
+                ];
+            }),
+            
 
             'payments' => $contract->payments->map(function ($payment) {
                 return [

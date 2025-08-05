@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\GlobalsSeeder;
 
 use App\Models\Finance\Organization;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

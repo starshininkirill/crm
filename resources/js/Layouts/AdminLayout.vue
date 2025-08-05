@@ -69,6 +69,14 @@
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.advertising-department.info') }"
+                :href="route('admin.advertising-department.info')">
+                Отдел Рекламы
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.settings.main') }"
                 :href="route('admin.settings.main')">
               Настройки

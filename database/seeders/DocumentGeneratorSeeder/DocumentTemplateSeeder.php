@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\DocumentGeneratorSeeder;
 
 use App\Models\Documents\DocumentTemplate;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

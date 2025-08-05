@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\GlobalsSeeder;
 
 use App\Models\Services\ServiceCategory;
 use App\Models\Global\WorkPlan;

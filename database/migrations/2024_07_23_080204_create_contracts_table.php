@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Contracts\Contract;
 use App\Models\States\Contract\Created;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->dateTime('close_date')->nullable();
             $table->string('state')->default(Created::class);
             $table->boolean('is_complex')->default(false);
+            $table->string('type')->index()->default(Contract::TYPE_SITE);
         });
     }
     /**

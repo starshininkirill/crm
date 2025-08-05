@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\GlobalsSeeder;
 
 use App\Models\AdvertisingDepartment;
 use App\Models\UserManagement\Department;
@@ -19,9 +19,11 @@ class DepartmentSeeder extends Seeder
         $this->saleDepartments();
 
         $this->projectManagersDepartment();
+
+        $this->reklamaDepartment();
     }
 
-    private function projectManagersDepartment()
+    protected function projectManagersDepartment()
     {
         Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
@@ -30,7 +32,7 @@ class DepartmentSeeder extends Seeder
         ]);
     }
 
-    private function saleDepartments()
+    protected function saleDepartments()
     {
         Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
@@ -52,11 +54,33 @@ class DepartmentSeeder extends Seeder
             'parent_id' => $mainDepartment->id,
         ]);
 
+        Carbon::setTestNow();
+    }
+
+    protected function reklamaDepartment(): void
+    {
+        Carbon::setTestNow('2025-01-01 00:00:00');
         $mainDepartment = Department::create([
             'name' => 'Отдел рекламы',
             'type' => Department::DEPARTMENT_ADVERTISING,
         ]);
 
+        $mainDepartment->save();
+
+        $reklamaDepartment1 = Department::create([
+            'name' => 'Подотдел Рекламы 1',
+            'type' => Department::DEPARTMENT_ADVERTISING,
+            'parent_id' => $mainDepartment->id,
+        ]);
+
+        $reklamaDepartment2 = Department::create([
+            'name' => 'Подотдел Рекламы 2',
+            'type' => Department::DEPARTMENT_ADVERTISING,
+            'parent_id' => $mainDepartment->id,
+        ]);
+
+
         Carbon::setTestNow();
     }
+
 }

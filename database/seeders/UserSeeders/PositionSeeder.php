@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\UserSeeders;
 
 use App\Models\AdvertisingDepartment;
 use App\Models\UserManagement\Department;

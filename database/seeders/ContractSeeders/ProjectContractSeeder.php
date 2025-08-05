@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\ContractSeeders;
 
 use App\Models\Contracts\Client;
 use App\Models\Contracts\Contract;

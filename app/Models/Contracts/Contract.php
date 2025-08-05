@@ -23,6 +23,10 @@ class Contract extends Model
 {
     use HasFactory, HasStates;
 
+    const TYPE_SITE = 'site';
+    const TYPE_ADS = 'ads';
+    const TYPE_SEO = 'seo';
+
     protected $fillable = [
         'number',
         'fio',
@@ -33,6 +37,7 @@ class Contract extends Model
         'client_id',
         'close_date',
         'is_complex',
+        'type',
     ];
 
     protected $casts = [
@@ -48,6 +53,11 @@ class Contract extends Model
     public function childs()
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function serviceMonths(): HasMany
+    {
+        return $this->hasMany(ServiceMonth::class);
     }
 
     public function users(): BelongsToMany

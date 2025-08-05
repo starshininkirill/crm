@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\GlobalsSeeder;
 
 use App\Models\Global\CallHistory;
 use App\Models\UserManagement\User;

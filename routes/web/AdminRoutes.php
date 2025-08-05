@@ -17,4 +17,5 @@ Route::prefix('admin')->middleware('checkPermission:can view admin')->group(func
     include __DIR__ . '/admin/ProjectManagersDepartmentRouter.php';
     include __DIR__ . '/admin/SettingRoutes.php';
     include __DIR__ . '/admin/DocumentGeneratorRoutes.php';
+    include __DIR__ . '/admin/AdvertisingDepartmentRouter.php';
 });

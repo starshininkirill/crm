@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\ContractSeeders;
 
 use App\Models\Contracts\Client;
 use App\Models\Contracts\Contract;
@@ -22,10 +22,10 @@ class SaleContractSeeder extends Seeder
     {
 
         Carbon::setTestNow('2025-02-02 10:26:39');
-        $clients = Client::factory()->count(150)->create();
+        $clients = Client::factory()->count(50)->create();
 
         Carbon::setTestNow();
-        $startDate = Carbon::now()->subMonths(4);
+        $startDate = Carbon::now()->subMonths(2);
         $endDate = Carbon::now();
 
         $services = Service::query()->WhereNotNull('price')->get();

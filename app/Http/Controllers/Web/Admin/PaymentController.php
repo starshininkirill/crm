@@ -18,18 +18,19 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $payments = Payment::with('contract')->get();
-
-        $payments = $payments->map(function ($payment) {
-            return [
-                'id' => $payment->id,
-                'created_at' => $payment->created_at->format('H:i d.m.Y'),
-                'contract' => $payment->contract()->with('client')->first(),
-                'value' => TextFormaterHelper::getPrice($payment->value),
-                'status' => $payment->status,
-                'formatStatus' => $payment->getStatusNameAttribute(),
-            ];
-        });
+        $payments = Payment::with('contract')
+            ->paginate(30)
+            ->withQueryString()
+            ->through(function ($payment) {
+                return [
+                    'id' => $payment->id,
+                    'created_at' => $payment->created_at->format('H:i d.m.Y'),
+                    'contract' => $payment->contract()->with('client')->first(),
+                    'value' => TextFormaterHelper::getPrice($payment->value),
+                    'status' => $payment->status,
+                    'formatStatus' => $payment->getStatusNameAttribute(),
+                ];
+            });
 
         return Inertia::render('Admin/Payment/Index', [
             'payments' => $payments,

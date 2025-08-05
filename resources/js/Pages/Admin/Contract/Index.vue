@@ -4,11 +4,9 @@
         <Head title="Договоры" />
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Договоры</h1>
-           
-            <StateProgressBar :all_states="all_states" :current_state="current_state" />
 
-            <h2 v-if="!contracts.length">Договоров не найдено</h2>
-            <div v-if="contracts.length" class="overflow-x-auto">
+            <h2 v-if="!contracts.data.length">Договоров не найдено</h2>
+            <div v-if="contracts.data.length">
                 <table class="table">
                     <thead class="thead">
                         <tr>
@@ -52,7 +50,7 @@
                     </thead>
                     <tbody>
 
-                        <tr v-for="contract in contracts" :key="contract.id" class="table-row ">
+                        <tr v-for="contract in contracts.data" :key="contract.id" class="table-row ">
                             <th scope="row" class="px-2 border-x py-4 font-medium text-gray-900 whitespace-nowrap ">
                                 {{ contract.created_at }}
                             </th>
@@ -116,6 +114,8 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <Pagination :links="contracts.links" />
             </div>
         </div>
     </ContractLayout>
@@ -125,12 +125,15 @@
 import { Head } from '@inertiajs/vue3';
 import ContractLayout from '../Layouts/ContractLayout.vue';
 import StateProgressBar from './Components/StateProgressBar.vue';
+import Pagination from '../../../Components/Pagination.vue';
+
 
 export default {
     components: {
         Head,
         ContractLayout,
-        StateProgressBar
+        StateProgressBar,
+        Pagination
     },
     props: {
         contracts: {
