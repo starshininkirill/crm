@@ -58,6 +58,7 @@ class DocumentGeneratorController extends Controller
                 return [
                     'id' => $document->id,
                     'result_name' => $document->result_name,
+                    'template_name' => $document->template_name,
                     'template_id' => $document->template_id,
                     'file_path' => Storage::url($document->file),
                     'file_name' => basename($document->file),
@@ -86,6 +87,7 @@ class DocumentGeneratorController extends Controller
         DocumentGeneratorTemplate::create([
             'template_id' => $validated['template_id'],
             'result_name' => $validated['result_name'],
+            'template_name' => $validated['template_name'],
             'file' => $path,
             'use_custom_doc_number' => $validated['use_custom_doc_number'],
         ]);
@@ -98,6 +100,7 @@ class DocumentGeneratorController extends Controller
         $validated = $request->validated();
 
         $documentTemplate->result_name = $validated['result_name'];
+        $documentTemplate->template_name = $validated['template_name'];
         $documentTemplate->template_id = $validated['template_id'];
         $documentTemplate->use_custom_doc_number = $validated['use_custom_doc_number'];
         

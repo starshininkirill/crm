@@ -9,6 +9,7 @@ class DocumentTemplateFilter extends Filter
 {
     protected function templateId(string $value): Builder
     {
-        return $this->builder->where('template_id', 'like', $value . '%');
+        return $this->builder->where('template_id', 'like', $value . '%')
+            ->orWhere('template_name', 'like', '%' . $value . '%');
     }
 }

@@ -15,6 +15,7 @@ class DocumentGeneratorTemplate extends Model
         'template_id',
         'use_custom_doc_number',
         'file',
+        'template_name',
     ];
 
     public $timestamps = false;

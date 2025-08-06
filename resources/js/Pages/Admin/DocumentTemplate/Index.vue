@@ -31,6 +31,9 @@
                         </div>
                     </div>
 
+                    <FormInput v-model="form.template_name" type="text" name="name"
+                        placeholder="ИП Николаев ИНД ЛЕНД ЮР" label="Название шаблона" autocomplete="name" required />
+
                     <FormInput v-model="form.result_name" type="text" name="name" placeholder="Разработка сайта"
                         label="Название файла после генерации" autocomplete="name" required />
 
@@ -55,28 +58,31 @@
                     </div>
                     <h2 v-if="!documentTemplates.data.length" class="text-xl">Шаблонов документов не найдено</h2>
                     <div v-if="documentTemplates.data.length" class="relative">
-                        <table class="w-full table">
+                        <table class="w-full table table-fixed">
                             <thead class="thead border-b">
                                 <tr>
-                                    <th scope="col" class="px-3 py-2 border-x">
+                                    <th scope="col" class="px-3 py-2 border-x w-20">
                                         id Шаблона
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r">
-                                        Название файла после генерации
+                                    <th scope="col" class="px-3 py-2 border-r w-64">
+                                        Название шаблона
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r">
+                                    <th scope="col" class="px-3 py-2 border-r w-64">
                                         Файл
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-16">
+                                    <th scope="col" class="px-3 py-2 border-r w-52">
+                                        Название файла после генерации
+                                    </th>
+                                    <th scope="col" class="px-3 py-2 border-r w-24">
                                         Нумератор
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r ">
+                                    <th scope="col" class="px-3 py-2 border-r w-20">
                                         Скачать
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r text-right w-12">
+                                    <th scope="col" class="px-3 py-2 border-r text-right w-32">
                                         Редактировать
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-x text-right w-12">
+                                    <th scope="col" class="px-3 py-2 border-x text-right w-20">
                                         Удалить
                                     </th>
                                 </tr>
@@ -89,10 +95,13 @@
                                         {{ documentTemplate.template_id }}
                                     </td>
                                     <td class="px-3 py-4 border-r ">
-                                        {{ documentTemplate.result_name }}
+                                        {{ documentTemplate.template_name }}
                                     </td>
                                     <td class="px-3 py-4 border-r break-all">
                                         {{ documentTemplate.file_name }}
+                                    </td>
+                                    <td class="px-3 py-4 border-r ">
+                                        {{ documentTemplate.result_name }}
                                     </td>
                                     <td class="px-3 py-4 border-r break-all whitespace-nowrap">
                                         {{ documentTemplate.use_custom_doc_number ? 'Организации' : 'Общий' }}
@@ -180,6 +189,7 @@ export default {
             'template_id': null,
             'file': null,
             'result_name': null,
+            'template_name': null,
             'use_custom_doc_number': 0,
         });
 
@@ -187,6 +197,7 @@ export default {
             form.post(route('admin.document-generator.store'), {
                 onSuccess: () => {
                     form.template_id = '';
+                    form.template_name = '';
                     form.file = '';
                     form.result_name = '';
                     form.use_custom_doc_number = 0;

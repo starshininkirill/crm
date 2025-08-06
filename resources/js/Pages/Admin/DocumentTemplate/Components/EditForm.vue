@@ -6,6 +6,9 @@
 
         <Error />
 
+        <FormInput v-model="form.template_name" type="text" name="name"
+        placeholder="ИП Николаев ИНД ЛЕНД ЮР" label="Название шаблона" autocomplete="name" required />
+
         <FormInput v-model="form.result_name" type="text" name="name" placeholder="Разработка сайта"
             label="Название файла после генерации" autocomplete="name" required />
 
@@ -45,6 +48,7 @@ export default {
     },
     setup(props, context) {
         const form = useForm({
+            'template_name': props.docuementTemplate.template_name, 
             'result_name': props.docuementTemplate.result_name,
             'template_id': props.docuementTemplate.template_id,
             'file': props.docuementTemplate.file,
@@ -55,7 +59,8 @@ export default {
         const submitForm = () => {
             form.post(route('admin.document-generator.update', { documentTemplate: props.docuementTemplate.id }), {
                 onSuccess: () => {
-                    form.template_id = '';
+                    form.template_id = ''
+                    form.template_name = '';
                     form.file = '';
                     form.result_name = '';
                     form.use_custom_doc_number = 0;

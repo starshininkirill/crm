@@ -27,6 +27,7 @@ class DocumentTemplateRequest extends FormRequest
             $rules = array_merge($rules, [
                 'template_id' => 'required|integer|unique:document_generator_templates,template_id',
                 'result_name' => 'required|min:3|max:255',
+                'template_name' => 'required|min:3|max:255',
                 'file' => 'required|file',
                 'use_custom_doc_number' => 'required|boolean',
             ]);
@@ -40,6 +41,7 @@ class DocumentTemplateRequest extends FormRequest
                     Rule::unique('document_generator_templates', 'template_id')->ignore($documentTemplate->id),
                 ],
                 'result_name' => 'required|min:3|max:255',
+                'template_name' => 'required|min:3|max:255',
                 'file' => 'nullable|file',
                 'use_custom_doc_number' => 'required|boolean',
             ]);
