@@ -25,7 +25,7 @@
                         <div class="flex flex-wrap gap-2">
                             <span v-for="template in quickTemplates" :key="template"
                                 @click="form.result_name = template"
-                                class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer text-sm">
+                                class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer text-sm">
                                 {{ template }}
                             </span>
                         </div>
@@ -61,28 +61,28 @@
                         <table class="w-full table table-fixed">
                             <thead class="thead border-b">
                                 <tr>
-                                    <th scope="col" class="px-3 py-2 border-x w-20">
+                                    <th scope="col" class="px-2 py-2 border-x w-20">
                                         id Шаблона
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-64">
+                                    <th scope="col" class="px-2 py-2 border-r w-64">
                                         Название шаблона
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-64">
+                                    <th scope="col" class="px-2 py-2 border-r w-64">
                                         Файл
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-52">
+                                    <th scope="col" class="px-2 py-2 border-r w-52">
                                         Название файла после генерации
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-24">
+                                    <th scope="col" class="px-2 py-2 border-r w-24">
                                         Нумератор
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r w-20">
+                                    <th scope="col" class="px-2 py-2 border-r w-20">
                                         Скачать
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-r text-right w-32">
+                                    <th scope="col" class="px-2 py-2 border-r text-center w-32">
                                         Редактировать
                                     </th>
-                                    <th scope="col" class="px-3 py-2 border-x text-right w-20">
+                                    <th scope="col" class="px-2 py-2 border-x text-center w-20">
                                         Удалить
                                     </th>
                                 </tr>
@@ -91,34 +91,34 @@
                                 <tr v-for="documentTemplate in documentTemplates.data" :key="documentTemplate.id"
                                     class="table-row">
                                     <td scope="row"
-                                        class="px-3 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
+                                        class="px-2 py-4 border-x font-medium text-gray-900 whitespace-nowrap">
                                         {{ documentTemplate.template_id }}
                                     </td>
-                                    <td class="px-3 py-4 border-r ">
+                                    <td class="px-2 py-4 border-r ">
                                         {{ documentTemplate.template_name }}
                                     </td>
-                                    <td class="px-3 py-4 border-r break-all">
+                                    <td class="px-2 py-4 border-r break-all">
                                         {{ documentTemplate.file_name }}
                                     </td>
-                                    <td class="px-3 py-4 border-r ">
+                                    <td class="px-2 py-4 border-r ">
                                         {{ documentTemplate.result_name }}
                                     </td>
-                                    <td class="px-3 py-4 border-r break-all whitespace-nowrap">
+                                    <td class="px-2 py-4 border-r break-all whitespace-nowrap">
                                         {{ documentTemplate.use_custom_doc_number ? 'Организации' : 'Общий' }}
                                     </td>
-                                    <td class="px-3 py-4 border-r">
+                                    <td class="px-2 py-4 border-r">
                                         <a download class="font-medium text-blue-600  hover:underline"
                                             :href="documentTemplate.file_path">
                                             Скачать
                                         </a>
                                     </td>
-                                    <td class="px-3 py-4 border-r text-right">
+                                    <td class="px-2 py-4 border-r text-center">
                                         <div @click="openModal(documentTemplate)"
                                             class="font-medium text-blue-600  hover:underline cursor-pointer">
                                             Редактировать
                                         </div>
                                     </td>
-                                    <td class="px-3 py-4 border-x text-right">
+                                    <td class="px-2 py-4 border-x text-center">
                                         <button @click="deleteDocumentTemplate(documentTemplate)"
                                             class="font-medium text-red-600 hover:underline">
                                             Удалить
