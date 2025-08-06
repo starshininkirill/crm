@@ -32,7 +32,7 @@
                     </div>
 
                     <FormInput v-model="form.template_name" type="text" name="name"
-                        placeholder="ИП Николаев ИНД ЛЕНД ЮР" label="Название шаблона" autocomplete="name" required />
+                        placeholder="ИП Николаев ИНД ЛЕНД ЮР" label="Название шаблона" autocomplete="name" />
 
                     <FormInput v-model="form.result_name" type="text" name="name" placeholder="Разработка сайта"
                         label="Название файла после генерации" autocomplete="name" required />
