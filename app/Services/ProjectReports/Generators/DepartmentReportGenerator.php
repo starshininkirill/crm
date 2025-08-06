@@ -9,7 +9,6 @@ use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class DepartmentReportGenerator
 {
@@ -17,7 +16,56 @@ class DepartmentReportGenerator
         private ReportDataDTOBuilder $reportDataDTOBuilder,
     ) {}
 
-    public function generateReportSnapshot(Department $department, Carbon $date): Collection
+    public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
+    {
+        $existingReport = $this->getExistingReport($date, $department, $withOtherPayments);
+
+        if ($existingReport) {
+            return $existingReport;
+        }
+
+        $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
+
+        $users = $fullReportData->users->filter(function ($user) {
+            return $user->departmentHead->isEmpty();
+        });
+
+        $report = $users->map(function ($user) use ($fullReportData) {
+            $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
+
+            return $this->processUser($userData);
+        });
+
+        if ($withOtherPayments) {
+            $report->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
+        }
+
+        return $report;
+    }
+
+    public function getExistingReport(Carbon $date, Department $department, bool $withOtherPayments = true)
+    {
+        if (!($date->year <= now()->year && $date->month < now()->month)) {
+            return null;
+        }
+
+        $report = $this->getHistoryReport($date, $department);
+        if ($report && !$report->isEmpty()) {
+            $resultReport = $report;
+        }
+
+        $resultReport = $this->generateReportSnapshot($department, $date);
+
+        if (!$withOtherPayments) {
+            $resultReport = $resultReport->filter(function ($userReport) {
+                return array_key_exists('id', $userReport['user']);
+            });
+        }
+
+        return $resultReport;
+    }
+
+    public function generateReportSnapshot(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
     {
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
         $users = $fullReportData->users->filter(fn($user) => $user->departmentHead->isEmpty());
@@ -42,12 +90,11 @@ class DepartmentReportGenerator
                     $accountsReceivablePercent;
             }
 
+
+            $user->is_probation = $userData->isProbation;
+
             return  [
-                'user' => [
-                    'id' => $user->id,
-                    'full_name' => $user->full_name,
-                    'is_probation' => $userData->isProbation,
-                ],
+                'user' => $user,
                 'bonuses' => $totalBonuses,
                 // Дополнительные итоговые данные для быстрого доступа
                 'total_closed_contracts_sum' => $userData->closeContracts->sum('value'),
@@ -114,7 +161,7 @@ class DepartmentReportGenerator
                         ->pluck('id')->all(),
                 ],
                 'percent_ladder' => [
-                    'bonus' => $accountsReceivablePercent,
+                    'bonus' => $percentLadder,
                     'accounts_receivable_sum' => $userData->accountSeceivable->sum('value'),
                     'ladder_percent' => $percentLadder,
                     'source_payment_ids' => $userData->accountSeceivable->pluck('id')->all(),
@@ -122,7 +169,8 @@ class DepartmentReportGenerator
             ];
         });
 
-        // 4. Собираем финальный объект всего отчета.
+        $userReports->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
+
         $historyReport = HistoryReport::create([
             'version' => '1.1',
             'period' => $date,
@@ -140,37 +188,7 @@ class DepartmentReportGenerator
         return collect($historyReport->data['user_reports']);
     }
 
-    public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
-    {
-
-        // if ($date->year <= now()->year && $date->month < now()->month) {
-        //     $report = $this->getHistoryReport($date, $department);
-        //     if($report && !$report->isEmpty()){
-        //         return $report;
-        //     }
-        //     return $this->generateReportSnapshot($department, $date);
-        // }
-
-        $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
-
-        $users = $fullReportData->users->filter(function ($user) {
-            return $user->departmentHead->isEmpty();
-        });
-
-        $report = $users->map(function ($user) use ($fullReportData) {
-            $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
-
-            return $this->processUser($userData);
-        });
-
-        if ($withOtherPayments) {
-            $report->push($this->createOtherPaymentsRow($fullReportData->otherAccountSeceivable));
-        }
-
-        return $report;
-    }
-
-    protected function getHistoryReport(Carbon $date, Department $department) : Collection
+    protected function getHistoryReport(Carbon $date, Department $department): Collection
     {
         $historyReport = HistoryReport::where('type', HistoryReport::TYPE_PROJECTS_DEPARTMENT)
             ->whereYear('period', $date->year)
@@ -178,7 +196,7 @@ class DepartmentReportGenerator
             ->where('department_id', $department->id)
             ->first();
 
-        if(!$historyReport){
+        if (!$historyReport) {
             return collect();
         }
 
