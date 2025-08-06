@@ -18,4 +18,5 @@ class ReportDataDTO
         public readonly Collection $otherAccountSeceivable,
         public readonly Carbon $date,
     ) {}
+
 }

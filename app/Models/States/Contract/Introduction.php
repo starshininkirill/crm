@@ -4,16 +4,17 @@ namespace App\Models\States\Contract;
 
 use App\Models\States\Contract\ContractState;
 
-class Close extends ContractState
+class Introduction extends ContractState
 {
-    public static $name = 'Завершен';
+    public static string $name = 'introduction';
 
     public function name(): string
     {
-        return 'Завершен';
+        return 'Ведение';
     }
+
     public function order(): int
     {
-        return 4;
+        return 2;
     }
-}
+} 

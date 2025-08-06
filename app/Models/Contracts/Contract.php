@@ -203,4 +203,17 @@ class Contract extends Model
             ];
         });
     }
+
+    public function getAvailableStates(): array
+    {
+        return ContractState::getStatesForType($this->type);
+    }
+
+    public function canTransitionToState(string $stateClass): bool
+    {
+        $currentState = $this->state;
+        $newState = new $stateClass($this);
+        
+        return $currentState->canTransitionTo($newState);
+    }
 }

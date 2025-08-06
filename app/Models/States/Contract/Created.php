@@ -2,7 +2,9 @@
 
 namespace App\Models\States\Contract;
 
+use App\Models\Contracts\Contract;
 use App\Models\States\Contract\ContractState;
+use Spatie\ModelStates\State;
 
 class Created extends ContractState
 {
@@ -13,7 +15,7 @@ class Created extends ContractState
         return 'Создан';
     }
 
-    public function order(): string
+    public function order(): int
     {
         return 1;
     }

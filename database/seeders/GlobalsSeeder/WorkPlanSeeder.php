@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 
 class WorkPlanSeeder extends Seeder
 {
-    private $projectDepartmentId = 5;
+    private $projectDepartmentId = 4;
 
     public function run(): void
     {

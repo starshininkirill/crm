@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('contract_id');
             $table->foreignId('tarif_id')->nullable();
             $table->foreignId('payment_id')->nullable();
+            $table->foreignId('user_id')->nullable();
             $table->integer('month');
+            $table->string('type')->index();
             $table->date('payment_date')->nullable();
             $table->date('start_service_date');
             $table->date('end_service_date');

@@ -2,6 +2,7 @@
 
 namespace App\Services\ProjectReports\Generators;
 
+use App\Models\Finance\HistoryReport;
 use App\Models\UserManagement\Department;
 use App\Models\Global\WorkPlan;
 use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
@@ -16,8 +17,140 @@ class DepartmentReportGenerator
         private ReportDataDTOBuilder $reportDataDTOBuilder,
     ) {}
 
+    public function generateReportSnapshot(Department $department, Carbon $date): Collection
+    {
+        $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
+        $users = $fullReportData->users->filter(fn($user) => $user->departmentHead->isEmpty());
+
+        $userReports = $users->map(function ($user) use ($fullReportData) {
+            $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
+
+            $upsellsBonus = $this->calculateUpsalesBonus($userData);
+            $b1PlanResult = $this->calculateB1Plan($userData);
+            $b2PlanResult = $this->calculateB2Plan($userData);
+            $b3PlanResult = $this->calculateB3Plan($userData);
+            $b4PlanResult = $this->calculateB4Plan($userData);
+            $percentLadder = $this->calculatePercentLadder($userData);
+            $accountsReceivablePercent = $userData->accountSeceivable->sum('value') / 100 * $percentLadder;
+
+            $totalBonuses = $upsellsBonus;
+            if (!$userData->isProbation) {
+                $totalBonuses += $b1PlanResult['bonus'] +
+                    $b2PlanResult['bonus'] +
+                    $b3PlanResult['bonus'] +
+                    $b4PlanResult['bonus'] +
+                    $accountsReceivablePercent;
+            }
+
+            return  [
+                'user' => [
+                    'id' => $user->id,
+                    'full_name' => $user->full_name,
+                    'is_probation' => $userData->isProbation,
+                ],
+                'bonuses' => $totalBonuses,
+                // Дополнительные итоговые данные для быстрого доступа
+                'total_closed_contracts_sum' => $userData->closeContracts->sum('value'),
+                'close_contracts' => $userData->closeContracts,
+                'close_contracts_count' => $userData->closeContracts->count(),
+                'close_contracts_sum' => $userData->accountSeceivable->sum('value'),
+                'accounts_receivable' => $userData->accountSeceivable,
+                'accounts_receivable_sum' => $userData->accountSeceivable->sum('value'),
+                'accounts_receivable_percent' => $accountsReceivablePercent,
+                'percent_ladder' => $percentLadder,
+                'upsells' => $userData->upsails,
+                'upsells_money' => $userData->upsailsMoney,
+                'upsells_bonus' => $upsellsBonus,
+                'compexes' => $userData->compexes,
+                'individual_sites' => $userData->individualSites,
+                'ready_sites' => $userData->readySites,
+
+                'upsell_bonus' => [
+                    'bonus' => $upsellsBonus,
+                    'total_upsell_money' => $userData->upsailsMoney,
+                    'bonus_percentage' => $userData->workPlans->where('type', WorkPlan::UPSALE_BONUS)->first()->data['bonus'] ?? 0,
+                    'source_payment_ids' => $userData->upsails->pluck('id')->all(),
+                ],
+                'b1' => [
+                    'bonus' => $b1PlanResult['bonus'],
+                    'completed' => $b1PlanResult['completed'],
+                    'current_value' => $userData->individualSites,
+                    'goal' => $userData->workPlans->where('type', WorkPlan::B1_PLAN)->first()->data['goal'] ?? 0,
+                    'source_contract_ids' => $userData->closeContracts
+                        ->filter(function ($contract) use ($userData) {
+                            $categoryIds = $userData->workPlans->where('type', WorkPlan::INDIVID_CATEGORY_IDS)->pluck('data.categoryIds')->flatten()->filter();
+                            if ($categoryIds->isEmpty()) return false;
+                            return $contract->services->pluck('category.id')->intersect($categoryIds)->isNotEmpty();
+                        })
+                        ->pluck('id')->all(),
+                ],
+                'b2' => [
+                    'bonus' => $b2PlanResult['bonus'],
+                    'completed' => $b2PlanResult['completed'],
+                    'current_value' => $userData->readySites,
+                    'goal' => $userData->workPlans->where('type', WorkPlan::B2_PLAN)->first()->data['goal'] ?? 0,
+                    'source_contract_ids' => $userData->closeContracts
+                        ->filter(function ($contract) use ($userData) {
+                            $categoryIds = $userData->workPlans->where('type', WorkPlan::READY_SYTES_CATEGORY_IDS)->pluck('data.categoryIds')->flatten()->filter();
+                            if ($categoryIds->isEmpty()) return false;
+                            return $contract->services->pluck('category.id')->intersect($categoryIds)->isNotEmpty();
+                        })
+                        ->pluck('id')->all(),
+                ],
+                'b3' => [
+                    'bonus' => $b3PlanResult['bonus'],
+                    'completed' => $b3PlanResult['completed'],
+                    'current_value' => $userData->accountSeceivable->sum('value'),
+                    'goal' => $userData->workPlans->where('type', WorkPlan::B3_PLAN)->first()->data['goal'] ?? 0,
+                    'source_payment_ids' => $userData->accountSeceivable->pluck('id')->all(),
+                ],
+                'b4' => [
+                    'bonus' => $b4PlanResult['bonus'],
+                    'completed' => $b4PlanResult['completed'],
+                    'current_value' => $userData->compexes,
+                    'goal' => $userData->workPlans->where('type', WorkPlan::B4_PLAN)->first()->data['goal'] ?? 0,
+                    'source_contract_ids' => $userData->closeContracts
+                        ->where('is_complex', true)
+                        ->pluck('id')->all(),
+                ],
+                'percent_ladder' => [
+                    'bonus' => $accountsReceivablePercent,
+                    'accounts_receivable_sum' => $userData->accountSeceivable->sum('value'),
+                    'ladder_percent' => $percentLadder,
+                    'source_payment_ids' => $userData->accountSeceivable->pluck('id')->all(),
+                ],
+            ];
+        });
+
+        // 4. Собираем финальный объект всего отчета.
+        $historyReport = HistoryReport::create([
+            'version' => '1.1',
+            'period' => $date,
+            'department_id' => $department->id,
+            'type' => HistoryReport::TYPE_PROJECTS_DEPARTMENT,
+            'data' => [
+                'user_reports' => $userReports->values()->all(),
+                'other_payments' => [
+                    'total' => $fullReportData->otherAccountSeceivable->sum('value'),
+                    'source_payment_ids' => $fullReportData->otherAccountSeceivable->pluck('id')->all(),
+                ],
+            ]
+        ]);
+
+        return collect($historyReport->data['user_reports']);
+    }
+
     public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
     {
+
+        // if ($date->year <= now()->year && $date->month < now()->month) {
+        //     $report = $this->getHistoryReport($date, $department);
+        //     if($report && !$report->isEmpty()){
+        //         return $report;
+        //     }
+        //     return $this->generateReportSnapshot($department, $date);
+        // }
+
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
 
         $users = $fullReportData->users->filter(function ($user) {
@@ -35,6 +168,21 @@ class DepartmentReportGenerator
         }
 
         return $report;
+    }
+
+    protected function getHistoryReport(Carbon $date, Department $department) : Collection
+    {
+        $historyReport = HistoryReport::where('type', HistoryReport::TYPE_PROJECTS_DEPARTMENT)
+            ->whereYear('period', $date->year)
+            ->whereMonth('period', $date->month)
+            ->where('department_id', $department->id)
+            ->first();
+
+        if(!$historyReport){
+            return collect();
+        }
+
+        return collect($historyReport->data['user_reports']);
     }
 
     protected function processUser(UserDataDTO $userData): Collection
@@ -56,10 +204,10 @@ class DepartmentReportGenerator
 
         if (!$user->is_probation) {
             $totalBonuses += $b1PlanResult['bonus'] +
-            $b2PlanResult['bonus'] +
-            $b3PlanResult['bonus'] +
-            $b4PlanResult['bonus'] +
-            $accountsReceivablePercent;
+                $b2PlanResult['bonus'] +
+                $b3PlanResult['bonus'] +
+                $b4PlanResult['bonus'] +
+                $accountsReceivablePercent;
         }
 
 
@@ -73,7 +221,9 @@ class DepartmentReportGenerator
             'accounts_receivable' => $userData->accountSeceivable,
             'accounts_receivable_sum' => $userData->accountSeceivable->sum('value'),
             'accounts_receivable_percent' => $accountsReceivablePercent,
-            'percent_ladder' => $percentLadder,
+            'percent_ladder' => [
+                'bonus' => $percentLadder,
+            ],
             'upsells' => $userData->upsails,
             'upsells_money' => $userData->upsailsMoney,
             'upsells_bonus' => $upsellsBonus,
@@ -100,7 +250,9 @@ class DepartmentReportGenerator
             'accounts_receivable' => $otherPayments,
             'accounts_receivable_sum' => $sum,
             'accounts_receivable_percent' => 0,
-            'percent_ladder' => 0,
+            'percent_ladder' => [
+                'bonus' => 0
+            ],
             'upsells' => collect(),
             'upsells_money' => 0,
             'upsells_bonus' => 0,
@@ -151,7 +303,7 @@ class DepartmentReportGenerator
             return 0;
         }
 
-        return $userData->upsailsMoney / 100 * $upsalesBonusPlan->data['bonus'];
+        return  $userData->upsailsMoney / 100 * $upsalesBonusPlan->data['bonus'];
     }
 
     protected function calculateB1Plan(UserDataDTO $userData): array

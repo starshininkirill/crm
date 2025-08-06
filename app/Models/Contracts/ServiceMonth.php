@@ -3,6 +3,7 @@
 namespace App\Models\Contracts;
 
 use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,14 +14,19 @@ class ServiceMonth extends Model
 
     public $timestamps = false;
 
+    const TYPE_ADS = 'ads';
+    const TYPE_SEO = 'seo';
+
     protected $fillable = [
         'price',
         'contract_id',
         'tarif_id',
+        'payment_id',
         'month',
         'payment_date',
         'start_service_date',
-        'end_service_date'
+        'end_service_date',
+        'type',
     ];
 
     protected $casts = [
@@ -29,6 +35,10 @@ class ServiceMonth extends Model
         'end_service_date' => 'date',
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function contract(): BelongsTo
     {

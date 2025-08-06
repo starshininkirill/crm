@@ -19,6 +19,7 @@ use Inertia\Inertia;
 
 class ProjectManagersDepartmentController extends Controller
 {
+    
     public function index()
     {
         return Inertia::render('Admin/ProjectsDepartment/Index', []);
@@ -36,6 +37,8 @@ class ProjectManagersDepartmentController extends Controller
         })->values();
 
         $report = $reportService->generateFullReport($department, $date);
+
+        // dd($report);
 
         return Inertia::render('Admin/ProjectsDepartment/Report', [
             'date' => fn() => $date ? $date->format('Y-m') : now()->format('Y-m'),

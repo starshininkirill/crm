@@ -54,7 +54,7 @@ class ContractController extends Controller
     {
         $users = User::all();
 
-        $allStates = ContractState::getStates();
+        $allStates = ContractState::getStatesForType($contract->type);
 
         $currentStateData = [
             'name' => $contract?->state?->name() ?? '',
@@ -79,7 +79,7 @@ class ContractController extends Controller
                 ];
             }),
 
-            'service_months' =>  $contract->serviceMonths->load('tarif')->map(function($month){
+            'service_months' =>  $contract->serviceMonths->load(['tarif', 'payment'])->map(function ($month) {
                 return [
                     'id' => $month->id,
                     'price' => $month->price,
@@ -89,9 +89,10 @@ class ContractController extends Controller
                     'end_service_date' => $month->end_service_date ? $month->end_service_date->format('Y-m-d') : '',
                     'tarif' => $month->tarif->only(['id', 'name']),
                     'payment' => $month->payment ?? '',
+                    'user' => $month->user ?? '',
                 ];
             }),
-            
+
 
             'payments' => $contract->payments->map(function ($payment) {
                 return [
@@ -104,6 +105,20 @@ class ContractController extends Controller
             'client' => $contract->client,
             'performers' => $contract->getPerformers(),
         ];
+
+        $directPayments = $contract->payments;
+        $monthPayments = $contract->serviceMonths->pluck('payment')->filter();
+
+        $allPayments = $directPayments->concat($monthPayments)->unique('id');
+
+        $contractData['payments'] = $allPayments->map(function ($payment) {
+            return [
+                'id' => $payment->id,
+                'order' => $payment->order,
+                'value' => TextFormaterHelper::getPrice($payment->value),
+                'is_close' => $payment->status == Payment::STATUS_CLOSE,
+            ];
+        });
 
         return Inertia::render('Admin/Contract/Show', [
             'contract' => $contractData,

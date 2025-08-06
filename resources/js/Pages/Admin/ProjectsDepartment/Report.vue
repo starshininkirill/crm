@@ -71,7 +71,7 @@
                                 {{ formatPrice(row.accounts_receivable_sum) }}
                             </td>
                             <td class="px-4 py-2 text-center border-r">
-                                {{ row.percent_ladder }} %
+                                {{ row.percent_ladder.bonus }} %
                             </td>
                             <td class="px-4 py-2 text-center border-r">
                                 {{ formatPrice(row.upsells_money) }}

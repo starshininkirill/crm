@@ -64,11 +64,52 @@ class UserSeeder extends Seeder
 
         $this->createProjectManagers();
 
+        $this->createAdsTeam();
+
         // Создаем случайных пользователей через фабрику
         // $this->createFactoryUsers(50); // 50 пользователей для каждого отдела
 
         // Создаем записи о рабочем времени
         $this->generateTimeChecks();
+    }
+
+    protected function createAdsTeam()
+    {
+        Carbon::setTestNow('2025-01-02 10:26:39');
+        // Сортудники
+        $employmnts = [
+            ['Начальник', 'Рекламный', 'headads@mail.ru', 0, 7],
+            ['Сортудник', 'Рекламный 1', 'rekalama@mail.ru', 1, 6],
+            ['Сотрудник', 'Рекламный 2', 'reklama2@mail.ru', 2, 5],
+        ];
+        $department = Department::where('type', Department::DEPARTMENT_ADVERTISING)
+            ->whereNull('parent_id')
+            ->first();
+
+        $subDepart = $department->childDepartments->first();
+
+        foreach ($employmnts as $key => $person) {
+            $user = User::create([
+                'first_name' => $person[0],
+                'last_name' => $person[1],
+                'surname' => 'Рекламович',
+                'work_phone' => '89999999999',
+                'bitrix_id' => rand(2, 100),
+                'email' => $person[2],
+                'password' => Hash::make('1409199696Rust'),
+                'position_id' => $person[4],
+                'department_id' => $subDepart->id,
+                'phone' => $person[3]
+            ]);
+            
+
+            if ($person[4] == 9) {
+                $department->head_id = $user->id;
+                $department->save();
+            }
+
+            $this->createEmploymentDetailsForUser($user);
+        }
     }
 
     protected function createRoles(): void

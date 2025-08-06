@@ -5,6 +5,10 @@
                 :route="'admin.advertising-department.info'">
                 Главная
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.advertising-department.report')"
+                :route="'admin.advertising-department.report'">
+                Отчёт по сотрудникам
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>

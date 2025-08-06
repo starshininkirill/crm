@@ -221,7 +221,8 @@
                     </span>
                     <span>
                         {{ month.tarif.name }} - {{ formatPrice(month.price) }}<br>
-                        {{ month.payment ? month.payment.id : 'Нет платежа' }}
+                        {{ month.payment ? 'Платёж №' + month.payment.id : 'Нет платежа' }}<br>
+                        {{ month.user ? month.user.full_name : 'Нет сотрудника' }}
                     </span>
                 </div>
             </div>
