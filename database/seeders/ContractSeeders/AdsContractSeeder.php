@@ -25,13 +25,13 @@ class AdsContractSeeder extends Seeder
         // Carbon::setTestNow('2025-02-02 10:26:39');
         Carbon::setTestNow();
 
-        $clients = Client::factory()->count(3)->create();
+        $clients = Client::factory()->count(30)->create();
 
         $rkCats = ServiceCategory::firstWhere('type', ServiceCategory::RK);
         $services = $rkCats->services;
 
         $department = Department::where('type', Department::DEPARTMENT_ADVERTISING)->whereNull('parent_id')->first();
-        $users = $department->allUsers()->filter(function($user) use ($department){
+        $users = $department->allUsers()->filter(function ($user) use ($department) {
             return $user->id != $department->head_id;
         });
 
@@ -73,7 +73,7 @@ class AdsContractSeeder extends Seeder
                 'price' => $tarif->optimal_price,
                 'tarif_id' => $tarif->id,
                 'month' => 1,
-                'start_service_date' => Carbon::now()->subMonth(),
+                'start_service_date' => Carbon::now()->copy()->subMonth(),
                 'end_service_date' => Carbon::now()->copy(),
                 'user_id' => $randomUser->id,
                 'type' => ServiceMonth::TYPE_ADS,
@@ -86,15 +86,28 @@ class AdsContractSeeder extends Seeder
             $firstMonth->payment_id = $payment->id;
             $firstMonth->save();
 
-            $contract->serviceMonths()->create([
-                'price' => $tarif->optimal_price,
-                'tarif_id' => $tarif->id,
-                'month' => 2,
-                'start_service_date' => Carbon::now()->copy(),
-                'end_service_date' => Carbon::now()->copy()->addMonth(1),
-                'user_id' => $randomUser->id,
-                'type' => ServiceMonth::TYPE_ADS,
-            ]);
+            if (rand(0, 1)) {
+                $moreTarifs = $tarifs->where('order', '>', $tarif->order);
+                if($moreTarifs && !$moreTarifs->isEmpty()){
+                    $tarif = $tarifs->where('order', '>', $tarif->order)->random(1)->first();
+                }
+                $secondMonth = $contract->serviceMonths()->create([
+                    'price' => $tarif->optimal_price,
+                    'tarif_id' => $tarif->id,
+                    'month' => 2,
+                    'start_service_date' => Carbon::now()->copy(),
+                    'end_service_date' => Carbon::now()->copy()->addMonth(1),
+                    'user_id' => $randomUser->id,
+                    'type' => ServiceMonth::TYPE_ADS,
+                ]);
+
+                $secondPayment = Payment::create([
+                    'value' => $tarif->optimal_price,
+                    'status' => Payment::STATUS_CLOSE,
+                ]);
+                $secondMonth->payment_id = $secondPayment->id;
+                $secondMonth->save();
+            }
         }
     }
 }

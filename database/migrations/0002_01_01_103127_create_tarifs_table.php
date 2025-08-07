@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('optimal_price');
             $table->text('description');
             $table->string('type');
+            $table->string('order')->default(1);
         });
     }
 

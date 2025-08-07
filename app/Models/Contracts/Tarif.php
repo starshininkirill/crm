@@ -20,6 +20,7 @@ class Tarif extends Model
         'minimal_price',
         'optimal_price',
         'description',
-        'type'
+        'type',
+        'order'
     ];
 }

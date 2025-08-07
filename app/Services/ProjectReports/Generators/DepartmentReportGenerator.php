@@ -20,11 +20,11 @@ class DepartmentReportGenerator
     // Для отображения подходит любой тип данных (array or Obect)
     public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
     {
-        $existingReport = $this->generateHistoryFullReport($date, $department, $withOtherPayments);
+        // $existingReport = $this->generateHistoryFullReport($date, $department, $withOtherPayments);
 
-        if ($existingReport) {
-            return $existingReport;
-        }
+        // if ($existingReport) {
+        //     return $existingReport;
+        // }
 
         return $this->generateRowFullReport($date, $department, $withOtherPayments);
     }

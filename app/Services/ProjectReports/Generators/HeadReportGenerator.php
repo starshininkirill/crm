@@ -29,15 +29,16 @@ class HeadReportGenerator
     // Отчёт для отображения (array или модель)
     public function generateHeadReport(Carbon $date, ?Collection $departments = null): Collection
     {
-        $existingReport = $this->generateHistoryFullReport($date, $departments);
-        if ($existingReport) {
-            return $existingReport;
-        }
+        // $existingReport = $this->generateHistoryFullReport($date, $departments);
+        // if ($existingReport) {
+        //     return $existingReport;
+        // }
 
         return $this->generateRowFullReport($date, $departments);
     }
 
-    // Отчёт на основе сырых данных
+    // Отчёт для расчёта
+    // Для использования как основания для расчёта других отчётов
     public function generateRowFullReport(Carbon $date, ?Collection $departments = null): Collection
     {
         if ($departments === null) {
@@ -56,7 +57,8 @@ class HeadReportGenerator
         return $report;
     }
 
-    // Отчёт только для отображения (только из истории)
+    // Отчёт только для отображения!!!
+    // При использования как основания для расчёта других отчётов возникает ошибка Array not Obect!!!
     public function generateHistoryFullReport(Carbon $date, ?Collection $departments = null): ?Collection
     {
         $historyReport = $this->getHistoryReport($date);

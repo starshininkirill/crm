@@ -45,6 +45,7 @@ class Contract extends Model
         'close_date' => 'datetime',
     ];
 
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
