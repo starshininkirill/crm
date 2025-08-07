@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('creater')->nullable();
             $table->string('inn')->nullable();
             $table->date('document_date')->nullable();
+            $table->string('template_id')->nullable();
             $table->timestamps();
         });
     }

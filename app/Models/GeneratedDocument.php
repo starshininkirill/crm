@@ -19,7 +19,8 @@ class GeneratedDocument extends Model
         'act_number',
         'creater',
         'inn',
-        'document_date'
+        'document_date',
+        'template_id',
     ];
 
     const TYPE_DEAL = 'deal';

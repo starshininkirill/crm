@@ -37,13 +37,13 @@
                                 <th scope="col" class="px-3 py-2 border-x w-36">
                                     Дата
                                 </th>
-                                <th scope="col" class="px-3 py-2 border-x w-36">
+                                <th scope="col" class="px-3 py-2 border-x w-28">
                                     Дата документа
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x w-64">
                                     Сотрудник
                                 </th>
-                                <th scope="col" class="px-3 py-2 border-x w-32">
+                                <th scope="col" class="px-3 py-2 border-x w-28">
                                     Сделка
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x w-28">
@@ -52,11 +52,14 @@
                                 <th scope="col" class="px-3 py-2 border-x w-44">
                                     ИНН
                                 </th>
-                                <th scope="col" class="px-3 py-2 border-x w-40">
+                                <th scope="col" class="px-3 py-2 border-x w-36">
                                     Тип документа
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x">
                                     Название файла
+                                </th>
+                                <th scope="col" class="px-3 py-2 border-x w-24">
+                                    ID шаблона
                                 </th>
                                 <th scope="col" class="px-3 py-2 border-x w-28">
                                     WORD файл
@@ -91,6 +94,9 @@
                                 </td>
                                 <td class="px-3 py-4 border-r ">
                                     {{ document.file_name }}
+                                </td>
+                                <td class="px-3 py-4 border-r ">
+                                    {{ document.template_id }}
                                 </td>
                                 <td class="px-3 py-4 border-r text-center">
                                     <a download class="font-medium text-blue-600  hover:underline"

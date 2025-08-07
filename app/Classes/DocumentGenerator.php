@@ -128,6 +128,7 @@ class DocumentGenerator
             'act_number' => $actNumber,
             'creater' => array_key_exists('GENERATED_BY', $formatedData) ? $formatedData['GENERATED_BY'] : '',
             'inn' => array_key_exists('UF_CRM_1671028881', $data) ? $data['UF_CRM_1671028881'] : null,
+            'template_id' => $templateId,
         ];
 
         try{
