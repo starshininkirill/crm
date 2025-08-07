@@ -12,6 +12,7 @@ class HistoryReport extends Model
     use HasFactory;
 
     const TYPE_PROJECTS_DEPARTMENT = 'projects_department';
+    const TYPE_HEAD_PROJECTS_DEPARTMENT = 'head_projects_department';
 
     
     protected $fillable = [

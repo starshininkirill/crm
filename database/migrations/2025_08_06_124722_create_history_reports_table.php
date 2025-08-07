@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('history_reports', function (Blueprint $table) {
             $table->id();
             $table->string('version')->default('1.1');
-            $table->foreignId('department_id');
+            $table->foreignId('department_id')->nullable();
             $table->string('type');
             $table->date('period');
             $table->json('data');

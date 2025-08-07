@@ -5,8 +5,6 @@ namespace App\Services\ProjectReports\Generators;
 use App\Models\Finance\HistoryReport;
 use App\Models\UserManagement\Department;
 use App\Models\Global\WorkPlan;
-use App\Models\TimeTracking\WorkStatus;
-use App\Models\UserManagement\User;
 use App\Services\ProjectReports\Builders\ReportDataDTOBuilder;
 use App\Services\ProjectReports\DTO\UserDataDTO;
 use Carbon\Carbon;
@@ -18,14 +16,23 @@ class DepartmentReportGenerator
         private ReportDataDTOBuilder $reportDataDTOBuilder,
     ) {}
 
+    // Отчёт для отображения
+    // Для отображения подходит любой тип данных (array or Obect)
     public function generateFullReport(Department $department, Carbon $date, bool $withOtherPayments = true): Collection
     {
-        $existingReport = $this->getExistingReport($date, $department, $withOtherPayments);
+        $existingReport = $this->generateHistoryFullReport($date, $department, $withOtherPayments);
 
         if ($existingReport) {
             return $existingReport;
         }
 
+        return $this->generateRowFullReport($date, $department, $withOtherPayments);
+    }
+
+    // Отчёт для расчёта
+    // Для использования как основания для расчёта других отчётов
+    public function generateRowFullReport(Carbon $date, Department $department, bool $withOtherPayments = true)
+    {
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
 
         $users = $fullReportData->users->filter(function ($user) {
@@ -45,7 +52,9 @@ class DepartmentReportGenerator
         return $report;
     }
 
-    public function getExistingReport(Carbon $date, Department $department, bool $withOtherPayments = true)
+    // Отчёт только для отображения!!!
+    // При использования как основания для расчёта других отчётов возникает ошибка Array not Obect!!!
+    public function generateHistoryFullReport(Carbon $date, Department $department, bool $withOtherPayments = true)
     {
         if (!($date->year <= now()->year && $date->month < now()->month)) {
             return null;
@@ -55,7 +64,7 @@ class DepartmentReportGenerator
 
         if ($report && !$report->isEmpty()) {
             $resultReport = $report;
-        }else{
+        } else {
             $resultReport = $this->generateReportSnapshot($department, $date);
         }
 
@@ -72,8 +81,6 @@ class DepartmentReportGenerator
     {
         $fullReportData = $this->reportDataDTOBuilder->buildFullReport($date, $department);
         $users = $fullReportData->users->filter(fn($user) => $user->departmentHead->isEmpty());
-
-        $this->loadSkippedDays($users, $date);
 
         $userReports = $users->map(function ($user) use ($fullReportData) {
             $userData = $this->reportDataDTOBuilder->getUserSubdata($fullReportData, $user);
@@ -193,26 +200,6 @@ class DepartmentReportGenerator
         return collect($historyReport->data['user_reports']);
     }
 
-    protected function loadSkippedDays(Collection $users, Carbon $date)
-    {
-        if ($users->isNotEmpty()) {
-            $startDate = $date->copy()->startOfMonth()->startOfDay();
-            $endDate = $date->copy()->endOfMonth()->endOfDay();
-
-            $users->loadCount(['dailyWorkStatuses' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate])
-                    ->whereHas('workStatus', function ($query) {
-                        $query->whereIn('type', [WorkStatus::TYPE_OWN_DAY, WorkStatus::TYPE_SICK_LEAVE, WorkStatus::TYPE_VACATION]);
-                    });
-            }]);
-
-            foreach ($users as $user) {
-                $user->skipped_days = $user->daily_work_statuses_count ?? 0;
-                unset($user->daily_work_statuses_count);
-            }
-        }
-    }
-
     protected function getHistoryReport(Carbon $date, Department $department): Collection
     {
         $historyReport = HistoryReport::where('type', HistoryReport::TYPE_PROJECTS_DEPARTMENT)
@@ -220,7 +207,6 @@ class DepartmentReportGenerator
             ->whereMonth('period', $date->month)
             ->where('department_id', $department->id)
             ->first();
-
 
         if (!$historyReport) {
             return collect();

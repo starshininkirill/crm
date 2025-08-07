@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\ProjectReports\Generators;
 
 use App\Helpers\DateHelper;
+use App\Models\Finance\HistoryReport;
 use App\Models\TimeTracking\DailyWorkStatus;
 use App\Models\UserManagement\Department;
 use App\Models\Global\WorkPlan;
@@ -24,33 +25,86 @@ class HeadReportGenerator
         private Collection $workPlans,
     ) {}
 
-    public function generateHeadReport(Carbon $date, Collection $departments = null): Collection
+
+    // Отчёт для отображения (array или модель)
+    public function generateHeadReport(Carbon $date, ?Collection $departments = null): Collection
+    {
+        $existingReport = $this->generateHistoryFullReport($date, $departments);
+        if ($existingReport) {
+            return $existingReport;
+        }
+
+        return $this->generateRowFullReport($date, $departments);
+    }
+
+    // Отчёт на основе сырых данных
+    public function generateRowFullReport(Carbon $date, ?Collection $departments = null): Collection
     {
         if ($departments === null) {
             $departments = Department::where('type', Department::DEPARTMENT_PROJECT_MANAGERS)
                 ->whereNotNull('head_id')
                 ->get();
         }
-
         if ($departments->isEmpty()) {
             return collect([]);
         }
-
         $headDepartments = $departments->whereNull('parent_id')->first();
-
         $this->workPlans = $this->workPlanService->actualPlans($date, $headDepartments);
-
         $report = $departments->map(function ($department) use ($date) {
             return $this->processUser($department, $date);
         });
-
         return $report;
+    }
+
+    // Отчёт только для отображения (только из истории)
+    public function generateHistoryFullReport(Carbon $date, ?Collection $departments = null): ?Collection
+    {
+        $historyReport = $this->getHistoryReport($date);
+        
+        if ($historyReport && !$historyReport->isEmpty()) {
+            return $historyReport;
+        }
+
+        $resultReport = $this->generateReportSnapshot($date, $departments);
+
+        return null;
+    }
+
+    public function generateReportSnapshot(Carbon $date, ?Collection $departments = null): Collection
+    {
+        $report = $this->generateRowFullReport($date, $departments);
+
+        $historyReport = HistoryReport::create([
+            'version' => '1.1',
+            'period' => $date,
+            'department_id' => Department::whereNull('parent_id')
+                ->where('type', Department::DEPARTMENT_PROJECT_MANAGERS)
+                ->get()
+                ->first()
+                ?->id ?? null,
+            'type' => HistoryReport::TYPE_HEAD_PROJECTS_DEPARTMENT,
+            'data' => $report->toArray(),
+        ]);
+
+        return collect($historyReport->data);
+    }
+
+    protected function getHistoryReport(Carbon $date): ?Collection
+    {
+        $historyReport = HistoryReport::where('type', HistoryReport::TYPE_HEAD_PROJECTS_DEPARTMENT)
+            ->whereYear('period', $date->year)
+            ->whereMonth('period', $date->month)
+            ->first();
+        if (!$historyReport) {
+            return null;
+        }
+        return collect($historyReport->data);
     }
 
     protected function processUser(Department $department, $date): array
     {
-        $departmentReport = $this->departmentReportGenerator->generateFullReport($department, $date);
-        
+        $departmentReport = $this->departmentReportGenerator->generateRowFullReport($date, $department);
+
         $users = new EloquentCollection($departmentReport->pluck('user')->filter(fn($user) => !$user['is_probation']));
 
         $this->loadSkippedDays($users, $date);
@@ -106,9 +160,9 @@ class HeadReportGenerator
         $planGoal = $upsalesPlan->data['goal'] ?? 0;
         $workingDaysInMonth = DateHelper::getWorkingDaysInMonth($date)->count();
 
-        $goal = $reportWithoutProbation->map(function($report) use ($planGoal, $workingDaysInMonth) {
+        $goal = $reportWithoutProbation->map(function ($report) use ($planGoal, $workingDaysInMonth) {
             $skippedDays = $report['user']['skipped_days'] ?? 0;
-            if($skippedDays == 0){
+            if ($skippedDays == 0) {
                 return $planGoal;
             }
 
@@ -123,7 +177,7 @@ class HeadReportGenerator
         if ($upsales >= $goal) {
             $bonus = $upsales / 100 * $upsalesPlan->data['bonus'];
             return [
-                'bonus' => $bonus,  
+                'bonus' => $bonus,
                 'goal' => $goal,
                 'upsales' => $upsales,
             ];
