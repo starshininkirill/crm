@@ -50,7 +50,7 @@ class HeadReportGenerator
     protected function processUser(Department $department, $date): array
     {
         $departmentReport = $this->departmentReportGenerator->generateFullReport($department, $date);
-
+        
         $users = new EloquentCollection($departmentReport->pluck('user')->filter(fn($user) => !$user['is_probation']));
 
         $this->loadSkippedDays($users, $date);
