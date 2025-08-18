@@ -74,7 +74,7 @@
                 :href="route('admin.settings.main')">
               Настройки
               </Link>
-            </li> -->
+            </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
