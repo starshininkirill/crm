@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
         }, ARRAY_FILTER_USE_KEY);
 
         return array_merge(parent::share($request), [
+            'app_env' => app()->environment(),
             'success' => session('success'),
             'session' => $filteredSessionData,
             'errors' => function () {
@@ -54,7 +55,7 @@ class HandleInertiaRequests extends Middleware
             ] : null,
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
-                    'location' => $request->url(), // Добавляем текущий URL
+                    'location' => $request->url(), // Добавляем текущий URLё
                 ]);
             },
         ]);

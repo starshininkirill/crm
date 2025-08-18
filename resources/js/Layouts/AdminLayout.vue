@@ -5,7 +5,7 @@
         <nav class="">
           <ul class="space-y-1 p-4">
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
                 :href="route('admin.contract.index')">
@@ -13,7 +13,7 @@
               </Link>
             </li>
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.payment.index') }"
                 :href="route('admin.payment.index')">
@@ -22,14 +22,15 @@
             </li>
 
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.service.index') }"
                 :href="route('admin.service.index')">
               Услуги
               </Link>
             </li>
-            <li>
+
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }"
                 :href="route('admin.time-check.index')">
@@ -44,7 +45,7 @@
               </Link>
             </li> -->
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.info') }"
                 :href="route('admin.sale-department.info')">
@@ -52,7 +53,7 @@
               </Link>
             </li>
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.projects-department.info') }"
                 :href="route('admin.projects-department.info')">
@@ -60,7 +61,8 @@
               </Link>
             </li>
 
-            <li>
+
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.advertising-department.info') }"
                 :href="route('admin.advertising-department.info')">
@@ -68,11 +70,19 @@
               </Link>
             </li>
 
-            <li>
+            <li v-if="$page.props.app_env == 'local'">
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.settings.main') }"
                 :href="route('admin.settings.main')">
               Настройки
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.organization.index') }"
+                :href="route('admin.organization.index')">
+              Организации
               </Link>
             </li>
 
