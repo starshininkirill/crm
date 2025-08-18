@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-2 w-fit">
-        <div class=" text-2xl font-semibold mb-2">
+        <div class=" text-2xl font-semibold mb-2 flex items-center gap-2">
             План на месяц
+            <Info text="Сумма новых денег, которые менеджер должен продать за месяц" />
         </div>
         <div class="flex flex-col gap-2 mb-4">
             <div v-if="!monthPlan || !Object.keys(monthPlan).length > 0" class=" text-xl mb-4">
@@ -49,8 +50,12 @@
 <script>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
+    components: {
+        Info
+    },
     props: {
         monthPlan: {
             type: Object,
@@ -62,6 +67,10 @@ export default {
         },
         departmentId: {
             type: Number
+        },
+        info: {
+            type: String,
+            required: false
         }
     },
     data() {

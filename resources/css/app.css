@@ -46,7 +46,12 @@
 }
 
 .table-row {
-    @apply bg-white border-b hover:bg-gray-50 relative
+    @apply bg-white border-b hover:bg-gray-200 relative
+}
+
+.table-row:hover .border-r,
+.table-row:hover .border-x {
+    @apply border-gray-300;
 }
 
 @layer components {

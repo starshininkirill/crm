@@ -1,7 +1,7 @@
 <template>
     <div class="grow w-full py-8 px-2">
         <div class="flex gap-3 mb-4 border-b">
-            <AdminSubnavLink :href="route('admin.settings.index')" :route="'admin.settings.index'">
+            <AdminSubnavLink :href="route('admin.settings.main')" :route="'admin.settings.main'">
                 Основные настройки
             </AdminSubnavLink>
             <AdminSubnavLink :href="route('admin.settings.calendar')" :route="'admin.settings.calendar'">
@@ -10,8 +10,8 @@
             <AdminSubnavLink :href="route('admin.settings.finance-week')" :route="'admin.settings.finance-week'">
                 Настройка рабочих недель
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.settings.time-check')" :route="'admin.settings.time-check'">
-                Настройки Time Check
+            <AdminSubnavLink :href="route('admin.settings.staff')" :route="'admin.settings.staff'">
+                Настройки кадров
             </AdminSubnavLink>
         </div>
         <slot />

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DepartmentRequest;
-use App\Models\Department;
+use App\Models\UserManagement\Department;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

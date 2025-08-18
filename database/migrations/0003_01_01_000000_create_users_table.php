@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
             $table->string('work_phone')->nullable();
+            $table->integer('min_salary')->nullable();
             $table->integer('salary')->nullable();
             $table->date('probation_start')->nullable();
             $table->date('probation_end')->nullable();
-            $table->enum('role', ['admin', 'user'])->default('user');
             $table->foreignId('position_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
             $table->string('password');

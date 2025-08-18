@@ -1,0 +1,30 @@
+<template>
+    <div class="grow w-full py-8 px-2">
+        <div class="flex gap-3 mb-4 border-b">
+            <AdminSubnavLink :href="route('admin.advertising-department.info')"
+                :route="'admin.advertising-department.info'">
+                Главная
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.advertising-department.report')"
+                :route="'admin.advertising-department.report'">
+                Отчёт по сотрудникам
+            </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.advertising-department.plansSettings')"
+                :route="'admin.advertising-department.plansSettings'">
+                Настройка планов
+            </AdminSubnavLink>
+        </div>
+        <slot />
+    </div>
+</template>
+
+<script>
+import AdminLayout from '../../../Layouts/AdminLayout.vue';
+import AdminSubnavLink from '../../../Components/AdminSubnavLink.vue';
+
+export default {
+    name: "AdvertisingDepartmentLayout",
+    components: { AdminSubnavLink },
+    layout: AdminLayout,
+};
+</script>

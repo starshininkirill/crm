@@ -1,0 +1,339 @@
+<?php
+
+namespace App\Services\ProjectReports\Builders;
+
+use App\Helpers\DateHelper;
+use App\Models\Contracts\Contract;
+use App\Models\Contracts\ContractUser;
+use App\Models\UserManagement\Department;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
+use App\Models\Global\WorkPlan;
+use App\Services\ProjectReports\DTO\ReportDataDTO;
+use App\Services\ProjectReports\DTO\UserDataDTO;
+use App\Services\SaleReports\WorkPlans\WorkPlanService;
+use App\Services\UserServices\UserService;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
+class ReportDataDTOBuilder
+{
+    public function __construct(
+        private UserService $userService,
+        private WorkPlanService $workPlanService,
+    ) {}
+
+    public function buildFullReport(Carbon $date, Department $department): ReportDataDTO
+    {
+        $data = $this->prepareFullData($date, $department);
+        return $data;
+    }
+
+    public function prepareFullData(Carbon $date, ?Department $department)
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        $plans = $this->workPlanService->actualPlans($date, $department);
+
+        $allUsers = $department->allUsers($date, ['departmentHead']);
+        $activeUsers = $this->userService->filterUsersByStatus($allUsers, 'active', $endOfMonth);
+        $activeUserIds = $activeUsers->pluck('id');
+
+        $upsails = $this->getUpsails($endOfMonth, $activeUserIds, ContractUser::SELLER);
+        $closeContracts = $this->getCloseContracts($endOfMonth, $activeUserIds);
+        [$accountSeceivable, $otherAccountSeceivable] = $this->getAccountSeceivable($endOfMonth, $activeUserIds, ContractUser::PROJECT);
+
+        [$accountSeceivable, $otherAccountSeceivable] = $this->handleProbationUsersPayments(
+            $activeUsers,
+            $date,
+            $accountSeceivable,
+            $otherAccountSeceivable
+        );
+
+        return new ReportDataDTO(
+            $upsails,
+            $department,
+            $activeUsers,
+            $closeContracts,
+            $accountSeceivable,
+            $plans,
+            $otherAccountSeceivable,
+            $date,
+        );
+    }
+
+    public function getUserSubdata(ReportDataDTO $mainData, User $user): UserDataDTO
+    {
+        $upsails = $mainData->upsails->filter(function ($upsail) use ($user) {
+            return $upsail->contract->contractUsers->where('role', ContractUser::SELLER)->contains('user_id', $user->id);
+        });
+        $upsailsMoney = $upsails->sum('value');
+
+        $closeContracts = $mainData->closeContracts->filter(function ($contract) use ($user) {
+            return $contract->contractUsers->where('role', ContractUser::PROJECT)->contains('user_id', $user->id);
+        });
+
+        $accountSeceivable = $mainData->accountSeceivable->filter(function ($payment) use ($user) {
+            $contractUsers = $payment->contract->contractUsers;
+            $isProjectManager = $contractUsers
+                ->where('role', ContractUser::PROJECT)
+                ->where('user_id', $user->id)
+                ->isNotEmpty();
+            $isSeller = $contractUsers
+                ->where('role', ContractUser::SELLER)
+                ->where('user_id', $user->id)
+                ->isNotEmpty();
+            return $isProjectManager && !$isSeller;
+        });
+
+        $individualSites = $this->calculateIndividualSites($closeContracts, $mainData->workPlans);
+        $readySites = $this->calculateReadySites($closeContracts, $mainData->workPlans);
+        $compexes = $this->calculateCompexes($closeContracts);
+
+        $isProbation = $this->userService->isProbation($user, $mainData->date);
+
+        return new UserDataDTO(
+            $upsails,
+            $upsailsMoney,
+            $mainData->department,
+            $user,
+            $closeContracts,
+            $accountSeceivable,
+            $mainData->workPlans,
+            $individualSites,
+            $readySites,
+            $compexes,
+            $isProbation,
+        );
+    }
+
+    private function handleProbationUsersPayments(Collection $activeUsers, Carbon $date, Collection $accountSeceivable, Collection $otherAccountSeceivable): array
+    {
+        $probationUsers = $activeUsers->filter(function ($user) use ($date) {
+            return $this->userService->isProbation($user, $date);
+        });
+        
+        if ($probationUsers->isEmpty()) {
+            return [$accountSeceivable, $otherAccountSeceivable];
+        }
+        
+        $probationUserIds = $probationUsers->pluck('id');
+        
+        $probationPayments = $accountSeceivable->filter(function ($payment) use ($probationUserIds) {
+            $contractUsers = $payment->contract->contractUsers;
+            return $contractUsers
+            ->where('role', ContractUser::PROJECT)
+            ->whereIn('user_id', $probationUserIds)
+            ->isNotEmpty();
+        });
+        if ($probationPayments->isNotEmpty()) {
+            $accountSeceivable = $accountSeceivable->diff($probationPayments);
+            $otherAccountSeceivable = $otherAccountSeceivable->merge($probationPayments);
+        }
+
+        return [$accountSeceivable, $otherAccountSeceivable];
+    }
+
+    protected function getCloseContracts(Carbon $date, array|Collection $userIds)
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        if (DateHelper::isCurrentMonth($date)) {
+            $contractsQuery = Contract::query()
+                ->whereBetween('close_date', [$startOfMonth, $endOfMonth]);
+
+            $contractsQuery->whereHas('contractUsers', function ($query) use ($userIds) {
+                $query->where('role', ContractUser::PROJECT)
+                    ->whereIn('user_id', $userIds);
+            });
+
+            return $contractsQuery->with(['contractUsers.user', 'payments', 'services.category'])->get();
+        } else {
+            $targetContractIds = ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
+                ->where('new_values->role', ContractUser::PROJECT)
+                ->whereIn('new_values->user_id', $userIds)
+                ->get()
+                ->pluck('new_values.contract_id')
+                ->unique();
+
+            if ($targetContractIds->isEmpty()) {
+                return collect();
+            }
+
+            $contracts = Contract::whereIn('id', $targetContractIds)
+                ->whereBetween('close_date', [$startOfMonth, $endOfMonth])
+                ->with(['services.category'])
+                ->get();
+
+            if ($contracts->isEmpty()) {
+                return collect();
+            }
+
+            $contractIds = $contracts->pluck('id');
+
+            $historicalContractUsers = ContractUser::recreateFromQuery(
+                ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
+                    ->whereIn('new_values->contract_id', $contractIds),
+                ['user'],
+                $endOfMonth
+            )->groupBy('contract_id');
+
+            $historicalPayments = Payment::recreateFromQuery(
+                Payment::getLatestHistoricalRecordsQuery($endOfMonth)
+                    ->whereIn('new_values->contract_id', $contractIds),
+                [],
+                $endOfMonth
+            )->groupBy('contract_id');
+
+            $contracts->each(function ($contract) use ($historicalContractUsers, $historicalPayments) {
+                $contract->setRelation('contractUsers', $historicalContractUsers->get($contract->id, collect()));
+                $contract->setRelation('payments', $historicalPayments->get($contract->id, collect()));
+            });
+
+            return $contracts;
+        }
+    }
+
+    protected function getAccountSeceivable(Carbon $date, array|Collection $activeUserIds, int $role): array
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        $relations = [
+            'contract.contractUsers.user.department',
+            'contract.contractUsers.user.position',
+        ];
+
+        if (DateHelper::isCurrentMonth($date)) {
+            $allPayments = Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->with($relations)
+                ->where('status', Payment::STATUS_CLOSE)
+                ->whereNot('order', 1)
+                ->whereHas('contract.contractUsers', function ($query) use ($role) {
+                    $query->where('role', $role);
+                })
+                ->get();
+        } else {
+            $contractUserHistories = ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
+                ->where('new_values->role', $role)
+                ->pluck('new_values')
+                ->map(fn($data) => $data['contract_id']);
+
+            $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($endOfMonth)
+                ->whereBetween('new_values->created_at', [$startOfMonth, $endOfMonth])
+                ->where('new_values->status', Payment::STATUS_CLOSE)
+                ->whereNot('new_values->order', 1)
+                ->whereIn('new_values->contract_id', $contractUserHistories);
+
+            $allPayments = Payment::recreateFromQuery($paymentsHistoryQuery, $relations, $endOfMonth);
+        }
+
+        $accountSeceivable = collect();
+        $otherAccountSeceivable = collect();
+
+        $allPayments->each(function ($payment) use ($activeUserIds, &$accountSeceivable, &$otherAccountSeceivable) {
+            $contract = $payment->contract;
+
+            $isSoldByProjectManager = $contract->contractUsers
+                ->where('role', ContractUser::SELLER)
+                ->contains(function ($contractUser) {
+                    return $contractUser->user?->department?->type === Department::DEPARTMENT_PROJECT_MANAGERS;
+                });
+
+            if ($isSoldByProjectManager) {
+                $otherAccountSeceivable->push($payment);
+                return;
+            }
+
+            $hasActiveUser = $contract->contractUsers
+                ->where('role', ContractUser::PROJECT)
+                ->whereIn('user_id', $activeUserIds)
+                ->isNotEmpty();
+
+            if ($hasActiveUser) {
+                $accountSeceivable->push($payment);
+            } else {
+                $otherAccountSeceivable->push($payment);
+            }
+        });
+
+        return [$accountSeceivable, $otherAccountSeceivable];
+    }
+
+    protected function getUpsails(Carbon $date, array|Collection $userIds, int $role)
+    {
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        $relations = [
+            'contract.contractUsers.user',
+            'contract.services'
+        ];
+
+        if (DateHelper::isCurrentMonth($date)) {
+            return Payment::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->with($relations)
+                ->where('status', Payment::STATUS_CLOSE)
+                ->whereHas('contract.contractUsers', function ($query) use ($userIds, $role) {
+                    $query->where('role', $role)
+                        ->whereIn('user_id', $userIds);
+                })
+                ->get();
+        } else {
+            $contractUserHistories = ContractUser::getLatestHistoricalRecordsQuery($endOfMonth)
+                ->whereIn('new_values->user_id', $userIds)
+                ->where('new_values->role', $role)
+                ->pluck('new_values')
+                ->map(function ($data) {
+                    return $data['contract_id'];
+                });
+
+
+            $paymentsHistoryQuery = Payment::getLatestHistoricalRecordsQuery($endOfMonth)
+                ->whereBetween('new_values->created_at', [$startOfMonth, $endOfMonth])
+                ->where('new_values->status', Payment::STATUS_CLOSE)
+                ->whereIn('new_values->contract_id', $contractUserHistories);
+
+            return Payment::recreateFromQuery($paymentsHistoryQuery, $relations, $endOfMonth);
+        }
+    }
+
+    private function calculateIndividualSites(Collection $closeContracts, Collection $workPlans): int
+    {
+        return $this->calculateContractsByWorkPlanType($closeContracts, $workPlans, WorkPlan::INDIVID_CATEGORY_IDS);
+    }
+
+    private function calculateReadySites(Collection $closeContracts, Collection $workPlans): int
+    {
+        return $this->calculateContractsByWorkPlanType($closeContracts, $workPlans, WorkPlan::READY_SYTES_CATEGORY_IDS);
+    }
+
+    private function calculateContractsByWorkPlanType(Collection $closeContracts, Collection $workPlans, string $workPlanType): int
+    {
+        $categoryIds = $workPlans
+            ->where('type', $workPlanType)
+            ->pluck('data.categoryIds')
+            ->flatten()
+            ->filter();
+
+        if ($categoryIds->isEmpty()) {
+            return 0;
+        }
+
+        $contracts = $closeContracts->filter(function ($contract) use ($categoryIds) {
+            return $contract->services->pluck('category.id')->intersect($categoryIds)->isNotEmpty();
+        });
+
+        return $contracts->count();
+    }
+
+    private function calculateCompexes(Collection $closeContracts): int
+    {
+        $contracts = $closeContracts->where('is_complex', true);
+
+        return $contracts->count();
+    }
+}

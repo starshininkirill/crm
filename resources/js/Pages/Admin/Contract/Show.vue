@@ -13,6 +13,8 @@
                 </template>
             </h1>
 
+            <StateProgressBar :all_states="all_states" :current_state="current_state" />
+
             <div class="grid grid-cols-3 pr-4">
 
                 <ContractInfo :contract="contract" />
@@ -25,11 +27,12 @@
 </template>
 
 <script>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import ContractLayout from '../Layouts/ContractLayout.vue';
 import VueSelect from 'vue-select';
 import Performers from './Components/Performers.vue';
 import ContractInfo from './Components/ContractInfo.vue';
+import StateProgressBar from './Components/StateProgressBar.vue';
 
 export default {
     components: {
@@ -37,7 +40,8 @@ export default {
         VueSelect,
         Performers,
         ContractInfo,
-        ContractLayout
+        ContractLayout,
+        StateProgressBar
     },
     props: {
         contract: {
@@ -46,6 +50,14 @@ export default {
         },
         users: {
             type: Array,
+            required: true,
+        },
+        all_states: {
+            type: Array,
+            required: true,
+        },
+        current_state: {
+            type: Object,
             required: true,
         },
     },

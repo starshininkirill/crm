@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-2xl font-semibold mb-2">
+        <div class="text-2xl font-semibold mb-2 flex items-center gap-2">
             Б3 План
+            <Info :text="'Менеджеру необходимо продать ' + plan.data.goal + ' указаных комплексов услуг'" />
         </div>
         <form class="flex flex-col gap-2" @submit.prevent="submitForm(plan)">
             <div class="grid grid-cols-2 gap-3">
@@ -23,7 +24,7 @@
                     @update:selected-categories="updateIncludedCategoryIds" />
                 <div class="col-span-2">
                     <!-- Выбор пар исключений -->
-                    <ServicePairsSelector title="Выберите пары услуг, которые будут засчитываться в план"
+                    <ServicePairsSelector title="Выберите пары услуг, которые не будут засчитываться в план"
                         :initial-pairs="formattedExcludeServicePairs" :all-options="services"
                         :is-editable="isCurrentMonth" @update:selected-pairs="handleSelectedPairsUpdate" />
                 </div>
@@ -40,15 +41,17 @@ import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import FormInput from '../../../../../Components/FormInput.vue';
 import ServiceSelector from './ServiceSelector.vue';
-import ServiceCategoriesSelector from './ServiceCategoriesSelector.vue';
 import ServicePairsSelector from './ServicePairsSelector.vue';
+import ServiceCategoriesSelector from '../../../../../Components/PlanSettings/ServiceCategoriesSelector.vue';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
     components: {
         FormInput,
         ServiceSelector,
         ServiceCategoriesSelector,
-        ServicePairsSelector
+        ServicePairsSelector,
+        Info
     },
     props: {
         departmentId: {

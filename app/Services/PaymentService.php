@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\Business\BusinessException;
 use App\Helpers\TextFormaterHelper;
-use App\Models\Contract;
-use App\Models\Payment;
-use App\Models\User;
+use App\Models\Contracts\Contract;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Admin\Organization;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Organization\OrganizationRequest;
-use App\Models\Organization;
+use App\Models\Finance\Organization;
 use Inertia\Inertia;
 
 class OrganizationController extends Controller

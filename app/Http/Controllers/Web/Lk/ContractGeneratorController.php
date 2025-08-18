@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Web\Lk;
 
 use App\Http\Controllers\Controller;
-use App\Models\Option;
-use App\Models\ServiceCategory;
+use App\Models\Global\Option;
+use App\Models\Services\ServiceCategory;
 use App\Classes\DocumentGenerator;
 use App\Http\Requests\Lk\ContractGeneratorRequest;
-use App\Models\Client;
-use App\Models\ContractUser;
+use App\Models\Contracts\Client;
+use App\Models\Contracts\ContractUser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
@@ -98,7 +98,7 @@ class ContractGeneratorController extends Controller
             $contract = $client->contracts()->create($request->storeContract());
 
             $contract->addPayments($request->payments());
-            $contract->attachPerformer($request->user()->id, ContractUser::SALLER);
+            $contract->attachPerformer($request->user()->id, ContractUser::SELLER);
             $contract->services()->attach($request->services());
 
             DB::commit();

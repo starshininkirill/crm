@@ -3,7 +3,7 @@
 
         <Head title="Неразобранные платежи (СБП)" />
         <div class="contract-page-wrapper flex flex-col relative">
-            <h1 class="text-4xl font-semibold mb-6">Платежи</h1>
+            <h1 class="text-4xl font-semibold mb-6">Неразобранные платежи (СБП)</h1>
 
             <Error />
 

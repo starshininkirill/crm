@@ -4,10 +4,10 @@
         <Head title="Договоры" />
         <div class="contract-page-wrapper flex flex-col">
             <h1 class="text-4xl font-semibold mb-6">Договоры</h1>
-            <h2 v-if="!contracts.length">Договоров не найдено</h2>
-            <div v-if="contracts.length" class="overflow-x-auto">
-                <table
-                    class="table">
+
+            <h2 v-if="!contracts.data.length">Договоров не найдено</h2>
+            <div v-if="contracts.data.length">
+                <table class="table">
                     <thead class="thead">
                         <tr>
                             <th scope="col" class="px-2 py-2 border-x">
@@ -50,14 +50,13 @@
                     </thead>
                     <tbody>
 
-                        <tr v-for="contract in contracts" :key="contract.id"
-                            class="table-row ">
+                        <tr v-for="contract in contracts.data" :key="contract.id" class="table-row ">
                             <th scope="row" class="px-2 border-x py-4 font-medium text-gray-900 whitespace-nowrap ">
                                 {{ contract.created_at }}
                             </th>
                             <td class="px-2 border-r py-4">
-                                <span v-if="contract.saller">
-                                    {{ contract.saller.first_name }} {{ contract.saller.last_name }}
+                                <span v-if="contract.SELLER">
+                                    {{ contract.SELLER.first_name }} {{ contract.SELLER.last_name }}
                                 </span>
                                 <span v-else>
                                     Не прикреплён
@@ -108,12 +107,15 @@
                                 {{ formatPrice(payment.value) }}
                                 </Link>
                             </td>
-                            <td v-for="i in 5 - contract.payments.length" :key="'empty-' + i" class="px-2 border-r py-4">
+                            <td v-for="i in 5 - contract.payments.length" :key="'empty-' + i"
+                                class="px-2 border-r py-4">
 
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <Pagination :links="contracts.links" />
             </div>
         </div>
     </ContractLayout>
@@ -122,11 +124,16 @@
 <script>
 import { Head } from '@inertiajs/vue3';
 import ContractLayout from '../Layouts/ContractLayout.vue';
+import StateProgressBar from './Components/StateProgressBar.vue';
+import Pagination from '../../../Components/Pagination.vue';
+
 
 export default {
     components: {
         Head,
-        ContractLayout
+        ContractLayout,
+        StateProgressBar,
+        Pagination
     },
     props: {
         contracts: {
@@ -135,6 +142,12 @@ export default {
         paymentStatuses: {
             type: Object
         },
+        all_states: {
+            type: Array
+        },
+        current_state: {
+            type: Object
+        }
     },
 }
 

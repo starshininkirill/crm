@@ -6,11 +6,12 @@ use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FinanceWeekRequest;
 use App\Http\Requests\Admin\WorkingDayRequest;
-use App\Models\FinanceWeek;
-use App\Models\Option;
-use App\Models\Service;
-use App\Models\ServiceCategory;
-use App\Models\WorkingDay;
+use App\Models\UserManagement\EmploymentType;
+use App\Models\TimeTracking\FinanceWeek;
+use App\Models\Global\Option;
+use App\Models\Services\Service;
+use App\Models\Services\ServiceCategory;
+use App\Models\TimeTracking\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,7 +39,6 @@ class SettingsController extends Controller
             'taxNds' => $taxNds ?? [],
             'paymentDefaultLawTemplate' => $paymentDefaultLawTemplate ?? [],
             'contractRkText' => $contractRkText ?? [],
-
         ]);
     }
 
@@ -98,7 +98,7 @@ class SettingsController extends Controller
     {
         $data = $request->validated();
 
-        if (empty($data)) {
+        if (empty($data['week'])) {
             return back()->withErrors('Ошибка при обновление финансовых недель')->withInput();
         }
 
@@ -125,14 +125,14 @@ class SettingsController extends Controller
         return redirect()->back()->with('success', 'Финансовые недели успешно изменены');
     }
 
-    public function timeCheck()
+    public function staff(Request $request)
     {
-        $startTimeOption = Option::whereName('time_check_start_work_day_time')->first();
-        $breakTimeOption = Option::whereName('time_check_max_breaktime')->first();
+        $option = Option::firstWhere('name', 'ids_of_employment_types_for_generating_salary_table');
+        $employmentTypes = EmploymentType::all();
 
-        return Inertia::render('Admin/Settings/TimeCheck',[
-            'startTimeProp' => $startTimeOption->value ?? null,
-            'breakTimeProp' => $breakTimeOption->value ?? null,
+        return Inertia::render('Admin/Settings/Staff', [
+            'option' => $option,
+            'employmentTypes' => $employmentTypes,
         ]);
     }
 }

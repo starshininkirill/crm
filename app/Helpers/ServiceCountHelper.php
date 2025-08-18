@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Models\ServiceCategory;
+use App\Models\Services\ServiceCategory;
 use Illuminate\Support\Collection;
 
 class ServiceCountHelper

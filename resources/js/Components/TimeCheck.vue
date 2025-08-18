@@ -80,7 +80,7 @@ export default {
                     { action: 'start' },
                     { withCredentials: true }
                 );
-
+                
                 this.currentAction = 'start';
                 this.stopBreakTimer();
             } catch (error) {

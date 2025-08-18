@@ -1,10 +1,18 @@
 <template>
-    <div class=" flex flex-col gap-4 col-span-2 max-w-lg">
+    <div class=" flex flex-col gap-4 col-span-2 mr-8">
         <div class=" pb-4 border-b flex flex-col gap-2">
             <div class="text-2xl font-semibold">
                 Основная информация
             </div>
             <div class=" flex flex-col gap-2">
+                <div class=" font-semibold grid grid-cols-2">
+                    <span class="text-lg">
+                        Тип сделки:
+                    </span>
+                    <span>
+                        {{ contract.type }}
+                    </span>
+                </div>
                 <div class=" font-semibold grid grid-cols-2">
                     <span class="text-lg">
                         Телефон:
@@ -27,6 +35,14 @@
                     </span>
                     <span>
                         {{ contract.sale }}
+                    </span>
+                </div>
+                <div class=" font-semibold grid grid-cols-2">
+                    <span class="text-lg">
+                        Комплекс услуг:
+                    </span>
+                    <span>
+                        {{ contract.is_complex ? 'Да' : 'Нет' }}
                     </span>
                 </div>
                 <div class=" font-semibold grid grid-cols-2">
@@ -190,6 +206,23 @@
                     </span>
                     <span>
                         {{ service.name }} <br>Цена {{ service.price }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div v-if="contract.type == 'ads' || contract.type == 'seo'" class=" pb-4 border-b flex flex-col gap-2">
+            <div class="text-2xl font-semibold mb-2">
+                Ведение
+            </div>
+            <div v-for="month in contract.service_months" :key="month.id" class=" flex flex-col gap-2">
+                <div class=" font-semibold grid grid-cols-2">
+                    <span class="text-lg">
+                        Месяц {{ month.month }}
+                    </span>
+                    <span>
+                        {{ month.tarif.name }} - {{ formatPrice(month.price) }}<br>
+                        {{ month.payment ? 'Платёж №' + month.payment.id : 'Нет платежа' }}<br>
+                        {{ month.user ? month.user.full_name : 'Нет сотрудника' }}
                     </span>
                 </div>
             </div>

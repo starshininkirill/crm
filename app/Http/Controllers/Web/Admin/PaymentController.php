@@ -6,9 +6,9 @@ use App\Exceptions\Business\BusinessException;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PaymentRequest;
-use App\Models\Organization;
-use App\Models\Payment;
-use App\Models\User;
+use App\Models\Finance\Organization;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
 use App\Services\ContractService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
@@ -18,18 +18,19 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $payments = Payment::with('contract')->get();
-
-        $payments = $payments->map(function ($payment) {
-            return [
-                'id' => $payment->id,
-                'created_at' => $payment->created_at->format('H:i d.m.Y'),
-                'contract' => $payment->contract()->with('client')->first(),
-                'value' => TextFormaterHelper::getPrice($payment->value),
-                'status' => $payment->status,
-                'formatStatus' => $payment->getStatusNameAttribute(),
-            ];
-        });
+        $payments = Payment::with('contract')
+            ->paginate(30)
+            ->withQueryString()
+            ->through(function ($payment) {
+                return [
+                    'id' => $payment->id,
+                    'created_at' => $payment->created_at->format('H:i d.m.Y'),
+                    'contract' => $payment->contract()->with('client')->first(),
+                    'value' => TextFormaterHelper::getPrice($payment->value),
+                    'status' => $payment->status,
+                    'formatStatus' => $payment->getStatusNameAttribute(),
+                ];
+            });
 
         return Inertia::render('Admin/Payment/Index', [
             'payments' => $payments,
@@ -47,14 +48,16 @@ class PaymentController extends Controller
                 'status' => $payment->status,
                 'formatStatus' => $payment->getStatusNameAttribute(),
                 'inn' => $payment->inn,
+                'row_type' => $payment->type,
                 'type' => $payment->formatedType() != '' ? $payment->formatedType() : 'Не определён',
                 'is_technical' => $payment->is_technical,
-                'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('d.m.Y H:i') : 'Не подтвержён',
-                'created_at' => $payment->created_at->format('d.m.Y H:i'),
+                'confirmed_at' => $payment->confirmed_at != null ? $payment->confirmed_at->format('Y-m-d\TH:i') : 'Не подтвержён',
+                'created_at' => $payment->created_at->format('Y-m-d\TH:i'),
                 'responsible' => $payment->responsible,
                 'organization' => $payment->organization,
             ],
-            'paymentStatuses' => Payment::vueStatuses(),
+            'paymentStatuses' => Payment::ASOC_STATUSES,
+            'paymentVueStatuses' => Payment::vueStatuses(),
             'paymentTypes' => Payment::ASOC_TYPES,
             'organizations' => Organization::all(),
             'users' => User::all()

@@ -5,7 +5,7 @@ use App\Http\Controllers\Web\Admin\Departments\SaleDepartmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('sale-department')->group(function () {
-    Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.index');
+    Route::get('/', [SaleDepartmentController::class, 'index'])->name('admin.sale-department.info');
 
     Route::get('/calls', [SaleDepartmentController::class, 'callsReport'])->name('admin.sale-department.calls');
     Route::get('/heads', [SaleDepartmentController::class, 'heads'])->name('admin.sale-department.heads');

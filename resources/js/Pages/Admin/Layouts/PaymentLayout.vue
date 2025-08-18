@@ -4,10 +4,10 @@
             <AdminSubnavLink :href="route('admin.payment.index')" :route="'admin.payment.index'">
                 Все Платежи
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.payment.unsorted')" :route="'admin.payment.unsorted'">
+            <AdminSubnavLink :href="route('admin.unsorted-payment')" :route="'admin.unsorted-payment'">
                 Неразобранные платежи (РС)
             </AdminSubnavLink>
-            <AdminSubnavLink :href="route('admin.payment.unsortedSbp')" :route="'admin.payment.unsortedSbp'">
+            <AdminSubnavLink :href="route('admin.unsorted-paymentsSbp')" :route="'admin.unsorted-paymentsSbp'">
                 Неразобранные платежи (СБП)
             </AdminSubnavLink>
         </div>

@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use App\Models\FinanceWeek;
-use App\Models\WorkingDay;
+use App\Models\TimeTracking\FinanceWeek;
+use App\Models\TimeTracking\WorkingDay;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Carbon\CarbonPeriod;
@@ -174,6 +174,7 @@ class DateHelper
         $financeWeeks = FinanceWeek::where('date_start', '>=',  $startOfMonth)
             ->where('date_end', '<=', $endOfMonth)
             ->get();
+            
         if (!$financeWeeks->isEmpty()) {
             $financeWeeks->map(function ($week) {
                 $week->date_start = Carbon::parse($week->date_start);

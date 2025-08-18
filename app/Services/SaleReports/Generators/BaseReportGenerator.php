@@ -3,9 +3,10 @@
 namespace App\Services\SaleReports\Generators;
 
 use App\Helpers\DateHelper;
-use App\Models\Payment;
+use App\Models\Finance\Payment;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
 use App\Services\SaleReports\DTO\ReportDTO;
+use App\Services\SaleReports\DTO\UserDataDTO;
 use App\Services\UserServices\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -32,7 +33,7 @@ abstract class BaseReportGenerator
         ]);
     }
 
-    protected function groupPaymentsByDate(ReportDTO $reportData, Collection $payments): Collection
+    protected function groupPaymentsByDate(ReportDTO|UserDataDTO $reportData, Collection $payments): Collection
     {
         $workingDays = $reportData->workingDays;
         return $payments->groupBy(function ($payment) use ($workingDays, $reportData) {

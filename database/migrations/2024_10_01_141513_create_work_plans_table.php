@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('work_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->string('type')->index();
             $table->json('data')->nullable();
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             $table->foreignId('position_id')->nullable()->constrained('positions')->onDelete('set null');

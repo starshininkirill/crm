@@ -5,7 +5,7 @@
         <nav class="">
           <ul class="space-y-1 p-4">
 
-            <!-- <li>
+            <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.contract.index') }"
                 :href="route('admin.contract.index')">
@@ -29,20 +29,13 @@
               Услуги
               </Link>
             </li>
-
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }" :href="route('admin.user.index')">
-              Сотрудники
+                :class="{ 'bg-gray-900 text-white': isActive('admin.user.index') }"
+                :href="route('admin.time-check.index')">
+              Кадры
               </Link>
             </li>
-            <li>
-              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.time-check.index') }"
-                :href="route('admin.time-check.index')">
-              Time Check
-              </Link>
-            </li> -->
             <!-- <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
                 :class="{ 'bg-gray-900 text-white': isActive('admin.department.index') }"
@@ -51,35 +44,42 @@
               </Link>
             </li> -->
 
-            <!-- <li>
+            <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.index') }"
-                :href="route('admin.sale-department.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.sale-department.info') }"
+                :href="route('admin.sale-department.info')">
               Отдел продаж
               </Link>
             </li>
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.settings.index') }"
-                :href="route('admin.settings.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.projects-department.info') }"
+                :href="route('admin.projects-department.info')">
+              Отдел Сопровождения
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.advertising-department.info') }"
+                :href="route('admin.advertising-department.info')">
+              Отдел Рекламы
+              </Link>
+            </li>
+
+            <li>
+              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
+                :class="{ 'bg-gray-900 text-white': isActive('admin.settings.main') }"
+                :href="route('admin.settings.main')">
               Настройки
               </Link>
             </li> -->
 
             <li>
               <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.organization.index') }"
-                :href="route('admin.organization.index')">
-              Организации
-              </Link>
-            </li>
-
-
-            <li>
-              <Link class="flex items-center p-2 hover:bg-gray-900 rounded"
-                :class="{ 'bg-gray-900 text-white': isActive('admin.document-generator.index') }"
-                :href="route('admin.document-generator.index')">
+                :class="{ 'bg-gray-900 text-white': isActive('admin.document-generator.templates') }"
+                :href="route('admin.document-generator.templates')">
               Генератор документов
               </Link>
             </li>

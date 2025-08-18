@@ -5,15 +5,17 @@ namespace App\Http\Controllers\Web\Lk;
 use App\Exceptions\Business\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lk\OverworkRequest;
-use App\Models\DailyWorkStatus;
-use App\Models\WorkStatus;
-use Illuminate\Http\Request;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\TimeTracking\WorkStatus;
+use App\Models\UserManagement\User;
 use Inertia\Inertia;
 
 class OverworkController extends Controller
 {
     public function create()
     {
+        $users = User::all();
+
         return Inertia::render('Lk/Overwork/Create');
     }
 

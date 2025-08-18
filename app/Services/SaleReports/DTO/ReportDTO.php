@@ -2,9 +2,9 @@
 
 namespace App\Services\SaleReports\DTO;
 
-use App\Models\Department;
-use App\Models\User;
-use App\Models\WorkPlan;
+use App\Models\UserManagement\Department;
+use App\Models\UserManagement\User;
+use App\Models\Global\WorkPlan;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -27,8 +27,8 @@ class ReportDTO
         public Collection $servicesByCatsCount = new Collection(),
         public float $bonuses = 0,
         public Collection $workPlans = new Collection(),
-        public bool $isUserData = false,
         public Collection $callsStat = new Collection(),
         public Collection $usedPayments = new Collection(),
+        public Collection $financeWeeks = new COllection(),
     ) {}
 }

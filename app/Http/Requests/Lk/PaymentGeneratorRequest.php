@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Lk;
 
-use App\Models\Client;
-use App\Models\Contract;
+use App\Models\Contracts\Client;
+use App\Models\Contracts\Contract;
 use Illuminate\Foundation\Http\FormRequest; 
 
 class PaymentGeneratorRequest extends FormRequest

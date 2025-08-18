@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-2xl font-semibold mb-2">
+        <div class="text-2xl font-semibold mb-2 flex items-center gap-2">
             Б2 План
+            <Info :text="'Менеджеру необходимо продать ' + plan.data.goal + ' указаных услуг'" />
         </div>
         <form class="flex flex-col gap-2" @submit.prevent="submitForm(plan)">
             <div class="grid grid-cols-2 gap-3">
@@ -18,7 +19,7 @@
                 @update:selected-services="updateIncludeIds" />
 
             <!-- Исключаемые услуги -->
-            <ServiceSelector title="Выберите услуги, которые не будут засчитываться в план"
+            <ServiceSelector title="Выберите услуги, комплекс с которыми не будет засчитываться в план (прим. СЕО + Ленд)"
                 :initial-services="excludeIds.map(id => filtredServices.find(s => s.id === id))"
                 :all-options="filtredServices" :is-editable="isCurrentMonth"
                 @update:selected-services="updateExcludeIds" />
@@ -36,12 +37,14 @@ import { router } from '@inertiajs/vue3';
 import VueSelect from 'vue-select';
 import FormInput from '../../../../../Components/FormInput.vue';
 import ServiceSelector from './ServiceSelector.vue';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
     components: {
         VueSelect,
         FormInput,
         ServiceSelector,
+        Info
     },
     props: {
         propSeoServices: {

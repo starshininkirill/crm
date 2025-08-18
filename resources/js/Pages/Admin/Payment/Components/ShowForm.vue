@@ -92,6 +92,9 @@ export default {
             type: Object
         },
     },
+    data(){
+        return{}
+    }
 }
 
 </script>

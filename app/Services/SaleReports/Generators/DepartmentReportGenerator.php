@@ -3,16 +3,17 @@
 namespace App\Services\SaleReports\Generators;
 
 use App\Exceptions\Business\BusinessException;
-use App\Models\User;
+use App\Models\UserManagement\User;
 use App\Helpers\DateHelper;
 use App\Helpers\ServiceCountHelper;
-use App\Models\Department;
-use App\Models\ServiceCategory;
+use App\Models\UserManagement\Department;
+use App\Models\Services\ServiceCategory;
 use App\Services\SaleReports\Builders\ReportDTOBuilder;
+use App\Services\SaleReports\Plans\PlanCalculatorFactory;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Services\SaleReports\DTO\ReportDTO;
-use App\Services\SaleReports\Plans\DepartmentPlanCalculator;
+use App\Services\SaleReports\DTO\UserDataDTO;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +23,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
     public function __construct(
         ReportDTOBuilder $reportDTOBuilder,
         UserService $userService,
-        protected DepartmentPlanCalculator $planCalculator
+        protected PlanCalculatorFactory $planCalculatorFactory
     ) {
         parent::__construct($reportDTOBuilder, $userService);
     }
@@ -41,8 +42,6 @@ class DepartmentReportGenerator extends BaseReportGenerator
             throw new BusinessException('Сотрудник ещё не работал в этот месяц.');
         }
 
-
-
         $report = [
             'daylyReport' => $this->monthByDayReport($reportData, $user),
             'motivationReport' => $this->motivationReport($reportData, $user),
@@ -51,8 +50,6 @@ class DepartmentReportGenerator extends BaseReportGenerator
         ];
 
         $pivotUsers = $this->pivotUsers($reportData, $users);
-
-
 
         $report = array_merge($report, [
             'pivotUsers' => $pivotUsers,
@@ -99,13 +96,14 @@ class DepartmentReportGenerator extends BaseReportGenerator
         return $res;
     }
 
-    protected function pivotUsers(ReportDTO $reportData, Collection $users): Collection
+    public function pivotUsers(ReportDTO|UserDataDTO $reportData, Collection $users): Collection
     {
         $report = collect();
 
         foreach ($users as $user) {
             $res = $this->motivationReport($reportData, $user);
             $res['name'] = $user->first_name . ' ' . $user->last_name;
+            $res['user'] = $user;
             $report[] = $res;
         }
 
@@ -115,32 +113,34 @@ class DepartmentReportGenerator extends BaseReportGenerator
     protected function pivotWeek(ReportDTO $reportData): Collection
     {
         $report = collect();
+        $planCalculator = $this->planCalculatorFactory->defaultCalculator();
 
-        $report['weeksPlan'] = $this->planCalculator->weeksReport($reportData);
-        $report['totalValues'] = $this->planCalculator->totalValues($reportData);
+        $report['weeksPlan'] = $planCalculator->weeksReport($reportData);
+        $report['totalValues'] = $planCalculator->totalValues($reportData);
 
         return $report;
     }
 
-    protected function motivationReport(ReportDTO $reportData, User $user): Collection
+    protected function motivationReport(ReportDTO $reportInfo, User $user): Collection
     {
         $report = collect();
 
-        $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportData, $user);
+        $planCalculator = $this->planCalculatorFactory->makeFor($user);
+        $reportInfo = $this->reportDTOBuilder->getUserSubdata($reportInfo, $user);
 
-        $report['monthPlan'] = $this->planCalculator->monthPlan($reportInfo);
-        $report['doublePlan'] = $this->planCalculator->doublePlan($reportInfo);
-        $report['bonusPlan'] = $this->planCalculator->bonusPlan($reportInfo);
-        $report['weeksPlan'] = $this->planCalculator->weeksPlan($reportInfo);
-        $report['superPlan'] = $this->planCalculator->superPlan($report['weeksPlan'], $reportInfo);
-        $report['totalValues'] = $this->planCalculator->totalValues($reportInfo);
-        $report['b1'] = $this->planCalculator->b1Plan($reportInfo);
-        $report['b2'] = $this->planCalculator->b2Plan($reportInfo);
-        $report['b3'] = $this->planCalculator->b3Plan($reportInfo);
-        $report['b4'] = $this->planCalculator->b4Plan($reportInfo);
+        $report['monthPlan'] = $planCalculator->monthPlan($reportInfo);
+        $report['doublePlan'] = $planCalculator->doublePlan($reportInfo);
+        $report['bonusPlan'] = $planCalculator->bonusPlan($reportInfo);
+        $report['weeksPlan'] = $planCalculator->weeksPlan($reportInfo);
+        $report['superPlan'] = $planCalculator->superPlan($report['weeksPlan'], $reportInfo);
+        $report['totalValues'] = $planCalculator->totalValues($reportInfo);
+        $report['b1'] = $planCalculator->b1Plan($reportInfo);
+        $report['b2'] = $planCalculator->b2Plan($reportInfo);
+        $report['b3'] = $planCalculator->b3Plan($reportInfo);
+        $report['b4'] = $planCalculator->b4Plan($reportInfo);
 
-        $bonuses = $this->planCalculator->getBonuses();
-        $report['salary'] = $this->planCalculator->calculateSalary($report, $reportInfo, $bonuses);
+        $bonuses = $planCalculator->getBonuses();
+        $report['salary'] = $planCalculator->calculateSalary($report, $reportInfo, $bonuses);
 
         return $report;
     }
@@ -180,7 +180,7 @@ class DepartmentReportGenerator extends BaseReportGenerator
 
         $newPaymentsSum = $dayNewPayments->sum('value');
         $oldPaymentsSum = $dayOldPayments->sum('value');
-        
+
         $serviceCounts = ServiceCountHelper::calculateServiceCountsByPayments($uniqueDayNewPayments);
         return [
             'date' => Carbon::parse($day)->format('d.m.y'),

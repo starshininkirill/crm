@@ -2,9 +2,9 @@
 
 namespace App\Services\TimeCheckServices;
 
-use App\Models\DailyWorkStatus;
-use App\Models\Department;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\DailyWorkStatus;
+use App\Models\UserManagement\Department;
+use App\Models\TimeTracking\WorkStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -135,6 +135,11 @@ class ReportService
 
     private function loadUserRelations($query, array $relations, string $date): void
     {
+        $query->where(function ($query) use ($date) {
+            $query->where('fired_at', null)
+                ->orWhereBetween('fired_at', [Carbon::parse($date)->startOfMonth(), Carbon::parse($date)->endOfMonth()]);
+        });
+
         if (empty($relations)) {
             return;
         }

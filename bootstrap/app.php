@@ -1,7 +1,7 @@
 <?php
 
 use App\Exceptions\Business\BusinessException;
-use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\CheckPermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'role' => CheckRole::class,
+            'checkPermission' => CheckPermission::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             '*',
@@ -38,7 +38,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (BusinessException $e, Request $request) {
-            return response()->json(400);
             if ($request->wantsJson()) {
                 $json = [
                     'success' => false,

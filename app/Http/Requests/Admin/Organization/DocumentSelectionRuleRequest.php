@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Organization;
 
-use App\Models\DocumentSelectionRule;
+use App\Models\Documents\DocumentSelectionRule;
 use DragonCode\Support\Facades\Helpers\Arr;
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -5,41 +5,44 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Helpers\TextFormaterHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ContractRequest;
-use App\Models\Contract;
-use App\Models\Payment;
-use App\Models\Service;
-use App\Models\User;
+use App\Models\Contracts\Contract;
+use App\Models\Contracts\ContractUser;
+use App\Models\Finance\Payment;
+use App\Models\UserManagement\User;
 use App\Services\ContractService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\States\Contract\ContractState;
+use Carbon\Carbon;
 
 class ContractController extends Controller
 {
-
     public function index()
     {
-        $contracts = Contract::orderByDesc('created_at')->get();
-
-        $contracts = $contracts->map(function ($contract) {
-            return [
-                'id' => $contract->id,
-                'number' => $contract->number,
-                'created_at' => $contract->created_at->format('d.m.Y'),
-                'saller' => $contract->saller() ?? [],
-                'parent' => $contract->parent ?? [],
-                'client' => $contract->client ?? [],
-                'phone' => $contract->phone ?? '',
-                'services' => $contract->services ?? [],
-                'price' => $contract->amount_price,
-                'payments' => $contract->payments->map(function ($payment) {
-                    return [
-                        'id' => $payment->id,
-                        'value' => $payment->value,
-                        'status' => $payment->status
-                    ];
-                }),
-            ];
-        })->toArray();
+        $contracts = Contract::with('payments')
+            ->orderByDesc('id')
+            ->paginate(30)
+            ->withQueryString()
+            ->through((function ($contract) {
+                return [
+                    'id' => $contract->id,
+                    'number' => $contract->number,
+                    'created_at' => $contract->created_at->format('d.m.Y'),
+                    'SELLER' => $contract->SELLER() ?? [],
+                    'parent' => $contract->parent ?? [],
+                    'client' => $contract->client ?? [],
+                    'phone' => $contract->phone ?? '',
+                    'services' => $contract->services ?? [],
+                    'price' => $contract->amount_price,
+                    'payments' => $contract->payments->map(function ($payment) {
+                        return [
+                            'id' => $payment->id,
+                            'value' => $payment->value,
+                            'status' => $payment->status
+                        ];
+                    }),
+                ];
+            }));
 
         return Inertia::render('Admin/Contract/Index', [
             'contracts' => $contracts,
@@ -51,6 +54,13 @@ class ContractController extends Controller
     {
         $users = User::all();
 
+        $allStates = ContractState::getStatesForType($contract->type);
+
+        $currentStateData = [
+            'name' => $contract?->state?->name() ?? '',
+            'order' => $contract?->state?->order() ?? '',
+        ];
+
         $contractData = [
             'id' => $contract->id,
             'number' => $contract->number,
@@ -59,6 +69,8 @@ class ContractController extends Controller
             'sale' => TextFormaterHelper::getPrice($contract->sale ?? 0),
             'created_at' => $contract->created_at->format('d.m.Y'),
             'parent' => $contract->parent ?? '',
+            'is_complex' => $contract->is_complex,
+            'type' => $contract->type,
             'services' => $contract->services->map(function ($service) {
                 return [
                     'id' => $service->id,
@@ -66,6 +78,21 @@ class ContractController extends Controller
                     'price' => TextFormaterHelper::getPrice($service->pivot->price),
                 ];
             }),
+
+            'service_months' =>  $contract->serviceMonths->load(['tarif', 'payment'])->map(function ($month) {
+                return [
+                    'id' => $month->id,
+                    'price' => $month->price,
+                    'month' => $month->month,
+                    'payment_date' => $month->payment_date ? $month->payment_date->format('Y-m-d') : '',
+                    'start_service_date' => $month->start_service_date ? $month->start_service_date->format('Y-m-d') : '',
+                    'end_service_date' => $month->end_service_date ? $month->end_service_date->format('Y-m-d') : '',
+                    'tarif' => $month->tarif->only(['id', 'name']),
+                    'payment' => $month->payment ?? '',
+                    'user' => $month->user ?? '',
+                ];
+            }),
+
 
             'payments' => $contract->payments->map(function ($payment) {
                 return [
@@ -79,9 +106,73 @@ class ContractController extends Controller
             'performers' => $contract->getPerformers(),
         ];
 
+        $directPayments = $contract->payments;
+        $monthPayments = $contract->serviceMonths->pluck('payment')->filter();
+
+        $allPayments = $directPayments->concat($monthPayments)->unique('id');
+
+        $contractData['payments'] = $allPayments->map(function ($payment) {
+            return [
+                'id' => $payment->id,
+                'order' => $payment->order,
+                'value' => TextFormaterHelper::getPrice($payment->value),
+                'is_close' => $payment->status == Payment::STATUS_CLOSE,
+            ];
+        });
+
         return Inertia::render('Admin/Contract/Show', [
             'contract' => $contractData,
             'users' => $users,
+            'all_states' => $allStates,
+            'current_state' => $currentStateData,
+        ]);
+    }
+
+    public function unallocatedContracts()
+    {
+        $contracts = Contract::with(['contractUsers.user', 'payments' => function ($query) {
+            $query->orderBy('order');
+        }])
+            ->where(function ($query) {
+                $query->whereDoesntHave('contractUsers', function ($q) {
+                    $q->where('role', ContractUser::SELLER);
+                })
+                    ->orWhereHas('contractUsers', function ($q) {
+                        $q->where('role', ContractUser::SELLER)
+                            ->whereHas('user', function ($q) {
+                                $q->whereNotNull('fired_at');
+                            });
+                    });
+            })
+            ->whereHas('payments', function ($q) {
+                $q->where('order', 1)
+                    ->where('status', '!=', Payment::STATUS_CLOSE);
+            })
+            ->get()
+            ->map(function ($contract) {
+                return [
+                    'id' => $contract->id,
+                    'number' => $contract->number,
+                    'created_at' => $contract->created_at->format('d.m.Y'),
+                    'SELLER' => $contract->SELLER() ?? [],
+                    'parent' => $contract->parent ?? [],
+                    'client' => $contract->client ?? [],
+                    'phone' => $contract->phone ?? '',
+                    'services' => $contract->services ?? [],
+                    'price' => $contract->amount_price,
+                    'payments' => $contract->payments->map(function ($payment) {
+                        return [
+                            'id' => $payment->id,
+                            'value' => $payment->value,
+                            'status' => $payment->status
+                        ];
+                    }),
+                ];
+            })->toArray();
+
+        return Inertia::render('Admin/Contract/Unallocated', [
+            'contracts' => $contracts,
+            'paymentStatuses' => Payment::vueStatuses(),
         ]);
     }
 

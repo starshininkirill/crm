@@ -3,9 +3,9 @@
 namespace App\Services\UserServices;
 
 use App\Helpers\DateHelper;
-use App\Models\TimeCheck;
-use App\Models\User;
-use App\Models\WorkStatus;
+use App\Models\TimeTracking\TimeCheck;
+use App\Models\UserManagement\User;
+use App\Models\TimeTracking\WorkStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+    public function isProbation(User $user, Carbon $date): bool
+    {
+        if (empty($user->probation_start) || empty($user->probation_end)) {
+            return false;
+        }
+        $probationStart = Carbon::parse($user->probation_start)->startOfDay();
+        $probationEnd = Carbon::parse($user->probation_end)->endOfDay();
+        return $date->between($probationStart, $probationEnd);
+    }
     public function getFirstWorkingDay(User $user): Carbon
     {
         $employmentDate = $user->created_at->copy();
@@ -83,10 +92,16 @@ class UserService
 
     public function filterUsersByStatus(Collection $users, string $status, Carbon $targetDate): Collection
     {
+        if ($users->isEmpty()) {
+            return collect();
+        }
         $endOfMonth = $targetDate->copy()->endOfMonth();
         $startOfMonth = $targetDate->copy()->startOfMonth();
 
         return $users->filter(function ($user) use ($status, $startOfMonth, $endOfMonth) {
+            if (!$user) {
+                return false;
+            }
             $firedAt = $user->fired_at;
 
             return match ($status) {

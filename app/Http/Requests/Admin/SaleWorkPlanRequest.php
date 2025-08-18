@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\WorkPlan;
+use App\Models\Global\WorkPlan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SaleWorkPlanRequest extends FormRequest
@@ -55,7 +55,7 @@ class SaleWorkPlanRequest extends FormRequest
                 $rules = array_merge($rules, [
                     'data.includeIds' => 'required|array',
                     'data.includeIds.*' => 'integer|exists:services,id',
-                    'data.includedCategoryIds' => 'required|array',
+                    'data.includedCategoryIds' => 'nullable|array',
                     'data.includedCategoryIds.*' => 'integer|exists:services,id',
                     'data.excludeServicePairs' => 'nullable|array',
                     'data.excludeServicePairs.*' => 'array|size:2',

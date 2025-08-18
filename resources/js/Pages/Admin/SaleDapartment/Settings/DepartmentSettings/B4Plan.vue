@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div class="text-2xl font-semibold mb-2">
+        <div class="text-2xl font-semibold mb-2 flex items-center gap-2">
             Б4 План
+            <Info :text="'Менеджеру необходимо продать ' + plan.data.goal + ' указаных услуг'" />
         </div>
         <form class="flex flex-col gap-2" @submit.prevent="submitForm(plan)">
             <div class="grid grid-cols-2 gap-3">
@@ -30,11 +31,13 @@ import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import FormInput from '../../../../../Components/FormInput.vue';
 import ServiceSelector from './ServiceSelector.vue';
+import Info from '../../../../../Components/Info.vue';
 
 export default {
     components: {
         FormInput,
         ServiceSelector,
+        Info
     },
     props: {
         propServices: {

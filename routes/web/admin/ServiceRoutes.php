@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('servicies')->group(function () {
     Route::prefix('categories')->group(function () {
-        Route::get('/', [ServiceCategoryController::class, 'index'])->name('admin.service.category.index');
-        Route::get('/{serviceCategory}/edit', [ServiceCategoryController::class, 'edit'])->name('admin.service.category.edit');
+        Route::get('/', [ServiceCategoryController::class, 'index'])->name('admin.service-category.index');
+        Route::get('/{serviceCategory}/edit', [ServiceCategoryController::class, 'edit'])->name('admin.service-category.edit');
 
         Route::post('/', [ServiceCategoryController::class, 'store'])->name('admin.service-category.store');
         Route::patch('/{serviceCategory}', [ServiceCategoryController::class, 'update'])->name('admin.service-category.update');

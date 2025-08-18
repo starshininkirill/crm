@@ -3,11 +3,11 @@
 namespace App\Classes;
 
 use App\Exceptions\Api\ApiException;
-use App\Models\Option;
-use App\Models\DocumentGeneratorTemplate;
-use App\Models\DocumentTemplate;
-use App\Models\GeneratedDocument;
-use App\Models\Organization;
+use App\Models\Global\Option;
+use App\Models\Documents\DocumentGeneratorTemplate;
+use App\Models\Documents\DocumentTemplate;
+use App\Models\Documents\GeneratedDocument;
+use App\Models\Finance\Organization;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Http;
@@ -287,15 +287,6 @@ class DocumentGenerator
         }
 
         return $documentName;
-    }
-
-    private function saveDOXC(TemplateProcessor $templateProcessor, string $documentName): string
-    {
-        $docxRelativePath = 'generatedDocuments/' . $this->fileManager->generateUniqueFileName($documentName, 'docx', 'generatedDocuments');
-        $docxFullPath = storage_path('app/public/' . $docxRelativePath);
-        $templateProcessor->saveAs($docxFullPath);
-
-        return $docxFullPath;
     }
 
     private function insertFormattedHtml(TemplateProcessor $templateProcessor, string $placeholder, string $html)

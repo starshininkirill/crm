@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Helpers\TextFormaterHelper;
-use App\Models\Payment;
+use App\Models\Finance\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

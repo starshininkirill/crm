@@ -4,8 +4,8 @@ namespace App\Services\TimeCheckServices;
 
 use App\Events\StartWorkDay;
 use App\Exceptions\Business\BusinessException;
-use App\Models\TimeCheck;
-use App\Models\User;
+use App\Models\TimeTracking\TimeCheck;
+use App\Models\UserManagement\User;
 use Carbon\Carbon;
 
 class ActionsService

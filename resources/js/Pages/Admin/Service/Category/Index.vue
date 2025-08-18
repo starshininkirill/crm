@@ -55,7 +55,7 @@
                                     </Link>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <Link :href="route('admin.service.category.edit', { serviceCategory: category.id })"
+                                    <Link :href="route('admin.service-category.edit', { serviceCategory: category.id })"
                                         class="font-medium text-blue-600  hover:underline">
                                     Редактировать
                                     </Link>

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Web\Main;
 
 use App\Http\Controllers\Controller;
-use App\Models\WorkPlan;
+use App\Models\Global\WorkPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class MainController extends Controller
 {
