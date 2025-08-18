@@ -9,6 +9,10 @@
                 :route="'admin.advertising-department.report'">
                 Отчёт по сотрудникам
             </AdminSubnavLink>
+            <AdminSubnavLink :href="route('admin.advertising-department.plansSettings')"
+                :route="'admin.advertising-department.plansSettings'">
+                Настройка планов
+            </AdminSubnavLink>
         </div>
         <slot />
     </div>

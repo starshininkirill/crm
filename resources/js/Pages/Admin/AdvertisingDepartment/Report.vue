@@ -50,50 +50,59 @@
                             Продажи
                         </th>
                         <th scope="col" class="px-2 py-2 border-r">
+                            % Продаж
+                        </th>
+                        <th scope="col" class="px-2 py-2 border-r">
                             Настройки
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="user in users_report" :key="user.id" class="table-row">
+                    <tr v-for="report in users_report" class="table-row">
                         <th scope="row" class="px-2 border-x py-2 font-medium text-gray-900 whitespace-nowrap ">
-                            {{ user.full_name }}
+                            {{ report.user.full_name }}
                         </th>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ user.current_months_count }}
+                            {{ report.previouss_months_count }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ user.current_months_count }}
+                            {{ report.previouss_months_count }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ user.next_months_count }}
+                            {{ report.next_months_count }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ formatPrice(user.next_months_amount) }}
-                        </td>
-                        <td class="px-2 border-r py-2 text-black ">
-                            ?
+                            {{ formatPrice(report.next_months_amount) }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
                             ?
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ formatPrice(user.next_months_average) }}
+                            ?
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            {{ user.new_tarif_count }}
+                            {{ formatPrice(report.next_months_average) }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            -
+                            {{ report.new_tarifs_count }}
+                        </td>
+                        <td class="px-2 border-r py-2 text-black"
+                        :class="{ 'text-green-500 font-semibold': report.b1.completed, '': !report.b1.completed }">
+                            {{ report.b1.bonus }}
+                        </td>
+                        <td class="px-2 border-r py-2 text-black"
+                        :class="{ 'text-green-500 font-semibold': report.b2.completed, '': !report.b2.completed }">
+                            {{ report.b2.bonus }}
+                        </td>
+                        <td class="px-2 border-r py-2 text-black"
+                        :class="{ 'text-green-500 font-semibold': report.b3.completed, '': !report.b3.completed }">
+                            {{ report.b3.bonus }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            -
+                            {{ formatPrice(report.upsells_plan.value) }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
-                            -
-                        </td>
-                        <td class="px-2 border-r py-2 text-black ">
-                            -
+                            {{ formatPrice(report.upsells_plan.bonus) }}
                         </td>
                         <td class="px-2 border-r py-2 text-black ">
                             -

@@ -17,13 +17,55 @@ class WorkPlanSeeder extends Seeder
         $this->createSalePlans();
         $this->createProjectPlans();
         $this->createAdvertisingSalePlans();
+        $this->createAdvertisingDepartmentPlans();
+    }
+
+
+    private function createAdvertisingDepartmentPlans()
+    {
+        Carbon::setTestNow('2025-01-01 10:26:39');
+
+        WorkPlan::create([
+            'type' => WorkPlan::B1_PLAN,
+            'department_id' => 5,
+            'data' => [
+                "goal" => 2,
+                "bonus" => "3000",
+            ],
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B2_PLAN,
+            'department_id' => 5,
+            'data' => [
+                "goal" => 70,
+                'additional_goal' => 3,
+                "bonus" => 7000,
+            ],
+        ]);
+        WorkPlan::create([
+            'type' => WorkPlan::B3_PLAN,
+            'department_id' => 5,
+            'data' => [
+                "goal" => 80,
+                'additional_goal' => 5,
+                "bonus" => 12000,
+            ],
+        ]);
+
+        WorkPlan::create([
+            'type' => WorkPlan::UPSALE_BONUS,
+            'data' => [
+                'bonus' => 10,
+            ],
+            'department_id' => 5,
+        ]);
+
     }
 
     private function createAdvertisingSalePlans()
     {
         Carbon::setTestNow('2025-01-01 10:26:39');
         
-
         WorkPlan::create([
             'type' => WorkPlan::B2_PLAN,
             'department_id' => 1,

@@ -8,6 +8,7 @@ use App\Models\Contracts\ContractUser;
 use App\Models\Contracts\ServiceMonth;
 use App\Models\Contracts\Tarif;
 use App\Models\Finance\Payment;
+use App\Models\Services\Service;
 use App\Models\Services\ServiceCategory;
 use App\Models\States\Contract\Introduction;
 use App\Models\UserManagement\Department;
@@ -21,6 +22,12 @@ class AdsContractSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(ContractService $contractService): void
+    {
+        $this->createAdsContracts($contractService);
+        $this->createUpsails($contractService);
+    }
+
+    private function createAdsContracts(ContractService $contractService)
     {
         // Carbon::setTestNow('2025-02-02 10:26:39');
         Carbon::setTestNow();
@@ -88,7 +95,7 @@ class AdsContractSeeder extends Seeder
 
             if (rand(0, 1)) {
                 $moreTarifs = $tarifs->where('order', '>', $tarif->order);
-                if($moreTarifs && !$moreTarifs->isEmpty()){
+                if ($moreTarifs && !$moreTarifs->isEmpty()) {
                     $tarif = $tarifs->where('order', '>', $tarif->order)->random(1)->first();
                 }
                 $secondMonth = $contract->serviceMonths()->create([
@@ -109,5 +116,71 @@ class AdsContractSeeder extends Seeder
                 $secondMonth->save();
             }
         }
+    }
+
+    private function createUpsails(ContractService $contractService)
+    {
+        Carbon::setTestNow('2025-07-01 10:26:39');
+        $clients = Client::factory()->count(20)->create();
+
+        Carbon::setTestNow();
+        $startDate = Carbon::now()->subMonth(2);
+        $endDate = Carbon::now();
+
+        $services = Service::query()->WhereNotNull('price')->get();
+        $department = Department::where('type', Department::DEPARTMENT_ADVERTISING)->whereNull('parent_id')->first();
+
+        if (!$department) {
+            return;
+        }
+
+        $users = $department->allUsers($endDate);
+
+        foreach ($clients as $key => $client) {
+
+            $totalDays = $startDate->copy()->diffInDays($endDate);
+            $randomDays = rand(0, $totalDays);
+            $randomDate = $startDate->copy()->addDays($randomDays);
+            Carbon::setTestNow($randomDate);
+
+
+            $contractData = [
+                'number' => $key + 100,
+                'phone' => '+8-(888)-888-88-88',
+                'amount_price' => rand(50000, 200000),
+                'client_id' => $client->id,
+            ];
+
+            $contract = Contract::create($contractData);
+
+            $contractServices = $services->random(1);
+
+            foreach ($contractServices as $service) {
+                $contract->services()->attach($service->id, [
+                    'price' => $service->price,
+                ]);
+            }
+
+            $contract->payments()->create([
+                'value' => rand(10000, 50000),
+                'status' => Payment::STATUS_CLOSE,
+                'order' => 1,
+                'type' => Payment::TYPE_NEW,
+            ]);
+
+
+            if ($users->count() > 0) {
+                $randomUser = $users->random();
+
+                $attachData = [
+                    [
+                        'id' => ContractUser::SELLER,
+                        'performers' => [$randomUser->id]
+                    ]
+                ];
+                $contractService->attachPerformers($contract, $attachData);
+            }
+        }
+        Carbon::setTestNow();
     }
 }
