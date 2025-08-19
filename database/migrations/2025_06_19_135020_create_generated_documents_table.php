@@ -16,13 +16,15 @@ return new class extends Migration
             $table->string('type')->index();
             $table->string('deal');
             $table->string('file_name');
-            $table->string('word_file');
+            $table->json('data')->nullable();
+            $table->string('word_file')->nullable();
             $table->string('pdf_file')->nullable();
             $table->string('act_number')->nullable();
             $table->string('creater')->nullable();
             $table->string('inn')->nullable();
             $table->date('document_date')->nullable();
             $table->string('template_id')->nullable();
+            $table->foreignId('document_generator_template_id')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Models\Documents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\HasFilter;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentGeneratorTemplate extends Model
 {
@@ -19,4 +20,9 @@ class DocumentGeneratorTemplate extends Model
     ];
 
     public $timestamps = false;
+
+    public function generatedDocuments() : HasMany
+    {
+        return $this->hasMany(GeneratedDocument::class, 'document_generator_template_id');
+    }
 }

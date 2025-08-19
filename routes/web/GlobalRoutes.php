@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Global\DocumentGeneratorController;
 use App\Http\Controllers\Web\Global\TimeCheckController;
 use App\Http\Controllers\Web\Global\OptionController;
 use Illuminate\Support\Facades\Route;
@@ -9,7 +10,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/breaktime', [TimeCheckController::class, 'userBreaktime'])->name('time-check.breaktime');
 
     Route::middleware('role:admin')->group(function () {
-
         Route::prefix('option')->name('option')->group(function () {
             Route::post('/', [OptionController::class, 'store'])->name('.store');
             Route::patch('/{option}', [OptionController::class, 'update'])->name('.update');
@@ -17,6 +17,10 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{option}', [OptionController::class, 'destroy'])->name('.destroy');
             Route::post('mass-update', [OptionController::class, 'massUpdate'])->name('.option.mass-update');
         });
-
     });
+
+    Route::get('/documents/download/{id}/{format}/{sign}', [DocumentGeneratorController::class, 'download'])
+        ->where('format', 'word|pdf')
+        ->where('sign', 'with-sign|without-sign')
+        ->name('generated-document.download');
 });

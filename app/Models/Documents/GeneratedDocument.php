@@ -5,6 +5,7 @@ namespace App\Models\Documents;
 use App\Models\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GeneratedDocument extends Model
 {
@@ -13,6 +14,7 @@ class GeneratedDocument extends Model
     protected $fillable = [
         'type',
         'deal',
+        'data',
         'file_name',
         'word_file',
         'pdf_file',
@@ -21,6 +23,7 @@ class GeneratedDocument extends Model
         'inn',
         'document_date',
         'template_id',
+        'document_generator_template_id',
     ];
 
     const TYPE_DEAL = 'deal';
@@ -37,7 +40,13 @@ class GeneratedDocument extends Model
 
     protected $casts = [
         'document_date' => 'date',
+        'data' => 'array',
     ];
+
+    public function template() : BelongsTo
+    {
+        return $this->belongsTo(DocumentGeneratorTemplate::class, 'document_generator_template_id');
+    }
 
     public function formatedType(): string
     {
